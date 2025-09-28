@@ -1,6 +1,6 @@
 --기본 변수
 TIME = 0
-SPAMING = 1
+SPAMING = 0.2
 DEBUG = 0
 INIT = 0
 
@@ -13,19 +13,21 @@ end
 
 --초기세팅 함수
 function initialize(triggerId)
-    if INIT ==0 then
-        INIT = 1
+    print(INIT)
+    if INIT == 0 then
+        --INIT = 1
         debug("초기 세팅 개시...")
-
         local initFuncs ={"initVars.sys"}
         for i, f_code in ipairs(initFuncs) do
             local funcBody = getLoreBooks(triggerId, f_code)[1].content
-            local func, err = createFunctionFromString(funcBody)
+            local func = createFunctionFromString(funcBody)
             debug(f_code .. " 함수 실행")
             func(triggerId)
         end
         
-
+        setState(triggerId, "screen", "main")
+        processAndStoreLore(triggerId, "main.func")
+         
     else
         initialize = function()--함수 무력화
             debug("초기세팅 완료")
@@ -36,7 +38,12 @@ end
 
 --시간값 출력
 function time()
-    return os.time()
+    if os.clock()<0 then
+        return os.time()    
+    else
+        return os.clock() --35q분 지나면 오버플로우로 못씀
+    end
+    
 end
 
 --- 문자열 함수를 실제 함수 객체로 변환
@@ -70,7 +77,7 @@ function processAndStoreLore(triggerId, loreBookId)
         local key = page.."_"..number
         setState(triggerId, key, functionBody)
         debug(description.."-> funcs['" .. key .. "']에 함수 저장됨.")
-        debug(functionBody)
+        --print(functionBody)
         count = count + 1
 
         --cmds 챗변수에 버튼들 입력
@@ -86,7 +93,7 @@ function processAndStoreLore(triggerId, loreBookId)
     debug("처리 완료. 총 " .. count .. "개의 함수를 저장했습니다.\n")
 end
 
-function executeFunction(triggerId, screen, f_code)
+function executeFunction(triggerId, screen, f_code, ...)
     local f_code = screen.."_"..f_code
     local funcBody = getState(triggerId, f_code)
 
@@ -96,7 +103,7 @@ function executeFunction(triggerId, screen, f_code)
     else
         local func, err = createFunctionFromString(funcBody)
         debug(f_code .. " 함수 실행")
-        func(triggerId)
+        func(triggerId, ...)
     end
 
     local screen = getState(triggerId, "screen")
@@ -123,13 +130,11 @@ function LLMresponse(triggerId, prompt)
 end
 
 listenEdit("editDisplay", function(triggerId, data)
-    initialize(triggerId) --초기 변수 등 세팅
-    --현재 스크린이 미지정이라면 메인페이지로 설정
     local screen = getState(triggerId, "screen")
     if not screen then
-        setState(triggerId, "screen", "main")
+        setState(triggerId, "screen", "gameStart")
         screen = getState(triggerId, "screen")
-        processAndStoreLore(triggerId, screen..".func")
+        --processAndStoreLore(triggerId, screen..".func")
     end
 
     --현재 페이지에 맞는 html호출
@@ -167,8 +172,13 @@ onButtonClick = async(function(triggerId, data)
         print("스패밍 멈춰!")
         return false
     end
-    local screen = getState(triggerId, "screen")
-    executeFunction(triggerId, screen, data)
+
+    if data=="gameStart" then
+        initialize(triggerId)
+    else
+        local screen = getState(triggerId, "screen")
+        executeFunction(triggerId, screen, data)
+    end
     --현재 페이지에 맞는 html호출
     local html = getLoreBooks(triggerId, screen..".html")[1].content
     setChatVar(triggerId, "html", html)
