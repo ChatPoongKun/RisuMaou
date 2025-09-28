@@ -1,0 +1,98 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Dokdo&display=swap');
+
+body {
+background-color: #0d1014;
+color: #e0e0e0;
+display: flex;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+margin: 0;
+padding: 1rem;
+box-sizing: border-box;
+overflow: hidden;
+}
+
+.splash-container {
+text-align: center;
+width: 100%;
+
+padding: 2.5rem 0.5rem;
+border: 1px solid #1a3a4a;
+box-shadow: 
+0 0 15px rgba(45, 156, 219, 0.2), 
+0 0 30px rgba(45, 156, 219, 0.2), 
+inset 0 0 20px rgba(45, 156, 219, 0.2);
+background-color: rgba(13, 16, 20, 0.5);
+position: relative;
+}
+
+/*.pre-title {
+color: #8cb2d0;
+margin-bottom: 0.5rem;
+font-size: 1rem;
+letter-spacing: 1px;
+}*/
+
+.maintitle {
+font-family: "Dokdo", system-ui !important;
+font-weight: 400;
+font-style: normal;
+font-size: clamp(3rem, 10vw, 5.5rem);
+color: #60d9f7;
+text-shadow:
+0 0 5px #60d9f7,
+0 0 15px #60d9f7,
+0 0 30px #60d9f7,
+0 0 50px #40c0e0;
+margin: 0;
+line-height: 1.1;
+}
+
+.subtitle {
+color: #b0c4de;
+font-size: clamp(1rem, 3vw, 1.25rem);
+margin: 1rem;
+letter-spacing: 0.5px;
+}
+
+.enter-button {
+display: inline-block;
+padding: 0.5rem 2.5rem;
+border: 2px solid #60d9f7;
+border-radius: 8px;
+color: #60d9f7;
+text-decoration: none;
+font-size: 1.2rem;
+font-weight: bold;
+background-color: transparent;
+transition: all 0.3s ease;
+box-shadow: 
+0 0 5px #60d9f7, 
+0 0 15px #60d9f7, 
+inset 0 0 10px rgba(96, 217, 247, 0.2);
+text-shadow: 0 0 3px #60d9f7;
+}
+
+.enter-button:hover,
+.enter-button:focus {
+background-color: rgba(96, 217, 247, 0.15);
+color: #ffffff;
+box-shadow: 
+0 0 10px #60d9f7, 
+0 0 25px #60d9f7, 
+0 0 40px #40c0e0,
+inset 0 0 15px rgba(96, 217, 247, 0.3);
+outline: none;
+}
+</style>
+
+<body>
+<div class="container">
+<div class="splash-container">
+<p class="maintitle">리수 마왕</p>
+<p class="subtitle">누군가 당신의 봉인석을...!!</p>
+<button class="enter-button" risu-btn="gameStart">봉인을 해제</button>
+</div></div>
+</body>
