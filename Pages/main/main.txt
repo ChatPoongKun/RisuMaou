@@ -1,0 +1,99 @@
+<body>
+<div class="container">
+<div class="line double"></div>
+
+<header class="game-header">
+<h1>▋메인 메뉴</h1>
+<div class="game-info">
+<span>({{getvar::day}}일째) 《만월》 {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}</span>
+<span>(소지 포인트: {{getVar::gold}} pts.)</span>
+</div>
+</header>
+
+<div class="line single"></div>
+
+<main>
+<section class="character-panel">
+<div class="character-display">
+<div class="character-portrait"><img src="{{source::user}}" style="margin:0px;border-radius:1em" ></div>
+<div class="character-info-wrapper">
+<div class="character-details">
+<div class="panel-header">
+<h2>* 마왕 {{user}}</h2>
+</div>
+</div>
+<div class="player-status">
+<p>HP: 250/250 | MP: 150/150 | ST: 100/100</p>
+</div>
+</div>
+</div>
+</section>
+
+<div class="line single"></div>
+
+<section class="management-panel">
+<h2>* 경영 및 운영</h2>
+
+<!-- Hidden radio buttons to control tabs -->
+<input type="radio" name="management-tabs" id="skills-tab" checked hidden>
+<input type="radio" name="management-tabs" id="traps-tab" hidden>
+<input type="radio" name="management-tabs" id="dungeon-tab" hidden>
+
+<div class="tabs">
+<label for="skills-tab" class="btn">▋스킬</label>
+<label for="traps-tab" class="btn">▋함정</label>
+<label for="dungeon-tab" class="btn">▋던전</label>
+</div>
+
+<div class="tab-content">
+<div id="skills-content" class="tab-pane">
+<p>기교Lv: 15Lv</p>
+<p>소지 지식: 【조합지식】【마계지식】【음마지식】</p>
+<div class="item-grid">
+<span>슬라임젤리(10)</span>
+<span>마수의 가죽(5)</span>
+<span>회복약(3)</span>
+<span>마력결정(22)</span>
+</div>
+</div>
+<div id="traps-content" class="tab-pane">
+<div class="item-grid">
+<span>끈끈이 함정(5)</span>
+<span>독화살 함정(2)</span>
+<span>마력흡수 함정(3)</span>
+<span>망각의 향기(1)</span>
+</div>
+</div>
+<div id="dungeon-content" class="tab-pane">
+<p>던전Lv: 5Lv (경험치: 1250) | 함정Lv: 3Lv | 현재의 용사 초기Lv: 10Lv</p>
+<div class="dungeon-floor-grid">
+<div><strong>제1계층:</strong> 부하 50체, 용사: 0인, 영격: 0인, 시설: 없음</div>
+<div><strong>제2계층:</strong> 부하 35체, 용사: 1인, 영격: 0인, 시설: 인간목장</div>
+<div><strong>제3계층:</strong> 부하 20체, 용사: 0인, 영격: 2인, 시설: 미궁</div>
+</div>
+<p class="total-info">부하총계: 105마리, 용사총계: 1명, 요격총계: 2명</p>
+</div>
+</div>
+</section>
+
+<div class="line single"></div>
+
+<section class="command-panel">
+<div class="command-header">
+<h2>* {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}의 일정</h2>
+<p>※ 휴식을 하는경우 경우 남은시간동안 업무를 처리합니다.</p>
+</div>
+<div class="status-message">
+<p>[새로운 시작] 당신은 막 봉인에서 깨어났습니다.</p>
+</div>
+<h3>▋Commands</h3>
+<div class="command-flex-container">
+{{getvar::cmds}}
+</div>
+</section>
+</main>
+
+<div class="line double"></div>
+</div>
+
+</body>

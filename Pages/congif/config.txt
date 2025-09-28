@@ -1,0 +1,10 @@
+<body>
+<div class="container">
+<div class="line double"></div>
+
+<header class="game-header">
+<h1>▋설정</h1>
+
+</header>
+{{getvar::cmds}}
+</body>
