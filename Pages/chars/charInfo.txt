@@ -1,179 +1,295 @@
+<style>
+/* info.css */
+
+/* Header for the character list */
+.info-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 1rem;
+margin-bottom: 1rem;
+}
+
+.list-meta {
+text-align: right;
+font-size: 0.9em;
+color: #bbb;
+}
+
+.list-meta span {
+display: block;
+}
+
+.info-description {
+background-color: #333;
+border-left: 3px solid #888;
+padding: 0.5rem 1rem;
+margin-bottom: 1.5rem;
+font-size: 0.9em;
+color: #ccc;
+}
+.info-description p {
+margin: 0.25rem 0;
+}
+
+
+/* Character List Styles */
+.character-list {
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+}
+
+.character-list-item {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+gap: 0.5rem 1rem;
+padding: 0.75rem;
+background-color: #303030;
+border: 1px solid #444;
+border-radius: 4px;
+color: #e0e0e0;
+text-decoration: none;
+transition: background-color 0.2s, border-color 0.2s;
+}
+
+.character-list-item:hover {
+background-color: #3a3a3a;
+border-color: #666;
+}
+
+.char-id, .char-status, .char-name, .char-level, .char-stats {
+white-space: nowrap;
+}
+
+.char-id {
+font-weight: bold;
+}
+
+.char-stats {
+color: #b0b0b0;
+font-size: 0.9em;
+}
+
+.char-bars-container {
+display: flex;
+flex-grow: 1;
+gap: 1.5rem;
+min-width: 280px;
+align-items: center;
+}
+
+/* Make bars fit in the list item better */
+.character-list-item .bar-container {
+gap: 0.5rem;
+}
+.character-list-item .bar-label {
+flex-basis: 30px;
+text-align: left;
+flex-shrink: 0;
+font-size: 0.9em;
+}
+
+.char-tags {
+margin-left: auto;
+display: flex;
+gap: 0.75rem;
+align-items: center;
+white-space: nowrap;
+}
+
+
+/* Status and Tag Colors based on Emuera script */
+.char-name.male { color: #87CEFA; } /* LightSkyBlue for Male */
+.status-invading, .tag-ntr { color: #ff6464; } /* Reddish */
+.status-intercepting, .status-trade { color: #64ffff; } /* Cyan */
+.status-trainable { color: #87CEFA; } /* LightSkyBlue */
+.status-childcare { color: #90EE90; } /* LightGreen */
+.tag-party { color: #ff6464; }
+.tag-conquered { color: #ff8c69; } /* Salmon-like Red */
+.tag-unconquered { color: #a9a9a9; } /* DarkGray */
+.tag-returning { color: #e5e564; } /* Yellowish */
+.tag-favorite { color: #FFD700; } /* Gold */
+
+</style>
+
 <body>
 <div class="container">
-    <div class="line double"></div>
+<div class="line double"></div>
 
-    <header class="game-header">
-        <h1>▋캐릭터 정보</h1>
-        <div class="game-info">
-            <span>1년째 1월 2일 (3일째) 《초승달》 오후</span>
-            <span>(소지 포인트: {{getVar::gold}} pts.)</span>
-        </div>
-    </header>
+<header class="game-header">
+<h1>▋캐릭터 정보</h1>
+<div class="game-info">
+<span>1년째 1월 2일 (3일째) 《초승달》 오후</span>
+<span>(소지 포인트: {{getVar::gold}} pts.)</span>
+</div>
+</header>
 
-    <div class="line single"></div>
+<div class="line single"></div>
 
-    <main class="char-layout">
-        <!-- Left Column: Primary Info -->
-        <div class="char-main-info">
-            <section class="profile-section">
-                <div class="character-display">
-                    <div class="character-portrait"><img src="https://i.imgur.com/example.png" alt="Artemis Portrait" style="width:100%; height:100%; object-fit:cover;"></div>
-                    <div class="character-info-wrapper">
-                        <h2 class="char-name-line">아르테미스 <span class="char-age">21세</span></h2>
-                        <div class="char-meta-info">
-                            <p><strong>종족:</strong> 엘프</p>
-                            <p><strong>직업:</strong> 궁수</p>
-                            <p><strong>호감도:</strong> 150</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="physical-stats-grid">
-                    <span><strong>신장:</strong> 168.0 cm</span>
-                    <span><strong>체중:</strong> 52.0 kg</span>
-                    <span><strong>B:</strong> 88.0 cm (D컵)</span>
-                    <span><strong>W:</strong> 58.0 cm</span>
-                    <span><strong>H:</strong> 85.0 cm</span>
-                </div>
-            </section>
+<main class="char-layout">
+<!-- Left Column: Primary Info -->
+<div class="char-main-info">
+<section class="profile-section">
+<div class="character-display">
+<div class="character-portrait"><img src="https://i.imgur.com/example.png" alt="Artemis Portrait" style="width:100%; height:100%; object-fit:cover;"></div>
+<div class="character-info-wrapper">
+<h2 class="char-name-line">아르테미스 <span class="char-age">21세</span></h2>
+<div class="char-meta-info">
+<p><strong>종족:</strong> 엘프</p>
+<p><strong>직업:</strong> 궁수</p>
+<p><strong>호감도:</strong> 150</p>
+</div>
+</div>
+</div>
+<div class="physical-stats-grid">
+<span><strong>신장:</strong> 168.0 cm</span>
+<span><strong>체중:</strong> 52.0 kg</span>
+<span><strong>B:</strong> 88.0 cm (D컵)</span>
+<span><strong>W:</strong> 58.0 cm</span>
+<span><strong>H:</strong> 85.0 cm</span>
+</div>
+</section>
 
-            <div class="line single"></div>
+<div class="line single"></div>
 
-            <section class="stats-section">
-                <h3>* 상태</h3>
-                <div class="x-risu-bar-container">
-                    <span class="bar-label">체력:</span>
-                    <div class="progress-bar">
-                        <div class="x-risu-progress-bar-fill x-risu-hp" style="width: 100%;"></div>
-                    </div>
-                    <span class="bar-value">250/250</span>
-                </div>
-                <div class="x-risu-bar-container">
-                    <span class="bar-label">기력:</span>
-                    <div class="progress-bar">
-                        <div class="x-risu-progress-bar-fill x-risu-st" style="width: 80%;"></div>
-                    </div>
-                    <span class="bar-value">80/100</span>
-                </div>
+<section class="stats-section">
+<h3>* 상태</h3>
+<div class="x-risu-bar-container">
+<span class="bar-label">체력:</span>
+<div class="progress-bar">
+<div class="x-risu-progress-bar-fill x-risu-hp" style="width: 100%;"></div>
+</div>
+<span class="bar-value">250/250</span>
+</div>
+<div class="x-risu-bar-container">
+<span class="bar-label">기력:</span>
+<div class="progress-bar">
+<div class="x-risu-progress-bar-fill x-risu-st" style="width: 80%;"></div>
+</div>
+<span class="bar-value">80/100</span>
+</div>
 
-                <h3 class="section-title">* 전투 능력</h3>
-                <div class="combat-stats-grid">
-                    <span><strong>공격력:</strong> 250 (순수 230)</span>
-                    <span><strong>방어력:</strong> 180 (순수 180)</span>
-                    <span><strong>카르마:</strong> 50 (질서)</span>
-                </div>
+<h3 class="section-title">* 전투 능력</h3>
+<div class="combat-stats-grid">
+<span><strong>공격력:</strong> 250 (순수 230)</span>
+<span><strong>방어력:</strong> 180 (순수 180)</span>
+<span><strong>카르마:</strong> 50 (질서)</span>
+</div>
 
-                <h3 class="section-title">* 장비</h3>
-                <div class="equipment-list">
-                    <p><strong>【무기】:</strong> 요정의 활</p>
-                    <p><strong>【장식A】:</strong> 민첩의 반지</p>
-                    <p><strong>【장식B】:</strong> 없음</p>
-                </div>
+<h3 class="section-title">* 장비</h3>
+<div class="equipment-list">
+<p><strong>【무기】:</strong> 요정의 활</p>
+<p><strong>【장식A】:</strong> 민첩의 반지</p>
+<p><strong>【장식B】:</strong> 없음</p>
+</div>
 
-                <h3 class="section-title">* 파티</h3>
-                <div class="party-info">
-                    <p>소속된 파티는 [ 서큐버스 ]이(가) 리더인 파티입니다.</p>
-                    <p><strong>파티원:</strong> 자신, 인큐버스</p>
-                </div>
-            </section>
-        </div>
+<h3 class="section-title">* 파티</h3>
+<div class="party-info">
+<p>소속된 파티는 [ 서큐버스 ]이(가) 리더인 파티입니다.</p>
+<p><strong>파티원:</strong> 자신, 인큐버스</p>
+</div>
+</section>
+</div>
 
-        <!-- Right Column: Detailed Info with Tabs -->
-        <div class="char-secondary-info">
-            <input type="radio" name="char-info-tabs" id="talents-tab" checked hidden>
-            <input type="radio" name="char-info-tabs" id="abl-exp-tab" hidden>
-            <input type="radio" name="char-info-tabs" id="appearance-tab" hidden>
+<!-- Right Column: Detailed Info with Tabs -->
+<div class="char-secondary-info">
+<input type="radio" name="char-info-tabs" id="talents-tab" checked hidden>
+<input type="radio" name="char-info-tabs" id="abl-exp-tab" hidden>
+<input type="radio" name="char-info-tabs" id="appearance-tab" hidden>
 
-            <div class="char-tabs">
-                <label for="talents-tab" class="char-tab-label">특성</label>
-                <label for="abl-exp-tab" class="char-tab-label">능력/경험</label>
-                <label for="appearance-tab" class="char-tab-label">외견</label>
-            </div>
+<div class="char-tabs">
+<label for="talents-tab" class="char-tab-label">특성</label>
+<label for="abl-exp-tab" class="char-tab-label">능력/경험</label>
+<label for="appearance-tab" class="char-tab-label">외견</label>
+</div>
 
-            <div class="char-tab-content">
-                <div id="talents-pane" class="char-tab-pane">
-                    <h4>* 개인 특성 (TALENT)</h4>
-                    <div class="talent-group">
-                        <h5>성격</h5>
-                        <div class="talent-tags">
-                            <span class="talent-tag">[ 츤데레 ]</span>
-                            <span class="talent-tag">[ 성실 ]</span>
-                            <span class="talent-tag">[ 자존심높음 ]</span>
-                        </div>
-                    </div>
-                    <div class="talent-group">
-                        <h5>체질</h5>
-                        <div class="talent-tags">
-                            <span class="talent-tag">[ 민감 ]</span>
-                            <span class="talent-tag">[ 아름다운 엉덩이 ]</span>
-                            <span class="talent-tag">[ 하얀피부 ]</span>
-                        </div>
-                    </div>
-                    <div class="talent-group">
-                        <h5>기술</h5>
-                        <div class="talent-tags">
-                            <span class="talent-tag">[ 요리 능숙 ]</span>
-                            <span class="talent-tag">[ 치료 ]</span>
-                        </div>
-                    </div>
-                    <div class="talent-group">
-                        <h5>전투기술</h5>
-                        <div class="talent-tags">
-                            <span class="talent-tag">[ 궁수 ]</span>
-                            <span class="talent-tag">[ 속사 ]</span>
-                        </div>
-                    </div>
-                </div>
+<div class="char-tab-content">
+<div id="talents-pane" class="char-tab-pane">
+<h4>* 개인 특성 (TALENT)</h4>
+<div class="talent-group">
+<h5>성격</h5>
+<div class="talent-tags">
+<span class="talent-tag">[ 츤데레 ]</span>
+<span class="talent-tag">[ 성실 ]</span>
+<span class="talent-tag">[ 자존심높음 ]</span>
+</div>
+</div>
+<div class="talent-group">
+<h5>체질</h5>
+<div class="talent-tags">
+<span class="talent-tag">[ 민감 ]</span>
+<span class="talent-tag">[ 아름다운 엉덩이 ]</span>
+<span class="talent-tag">[ 하얀피부 ]</span>
+</div>
+</div>
+<div class="talent-group">
+<h5>기술</h5>
+<div class="talent-tags">
+<span class="talent-tag">[ 요리 능숙 ]</span>
+<span class="talent-tag">[ 치료 ]</span>
+</div>
+</div>
+<div class="talent-group">
+<h5>전투기술</h5>
+<div class="talent-tags">
+<span class="talent-tag">[ 궁수 ]</span>
+<span class="talent-tag">[ 속사 ]</span>
+</div>
+</div>
+</div>
 
-                <div id="abl-exp-pane" class="char-tab-pane">
-                    <h4>* 성적 특성</h4>
-                    <div class="ability-grid">
-                        <span>순종 - 2LV</span>
-                        <span>욕망 - 3LV</span>
-                        <span>자위중독 - 1LV</span>
-                        <span>봉사정신 - 2LV</span>
-                    </div>
-                    <h4 class="section-title">* 몸과 마음에 각인된 흔적</h4>
-                    <div class="marks-grid">
-                        <div class="mark-item"><span>고통</span><div class="mark-bar"><div class="mark-fill" style="width: 20%"></div></div><span>LV2</span></div>
-                        <div class="mark-item"><span>쾌락</span><div class="mark-bar"><div class="mark-fill" style="width: 50%"></div></div><span>LV5</span></div>
-                        <div class="mark-item"><span>굴복</span><div class="mark-bar"><div class="mark-fill" style="width: 30%"></div></div><span>LV3</span></div>
-                        <div class="mark-item"><span>반발</span><div class="mark-bar"><div class="mark-fill" style="width: 80%"></div></div><span>LV8</span></div>
-                    </div>
-                    <h4 class="section-title">* 경험 기록</h4>
-                    <div class="experience-list">
-                        <p><strong>자위 경험:</strong> 35</p>
-                        <p><strong>V 삽입 경험:</strong> 12</p>
-                        <p><strong>첫 키스 상대:</strong> 인큐버스의 입술</p>
-                        <p><strong>첫 경험 상대:</strong> 몬스터의 자지</p>
-                        <p><strong>다음 레벨업 경험치:</strong> 1200</p>
-                        <p><strong>총 획득 경험치:</strong> 15800</p>
-                    </div>
-                </div>
+<div id="abl-exp-pane" class="char-tab-pane">
+<h4>* 성적 특성</h4>
+<div class="ability-grid">
+<span>순종 - 2LV</span>
+<span>욕망 - 3LV</span>
+<span>자위중독 - 1LV</span>
+<span>봉사정신 - 2LV</span>
+</div>
+<h4 class="section-title">* 몸과 마음에 각인된 흔적</h4>
+<div class="marks-grid">
+<div class="mark-item"><span>고통</span><div class="mark-bar"><div class="mark-fill" style="width: 20%"></div></div><span>LV2</span></div>
+<div class="mark-item"><span>쾌락</span><div class="mark-bar"><div class="mark-fill" style="width: 50%"></div></div><span>LV5</span></div>
+<div class="mark-item"><span>굴복</span><div class="mark-bar"><div class="mark-fill" style="width: 30%"></div></div><span>LV3</span></div>
+<div class="mark-item"><span>반발</span><div class="mark-bar"><div class="mark-fill" style="width: 80%"></div></div><span>LV8</span></div>
+</div>
+<h4 class="section-title">* 경험 기록</h4>
+<div class="experience-list">
+<p><strong>자위 경험:</strong> 35</p>
+<p><strong>V 삽입 경험:</strong> 12</p>
+<p><strong>첫 키스 상대:</strong> 인큐버스의 입술</p>
+<p><strong>첫 경험 상대:</strong> 몬스터의 자지</p>
+<p><strong>다음 레벨업 경험치:</strong> 1200</p>
+<p><strong>총 획득 경험치:</strong> 15800</p>
+</div>
+</div>
 
-                <div id="appearance-pane" class="char-tab-pane">
-                    <h4>* 외견 정보</h4>
-                    <div class="appearance-details">
-                        <p>허리 너머까지 내려오는 은발의 장발. 피부는 눈처럼 희고 깨끗하다.</p>
-                        <p><strong>복장:</strong> 가죽 갑옷과 여행자의 망토.</p>
-                        <p><strong>문신:</strong> 뺨에 작은 『★』 문신이 새겨져 있다.</p>
-                        <p><strong>피어싱:</strong> 귓불에 작은 은색 피어싱이 되어있다.</p>
-                        <p><strong>음모:</strong> 깨끗하게 관리되어 털이 거의 없다.</p>
-                        <p>자궁 안에는 120ml의 정액이 들어있습니다.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+<div id="appearance-pane" class="char-tab-pane">
+<h4>* 외견 정보</h4>
+<div class="appearance-details">
+<p>허리 너머까지 내려오는 은발의 장발. 피부는 눈처럼 희고 깨끗하다.</p>
+<p><strong>복장:</strong> 가죽 갑옷과 여행자의 망토.</p>
+<p><strong>문신:</strong> 뺨에 작은 『★』 문신이 새겨져 있다.</p>
+<p><strong>피어싱:</strong> 귓불에 작은 은색 피어싱이 되어있다.</p>
+<p><strong>음모:</strong> 깨끗하게 관리되어 털이 거의 없다.</p>
+<p>자궁 안에는 120ml의 정액이 들어있습니다.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
 
-    <div class="line single"></div>
+<div class="line single"></div>
 
-    <section class="command-panel">
-        <h3>▋Commands</h3>
-        <div class="command-flex-container">
+<section class="command-panel">
+<h3>▋Commands</h3>
+<div class="command-flex-container">
 {{getvar::cmds}}
-        </div>
-    </section>
-
-    <div class="line double"></div>
+</div>
+</section>
+<div class="line double"></div>
 </div>
 </body>

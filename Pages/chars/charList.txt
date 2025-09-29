@@ -1,4 +1,11 @@
-<body>
+<style>
+.x-risu-progress-bar{
+height: 0.3rem !important;
+}
+
+
+</style>
+
 <div class="container">
 <header class="char-header">
 <h1>▋ 캐릭터 정보</h1>
@@ -7,7 +14,7 @@
 
 <div class="controls-bar">
 <div class="sort-buttons">
-<button class="sort-btn active">번호순</button>
+<button class="sort-btn">번호순</button>
 <button class="sort-btn">소지금순</button>
 <button class="sort-btn">부채순</button>
 </div>
@@ -27,10 +34,10 @@
 <p class="char-name-line">
 [01] <span class="status-trainable">[조교가능]</span> 엘리제 (남) <span class="char-level">Lv.14</span>
 </p>
-<div class="char-tags">
+<span class="char-tags">
 공격 39 / 방어 11 / 카르마 38
 <span class="tag tag-lewd">〈음란〉</span>
-</div>
+</span>
 </div>
 <div class="char-status-bars">
 <div class="bar-container">
@@ -95,14 +102,14 @@
 <div class="bar-container">
 <span class="bar-label">HP:</span>
 <div class="progress-bar">
-<div class="progress-fill hp" style="width: 70.3%;"></div>
+<div class="progress-bar-fill hp" style="width: 70.3%;"></div>
 </div>
 <span class="bar-value">64/91</span>
 </div>
 <div class="bar-container">
 <span class="bar-label">ST:</span>
 <div class="progress-bar">
-<div class="progress-fill st" style="width: 96%;"></div>
+<div class="progress-bar-fill st" style="width: 96%;"></div>
 </div>
 <span class="bar-value">24/25</span>
 </div>
@@ -112,4 +119,3 @@
 </div>
 
 {{getvar::cmds}}
-</body>

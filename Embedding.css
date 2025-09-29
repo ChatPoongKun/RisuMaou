@@ -1,15 +1,5 @@
 <style>
 /* General Body Styles */
-body {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    font-family: 'Gulim', 'Malgun Gothic', 'Dotum', monospace;
-    font-size: 16px;
-    line-height: 1.6;
-    margin: 0;
-    padding: 1rem;
-}
-
 .container {
     max-width: 1024px;
     margin: 0 auto;
@@ -34,7 +24,7 @@ body {
 }
 
 /* Header */
-.game-header {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -42,12 +32,12 @@ body {
     padding-bottom: 0.5rem;
 }
 
-.game-header h1 {
+.header h1 {
     font-family: 'Arial Black', sans-serif;
     font-size: 1.5em;
     color: #ffffff;
     margin: 0;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .game-info {
@@ -75,146 +65,23 @@ h2, h3 {
     font-size: 1.2em;
 }
 
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-/* Character Panel */
-.character-display {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.character-portrait {
-    width: 128px;
-    height: 128px;
-    background-color: #111;
-    border: 1px solid #444;
-    flex-shrink: 0;
-    border-radius: 1em;
-    overflow:hidden;
-}
-
-.character-info-wrapper {
-    flex-grow: 1;
-}
-
-.character-details {
-    margin: 0 0 0.75rem 0;
-}
-
-.player-status p {
-    margin: 0;
-    background-color: #303030;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    font-family: monospace;
-    text-align: center;
-}
-
-/* Management Panel & Tabs */
-.tabs {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.tab-content {
-    margin-top: 1rem;
-    padding: 1.5rem;
-    background-color: #303030;
-    border-radius: 4px;
-    min-height: 150px;
-    font-family: 'Gulim', monospace;
-    font-size: 0.95em;
-}
-
-.tab-content > .tab-pane {
-    display: none;
-}
-
-#skills-tab:checked ~ .tab-content > #skills-content,
-#traps-tab:checked ~ .tab-content > #traps-content,
-#dungeon-tab:checked ~ .tab-content > #dungeon-content {
-    display: block;
-}
-
-#skills-tab:checked ~ .tabs label[for="skills-tab"],
-#traps-tab:checked ~ .tabs label[for="traps-tab"],
-#dungeon-tab:checked ~ .tabs label[for="dungeon-tab"] {
-    background-color: #666;
-    border-color: #888;
-    color: #fff;
-}
-
-.tab-pane p {
-    margin: 0 0 0.75rem 0;
-}
-
-.item-grid, .dungeon-floor-grid {
+.command-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-    margin-top: 1rem;
-}
-
-.dungeon-floor-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 0.5rem;
-}
-.dungeon-floor-grid div {
-    background-color: #2a2a2a;
-    padding: 0.5rem;
-    border-radius: 3px;
-}
-
-.total-info {
-    margin-top: 1.25rem !important;
-    font-weight: bold;
-    border-top: 1px solid #444;
-    padding-top: 1rem;
-}
-
-/* Command Panel */
-.command-header p {
-    font-size: 0.9em;
-    color: #aaaaaa;
-    margin-top: -0.5rem;
-}
-
-.status-message {
-    background-color: #333;
-    border-left: 3px solid #ffffbf;
-    padding: 0.75rem 1rem;
-    margin: 1rem 0;
-}
-.status-message p {
-    margin: 0;
-}
-
-.command-flex-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
     justify-content: left;
 }
-
-.command-flex-container .btn {
-    flex: 1 1 200px;
-}
-
 
 /* General UI Elements */
 .x-risu-btn {
     background-color: #444;
     border: 1px solid #666;
     color: #e0e0e0;
-    padding: 0.5rem 1rem;
+    padding: 0.2rem 0.5rem;
+}
+
+.x-risu-command-btn{
+    padding: 0.5rem 1rem !important;
     text-align: left;
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
@@ -222,13 +89,6 @@ h2, h3 {
     font-weight: bold;
     font-size: 1em;
     border-radius: 4px;
-    max-width: 15em;
-}
-
-@media screen and (max-width: 767px) {
-.x-risu-btn {
-    max-width: 48%;
-  }
 }
 
 .x-risu-btn:hover {
@@ -256,10 +116,11 @@ h2, h3 {
     gap: 0.75rem;
     font-family: monospace;
     font-size: 0.9em;
+    width:100%;
 }
 
 .bar-label {
-    flex-basis: 80px;
+    flex-basis: 4.5rem;
     text-align: right;
     flex-shrink: 0;
 }
@@ -268,22 +129,23 @@ h2, h3 {
     flex-grow: 1;
     background-color: #111;
     border: 1px solid #444;
-    height: 1.25rem;
+    height: 1rem;
     padding: 2px;
     border-radius: 4px;
 }
 
-.x-risu-progress-fill, .x-risu-progress-bar-fill { /* support both class names from original files */
+.x-risu-progress-bar-fill {
+    position:relative;
     height: 100%;
     border-radius: 2px;
     transition: width 0.3s ease-in-out;
 }
 
 /* Unified colors. Using brighter ones from char.css where available. */
-.x-risu-progress-fill.x-risu-hp, .x-risu-progress-bar-fill.x-risu-hp { background-color: #e74c3c; } /* from char.css */
-.x-risu-progress-fill.x-risu-mp, .x-risu-progress-bar-fill.x-risu-mp { background-color: #2980b9; } /* from train.css */
-.x-risu-progress-fill.x-risu-st, .x-risu-progress-bar-fill.x-risu-st { background-color: #2ecc71; } /* from char.css */
-.x-risu-progress-fill.x-risu-ej, .x-risu-progress-bar-fill.x-risu-ej { background-color: #f1c40f; } /* from train.css */
+.x-risu-progress-bar-fill.x-risu-hp { background-image: linear-gradient(to right, #e46557, #eb1d1d); } /*체력*/
+.x-risu-progress-bar-fill.x-risu-st { background-image: linear-gradient(to right, #ecd162, #f1c40f); } /*기력*/
+.x-risu-progress-bar-fill.x-risu-sp { background-image: linear-gradient(to right, #ecd162, #f1c40f); } /*정액량*/
+.x-risu-progress-bar-fill.x-risu-ej { background-image: linear-gradient(to right, #e06884, #ce025b); } /*사정게이지*/
 
 .bar-value {
     flex-basis: 100px;
@@ -453,10 +315,9 @@ h2, h3 {
     border: 1px solid #555;
     padding: 0.6rem 1rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 1rem;
+    justify-content: space-between;
 }
 
 .character-card:hover {
@@ -465,12 +326,22 @@ h2, h3 {
 }
 
 .char-info {
-    flex-grow: 1;
-    width:40%;
+    gap:1rem;
+    align-items: center;
+    max-width: 50%;
 }
 
 .char-info p {
     margin: 0.2rem 0;
+}
+
+.char-status-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    max-width:50%;
+    width:-webkit-fill-available;
 }
 
 .char-name-line {
@@ -490,7 +361,6 @@ h2, h3 {
 .char-tags {
     font-size: 0.9em;
     color: #c0c0c0;
-    margin-top: 0.5rem;
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
@@ -522,19 +392,9 @@ h2, h3 {
     color: #dddddd;
 }
 
-.char-status-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    width: 54%;
-    flex-shrink: 0;
-}
+
 
 /* Overrides for character card status bars to match design */
-.char-status-bars .bar-label {
-    flex-basis: 25px;
-    color: #b0b0b0;
-}
 
 .char-status-bars .x-risu-progress-bar {
     background-color: #000;
