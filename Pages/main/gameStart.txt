@@ -1,19 +1,6 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Dokdo&display=swap');
 
-body {
-background-color: #0d1014;
-color: #e0e0e0;
-display: flex;
-align-items: center;
-justify-content: center;
-min-height: 100vh;
-margin: 0;
-padding: 1rem;
-box-sizing: border-box;
-overflow: hidden;
-}
-
 .splash-container {
 text-align: center;
 width: 100%;
@@ -36,7 +23,7 @@ letter-spacing: 1px;
 }*/
 
 .maintitle {
-font-family: "Dokdo", system-ui !important;
+font-family: "Dokdo", system-ui;
 font-weight: 400;
 font-style: normal;
 font-size: clamp(3rem, 10vw, 5.5rem);
@@ -49,7 +36,6 @@ text-shadow:
 margin: 0;
 line-height: 1.1;
 }
-
 .subtitle {
 color: #b0c4de;
 font-size: clamp(1rem, 3vw, 1.25rem);
@@ -64,7 +50,8 @@ border: 2px solid #60d9f7;
 border-radius: 8px;
 color: #60d9f7;
 text-decoration: none;
-font-size: 1.2rem;
+font-family: "Dokdo", system-ui;
+font-size: 2rem;
 font-weight: bold;
 background-color: transparent;
 transition: all 0.3s ease;
@@ -72,7 +59,6 @@ box-shadow:
 0 0 5px #60d9f7, 
 0 0 15px #60d9f7, 
 inset 0 0 10px rgba(96, 217, 247, 0.2);
-text-shadow: 0 0 3px #60d9f7;
 }
 
 .enter-button:hover,
@@ -93,6 +79,6 @@ outline: none;
 <div class="splash-container">
 <p class="maintitle">리수 마왕</p>
 <p class="subtitle">누군가 당신의 봉인석을...!!</p>
-<button class="enter-button" risu-btn="gameStart">봉인을 해제</button>
+<label class="enter-button" risu-trigger="gameStart">봉인을 해제</label>
 </div></div>
 </body>

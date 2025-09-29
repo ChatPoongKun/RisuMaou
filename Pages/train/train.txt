@@ -1,85 +1,77 @@
-<body>
+<style>
+.x-risu-progress-bar.x-risu-ej{
+height: 0.6rem;
+}
+</style>
+
 <div class="container">
 <div class="line double"></div>
 
-<header class="game-header">
-<h1>▋조교</h1>
+<header class="header">
+<h1>▋메인 메뉴</h1>
 <div class="game-info">
-<span>1년째 1월 2일 (3일째) 《초승달》 오후</span>
-<span>(소지 포인트: {{getVar::gold}} pts.)</span>
+<span>({{getvar::day}}일째) 《만월》 {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}</span>
 </div>
 </header>
-
-<div class="line single"></div>
-
 <main>
 <section class="status-panel">
 <div class="panel-header">
 <h2>* 대상 상태</h2>
 </div>
-<div class="status-display">
-<div class="status-bars">
-    <div class="bar-container">
-        <span class="bar-label">HP:</span>
-        <div class="progress-bar">
-            <div class="progress-bar-fill hp" style="width: 80%;"></div>
-        </div>
-        <span class="bar-value">200/250</span>
-    </div>
-    <div class="bar-container">
-        <span class="bar-label">MP:</span>
-        <div class="progress-bar">
-            <div class="progress-bar-fill mp" style="width: 100%;"></div>
-        </div>
-        <span class="bar-value">150/150</span>
-    </div>
-        <div class="bar-container">
-        <span class="bar-label">ST:</span>
-        <div class="progress-bar">
-            <div class="progress-bar-fill st" style="width: 50%;"></div>
-        </div>
-        <span class="bar-value">50/100</span>
-    </div>
+<div class="bar-container">
+<span class="bar-label">체력:</span>
+<div class="progress-bar">
+<div class="progress-bar-fill hp" style="width: 80%;"></div>
 </div>
-
+<span class="bar-value">200/250</span>
+</div>
+<div class="bar-container">
+<span class="bar-label">기력:</span>
+<div class="progress-bar">
+<div class="progress-bar-fill st" style="width: 50%;"></div>
+</div>
+<span class="bar-value">50/100</span>
+</div>
+<div class="line single"></div>
 <div class="vitals-grid">
-    <div><strong>복장:</strong> 【알몸】</div>
-    <div><strong>체내 정액량:</strong> 120ml</div>
-    <div><strong>Ｃ절정:</strong> 2</div>
-    <div><strong>Ｖ절정:</strong> 1</div>
-    <div><strong>Ａ절정:</strong> 0</div>
-    <div><strong>Ｂ절정:</strong> 0</div>
+<div><strong>복장:</strong> 【알몸】</div>
+<div><strong>체내 정액량:</strong> 120ml</div>
+<div><strong>Ｃ절정:</strong> 2</div>
+<div><strong>Ｖ절정:</strong> 1</div>
+<div><strong>Ａ절정:</strong> 0</div>
+<div><strong>Ｂ절정:</strong> 0</div>
 </div>
-
+<div class="line single"></div>
 <div class="palam-section">
-    <h3>* 파라미터</h3>
-    <div class="palam-grid">
-        <span>[욕정]: 1250</span>
-        <span>[윤활]: 1500</span>
-        <span>[고통]: 300</span>
-        <span>[굴복]: 450</span>
-        <span>[자존심]: 800</span>
-        <span>[반발]: 200</span>
-        <span>[욕망]: 600</span>
-        <span>[기교]: 700</span>
-    </div>
+<h3>* 파라미터</h3>
+<div class="palam-grid">
+<span>[욕정]: 1250</span>
+<span>[윤활]: 1500</span>
+<span>[고통]: 300</span>
+<span>[굴복]: 450</span>
+<span>[자존심]: 800</span>
+<span>[반발]: 200</span>
+<span>[욕망]: 600</span>
+<span>[기교]: 700</span>
 </div>
-    <div class="ejaculation-section">
-    <h3>* 사정 게이지</h3>
-        <div class="bar-container">
-        <span class="bar-label">주인공:</span>
-        <div class="progress-bar">
-            <div class="progress-bar-fill ej" style="width: 30%;"></div>
-        </div>
-        <span class="bar-value">3000/10000</span>
-    </div>
-    <div class="bar-container">
-        <span class="bar-label">대상:</span>
-        <div class="progress-bar">
-            <div class="progress-bar-fill ej" style="width: 10%;"></div>
-        </div>
-        <span class="bar-value">1000/10000</span>
-    </div>
+</div>
+<div class="line single"></div>
+<div class="ejaculation-section">
+<h3>* 사정 게이지</h3>
+<div class="bar-container">
+<span class="bar-label">{{user}}:</span>
+<div class="progress-bar ej">
+<div class="progress-bar-fill ej" style="width: 30%;"></div>
+</div>
+<span class="bar-value">3000/10000</span>
+</div>
+<div class="bar-container">
+<span class="bar-label">대상:</span>
+<div class="progress-bar ej">
+<div class="progress-bar-fill ej" style="width: 5%;"></div>
+</div>
+<span class="bar-value">1000/10000</span>
+</div>
 </div>
 </div>
 </section>
@@ -97,7 +89,7 @@
 
 <section class="command-panel">
 <h3>▋Commands</h3>
-<div class="command-flex-container">
+<div class="command-container">
 {{getVar::cmds}}
 </div>
 </section>
@@ -105,4 +97,3 @@
 
 <div class="line double"></div>
 </div>
-</body>

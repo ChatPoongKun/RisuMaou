@@ -3,6 +3,7 @@ TIME = 0
 SPAMING = 0.2
 DEBUG = 0
 INIT = 0
+CHARLIST = {}
 
 --디버깅용
 function debug(...)
@@ -13,7 +14,6 @@ end
 
 --초기세팅 함수
 function initialize(triggerId)
-    print(INIT)
     if INIT == 0 then
         --INIT = 1
         debug("초기 세팅 개시...")
@@ -26,7 +26,7 @@ function initialize(triggerId)
         end
         
         setState(triggerId, "screen", "main")
-        processAndStoreLore(triggerId, "main.func")
+        processAndStoreLore(triggerId, "main.lua")
          
     else
         initialize = function()--함수 무력화
@@ -46,7 +46,19 @@ function time()
     
 end
 
---- 문자열 함수를 실제 함수 객체로 변환
+-- CharInfo 조회용 함수
+function charInfo(triggerId, name)
+    if name == getPersonaName(triggerId) then
+        local name = getPersonaName(triggerId)
+    else
+        local name = name
+    end
+    setState(triggerId, "screen", "charInfo")
+
+end
+
+
+-- 문자열 함수를 실제 함수 객체로 변환
 function createFunctionFromString(functionString)
     local returnableString = "return " .. functionString
     
@@ -72,6 +84,7 @@ function processAndStoreLore(triggerId, loreBookId)
     local pattern = "%[(%w+)/(%w+)/([^%]]+)%]%s*(function.-end)!!"
     local count = 0
     local cmds = ""
+    local btns = ""
 
     for page, number, description, functionBody in loreEntries:gmatch(pattern) do
         local key = page.."_"..number
@@ -105,11 +118,6 @@ function executeFunction(triggerId, screen, f_code, ...)
         debug(f_code .. " 함수 실행")
         func(triggerId, ...)
     end
-
-    local screen = getState(triggerId, "screen")
-    debug(screen..".html 화면을 갱신합니다.")
-    processAndStoreLore(triggerId, screen..".func")
-    TIME = time()
 end
 
 function LLMresponse(triggerId, prompt)
@@ -134,7 +142,7 @@ listenEdit("editDisplay", function(triggerId, data)
     if not screen then
         setState(triggerId, "screen", "gameStart")
         screen = getState(triggerId, "screen")
-        --processAndStoreLore(triggerId, screen..".func")
+        --processAndStoreLore(triggerId, screen..".lua")
     end
 
     --현재 페이지에 맞는 html호출
@@ -173,13 +181,23 @@ onButtonClick = async(function(triggerId, data)
         return false
     end
 
-    if data=="gameStart" then
-        initialize(triggerId)
+    local screen = getState(triggerId, "screen")
+    if string.find(data, "charInfo") then
+        local name = string.match(data, "charInfo_(.*)")
+        charInfo(triggerId, name)
     else
-        local screen = getState(triggerId, "screen")
         executeFunction(triggerId, screen, data)
     end
+    
     --현재 페이지에 맞는 html호출
+    screen = getState(triggerId, "screen")
     local html = getLoreBooks(triggerId, screen..".html")[1].content
     setChatVar(triggerId, "html", html)
+    debug(screen..".html 화면을 갱신합니다.")
+    processAndStoreLore(triggerId, screen..".lua")
+    TIME = time()
 end)
+
+function gameStart(triggerId)
+   initialize(triggerId)
+end

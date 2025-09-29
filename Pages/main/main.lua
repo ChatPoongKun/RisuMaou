@@ -26,41 +26,40 @@ end!!
         local crm = charInfo["base"]["카르마"]
         local hp = charInfo["base"]["체력"]/1000
         local hpMax = charInfo["base"]["최대 체력"]/1000
-        local hpRatio = hp/hpMax
+        local hpRatio = 100*hp/hpMax
         local st = charInfo["base"]["기력"]/1000
         local stMax = charInfo["base"]["최대 기력"]/1000
-        local stRatio = st/stMax
+        local stRatio = 100*st/stMax
 
-        charList = charList .. [[<div class="character-card">
+        charList = charList .. [[<div class="character-card" risu-btn="charInfo_]]..name..[[">
             <div class="char-info">
             <p class="char-name-line">
-            []]..index..[[] <span class="status-trainable">[조교가능]</span>]]..name..[[ <span class="char-level">Lv.]]..lv..[[</span>
+            []]..index..[[] <span class="status-trainable">[조교가능] </span>]]..name..[[ <span class="char-level">Lv.]]..lv..[[</span>
             </p>
-            <div class="char-tags">
+            <span class="char-tags">
             공격 ]]..atk.." / 방어 "..def.." / 카르마 "..crm..[[
             <span class="tag tag-lewd">〈음란〉</span>
-            </div>
+            </span>
             </div>
             <div class="char-status-bars">
             <div class="bar-container">
-            <span class="bar-label">HP:</span>
+            <span class="bar-label">체력:</span>
             <div class="progress-bar">
-            <div class="progress-fill hp" style="width: ]]..hpRatio..[[;"></div>
+            <div class="progress-bar-fill hp" style="width: ]]..hpRatio..[[%;"></div>
             </div>
             <span class="bar-value">]]..hp.."/"..hpMax..[[ K</span>
             </div>
             <div class="bar-container">
-            <span class="bar-label">ST:</span>
+            <span class="bar-label">기력:</span>
             <div class="progress-bar">
-            <div class="progress-fill st" style="width: ]]..stRatio..[[;"></div>
+            <div class="progress-bar-fill st" style="width: ]]..stRatio..[[%;"></div>
             </div>
             <span class="bar-value">]]..st.."/"..stMax..[[ K</span>
             </div>
             </div>
             </div>]]
-        print(charList)
+        debug(charList)
     end
-        print("test")
     setChatVar(triggerId, "charList", charList)
 
 end!!
