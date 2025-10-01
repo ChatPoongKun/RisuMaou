@@ -79,6 +79,6 @@ outline: none;
 <div class="splash-container">
 <p class="maintitle">리수 마왕</p>
 <p class="subtitle">누군가 당신의 봉인석을...!!</p>
-<label class="enter-button" risu-trigger="gameStart">봉인을 해제</label>
+<label class="enter-button" risu-btn="gameStart">봉인을 해제</label>
 </div></div>
 </body>
