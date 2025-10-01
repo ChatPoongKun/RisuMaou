@@ -1,5 +1,5 @@
 --기본 변수
-TIME = 0
+TIME = -1
 SPAMING = 0.2
 DEBUG = 0
 INIT = 0
@@ -12,6 +12,13 @@ function debug(...)
     end
 end
 
+--로어북 주석처리 "///" 제거
+function getLoreBookContent(triggerId, lore)
+    local rawContent = getLoreBooks(triggerId, lore)[1].content
+    local modContent = string.gsub(rawContent, "%s*///[^\n]*\n?", "\n")
+    return modContent
+end
+
 --초기세팅 함수
 function initialize(triggerId)
     if INIT == 0 then
@@ -19,7 +26,7 @@ function initialize(triggerId)
         debug("초기 세팅 개시...")
         local initFuncs ={"initVars.sys"}
         for i, f_code in ipairs(initFuncs) do
-            local funcBody = getLoreBooks(triggerId, f_code)[1].content
+            local funcBody = getLoreBookContent(triggerId, f_code)
             local func = createFunctionFromString(funcBody)
             debug(f_code .. " 함수 실행")
             func(triggerId)
@@ -41,12 +48,12 @@ function time()
     if os.clock()<0 then
         return os.time()    
     else
-        return os.clock() --35q분 지나면 오버플로우로 못씀
+        return os.clock() --35분 지나면 오버플로우로 못씀
     end
     
 end
 
--- CharInfo 조회용 함수
+-- CharInfo 조회용 함수 (작성중)
 function charInfo(triggerId, name)
     if name == getPersonaName(triggerId) then
         local name = getPersonaName(triggerId)
@@ -79,7 +86,7 @@ end
 function processAndStoreLore(triggerId, loreBookId)
     -- 1. loreBookId를 이용해 실제 로어 내용들을 가져옴
     debug(loreBookId .. "로어북에서 함수 호출")
-    local loreEntries = getLoreBooks(triggerId, loreBookId)[1].content
+    local loreEntries = getLoreBookContent(triggerId, loreBookId)
 
     local pattern = "%[(%w+)/(%w+)/([^%]]+)%]%s*(function.-end)!!"
     local count = 0
@@ -146,7 +153,7 @@ listenEdit("editDisplay", function(triggerId, data)
     end
 
     --현재 페이지에 맞는 html호출
-    local html = getLoreBooks(triggerId, screen..".html")[1].content
+    local html = getLoreBookContent(triggerId, screen..".html")
     setChatVar(triggerId, "html", html)
 end)
 
@@ -182,7 +189,10 @@ onButtonClick = async(function(triggerId, data)
     end
 
     local screen = getState(triggerId, "screen")
-    if string.find(data, "charInfo") then
+    if data == "gameStart" then
+        print("start")
+        initialize(triggerId)
+    elseif string.find(data, "charInfo") then
         local name = string.match(data, "charInfo_(.*)")
         charInfo(triggerId, name)
     else
@@ -191,13 +201,9 @@ onButtonClick = async(function(triggerId, data)
     
     --현재 페이지에 맞는 html호출
     screen = getState(triggerId, "screen")
-    local html = getLoreBooks(triggerId, screen..".html")[1].content
+    local html = getLoreBookContent(triggerId, screen..".html")
     setChatVar(triggerId, "html", html)
     debug(screen..".html 화면을 갱신합니다.")
     processAndStoreLore(triggerId, screen..".lua")
     TIME = time()
 end)
-
-function gameStart(triggerId)
-   initialize(triggerId)
-end
