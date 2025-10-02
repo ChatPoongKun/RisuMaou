@@ -2,8 +2,7 @@
 TIME = -1
 SPAMING = 0.2
 DEBUG = 0
-INIT = 0
-CHARLIST = {}
+local CHARLIST = {}
 
 --디버깅용
 function debug(...)
@@ -21,25 +20,17 @@ end
 
 --초기세팅 함수
 function initialize(triggerId)
-    if INIT == 0 then
-        --INIT = 1
-        debug("초기 세팅 개시...")
-        local initFuncs ={"initVars.sys"}
-        for i, f_code in ipairs(initFuncs) do
-            local funcBody = getLoreBookContent(triggerId, f_code)
-            local func = createFunctionFromString(funcBody)
-            debug(f_code .. " 함수 실행")
-            func(triggerId)
-        end
-        
-        setState(triggerId, "screen", "main")
-        processAndStoreLore(triggerId, "main.lua")
-         
-    else
-        initialize = function()--함수 무력화
-            debug("초기세팅 완료")
-        end
+    debug("초기 세팅 개시...")
+    local initFuncs ={"initVars.sys"}
+    for i, f_code in ipairs(initFuncs) do
+        local funcBody = getLoreBookContent(triggerId, f_code)
+        local func = createFunctionFromString(funcBody)
+        debug(f_code .. " 함수 실행")
+        func(triggerId)
     end
+
+    setState(triggerId, "screen", "main")
+    processAndStoreLore(triggerId, "main.lua")
 
 end
 
@@ -55,11 +46,21 @@ end
 
 -- CharInfo 조회용 함수 (작성중)
 function charInfo(triggerId, name)
+    local name = name
     if name == getPersonaName(triggerId) then
-        local name = getPersonaName(triggerId)
+        name = "user"
     else
-        local name = name
+        name = name
     end
+    --캐릭터 정보를 리수 딕셔너리/배열 양식에 맞게 변형 
+    --local charInfo = json.decode(getLoreBookContent(triggerId, name))
+    local charInfo = getLoreBookContent(triggerId, name)
+    local charInfo = charInfo:gsub("%[(.-)%]", function(inside)
+        local replace = inside:gsub('"','\\"')
+        return '"[' .. replace .. ']"'
+    end)
+    debug("문자치환 후: "..charInfo)
+    setChatVar(triggerId, "target", charInfo)
     setState(triggerId, "screen", "charInfo")
 
 end
@@ -181,29 +182,31 @@ onStart = async(function(triggerId)
 end)
 
 onButtonClick = async(function(triggerId, data)
-    if time()-TIME < SPAMING then
-        print(time, TIME)
-        alertError(triggerId, "메시지가 단 시간에 너무 많이 입력되었습니다.")
-        print("스패밍 멈춰!")
-        return false
-    end
-
-    local screen = getState(triggerId, "screen")
     if data == "gameStart" then
-        print("start")
-        initialize(triggerId)
-    elseif string.find(data, "charInfo") then
-        local name = string.match(data, "charInfo_(.*)")
-        charInfo(triggerId, name)
+        initialize(triggerId)    
+        print(INIT .. "게임 시작")
     else
-        executeFunction(triggerId, screen, data)
+        if time()-TIME < SPAMING then
+            print(time, TIME)
+            alertError(triggerId, "메시지가 단 시간에 너무 많이 입력되었습니다.")
+            print("스패밍 멈춰!")
+            return false
+        end
+
+        local screen = getState(triggerId, "screen")
+        if string.find(data, "charInfo") then
+            local name = string.match(data, "charInfo_(.*)")
+            charInfo(triggerId, name)
+        else
+            executeFunction(triggerId, screen, data)
+        end
+
+        --현재 페이지에 맞는 html호출
+        screen = getState(triggerId, "screen")
+        local html = getLoreBookContent(triggerId, screen..".html")
+        setChatVar(triggerId, "html", html)
+        debug(screen..".html 화면을 갱신합니다.")
+        processAndStoreLore(triggerId, screen..".lua")
+        TIME = time()
     end
-    
-    --현재 페이지에 맞는 html호출
-    screen = getState(triggerId, "screen")
-    local html = getLoreBookContent(triggerId, screen..".html")
-    setChatVar(triggerId, "html", html)
-    debug(screen..".html 화면을 갱신합니다.")
-    processAndStoreLore(triggerId, screen..".lua")
-    TIME = time()
 end)

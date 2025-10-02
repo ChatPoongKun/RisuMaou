@@ -5,7 +5,8 @@ function (triggerId)
         day = 1,
         ampm = 0, --0은 오전 1은 오후
         chars = '["user","마오"]', --리수의 배열 변수 형식에 맞춤
-        DEBUG = DEBUG
+        DEBUG = DEBUG,
+        expLv = getLoreBookContent(triggerId, "expLv")
     }
     for key, value in pairs(initVars) do
         setChatVar(triggerId, key, value)
