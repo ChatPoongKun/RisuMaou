@@ -15,25 +15,28 @@ end!!
     local screen = "charList"
     setState(triggerId, "screen", screen)
     local chars = json.decode(getChatVar(triggerId, "chars"))
+    
+    debug("대상: "..json.encode(chars))
     local charList = ""
-
     for index, value in ipairs(chars) do
+        debug(index, value)
         local charInfo = json.decode(getLoreBookContent(triggerId, value))
-        local name = charInfo["base"]["이름"]
-        local lv = charInfo["base"]["레벨"]
-        local atk = charInfo["base"]["공격력"]
-        local def = charInfo["base"]["방어력"]
-        local crm = charInfo["base"]["카르마"]
-        local hp = charInfo["base"]["체력"]/1000
-        local hpMax = charInfo["base"]["최대 체력"]/1000
+        debug(json.encode(charInfo))
+        local name = charInfo["이름"]
+        local lv = charInfo["레벨"]
+        local atk = charInfo["공격력"]
+        local def = charInfo["방어력"]
+        local crm = charInfo["카르마"]
+        local hp = charInfo["체력"]/1000
+        local hpMax = charInfo["최대체력"]/1000
         local hpRatio = 100*hp/hpMax
-        local st = charInfo["base"]["기력"]/1000
-        local stMax = charInfo["base"]["최대 기력"]/1000
+        local st = charInfo["기력"]/1000
+        local stMax = charInfo["최대기력"]/1000
         local stRatio = 100*st/stMax
 
         charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."::CARD"
-        debug(charList)
     end
+    debug("charList: "..charList)
     setChatVar(triggerId, "charList", charList)
 
 end!!

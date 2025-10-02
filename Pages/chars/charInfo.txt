@@ -1,295 +1,527 @@
+
 <style>
-/* info.css */
+    /* Character Profile Section */
+    .character-profile {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
 
-/* Header for the character list */
-.info-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 1rem;
-margin-bottom: 1rem;
-}
+    .profile-main {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        flex-basis: 320px;
+        flex-grow: 1;
+    }
 
-.list-meta {
-text-align: right;
-font-size: 0.9em;
-color: #bbb;
-}
+    .character-portrait {
+        width: 128px;
+        height: 128px;
+        background-color: #111;
+        border: 1px solid #444;
+        flex-shrink: 0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
 
-.list-meta span {
-display: block;
-}
+    .profile-details h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5em;
+        color: #ffffff;
+    }
 
-.info-description {
-background-color: #333;
-border-left: 3px solid #888;
-padding: 0.5rem 1rem;
-margin-bottom: 1.5rem;
-font-size: 0.9em;
-color: #ccc;
-}
-.info-description p {
-margin: 0.25rem 0;
-}
+    .profile-details p {
+        margin: 0.25rem 0;
+        color: #ccc;
+        font-size: 0.95em;
+    }
+
+    .profile-stats {
+        flex-basis: 320px;
+        flex-grow: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-top: 0.5rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.5rem 1rem;
+        margin-top: 1rem;
+        background-color: #3a3a3a;
+        padding: 1rem;
+        border-radius: 4px;
+    }
+
+    /* Tabs for Detailed Info */
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        border-bottom: 1px solid #555;
+        padding-bottom: 0.5rem;
+    }
+
+    .tabs label {
+        padding: 0.5rem 1rem;
+        background-color: #444;
+        border: 1px solid #666;
+        color: #e0e0e0;
+        cursor: pointer;
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s ease;
+        position: relative;
+        bottom: -1px;
+    }
+
+    .tab-content {
+        margin-top: 0;
+        padding: 1.3rem;
+        background-color: #383838;
+        border: 1px solid #555;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        min-height: 200px;
+    }
+
+    .tab-content > .tab-pane {
+        display: none;
+    }
+
+    input[name="detail-tabs"]:checked + label {
+        background-color: #383838;
+        border-color: #555;
+        border-bottom-color: #383838;
+        color: #fff;
+    }
+
+    #talents-tab:checked ~ .tab-content > #talents-content,
+    #abl-tab:checked ~ .tab-content > #abl-content,
+    #exp-tab:checked ~ .tab-content > #exp-content,
+    #appearance-tab:checked ~ .tab-content > #appearance-content,
+    #narrative-tab:checked ~ .tab-content > #narrative-content {
+        display: block;
+    }
+
+    /* Info Grids within Tabs */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem 0.75rem;
+    }
+    
+    .info-grid h3 {
+        font-size: 1.1em;
+        color: #ffffff;
+        grid-column: 1 / -1;
+        margin-top: 0.5rem;
+        margin-bottom: 0rem;
+        border-bottom: 1px solid #4f4f4f;
+        /*padding-bottom: 0.5rem;*/
+    }
+    .info-grid h3:first-child {
+        margin-top: 0;
+    }
+    
+    .info-grid .talent-tag {
+        background-color: #2a2a2a;
+        padding: 0.1rem 0.3rem;
+        border-radius: 2px;
+        font-family: monospace;
+        font-size: 0.9em;
+        margin: 0 0.2rem;
+        border: 1px solid #4f4f4f; /* ADDED */
+    }
+
+    /* New styles for improved layouts and stars */
+
+    /* Star Rating System */
+    .star-rating {
+      --rating: 0; /* Default value */
+      --percent: calc(var(--rating) / 10 * 100%);
+      display: inline-block;
+      font-size: 1.4rem;
+      font-family: 'Times New Roman', Times, serif;
+      line-height: 1;
+    }
+
+    .star-rating::before {
+        content: '♥♥♥♥♥';
+        letter-spacing: 2px;
+        background: linear-gradient(90deg, #ec0c4f var(--percent), #555 var(--percent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .skull-rating {
+      --rating: 0; /* Default value */
+      --percent: calc(var(--rating) / 10 * 100%);
+      display: inline-block;
+      font-size: 0.75rem;
+      font-family: 'Times New Roman', Times, serif;
+      line-height: 1;
+    }
+
+    .skull-rating::before {
+        content: '☠️☠️☠️☠️☠️';
+        letter-spacing: 0;
+        background: linear-gradient(90deg, #ffffff var(--percent), #555 var(--percent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .mark-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .mark-item .bar-label {
+        flex-basis: 4.5rem;
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    /* Imprints Section - Grid layout */
+    .marks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+    .marks-grid .mark-item {
+        justify-content: space-between;
+        background-color: #3a3a3a;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+    }
+    .marks-grid .mark-item .bar-label {
+        flex-basis: auto;
+        text-align: left;
+    }
 
 
-/* Character List Styles */
-.character-list {
-display: flex;
-flex-direction: column;
-gap: 0.75rem;
-}
+    /* Talents Tab - Flexbox layout for tags */
+    #talents-content .info-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.1rem 0.2rem;
+    }
+    #talents-content .info-grid h3 {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
 
-.character-list-item {
-display: flex;
-flex-wrap: wrap;
-align-items: center;
-gap: 0.5rem 1rem;
-padding: 0.75rem;
-background-color: #303030;
-border: 1px solid #444;
-border-radius: 4px;
-color: #e0e0e0;
-text-decoration: none;
-transition: background-color 0.2s, border-color 0.2s;
-}
+    /* Abilities Tab - Grid layout */
+    #abl-content .info-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        align-items: center;
+    }
+    .abl-item {
+        display: flex;
+        /* justify-content: space-between; -- REMOVED */
+        align-items: center;
+        gap: 1rem;
+        padding: 0.2rem 0.5rem; /* ADDED */
+        border: 1px solid #4f4f4f; /* ADDED */
+        border-radius: 4px; /* ADDED */
+        background-color: #2a2a2a; /* ADDED */
+    }
 
-.character-list-item:hover {
-background-color: #3a3a3a;
-border-color: #666;
-}
+    /* Experience Tab - Grid layout */
+    #exp-content .info-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    
+    .exp-list p, .appearance-content p {
+        margin: 0 0 0.75rem 0;
+        line-height: 1.6;
+    }
+    .exp-list p:last-child, .appearance-content p:last-child {
+            margin-bottom: 0;
+    }
 
-.char-id, .char-status, .char-name, .char-level, .char-stats {
-white-space: nowrap;
-}
+    /* Equipment Section */
+    .equipment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+    .equipment-item {
+        background-color: #3a3a3a;
+        padding: 0.75rem;
+        border-radius: 4px;
+    }
+    .equipment-item .item-type {
+        font-weight: bold;
+        color: #ffffbf;
+        margin-right: 0.5em;
+    }
+    
+    /* Jewel Section */
+    .jewel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+        background-color: #3a3a3a;
+        padding: 1rem;
+        border-radius: 4px;
+    }
 
-.char-id {
-font-weight: bold;
-}
+    /* Narrative Tab */
+    .narrative-block {
+        margin-bottom: 1.5rem;
+    }
+    .narrative-block h3 {
+        font-size: 1.1em;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #4f4f4f;
+        padding-bottom: 0.5rem;
+    }
+    .narrative-block p, .narrative-block ul {
+        background-color: #2a2a2a;
+        padding: 0.75rem;
+        border-radius: 4px;
+        line-height: 1.6;
+        margin: 0;
+    }
+     .narrative-block ul {
+        padding-left: 2.5rem;
+     }
 
-.char-stats {
-color: #b0b0b0;
-font-size: 0.9em;
-}
+    @media screen and (max-width: 600px){
+        .star-rating{
+            font-size: 1.2rem;
+        }
+        .skull-rating{
+            font-size: 0.65rem;
+        }
 
-.char-bars-container {
-display: flex;
-flex-grow: 1;
-gap: 1.5rem;
-min-width: 280px;
-align-items: center;
-}
+        .info-grid {
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) !important;
+        gap: 0.75rem 0.5rem;
+        }
 
-/* Make bars fit in the list item better */
-.character-list-item .bar-container {
-gap: 0.5rem;
-}
-.character-list-item .bar-label {
-flex-basis: 30px;
-text-align: left;
-flex-shrink: 0;
-font-size: 0.9em;
-}
-
-.char-tags {
-margin-left: auto;
-display: flex;
-gap: 0.75rem;
-align-items: center;
-white-space: nowrap;
-}
-
-
-/* Status and Tag Colors based on Emuera script */
-.char-name.male { color: #87CEFA; } /* LightSkyBlue for Male */
-.status-invading, .tag-ntr { color: #ff6464; } /* Reddish */
-.status-intercepting, .status-trade { color: #64ffff; } /* Cyan */
-.status-trainable { color: #87CEFA; } /* LightSkyBlue */
-.status-childcare { color: #90EE90; } /* LightGreen */
-.tag-party { color: #ff6464; }
-.tag-conquered { color: #ff8c69; } /* Salmon-like Red */
-.tag-unconquered { color: #a9a9a9; } /* DarkGray */
-.tag-returning { color: #e5e564; } /* Yellowish */
-.tag-favorite { color: #FFD700; } /* Gold */
-
+        .marks-grid {
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) !important;
+        gap: 0.75rem 0.5rem;
+        }
+        
+        .tab-content{
+            padding: 1rem;
+        }
+    }
 </style>
 
-<body>
 <div class="container">
+<header class="header">
+<h1>▋ 캐릭터 상세 정보</h1>
+</header>
 <div class="line double"></div>
 
-<header class="game-header">
-<h1>▋캐릭터 정보</h1>
-<div class="game-info">
-<span>1년째 1월 2일 (3일째) 《초승달》 오후</span>
-<span>(소지 포인트: {{getVar::gold}} pts.)</span>
-</div>
-</header>
-
-<div class="line single"></div>
-
-<main class="char-layout">
-<!-- Left Column: Primary Info -->
-<div class="char-main-info">
-<section class="profile-section">
-<div class="character-display">
-<div class="character-portrait"><img src="https://i.imgur.com/example.png" alt="Artemis Portrait" style="width:100%; height:100%; object-fit:cover;"></div>
-<div class="character-info-wrapper">
-<h2 class="char-name-line">아르테미스 <span class="char-age">21세</span></h2>
-<div class="char-meta-info">
-<p><strong>종족:</strong> 엘프</p>
-<p><strong>직업:</strong> 궁수</p>
-<p><strong>호감도:</strong> 150</p>
+<main>
+<section class="character-profile">
+<div class="profile-main">
+<div class="character-portrait"><img src="{{#when::{{dict_element::{{getvar::target}}::이름}}::is::{{user}}}}{{source::user}}{{:else}}{{raw::{{dict_element::{{getvar::target}}::이름}}.png}}{{/when}}"></div>
+<div class="profile-details">
+<h2>{{dict_element::{{getvar::target}}::이름}} Lv.{{dict_element::{{getvar::target}}::레벨}}</h2>
+<p><strong>종족:</strong> {{dict_element::{{getvar::target}}::종족}}</p>
+<p><strong>성별:</strong> {{dict_element::{{getvar::target}}::성별}}</p>
+<p><strong>직업:</strong> {{dict_element::{{getvar::target}}::클래스}}</p>
+<p><strong>나이:</strong> {{dict_element::{{getvar::target}}::나이}}</p>
 </div>
 </div>
-</div>
-<div class="physical-stats-grid">
-<span><strong>신장:</strong> 168.0 cm</span>
-<span><strong>체중:</strong> 52.0 kg</span>
-<span><strong>B:</strong> 88.0 cm (D컵)</span>
-<span><strong>W:</strong> 58.0 cm</span>
-<span><strong>H:</strong> 85.0 cm</span>
-</div>
-</section>
-
-<div class="line single"></div>
-
-<section class="stats-section">
-<h3>* 상태</h3>
+<div class="profile-stats">
 <div class="x-risu-bar-container">
 <span class="bar-label">체력:</span>
 <div class="progress-bar">
-<div class="x-risu-progress-bar-fill x-risu-hp" style="width: 100%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-hp" style="width: {{calc::{{dict_element::{{getvar::target}}::체력}} / {{dict_element::{{getvar::target}}::최대체력}} * 100}}%;"></div>
 </div>
-<span class="bar-value">250/250</span>
+<span class="bar-value">{{dict_element::{{getvar::target}}::체력}}/{{dict_element::{{getvar::target}}::최대체력}}</span>
 </div>
 <div class="x-risu-bar-container">
 <span class="bar-label">기력:</span>
 <div class="progress-bar">
-<div class="x-risu-progress-bar-fill x-risu-st" style="width: 80%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-st" style="width: {{calc::{{dict_element::{{getvar::target}}::기력}} / {{dict_element::{{getvar::target}}::최대기력}} * 100}}%;"></div>
 </div>
-<span class="bar-value">80/100</span>
+<span class="bar-value">{{dict_element::{{getvar::target}}::기력}}/{{dict_element::{{getvar::target}}::최대기력}}</span>
 </div>
-
-<h3 class="section-title">* 전투 능력</h3>
-<div class="combat-stats-grid">
-<span><strong>공격력:</strong> 250 (순수 230)</span>
-<span><strong>방어력:</strong> 180 (순수 180)</span>
-<span><strong>카르마:</strong> 50 (질서)</span>
+<div class="stats-grid">
+<span><strong>공격:</strong> {{dict_element::{{getvar::target}}::공격력}}</span>
+<span><strong>방어:</strong> {{dict_element::{{getvar::target}}::방어력}}</span>
+<span><strong>카르마:</strong> {{dict_element::{{getvar::target}}::카르마}}</span>
+<span><strong>소지금:</strong> {{dict_element::{{getvar::target}}::소지금}}</span>
+<span><strong>빚:</strong> {{dict_element::{{getvar::target}}::빚}}</span>
 </div>
-
-<h3 class="section-title">* 장비</h3>
-<div class="equipment-list">
-<p><strong>【무기】:</strong> 요정의 활</p>
-<p><strong>【장식A】:</strong> 민첩의 반지</p>
-<p><strong>【장식B】:</strong> 없음</p>
-</div>
-
-<h3 class="section-title">* 파티</h3>
-<div class="party-info">
-<p>소속된 파티는 [ 서큐버스 ]이(가) 리더인 파티입니다.</p>
-<p><strong>파티원:</strong> 자신, 인큐버스</p>
 </div>
 </section>
-</div>
 
-<!-- Right Column: Detailed Info with Tabs -->
-<div class="char-secondary-info">
-<input type="radio" name="char-info-tabs" id="talents-tab" checked hidden>
-<input type="radio" name="char-info-tabs" id="abl-exp-tab" hidden>
-<input type="radio" name="char-info-tabs" id="appearance-tab" hidden>
+<div class="line single"></div>
 
-<div class="char-tabs">
-<label for="talents-tab" class="char-tab-label">특성</label>
-<label for="abl-exp-tab" class="char-tab-label">능력/경험</label>
-<label for="appearance-tab" class="char-tab-label">외견</label>
-</div>
+<section class="detailed-info">
+<input type="radio" name="detail-tabs" id="talents-tab" checked hidden><label for="talents-tab" class="x-risu-btn">▋특성</label>
+<input type="radio" name="detail-tabs" id="abl-tab" hidden><label for="abl-tab" class="x-risu-btn">▋능력</label>
+<input type="radio" name="detail-tabs" id="exp-tab" hidden><label for="exp-tab" class="x-risu-btn">▋경험</label>
+<input type="radio" name="detail-tabs" id="appearance-tab" hidden><label for="appearance-tab" class="x-risu-btn">▋외모</label>
+<input type="radio" name="detail-tabs" id="narrative-tab" hidden><label for="narrative-tab" class="x-risu-btn">▋서사</label>
 
-<div class="char-tab-content">
-<div id="talents-pane" class="char-tab-pane">
-<h4>* 개인 특성 (TALENT)</h4>
-<div class="talent-group">
-<h5>성격</h5>
-<div class="talent-tags">
-<span class="talent-tag">[ 츤데레 ]</span>
-<span class="talent-tag">[ 성실 ]</span>
-<span class="talent-tag">[ 자존심높음 ]</span>
-</div>
-</div>
-<div class="talent-group">
-<h5>체질</h5>
-<div class="talent-tags">
-<span class="talent-tag">[ 민감 ]</span>
-<span class="talent-tag">[ 아름다운 엉덩이 ]</span>
-<span class="talent-tag">[ 하얀피부 ]</span>
-</div>
-</div>
-<div class="talent-group">
-<h5>기술</h5>
-<div class="talent-tags">
-<span class="talent-tag">[ 요리 능숙 ]</span>
-<span class="talent-tag">[ 치료 ]</span>
-</div>
-</div>
-<div class="talent-group">
-<h5>전투기술</h5>
-<div class="talent-tags">
-<span class="talent-tag">[ 궁수 ]</span>
-<span class="talent-tag">[ 속사 ]</span>
-</div>
+<div class="tab-content">
+<div id="talents-content" class="tab-pane">
+<div class="info-grid">
+<h3>성격</h3>
+{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::성격}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::성격}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
+<h3>체질</h3>
+{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::체질}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::체질}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
+<h3>성적취향</h3>
+{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::성적취향}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::성적취향}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
+<h3>성감대</h3>
+{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::성감대}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::성감대}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
 </div>
 </div>
 
-<div id="abl-exp-pane" class="char-tab-pane">
-<h4>* 성적 특성</h4>
-<div class="ability-grid">
-<span>순종 - 2LV</span>
-<span>욕망 - 3LV</span>
-<span>자위중독 - 1LV</span>
-<span>봉사정신 - 2LV</span>
+<div id="abl-content" class="tab-pane">
+<div class="info-grid">
+{{#when::{{dict_element::{{getvar::target}}::순종}}::isnot::0}}<div class="abl-item"><span>순종</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::순종}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::욕망}}::isnot::0}}<div class="abl-item"><span>욕망</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::욕망}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::기교}}::isnot::0}}<div class="abl-item"><span>기교</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::기교}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::C감각}}::isnot::0}}<div class="abl-item"><span>C감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::C감각}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::B감각}}::isnot::0}}<div class="abl-item"><span>B감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::B감각}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::V감각}}::isnot::0}}<div class="abl-item"><span>V감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V감각}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::A감각}}::isnot::0}}<div class="abl-item"><span>A감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A감각}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::U감각}}::isnot::0}}<div class="abl-item"><span>U감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::U감각}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::T감각}}::isnot::0}}<div class="abl-item"><span>T감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::T감각}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::V확장}}::isnot::0}}<div class="abl-item"><span>V확장</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V확장}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::A확장}}::isnot::0}}<div class="abl-item"><span>A확장</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A확장}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::U확장}}::isnot::0}}<div class="abl-item"><span>U확장</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::U확장}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::봉사기술}}::isnot::0}}<div class="abl-item"><span>봉사기술</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::봉사기술}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::성교기술}}::isnot::0}}<div class="abl-item"><span>성교기술</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::성교기술}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::화술}}::isnot::0}}<div class="abl-item"><span>화술</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::화술}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::노출벽}}::isnot::0}}<div class="abl-item"><span>노출벽</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::노출벽}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::마조끼}}::isnot::0}}<div class="abl-item"><span>마조끼</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::마조끼}}"></div></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::성교중독}}::isnot::0}}<div class="abl-item"><span>성교중독</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::성교중독}}"></div></div>{{/when}}
 </div>
-<h4 class="section-title">* 몸과 마음에 각인된 흔적</h4>
+</div>
+
+<div id="exp-content" class="tab-pane">
+<div class="info-grid">
+{{#when::{{dict_element::{{getvar::target}}::V경험}}::isnot::0}}<div class="talent-tag"><strong>V경험:</strong> {{dict_element::{{getvar::target}}::V경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::A경험}}::isnot::0}}<div class="talent-tag"><strong>A경험:</strong> {{dict_element::{{getvar::target}}::A경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::C경험}}::isnot::0}}<div class="talent-tag"><strong>C경험:</strong> {{dict_element::{{getvar::target}}::C경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::B경험}}::isnot::0}}<div class="talent-tag"><strong>B경험:</strong> {{dict_element::{{getvar::target}}::B경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::U경험}}::isnot::0}}<div class="talent-tag"><strong>U경험:</strong> {{dict_element::{{getvar::target}}::U경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::T경험}}::isnot::0}}<div class="talent-tag"><strong>T경험:</strong> {{dict_element::{{getvar::target}}::T경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::사정경험}}::isnot::0}}<div class="talent-tag"><strong>사정경험:</strong> {{dict_element::{{getvar::target}}::사정경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::성교경험}}::isnot::0}}<div class="talent-tag"><strong>성교경험:</strong> {{dict_element::{{getvar::target}}::성교경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::자위경험}}::isnot::0}}<div class="talent-tag"><strong>자위경험:</strong> {{dict_element::{{getvar::target}}::자위경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::정액경험}}::isnot::0}}<div class="talent-tag"><strong>정액경험:</strong> {{dict_element::{{getvar::target}}::정액경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::출산경험}}::isnot::0}}<div class="talent-tag"><strong>출산경험:</strong> {{dict_element::{{getvar::target}}::출산경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::매춘경험}}::isnot::0}}<div class="talent-tag"><strong>매춘경험:</strong> {{dict_element::{{getvar::target}}::매춘경험}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::전투경험}}::isnot::0}}<div class="talent-tag"><strong>전투경험:</strong> {{dict_element::{{getvar::target}}::전투경험}}</div>{{/when}}
+</div>
+<div class="line single" style="margin-top:1.5rem"></div>
+<p class="total-info" style="margin-top: 1.5rem !important;">
+<strong>다음 레벨까지:</strong> {{? {{array_element::{{getvar::expLv}}::{{dict_element::{{getvar::target}}::레벨}}}}-{{dict_element::{{getvar::target}}::경험치}}}} EXP<br>
+<strong>총 획득 경험치:</strong> {{dict_element::{{getvar::target}}::경험치}} EXP
+</p>
+</div>
+
+<div id="appearance-content" class="tab-pane">
+<div class="appearance-content">
+<p><strong>키:</strong> {{dict_element::{{getvar::target}}::키}}cm | <strong>몸무게:</strong> {{dict_element::{{getvar::target}}::몸무게}}kg</p>
+<p><strong>헤어스타일:</strong> {{dict_element::{{getvar::target}}::머리}}</p>
+<p><strong>복장:</strong> {{dict_element::{{getvar::target}}::복장}}</p>
+<p><strong>가슴:</strong> {{dict_element::{{getvar::target}}::가슴}} | <strong>유두:</strong> {{dict_element::{{getvar::target}}::유두}}</p>
+<p><strong>음모:</strong> {{dict_element::{{getvar::target}}::음모}}</p>
+{{#when::{{dict_element::{{getvar::target}}::페니스}}::isnot::}}<p><strong>페니스:</strong> {{dict_element::{{getvar::target}}::페니스}}</p>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::자궁정액}}::isnot::0}}<p>자궁에 <strong>{{dict_element::{{getvar::target}}::자궁정액}}ml</strong>의 정액이 들어있습니다.</p>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::애널정액}}::isnot::0}}<p>애널에 <strong>{{dict_element::{{getvar::target}}::애널정액}}ml</strong>의 정액이 들어있습니다.</p>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::문신}}::isnot::}}<p><strong>문신:</strong> {{dict_element::{{getvar::target}}::문신}}</p>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::피어싱}}::isnot::}}<p><strong>피어싱:</strong> {{dict_element::{{getvar::target}}::피어싱}}</p>{{/when}}
+</div>
+</div>
+
+<div id="narrative-content" class="tab-pane">
+<div class="narrative-block">
+<h3>첫경험</h3>
+<p><strong>첫키스 상대:</strong> {{dict_element::{{getvar::target}}::첫키스 상대}}<br>
+<strong>첫경험 상대:</strong> {{dict_element::{{getvar::target}}::첫경험 상대}}</p>
+</div>
+{{#when::{{dict_element::{{getvar::target}}::가족관계}}::isnot::null}}
+<div class="narrative-block"><h3>가족관계</h3><p>{{dict_element::{{getvar::target}}::가족관계}}</p></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::용사가 된 동기}}::isnot::null}}
+<div class="narrative-block"><h3>용사가 된 동기</h3><p>{{dict_element::{{getvar::target}}::용사가 된 동기}}</p></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::용사가 되기 전}}::isnot::null}}
+<div class="narrative-block"><h3>용사가 되기 전</h3><p>{{dict_element::{{getvar::target}}::용사가 되기 전}}</p></div>{{/when}}
+{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::이상경험 기록}}}} > 0}}}}
+<div class="narrative-block"><h3>이상경험 기록</h3><ul>
+{{#each {{dict_element::{{getvar::target}}::이상경험 기록}} R}}<li>{{slot::R}}</li>{{/each}}
+</ul></div>{{/when}}
+</div>
+</div>
+</section>
+
+<div class="line single"></div>
+
+<section class="marks-section">
+<h2>* 각인</h2>
 <div class="marks-grid">
-<div class="mark-item"><span>고통</span><div class="mark-bar"><div class="mark-fill" style="width: 20%"></div></div><span>LV2</span></div>
-<div class="mark-item"><span>쾌락</span><div class="mark-bar"><div class="mark-fill" style="width: 50%"></div></div><span>LV5</span></div>
-<div class="mark-item"><span>굴복</span><div class="mark-bar"><div class="mark-fill" style="width: 30%"></div></div><span>LV3</span></div>
-<div class="mark-item"><span>반발</span><div class="mark-bar"><div class="mark-fill" style="width: 80%"></div></div><span>LV8</span></div>
+<div class="mark-item"><span class="bar-label">고통:</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::고통각인}}"></div></div>
+<div class="mark-item"><span class="bar-label">쾌락:</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::쾌락각인}}"></div></div>
+<div class="mark-item"><span class="bar-label">복종:</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::복종각인}}"></div></div>
+<div class="mark-item"><span class="bar-label">수치:</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::수치각인}}"></div></div>
+<div class="mark-item"><span class="bar-label">반발:</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::target}}::반발각인}}"></div></div>
 </div>
-<h4 class="section-title">* 경험 기록</h4>
-<div class="experience-list">
-<p><strong>자위 경험:</strong> 35</p>
-<p><strong>V 삽입 경험:</strong> 12</p>
-<p><strong>첫 키스 상대:</strong> 인큐버스의 입술</p>
-<p><strong>첫 경험 상대:</strong> 몬스터의 자지</p>
-<p><strong>다음 레벨업 경험치:</strong> 1200</p>
-<p><strong>총 획득 경험치:</strong> 15800</p>
-</div>
-</div>
+</section>
 
-<div id="appearance-pane" class="char-tab-pane">
-<h4>* 외견 정보</h4>
-<div class="appearance-details">
-<p>허리 너머까지 내려오는 은발의 장발. 피부는 눈처럼 희고 깨끗하다.</p>
-<p><strong>복장:</strong> 가죽 갑옷과 여행자의 망토.</p>
-<p><strong>문신:</strong> 뺨에 작은 『★』 문신이 새겨져 있다.</p>
-<p><strong>피어싱:</strong> 귓불에 작은 은색 피어싱이 되어있다.</p>
-<p><strong>음모:</strong> 깨끗하게 관리되어 털이 거의 없다.</p>
-<p>자궁 안에는 120ml의 정액이 들어있습니다.</p>
+<div class="line single"></div>
+
+<section class="jewel-section">
+<h2>* 주얼</h2>
+<div class="jewel-grid">
+{{#when::{{dict_element::{{getvar::target}}::C쾌락}}::isnot::0}}<div class="talent-tag"><strong>C쾌락:</strong> {{dict_element::{{getvar::target}}::C쾌락}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::V쾌락}}::isnot::0}}<div class="talent-tag"><strong>V쾌락:</strong> {{dict_element::{{getvar::target}}::V쾌락}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::A쾌락}}::isnot::0}}<div class="talent-tag"><strong>A쾌락:</strong> {{dict_element::{{getvar::target}}::A쾌락}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::B쾌락}}::isnot::0}}<div class="talent-tag"><strong>B쾌락:</strong> {{dict_element::{{getvar::target}}::B쾌락}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::U쾌락}}::isnot::0}}<div class="talent-tag"><strong>U쾌락:</strong> {{dict_element::{{getvar::target}}::U쾌락}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::욕정}}::isnot::0}}<div class="talent-tag"><strong>욕정:</strong> {{dict_element::{{getvar::target}}::욕정}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::온순}}::isnot::0}}<div class="talent-tag"><strong>온순:</strong> {{dict_element::{{getvar::target}}::온순}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::굴복}}::isnot::0}}<div class="talent-tag"><strong>굴복:</strong> {{dict_element::{{getvar::target}}::굴복}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::기술}}::isnot::0}}<div class="talent-tag"><strong>기술:</strong> {{dict_element::{{getvar::target}}::기술}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::수치}}::isnot::0}}<div class="talent-tag"><strong>수치:</strong> {{dict_element::{{getvar::target}}::수치}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::고통}}::isnot::0}}<div class="talent-tag"><strong>고통:</strong> {{dict_element::{{getvar::target}}::고통}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::공포}}::isnot::0}}<div class="talent-tag"><strong>공포:</strong> {{dict_element::{{getvar::target}}::공포}}</div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::부정}}::isnot::0}}<div class="talent-tag"><strong>부정:</strong> {{dict_element::{{getvar::target}}::부정}}</div>{{/when}}
+</div>
+</section>
+
+<div class="line single"></div>
+
+<section class="equipment-section">
+<h2>* 장비</h2>
+<div class="equipment-grid">
+<div class="equipment-item">
+<span class="item-type">【무기】</span><span>{{dict_element::{{getvar::target}}::무기}}</span>
+</div>
+<div class="equipment-item">
+<span class="item-type">【반지A】</span><span>{{dict_element::{{getvar::target}}::반지1}}</span>
+</div>
+<div class="equipment-item">
+<span class="item-type">【반지B】</span><span>{{dict_element::{{getvar::target}}::반지2}}</span>
 </div>
 </div>
-</div>
-</div>
-</main>
+</section>
 
 <div class="line single"></div>
 
 <section class="command-panel">
 <h3>▋Commands</h3>
-<div class="command-flex-container">
+<div class="command-container">
 {{getvar::cmds}}
 </div>
 </section>
+</main>
+
 <div class="line double"></div>
 </div>
-</body>
