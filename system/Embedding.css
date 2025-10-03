@@ -211,9 +211,6 @@ h2, h3 {
 
 /* --- PAGE: CHARACTER INFO (from char.css) --- */
 
-/* Body and container styles from char.css are not used to maintain a consistent look. */
-/* The .container on char.html will now use the main app styles. */
-
 .char-header {
     padding-bottom: 0.5rem;
 }
@@ -230,7 +227,7 @@ h2, h3 {
     margin: 0;
     color: #b0b0b0;
 }
-
+/* 캐릭터 카드 정렬 관련 요소. 정렬로직은 추후에 구현
 .controls-bar {
     display: flex;
     justify-content: space-between;
@@ -303,7 +300,7 @@ h2, h3 {
 .pagination a:hover {
     background-color: #6a6a6a;
 }
-
+*/
 .character-list {
     display: flex;
     flex-direction: column;
@@ -349,8 +346,8 @@ h2, h3 {
     color: #e0e0e0;
 }
 
-.status-trainable, .status-waiting {
-    color: #66cc99; /* A teal/green color */
+.char-status { /*조교가능, 침공중, 요격중, 노출대 등 */
+    color: #66cc99;
 }
 
 .char-level {
@@ -411,7 +408,7 @@ h2, h3 {
 }
 
 .char-status-bars .bar-value {
-    flex-basis: 90px;
+    flex-basis: 50px;
     text-align: right;
     color: #e0e0e0;
 }

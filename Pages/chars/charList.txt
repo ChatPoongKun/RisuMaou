@@ -12,6 +12,7 @@ height: 0.3rem !important;
 <p class="char-subtitle">총 인원: {{? 1+{{array_length::chars}}}} 명 (소지 포인트: {{getvar::gold}} pts.)</p>
 </header>
 
+<!-- 정렬 기능은 추후 구현
 <div class="controls-bar">
 <div class="sort-buttons">
 <button class="sort-btn">번호순</button>
@@ -24,7 +25,7 @@ height: 0.3rem !important;
 <a href="#">[다음]</a>
 </div>
 </div>
-
+-->
 <main class="character-list">
 
 {{getvar::charList}}

@@ -1,15 +1,15 @@
 FORM
-CHARACTER::index|name|lv|atk|def|crm|hp|hpMax|hpRatio|st|stMax|stRatio::CARD
+CHARACTER::index|name|lv|atk|def|crm|hp|hpMax|hpRatio|st|stMax|stRatio::LIST
 
 IN
-CHARACTER::(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)::CARD
+CHARACTER::(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)::LIST
 
 OUT
 
-<div class="character-card" risu-btn="charInfo_$2">
+<div class="character-card" risu-btn="$1_charInfo_$2">
 <div class="char-info">
 <p class="char-name-line">
-[$1] <span class="status-trainable">[조교가능] </span>$2<span class="char-level">Lv.$3</span>
+[$1] <span class="char-status">[조교가능] </span>$2<span class="char-level"> Lv.$3</span>
 </p>
 <span class="char-tags">
 공격 $4 / 방어 $5 / 카르마 $6
@@ -22,14 +22,14 @@ OUT
 <div class="progress-bar">
 <div class="progress-bar-fill hp" style="width: $9%"></div>
 </div>
-<span class="bar-value">$7/$8 K</span>
+<span class="bar-value">$7</span>
 </div>
 <div class="bar-container">
 <span class="bar-label">기력:</span>
 <div class="progress-bar">
 <div class="progress-bar-fill st" style="width: $12%;"></div>
 </div>
-<span class="bar-value">$10/$11 K</span>
+<span class="bar-value">$10</span>
 </div>
 </div>
 </div>

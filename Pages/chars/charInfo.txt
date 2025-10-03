@@ -215,7 +215,7 @@
 
     /* Abilities Tab - Grid layout */
     #abl-content .info-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
         align-items: center;
     }
     .abl-item {
@@ -324,7 +324,7 @@
 <main>
 <section class="character-profile">
 <div class="profile-main">
-<div class="character-portrait"><img src="{{#when::{{dict_element::{{getvar::target}}::이름}}::is::{{user}}}}{{source::user}}{{:else}}{{raw::{{dict_element::{{getvar::target}}::이름}}.png}}{{/when}}"></div>
+<div class="character-portrait"><img src="{{#when::{{dict_element::{{getvar::target}}::이름}}::is::{{user}}}}{{source::user}}{{:else}}{{raw::{{dict_element::{{getvar::target}}::이름}}.png}}{{/when}}" style="margin:0px;border-radius:1em"></div>
 <div class="profile-details">
 <h2>{{dict_element::{{getvar::target}}::이름}} Lv.{{dict_element::{{getvar::target}}::레벨}}</h2>
 <p><strong>종족:</strong> {{dict_element::{{getvar::target}}::종족}}</p>
@@ -337,14 +337,14 @@
 <div class="x-risu-bar-container">
 <span class="bar-label">체력:</span>
 <div class="progress-bar">
-<div class="x-risu-progress-bar-fill x-risu-hp" style="width: {{calc::{{dict_element::{{getvar::target}}::체력}} / {{dict_element::{{getvar::target}}::최대체력}} * 100}}%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-hp" style="width: {{calc::{{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
 </div>
 <span class="bar-value">{{dict_element::{{getvar::target}}::체력}}/{{dict_element::{{getvar::target}}::최대체력}}</span>
 </div>
 <div class="x-risu-bar-container">
 <span class="bar-label">기력:</span>
 <div class="progress-bar">
-<div class="x-risu-progress-bar-fill x-risu-st" style="width: {{calc::{{dict_element::{{getvar::target}}::기력}} / {{dict_element::{{getvar::target}}::최대기력}} * 100}}%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-st" style="width: {{calc::{{tonumber::{{dict_element::{{getvar::target}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대기력}}}} * 100}}%;"></div>
 </div>
 <span class="bar-value">{{dict_element::{{getvar::target}}::기력}}/{{dict_element::{{getvar::target}}::최대기력}}</span>
 </div>
@@ -383,42 +383,23 @@
 
 <div id="abl-content" class="tab-pane">
 <div class="info-grid">
-{{#when::{{dict_element::{{getvar::target}}::순종}}::isnot::0}}<div class="abl-item"><span>순종</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::순종}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::욕망}}::isnot::0}}<div class="abl-item"><span>욕망</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::욕망}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::기교}}::isnot::0}}<div class="abl-item"><span>기교</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::기교}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::C감각}}::isnot::0}}<div class="abl-item"><span>C감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::C감각}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::B감각}}::isnot::0}}<div class="abl-item"><span>B감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::B감각}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::V감각}}::isnot::0}}<div class="abl-item"><span>V감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V감각}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::A감각}}::isnot::0}}<div class="abl-item"><span>A감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A감각}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::U감각}}::isnot::0}}<div class="abl-item"><span>U감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::U감각}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::T감각}}::isnot::0}}<div class="abl-item"><span>T감각</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::T감각}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::V확장}}::isnot::0}}<div class="abl-item"><span>V확장</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V확장}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::A확장}}::isnot::0}}<div class="abl-item"><span>A확장</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A확장}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::U확장}}::isnot::0}}<div class="abl-item"><span>U확장</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::U확장}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::봉사기술}}::isnot::0}}<div class="abl-item"><span>봉사기술</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::봉사기술}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::성교기술}}::isnot::0}}<div class="abl-item"><span>성교기술</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::성교기술}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::화술}}::isnot::0}}<div class="abl-item"><span>화술</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::화술}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::노출벽}}::isnot::0}}<div class="abl-item"><span>노출벽</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::노출벽}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::마조끼}}::isnot::0}}<div class="abl-item"><span>마조끼</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::마조끼}}"></div></div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::성교중독}}::isnot::0}}<div class="abl-item"><span>성교중독</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::성교중독}}"></div></div>{{/when}}
+{{#each {{array::C감각::B감각::V감각::A감각::U감각::T감각::V확장::A확장::U확장::순종::욕망::기교::봉사기술::성교기술::화술::노출벽::마조끼::성교중독::자위중독::정액중독::방뇨중독::매춘중독::촉수중독::수간중독}} abil}}
+{{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::isnot::0}}
+<div class="abl-item"><span>{{slot::abil}}</span>
+<div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}">
+</div></div>
+{{/when}}
+{{/each}}
 </div>
 </div>
 
 <div id="exp-content" class="tab-pane">
 <div class="info-grid">
-{{#when::{{dict_element::{{getvar::target}}::V경험}}::isnot::0}}<div class="talent-tag"><strong>V경험:</strong> {{dict_element::{{getvar::target}}::V경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::A경험}}::isnot::0}}<div class="talent-tag"><strong>A경험:</strong> {{dict_element::{{getvar::target}}::A경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::C경험}}::isnot::0}}<div class="talent-tag"><strong>C경험:</strong> {{dict_element::{{getvar::target}}::C경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::B경험}}::isnot::0}}<div class="talent-tag"><strong>B경험:</strong> {{dict_element::{{getvar::target}}::B경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::U경험}}::isnot::0}}<div class="talent-tag"><strong>U경험:</strong> {{dict_element::{{getvar::target}}::U경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::T경험}}::isnot::0}}<div class="talent-tag"><strong>T경험:</strong> {{dict_element::{{getvar::target}}::T경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::사정경험}}::isnot::0}}<div class="talent-tag"><strong>사정경험:</strong> {{dict_element::{{getvar::target}}::사정경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::성교경험}}::isnot::0}}<div class="talent-tag"><strong>성교경험:</strong> {{dict_element::{{getvar::target}}::성교경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::자위경험}}::isnot::0}}<div class="talent-tag"><strong>자위경험:</strong> {{dict_element::{{getvar::target}}::자위경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::정액경험}}::isnot::0}}<div class="talent-tag"><strong>정액경험:</strong> {{dict_element::{{getvar::target}}::정액경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::출산경험}}::isnot::0}}<div class="talent-tag"><strong>출산경험:</strong> {{dict_element::{{getvar::target}}::출산경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::매춘경험}}::isnot::0}}<div class="talent-tag"><strong>매춘경험:</strong> {{dict_element::{{getvar::target}}::매춘경험}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::전투경험}}::isnot::0}}<div class="talent-tag"><strong>전투경험:</strong> {{dict_element::{{getvar::target}}::전투경험}}</div>{{/when}}
+{{#each {{array::V경험::A경험::C경험::B경험::U경험::T경험::사정경험::성교경험::자위경험::정액경험::출산경험::매춘경험::전투경험}} exp}}
+{{#when::{{dict_element::{{getvar::target}}::{{slot::exp}}}}::isnot::0}}
+<div class="talent-tag"><strong>{{slot::exp}}:</strong> {{dict_element::{{getvar::target}}::{{slot::exp}}}}</div>
+{{/when}}
+{{/each}}
 </div>
 <div class="line single" style="margin-top:1.5rem"></div>
 <p class="total-info" style="margin-top: 1.5rem !important;">
@@ -480,19 +461,11 @@
 <section class="jewel-section">
 <h2>* 주얼</h2>
 <div class="jewel-grid">
-{{#when::{{dict_element::{{getvar::target}}::C쾌락}}::isnot::0}}<div class="talent-tag"><strong>C쾌락:</strong> {{dict_element::{{getvar::target}}::C쾌락}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::V쾌락}}::isnot::0}}<div class="talent-tag"><strong>V쾌락:</strong> {{dict_element::{{getvar::target}}::V쾌락}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::A쾌락}}::isnot::0}}<div class="talent-tag"><strong>A쾌락:</strong> {{dict_element::{{getvar::target}}::A쾌락}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::B쾌락}}::isnot::0}}<div class="talent-tag"><strong>B쾌락:</strong> {{dict_element::{{getvar::target}}::B쾌락}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::U쾌락}}::isnot::0}}<div class="talent-tag"><strong>U쾌락:</strong> {{dict_element::{{getvar::target}}::U쾌락}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::욕정}}::isnot::0}}<div class="talent-tag"><strong>욕정:</strong> {{dict_element::{{getvar::target}}::욕정}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::온순}}::isnot::0}}<div class="talent-tag"><strong>온순:</strong> {{dict_element::{{getvar::target}}::온순}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::굴복}}::isnot::0}}<div class="talent-tag"><strong>굴복:</strong> {{dict_element::{{getvar::target}}::굴복}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::기술}}::isnot::0}}<div class="talent-tag"><strong>기술:</strong> {{dict_element::{{getvar::target}}::기술}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::수치}}::isnot::0}}<div class="talent-tag"><strong>수치:</strong> {{dict_element::{{getvar::target}}::수치}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::고통}}::isnot::0}}<div class="talent-tag"><strong>고통:</strong> {{dict_element::{{getvar::target}}::고통}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::공포}}::isnot::0}}<div class="talent-tag"><strong>공포:</strong> {{dict_element::{{getvar::target}}::공포}}</div>{{/when}}
-{{#when::{{dict_element::{{getvar::target}}::부정}}::isnot::0}}<div class="talent-tag"><strong>부정:</strong> {{dict_element::{{getvar::target}}::부정}}</div>{{/when}}
+{{#each {{array::V쾌락::A쾌락::B쾌락::U쾌락::욕정::온순::굴복::기술::수치::고통::공포::부정}} juel}}
+{{#when::{{dict_element::{{getvar::target}}::{{slot::juel}}}}::isnot::0}}
+<div class="talent-tag"><strong>{{slot::juel}}:</strong> {{dict_element::{{getvar::target}}::{{slot::juel}}}}</div>
+{{/when}}
+{{/each}}
 </div>
 </section>
 

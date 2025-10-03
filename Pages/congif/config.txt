@@ -6,5 +6,7 @@
 <h1>▋설정</h1>
 
 </header>
+<div class="command-container">
 {{getvar::cmds}}
+</div>
 </body>
