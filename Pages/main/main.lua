@@ -27,14 +27,15 @@ end!!
         local atk = charInfo["공격력"]
         local def = charInfo["방어력"]
         local crm = charInfo["카르마"]
-        local hp = charInfo["체력"]/1000
-        local hpMax = charInfo["최대체력"]/1000
-        local hpRatio = 100*hp/hpMax
-        local st = charInfo["기력"]/1000
-        local stMax = charInfo["최대기력"]/1000
-        local stRatio = 100*st/stMax
+        local hp = charInfo["체력"]
+        local hpMax = charInfo["최대체력"]
+        local hpRatio = 100*tonumber(hp)/tonumber(hpMax)
+        local st = charInfo["기력"]
+        local stMax = charInfo["최대기력"]
+        local stRatio = 100*tonumber(st)/tonumber(stMax)
+        
 
-        charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."::CARD"
+        charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."::LIST"
     end
     debug("charList: "..charList)
     setChatVar(triggerId, "charList", charList)
@@ -82,8 +83,11 @@ end!!
 end!!
 
 [main/199/휴식] function(triggerId)
-    local screen = "휴식"
-    alertNormal(triggerId, "쉽니다 쿨쿨..")
+    --하루가 지나갈떄의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 rest.sys 함수로 별도처리
+    local funcBody = getLoreBookContent(triggerId, "rest.sys")
+    local func = createFunctionFromString(funcBody)
+    func(triggerId)
+    debug(f_code .. " 함수 실행")
 end!!
 
 [main/777/설정] function(triggerId)
