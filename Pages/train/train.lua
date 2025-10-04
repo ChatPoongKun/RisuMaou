@@ -52,7 +52,7 @@ end!!
     setChatVar(triggerId, cat, tgl)
 end!!
 
-[train/x/{{#when::애무계::vis::1}}--{{/when}}]function end!!
+[train/--/{{#when::애무계::vis::1}}--애무계--{{/when}}]function end!!
 
 [train/11/{{#when::{{getVar::애무계}}::is::1}}아무것도안한다{{/when}}] function(triggerId)
     local train = "아무것도안한다"
@@ -63,7 +63,7 @@ end!!
 end!!
 
 [train/13/{{#when::{{getVar::애무계}}::is::1}}애무{{/when}}] function(triggerId)
-    setChatVar(triggerId, "btns", "[[응답 처리중....]]")
+    setChatVar(triggerId, "cmds", "<span style='text-align:center;'>[[응답 처리중....]]</span>")
     reloadDisplay(triggerId)
     local log = getChatVar(triggerId, "trainLog")
     log = log .. "<br>{{user}}는 대상을 애무한다."
@@ -105,7 +105,7 @@ end!!
     local train = "애널 핥기"
 end!!
 
-[train/x/{{#when::도구계::vis::1}}--{{/when}}]function end!!
+[train/--/{{#when::도구계::vis::1}}--도구계--{{/when}}]function end!!
 
 [train/21/{{#when::{{getVar::도구계}}::is::1}}진동하는보석{{/when}}] function(triggerId)
     local train = "진동하는 보석"
@@ -152,7 +152,7 @@ end!!
     local train = "볼개그"
 end!!
 
-[train/x/{{#when::V계::vis::1}}--{{/when}}]function end!!
+[train/--/{{#when::V계::vis::1}}--V계--{{/when}}]function end!!
 
 [train/31/{{#when::{{getVar::V계}}::is::1}}정상위{{/when}}] function(triggerId)
     local train = "정상위"
@@ -174,7 +174,7 @@ end!!
     local train = "기승위"
 end!!
 
-[train/x/{{#when::A계::vis::1}}--{{/when}}]function end!!
+[train/--/{{#when::A계::vis::1}}--A계--{{/when}}]function end!!
 
 [train/41/{{#when::{{getVar::A계}}::is::1}}정상위애널{{/when}}] function(triggerId)
     local train = "정상위애널"
@@ -196,7 +196,7 @@ end!!
     local train = "기승위애널"
 end!!
 
-[train/x/{{#when::봉사계::vis::1}}--{{/when}}]function end!!
+[train/--/{{#when::봉사계::vis::1}}--봉사계--{{/when}}]function end!!
 
 [train/51/{{#when::{{getVar::봉사계}}::is::1}}수음{{/when}}] function(triggerId)
     local train = "수음"
@@ -231,7 +231,7 @@ end!!
     local train = "리밍"
 end!!
 
-[train/x/{{#when::하드계::vis::1}}--{{/when}}]function end!!
+[train/--/{{#when::하드계::vis::1}}--하드계--{{/when}}]function end!!
 
 [train/91/{{#when::{{getVar::하드계}}::is::1}}스팽킹{{/when}}] function(triggerId)
     local train = "스팽킹"
@@ -277,7 +277,7 @@ end!!
     local train = "양구멍피스트"
 end!!
 
-[train/x/--]function end!!
+[train/--/ ]function end!!
 
 [train/101/로션] function(triggerId)
     local train = "로션"

@@ -14,17 +14,11 @@ function (triggerId)
             elseif hasVal(char, "느린회복") then
                 heal = heal*0.5
             end
-            char["체력"] = int(math.min(char["체력"] + char["최대체력"]*heal, tonumber(char["최대체력"])))
-            char["기력"] = int(math.min(char["기력"] + char["최대기력"]*heal, tonumber(char["최대기력"])))
-            
+            char["체력"] = int(math.min(tonumber(char["체력"]) + tonumber(char["최대체력"])*heal, tonumber(char["최대체력"])))
+            char["기력"] = int(math.min(tonumber(char["기력"]) + tonumber(char["최대기력"])*heal, tonumber(char["최대기력"])))
+
             --수정한 정보를 다시 캐릭터 로어북으로 저장
-            local option = {
-            alwaysActive = false,
-            insertOrder = 100,
-            key = "",
-            secondKey = "",
-            regex = false
-            }
+            local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
             upsertLocalLoreBook(triggerId, value, json.encode(char), option)
         end
 
@@ -35,7 +29,7 @@ function (triggerId)
     end
     day = day + ampm
     ampm = math.abs(ampm - 1)
-    print(day.."일 "..ampm)
+    debug(day.."일 "..ampm)
     setChatVar(triggerId, "day", day)
     setChatVar(triggerId, "ampm", ampm)
 

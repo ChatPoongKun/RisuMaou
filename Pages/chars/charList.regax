@@ -1,15 +1,15 @@
 FORM
-CHARACTER::index|name|lv|atk|def|crm|hp|hpMax|hpRatio|st|stMax|stRatio::LIST
+CHARACTER::index|name|lv|atk|def|crm|hp|hpMax|hpRatio|st|stMax|stRatio|condition::LIST
 
 IN
-CHARACTER::(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)::LIST
+CHARACTER::(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)::LIST
 
 OUT
 
 <div class="character-card" risu-btn="$1_charInfo_$2">
 <div class="char-info">
 <p class="char-name-line">
-[$1] <span class="char-status">[조교가능] </span>$2<span class="char-level"> Lv.$3</span>
+[$1] <span class="char-status">[$13] </span>$2<span class="char-level"> Lv.$3</span>
 </p>
 <span class="char-tags">
 공격 $4 / 방어 $5 / 카르마 $6
