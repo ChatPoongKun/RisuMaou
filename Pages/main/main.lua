@@ -1,12 +1,46 @@
 [main/100/조교 시작] function(triggerId)
-    local screen = "train"
+    local screen = "preTrain"
+
+-----------------------------
+    setState(triggerId, "screen", screen)
+    local chars = json.decode(getChatVar(triggerId, "chars"))
+    
+    debug("대상: "..json.encode(chars))
+    local charList = ""
+    for index, value in ipairs(chars) do
+        debug(index, value)
+        local charInfo = json.decode(getLoreBookContent(triggerId, value))
+        if charInfo["condition"] == "조교가능" then
+            debug(json.encode(charInfo))
+            local name = charInfo["이름"]
+            local lv = charInfo["레벨"]
+            local atk = charInfo["공격력"]
+            local def = charInfo["방어력"]
+            local crm = charInfo["카르마"]
+            local hp = charInfo["체력"]
+            local hpMax = charInfo["최대체력"]
+            local hpRatio = 100*tonumber(hp)/tonumber(hpMax)
+            local st = charInfo["기력"]
+            local stMax = charInfo["최대기력"]
+            local stRatio = 100*tonumber(st)/tonumber(stMax)
+            local condition = charInfo["condition"]
+
+            charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."|"..condition.."::LIST"
+        end
+    end
+    if charList == "" then
+        charList = "조교 가능한 대상이 없습니다."
+    end
+    debug("charList: "..charList)
+    setChatVar(triggerId, "charList", charList)
+-------------------------------
+
     setChatVar(triggerId, "애무계", 1)
     setChatVar(triggerId, "도구계", 0)
     setChatVar(triggerId, "V계", 0)
     setChatVar(triggerId, "A계", 0)
     setChatVar(triggerId, "봉사계", 0)
     setChatVar(triggerId, "하드계", 0)
-    setState(triggerId, "screen", screen)
     setChatVar(triggerId, "trainLog", "대상이 조교 준비중이다.")
 
 end!!
@@ -33,9 +67,9 @@ end!!
         local st = charInfo["기력"]
         local stMax = charInfo["최대기력"]
         local stRatio = 100*tonumber(st)/tonumber(stMax)
-        
+        local condition = charInfo["condition"]
 
-        charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."::LIST"
+        charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."|"..condition.."::LIST"
     end
     debug("charList: "..charList)
     setChatVar(triggerId, "charList", charList)
@@ -89,6 +123,8 @@ end!!
     func(triggerId)
     debug(f_code .. " 함수 실행")
 end!!
+
+[main/--/ ] function end!!
 
 [main/777/설정] function(triggerId)
     local screen = "config"

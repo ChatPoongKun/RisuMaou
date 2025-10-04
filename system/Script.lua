@@ -69,7 +69,7 @@ function charToVar(triggerId, varName, name)
         local replace = inside:gsub('"','\\"')
         return '"[' .. replace .. ']"'
     end)
-    debug(name.."변수에 저장: "..charInfo)
+    debug(name.."를 user 변수에 저장")
     setChatVar(triggerId, varName, charInfo)
 
 end
@@ -77,7 +77,7 @@ end
 --초기세팅 함수
 function initialize(triggerId)
     debug("초기 세팅 개시...")
-    local initFuncs ={"initVars.sys"} --향후 초기 설정 함수를 더 추가할 수 있도록 테이블 선언
+    local initFuncs ={"initVars.sys", "debugCmds.sys"} --향후 초기 설정 함수를 더 추가할 수 있도록 테이블 선언
     for i, f_code in ipairs(initFuncs) do
         local funcBody = getLoreBookContent(triggerId, f_code)
         local func = createFunctionFromString(funcBody)
@@ -113,7 +113,7 @@ function processAndStoreLore(triggerId, loreBookId)
     debug(loreBookId .. "로어북에서 함수 호출")
     local loreEntries = getLoreBookContent(triggerId, loreBookId)
 
-    local pattern = "%[(%w+)/(%w+)/([^%]]+)%]%s*(function.-end)!!"
+    local pattern = "%[(%w+)/(%S+)/([^%]]+)%]%s*(function.-end)!!"
     local count = 0
     local cmds = ""
 
@@ -121,12 +121,11 @@ function processAndStoreLore(triggerId, loreBookId)
         local key = page.."_"..number
         setState(triggerId, key, functionBody)
         debug(description.."-> funcs['" .. key .. "']에 함수 저장됨.")
-        --print(functionBody)
         count = count + 1
 
         --cmds 챗변수에 버튼들 입력
-        if description == "--" then --구분선 처리
-            cmds = cmds .. "<hr style='border:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'>"
+        if number == "--" then --구분선 처리
+            cmds = cmds .. "<div style='text-align:center;border-bottom:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'>"..description.."</div>"
         else
             cmds = cmds.."<button class='btn command-btn' risu-btn='"..number.."'>["..number.."] "..description.."</button>"
         end
@@ -137,18 +136,20 @@ function processAndStoreLore(triggerId, loreBookId)
     debug("처리 완료. 총 " .. count .. "개의 함수를 저장했습니다.\n")
 end
 
-function executeFunction(triggerId, screen, f_code, ...)
-    local f_code = screen.."_"..f_code
+function executeFunction(triggerId, screen, code, ...)
+    local f_code = screen.."_"..code
     local funcBody = getState(triggerId, f_code)
 
     if not funcBody then
-        alertNormal(triggerId, "커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
-        return
-    else
+        funcBody = getState(triggerId, code)
+        if not funcBody then
+            alertNormal(triggerId, "커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
+            return
+        end
+    end
         local func, err = createFunctionFromString(funcBody)
         debug(f_code .. " 함수 실행")
         func(triggerId, ...)
-    end
 end
 
 function LLMresponse(triggerId, prompt)
@@ -165,7 +166,6 @@ function LLMresponse(triggerId, prompt)
     else
         print("응답실패")
     end
-
 end
 
 listenEdit("editDisplay", function(triggerId, data)
@@ -173,7 +173,6 @@ listenEdit("editDisplay", function(triggerId, data)
     if not screen then
         setState(triggerId, "screen", "gameStart")
         screen = getState(triggerId, "screen")
-        --processAndStoreLore(triggerId, screen..".lua")
     end
 
     --현재 페이지에 맞는 html호출
@@ -226,9 +225,16 @@ onButtonClick = async(function(triggerId, data)
 
         local screen = getState(triggerId, "screen")
         if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
+            local cmd = string.match(data, "(.*)_charInfo")
             local name = string.match(data, "charInfo_(.*)")
+            local f_code = "charCard.sys"
+            local funcBody = getLoreBookContent(triggerId, f_code)
+            local func = createFunctionFromString(funcBody)
+            func(triggerId, cmd, name)
+            debug(f_code .." 함수 실행")
+            --[[local name = string.match(data, "charInfo_(.*)")
             charToVar(triggerId, "target", name)
-            setState(triggerId, "screen", "charInfo")
+            setState(triggerId, "screen", "charInfo")]]
         else
             executeFunction(triggerId, screen, data)
         end

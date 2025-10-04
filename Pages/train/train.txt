@@ -2,77 +2,305 @@
 .x-risu-progress-bar.x-risu-ej{
 height: 0.6rem;
 }
+
+/* MODIFIED: Target Profile Section */
+.target-profile {
+    display: flex;
+    flex-wrap: wrap; /* ADDED for responsiveness */
+    gap: 1rem;
+    align-items: flex-start;
+    background-color: #303030;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+/* NEW: Wrapper for portrait and bars */
+.target-visuals {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.character-portrait {
+    width: 128px;
+    height: 128px;
+    background-color: #111;
+    border: 1px solid #444;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.target-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Space between header and details */
+    min-width: 280px; /* Helps determine wrapping point */
+}
+
+.target-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.target-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+/* NEW: Vertical Bars */
+.vertical-bars {
+    display: flex;
+    gap: 0.75rem;
+    height: 128px; /* Match portrait height */
+    flex-shrink: 0;
+}
+.v-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    width: 24px;
+}
+.v-bar-track {
+    width: 70%;
+    height: 100%;
+    background-color: #111;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Align fill to bottom */
+}
+.v-bar-fill {
+    width: 100%;
+    border-radius: 2px;
+    transition: height 0.3s ease-in-out;
+}
+.v-bar-label {
+    font-size: 0.8em;
+    font-weight: bold;
+}
+.v-bar-fill.x-risu-hp { background-image: linear-gradient(to top, #e46557, #eb1d1d); }
+.v-bar-fill.x-risu-st { background-image: linear-gradient(to top, #ecd162, #f1c40f); }
+.v-bar-fill.x-risu-ej { background-image: linear-gradient(to top, #e06884, #ce025b); }
+
+
+/* NEW: Target Details Grid */
+.target-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
+}
+.detail-item {
+    background-color: #2a2a2a;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.detail-label {
+    font-weight: bold;
+    color: #ccc;
+}
+.detail-value {
+    color: #fff;
+    font-family: monospace;
+}
+
+.stats-section h2 {
+    font-size: 1.2em;
+}
+
+/* MODIFIED: Stats Section Header for Toggle */
+.stats-header {
+    display: flex;
+    /*justify-content: space-between;*/
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+.stats-header h2 {
+    margin: 0;
+}
+.toggle-btn {
+    cursor: pointer;
+    font-size: 0.9em;
+
+}
+
+/* NEW: Logic for showing/hiding stats */
+#stats-expanded:checked ~ .stats-header .expand-btn,
+#stats-collapsed:checked ~ .stats-header .collapse-btn {
+    display: none;
+}
+#stats-collapsed:checked ~ .stats-grid {
+    display: none;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+    background-color: #303030;
+    padding: 1rem;
+    border-radius: 4px;
+}
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2a2a2a;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+.stat-label {
+    font-weight: bold;
+}
+
+.ejaculation-section h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.1em;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.5rem;
+}
 </style>
 
 <div class="container">
 <div class="line double"></div>
 
 <header class="header">
-<h1>▋메인 메뉴</h1>
+<h1>▋조교 메뉴</h1>
 <div class="game-info">
 <span>({{getvar::day}}일째) 《만월》 {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}</span>
 </div>
 </header>
 <main>
 <section class="status-panel">
-<div class="panel-header">
-<h2>* 대상 상태</h2>
+<div class="target-profile">
+<div class="target-visuals">
+<div class="character-portrait">
+<!-- Placeholder for target image variable -->
+<img src="{{raw::{{dict_element::{{getvar::target}}::이름}}.png}}" style="margin:0px;border-radius:1em">
 </div>
-<div class="bar-container">
-<span class="bar-label">체력:</span>
-<div class="progress-bar">
-<div class="progress-bar-fill hp" style="width: 80%;"></div>
+<div class="vertical-bars">
+<!-- Vertical HP Bar -->
+<div class="v-bar-container">
+<div class="v-bar-track">
+<div class="v-bar-fill x-risu-hp" style="height: {{calc::{{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
 </div>
-<span class="bar-value">200/250</span>
+<span class="v-bar-label">HP</span>
 </div>
-<div class="bar-container">
-<span class="bar-label">기력:</span>
-<div class="progress-bar">
-<div class="progress-bar-fill st" style="width: 50%;"></div>
+<!-- Vertical ST Bar -->
+<div class="v-bar-container">
+<div class="v-bar-track">
+<div class="v-bar-fill x-risu-st" style="height: {{calc::{{tonumber::{{dict_element::{{getvar::target}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대기력}}}} * 100}}%;"></div>
 </div>
-<span class="bar-value">50/100</span>
+<span class="v-bar-label">기력</span>
 </div>
+<!-- Vertical Ejaculation Bar -->
+<div class="v-bar-container">
+<div class="v-bar-track">
+<!-- TODO: Replace with dynamic variables -->
+<div class="v-bar-fill x-risu-ej" style="height: 5%;"></div>
+</div>
+<span class="v-bar-label">사정</span>
+</div>
+</div>
+</div>
+<div class="target-info">
+<div class="target-header">
+<h2>{{dict_element::{{getvar::target}}::이름}}</h2>
+<div class="char-tags">
+{{#each {{dict_element::{{getvar::target}}::태그}} T}}<span class="tag tag-lewd">〈{{slot::T}}〉</span>{{/each}}
+</div>
+</div>
+<div class="target-details-grid">
+<div class="detail-item">
+<span class="detail-label">질내정액</span>
+<span class="detail-value">{{dict_element::{{getvar::target}}::자궁정액}}ml</span>
+</div>
+<div class="detail-item">
+<span class="detail-label">애널정액</span>
+<span class="detail-value">{{dict_element::{{getvar::target}}::애널정액}}ml</span>
+</div>
+<div class="detail-item">
+<span class="detail-label">C절정</span>
+<span class="detail-value">{{dict_element::{{getvar::target}}::C쾌락경험}}회</span>
+</div>
+<div class="detail-item">
+<span class="detail-label">V절정</span>
+<span class="detail-value">{{dict_element::{{getvar::target}}::V쾌락경험}}회</span>
+</div>
+<div class="detail-item">
+<span class="detail-label">A절정</span>
+<span class="detail-value">{{dict_element::{{getvar::target}}::A쾌락경험}}회</span>
+</div>
+<div class="detail-item">
+<span class="detail-label">B절정</span>
+<span class="detail-value">{{dict_element::{{getvar::target}}::B쾌락경험}}회</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
 <div class="line single"></div>
-<div class="vitals-grid">
-<div><strong>복장:</strong> 【알몸】</div>
-<div><strong>체내 정액량:</strong> 120ml</div>
-<div><strong>Ｃ절정:</strong> 2</div>
-<div><strong>Ｖ절정:</strong> 1</div>
-<div><strong>Ａ절정:</strong> 0</div>
-<div><strong>Ｂ절정:</strong> 0</div>
+
+<section class="stats-section">
+<input type="radio" name="stats-toggle" id="stats-expanded" checked hidden>
+<input type="radio" name="stats-toggle" id="stats-collapsed" hidden>
+<div class="stats-header">
+<h2>* Stats</h2>
+<div class="toggle-buttons">
+<label for="stats-collapsed" class="toggle-btn collapse-btn x-risu-btn">접기</label>
+<label for="stats-expanded" class="toggle-btn expand-btn x-risu-btn">펼치기</label>
 </div>
+</div>
+<div class="stats-grid">
+<div class="stat-item"><span class="stat-label">C쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::C쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">V쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">A쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">B쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::B쾌락}}"></div></div>
+<!--요도 성감이 있는 경우에만 U쾌락이 뜨도록 해야 함-->
+<div class="stat-item"><span class="stat-label">U쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::U쾌락}}"></div></div>
+<!--인후 성감이 있는 경우에만 T쾌락이 뜨도록 해야 함-->
+<div class="stat-item"><span class="stat-label">T쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::T쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">S쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::S쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">V윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V윤활}}"></div></div>
+<div class="stat-item"><span class="stat-label">A윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A윤활}}"></div></div>
+<div class="stat-item"><span class="stat-label">욕정</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::욕정}}"></div></div>
+<div class="stat-item"><span class="stat-label">온순</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::온순}}"></div></div>
+<div class="stat-item"><span class="stat-label">굴복</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::target}}::굴복}}"></div></div>
+<div class="stat-item"><span class="stat-label">습득</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::습득}}"></div></div>
+<div class="stat-item"><span class="stat-label">수치</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::target}}::수치}}"></div></div>
+<div class="stat-item"><span class="stat-label">고통</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::target}}::고통}}"></div></div>
+<div class="stat-item"><span class="stat-label">공포</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::target}}::공포}}"></div></div>
+<div class="stat-item"><span class="stat-label">불쾌</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::target}}::불쾌}}"></div></div>
+<div class="stat-item"><span class="stat-label">부정</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::target}}::부정}}"></div></div>
+</div>
+</section>
+
 <div class="line single"></div>
-<div class="palam-section">
-<h3>* 파라미터</h3>
-<div class="palam-grid">
-<span>[욕정]: 1250</span>
-<span>[윤활]: 1500</span>
-<span>[고통]: 300</span>
-<span>[굴복]: 450</span>
-<span>[자존심]: 800</span>
-<span>[반발]: 200</span>
-<span>[욕망]: 600</span>
-<span>[기교]: 700</span>
-</div>
-</div>
-<div class="line single"></div>
-<div class="ejaculation-section">
-<h3>* 사정 게이지</h3>
-<div class="bar-container">
+
+<section class="ejaculation-section">
+<h3>* 사정 게이지 ({{user}})</h3>
+<div class="x-risu-bar-container">
 <span class="bar-label">{{user}}:</span>
-<div class="progress-bar ej">
-<div class="progress-bar-fill ej" style="width: 30%;"></div>
+<div class="progress-bar x-risu-ej">
+<!-- TODO: Replace with dynamic variables -->
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: 30%;"></div>
 </div>
 <span class="bar-value">3000/10000</span>
-</div>
-<div class="bar-container">
-<span class="bar-label">대상:</span>
-<div class="progress-bar ej">
-<div class="progress-bar-fill ej" style="width: 5%;"></div>
-</div>
-<span class="bar-value">1000/10000</span>
-</div>
-</div>
 </div>
 </section>
 

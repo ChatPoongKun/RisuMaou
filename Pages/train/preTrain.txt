@@ -1,0 +1,35 @@
+<style>
+.x-risu-progress-bar{
+height: 0.3rem !important;
+}
+
+
+</style>
+
+<div class="container">
+<header class="char-header">
+<h1>▋ 캐릭터 정보</h1>
+</header>
+
+<!-- 정렬 기능은 추후 구현
+<div class="controls-bar">
+<div class="sort-buttons">
+<button class="sort-btn">번호순</button>
+<button class="sort-btn">소지금순</button>
+<button class="sort-btn">부채순</button>
+</div>
+<div class="pagination">
+<span>PAGE: 1 / 4</span>
+<a href="#">[이전]</a>
+<a href="#">[다음]</a>
+</div>
+</div>
+-->
+<main class="character-list">
+
+{{getvar::charList}}
+
+</main>
+</div>
+
+{{getvar::cmds}}

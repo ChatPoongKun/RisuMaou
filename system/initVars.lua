@@ -21,14 +21,16 @@ function (triggerId)
 
         --캐릭터에는 정의가 필요한 부분만 넣고 들어가지 않은 trait, juel등의 필드를 db에서 읽어와서 추가
         local db = {"marks.db", "abl.db", "juel.db", "exp.db", "stat.db"}
+        local added = ""
         for _, tbl in pairs(db) do
             for key,_ in pairs(json.decode(getLoreBookContent(triggerId, tbl))) do
                 if not content[key] then
-                    debug(v.."의 캐릭터 테이블에 ".. key.."필드 추가")
                     content[key] = "0"
+                    added = added .. ", ".. key
                 end
             end
         end
+        debug(v.."의 캐릭터 테이블에 ".. added.."필드 추가")
 
         --캐릭터 정보를 로컬로어북에 저장
         local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
