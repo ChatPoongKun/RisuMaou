@@ -8,8 +8,8 @@
 }
 
 .character-portrait {
-    width: 128px;
-    height: 128px;
+    width: 10rem;
+    height: 10rem;
     background-color: #111;
     border: 1px solid #444;
     flex-shrink: 0;
@@ -114,6 +114,13 @@
     margin: 0;
 }
 
+@media screen and (max-width: 600px) {
+    .character-portrait {
+        width: 5rem;
+        height: 5rem;
+    }
+}
+
 </style>
 
 <div class="container">
@@ -122,8 +129,8 @@
 <header class="header">
 <h1>▋메인 메뉴</h1>
 <div class="game-info">
-<span>({{getvar::day}}일째) 《만월》 {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}</span>
-<span>(소지 포인트: {{getvar::gold}} pts.)</span>
+<span>({{getvar::day}}일째) {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}《만월》 {{/when}}{{#when::ampm::vis::0}}낮{{:else}}밤{{/when}}</span>
+<span>(소지금: {{getvar::gold}} Gold)</span>
 </div>
 </header>
 

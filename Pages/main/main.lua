@@ -96,8 +96,8 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/106/영격] function(triggerId)
-    local screen = "영격"
+[main/106/격퇴] function(triggerId)
+    local screen = "격퇴"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 

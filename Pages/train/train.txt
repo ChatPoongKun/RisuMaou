@@ -3,6 +3,8 @@
 height: 0.6rem;
 }
 
+
+
 /* MODIFIED: Target Profile Section */
 .target-profile {
     display: flex;
@@ -95,7 +97,7 @@ height: 0.6rem;
 /* NEW: Target Details Grid */
 .target-details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
     gap: 0.5rem;
 }
 .detail-item {
@@ -148,7 +150,7 @@ height: 0.6rem;
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 0.5rem;
     background-color: #303030;
     padding: 1rem;
@@ -171,6 +173,12 @@ height: 0.6rem;
     font-size: 1.1em;
     border-bottom: 1px solid #444;
     padding-bottom: 0.5rem;
+}
+@media screen and (max-width: 600px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+        font-size: 0.8rem;
+        }
 }
 </style>
 

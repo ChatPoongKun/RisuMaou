@@ -67,7 +67,7 @@ h2, h3 {
 
 .command-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.5rem;
     justify-content: left;
 }
@@ -119,7 +119,7 @@ h2, h3 {
 }
 
 .bar-label {
-    flex-basis: 4.5rem;
+    /*flex-basis: 4.5rem;*/
     text-align: right;
     flex-shrink: 0;
 }
@@ -324,7 +324,7 @@ h2, h3 {
 .char-info {
     gap:1rem;
     align-items: center;
-    max-width: 50%;
+    flex-basis: 15rem;
 }
 
 .char-info p {
@@ -336,8 +336,8 @@ h2, h3 {
     flex-direction: column;
     gap: 0.3rem;
     flex-shrink: 0;
-    max-width:50%;
-    width:-webkit-fill-available;
+    flex-basis: 15rem;
+    /*width:-webkit-fill-available;*/
 }
 
 .char-name-line {
@@ -456,8 +456,12 @@ h2, h3 {
         gap: 0.75rem;
     }
 
-    .char-status-bars {
-        width: 100%;
+    .x-risu-command-btn{
+    font-size: 0.8em;
+    }
+
+    .command-container {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     }
 
     .star-rating{
