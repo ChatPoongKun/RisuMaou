@@ -54,8 +54,8 @@ end!!
 
 [train/--/{{#when::애무계::vis::1}}--애무계--{{/when}}]function end!!
 
-[train/11/{{#when::{{getVar::애무계}}::is::1}}아무것도안한다{{/when}}] function(triggerId)
-    local train = "아무것도안한다"
+[train/11/{{#when::{{getVar::애무계}}::is::1}}가만 지켜본다{{/when}}] function(triggerId)
+    local train = "가만 지켜본다"
 end!!
 
 [train/12/{{#when::{{getVar::애무계}}::is::1}}회화한다{{/when}}] function(triggerId)
@@ -65,7 +65,18 @@ end!!
 [train/13/{{#when::{{getVar::애무계}}::is::1}}애무{{/when}}] function(triggerId)
     setChatVar(triggerId, "cmds", "<span style='text-align:center;'>[[응답 처리중....]]</span>")
     reloadDisplay(triggerId)
-    local log = getChatVar(triggerId, "trainLog")
+    --[[
+    프롬빌딩: 시스템 프롬 + DB + 캐릭터시트(수치가 0이거나 빈 무의미한 필드를 제거하고 리퀘 보낼 것) + 조교로그
+    기존 로그에 조교 커맨드를 덧붙이고 LLM응답을 받아 로그에 덧붙임. 이때, 스탯 변화도 json으로 받아와 스탯창에 적용
+    stat: 프롬에 설명 포함. llm기반 데이터 변경
+    mark: 프롬에 설명 포함. 스탯변화 결과에 따라 스크립트로 처리
+    abl: 프롬에 설명 포함. 유저의 선택에 따라 juel을 소모해 레벨업
+    trait: 보유한 trait만 프롬에 포함
+    juel: 조교 종료 후 stat 누적치에 따라 획득
+    exp: 조교 항목별로 스크립트 처리
+    !!LLM 비의존적 처리도 응답이 성공한 경우에 한해서만 처리하도록 조치할것.
+    ]]
+    local log = getChatVar(triggerId, "trainLog") 
     log = log .. "<br>{{user}}는 대상을 애무한다."
     local response = LLMresponse(triggerId,"{{mainprompt}}" .. "{{user}}는 상대를 애무합니다.")
     log = log .. "<br>" .. response
@@ -249,8 +260,8 @@ end!!
     local train = "밧줄"
 end!!
 
-[train/95/{{#when::{{getVar::하드계}}::is::1}}관장기＋플러그{{/when}}] function(triggerId)
-    local train = "관장기＋플러그"
+[train/95/{{#when::{{getVar::하드계}}::is::1}}관장+플러그{{/when}}] function(triggerId)
+    local train = "관장+플러그"
 end!!
 
 [train/96/{{#when::{{getVar::하드계}}::is::1}}방뇨{{/when}}] function(triggerId)

@@ -8,7 +8,7 @@ height: 0.3rem !important;
 
 <div class="container">
 <header class="char-header">
-<h1>▋ 캐릭터 정보</h1>
+<h1>▋ 조교 대상</h1>
 </header>
 
 <!-- 정렬 기능은 추후 구현
