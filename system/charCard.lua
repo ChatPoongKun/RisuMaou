@@ -1,4 +1,4 @@
-function(triggerId, cmd, name)
+function(triggerId, name)
     local screen = getState(triggerId, "screen")
     if screen == "charList" then
         charToVar(triggerId, "target", name)

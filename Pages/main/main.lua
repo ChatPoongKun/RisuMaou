@@ -24,8 +24,12 @@
             local stMax = charInfo["최대기력"]
             local stRatio = 100*tonumber(st)/tonumber(stMax)
             local condition = charInfo["condition"]
-
-            charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."|"..condition.."::LIST"
+            local title = charInfo["칭호"]
+            if title == "" then
+                title = " "
+            end
+            
+            charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."|"..condition.."|"..title.."::LIST"
         end
     end
     if charList == "" then
@@ -68,8 +72,13 @@ end!!
         local stMax = charInfo["최대기력"]
         local stRatio = 100*tonumber(st)/tonumber(stMax)
         local condition = charInfo["condition"]
+        local title = charInfo["칭호"]
+        print(charInfo["칭호"])
+        if title == "" then
+            title = " "
+        end
 
-        charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."|"..condition.."::LIST"
+        charList = charList .. "CHARACTER::"..index.."|"..name.."|"..lv.."|"..atk.."|"..def.."|"..crm.."|"..hp.."|"..hpMax.."|"..hpRatio.."|"..st.."|"..stMax.."|"..stRatio.."|"..condition.."|"..title.."::LIST"
     end
     debug("charList: "..charList)
     setChatVar(triggerId, "charList", charList)
@@ -118,10 +127,7 @@ end!!
 
 [main/199/휴식] function(triggerId)
     --하루가 지나갈떄의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 rest.sys 함수로 별도처리
-    local funcBody = getLoreBookContent(triggerId, "rest.sys")
-    local func = createFunctionFromString(funcBody)
-    func(triggerId)
-    debug(f_code .. " 함수 실행")
+    sysFunction(triggerId, "rest.sys")
 end!!
 
 [main/--/ ] function end!!

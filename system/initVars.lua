@@ -1,5 +1,6 @@
 function (triggerId)
     --초기 변수 설정
+    print("초기 변수 설정")
     local initVars = {
         gold = "10,000",
         day = 1,
