@@ -227,9 +227,11 @@ height: 0.6rem;
 <div class="target-info">
 <div class="target-header">
 <h2>{{dict_element::{{getvar::target}}::이름}}</h2>
+{{#when {{? {{dict_element::{{getvar::target}}::칭호}}!=}}}}
 <div class="char-tags">
-{{#each {{dict_element::{{getvar::target}}::태그}} T}}<span class="tag tag-lewd">〈{{slot::T}}〉</span>{{/each}}
+<span class="tag tag-{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::음란}}lewd{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::연모}}love{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::암캐}}puppy{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::붕괴}}destroyed{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::광기}}mad{{/when}}"> 〈{{dict_element::{{getvar::target}}::칭호}}〉</span>
 </div>
+{{/when}}
 </div>
 <div class="target-details-grid">
 <div class="detail-item">

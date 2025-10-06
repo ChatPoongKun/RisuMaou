@@ -1,7 +1,7 @@
 --기본 변수
 TIME = -1
 SPAMING = 0.2
-DEBUG = 0
+DEBUG = 1
 local CHARLIST = {}
 
 --디버깅용
@@ -79,12 +79,8 @@ function initialize(triggerId)
     debug("초기 세팅 개시...")
     local initFuncs ={"initVars.sys", "debugCmds.sys"} --향후 초기 설정 함수를 더 추가할 수 있도록 테이블 선언
     for i, f_code in ipairs(initFuncs) do
-        local funcBody = getLoreBookContent(triggerId, f_code)
-        local func = createFunctionFromString(funcBody)
-        func(triggerId)
-        debug(f_code .. " 함수 실행")
+        sysFunction(triggerId, f_code)
     end
-
     setState(triggerId, "screen", "main")
     processAndStoreLore(triggerId, "main.lua")
 
@@ -150,6 +146,18 @@ function executeFunction(triggerId, screen, code, ...)
         local func, err = createFunctionFromString(funcBody)
         debug(f_code .. " 함수 실행")
         func(triggerId, ...)
+end
+
+function sysFunction(triggerId, f_code, ...)
+    local funcBody = getLoreBookContent(triggerId, f_code)
+    if not funcBody then
+        alertNormal(triggerId, "시스템 커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
+        return
+    end
+    print("시스템 커맨드 실행: " .. f_code)
+    local func, err = createFunctionFromString(funcBody)
+    debug(f_code .. " 함수 실행")
+    func(triggerId, ...)
 end
 
 function promptBuild(triggerId, ...)
@@ -226,8 +234,8 @@ end)
 
 onButtonClick = async(function(triggerId, data)
     if data == "gameStart" then
-        initialize(triggerId)    
-        print(INIT .. "게임 시작")
+        initialize(triggerId)
+        print("게임 시작")
     else
         if time()-TIME < SPAMING then
             debug(time, TIME)
@@ -238,16 +246,10 @@ onButtonClick = async(function(triggerId, data)
 
         local screen = getState(triggerId, "screen")
         if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
-            local cmd = string.match(data, "(.*)_charInfo")
+            --local cmd = string.match(data, "(.*)_charInfo") --숫자입력을 통한 캐릭터 선택의 구현은 추후 고민
             local name = string.match(data, "charInfo_(.*)")
             local f_code = "charCard.sys"
-            local funcBody = getLoreBookContent(triggerId, f_code)
-            local func = createFunctionFromString(funcBody)
-            func(triggerId, cmd, name)
-            debug(f_code .." 함수 실행")
-            --[[local name = string.match(data, "charInfo_(.*)")
-            charToVar(triggerId, "target", name)
-            setState(triggerId, "screen", "charInfo")]]
+            sysFunction(triggerId, f_code, name)
         else
             executeFunction(triggerId, screen, data)
         end

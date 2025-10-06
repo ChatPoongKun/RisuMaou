@@ -345,7 +345,7 @@ h2, h3 {
     color: #e0e0e0;
 }
 
-.char-status { /*조교가능, 침공중, 요격중, 노출대 등 */
+.char-condition { /*조교가능, 침공중, 요격중, 노출대 등 */
     color: #66cc99;
 }
 
@@ -365,15 +365,39 @@ h2, h3 {
 
 .tag {
     font-size: 0.8em;
-    padding: 0;
+    padding: 0.15rem 0.2rem;
     border-radius: 0.5rem;
     border: 1px solid;
 }
 
-.tag-lewd {
-    background-color: #ff669930;
-    border-color: #ff6699;
-    color: #ffb3cc;
+.tag-lewd { /*음란*/
+    background-color: #ffb6d5;
+    border-color: #ff3c7e;
+    color: #a8003c;
+}
+
+.tag-love { /*연모*/
+    background-color: #ffd6e6;
+    border-color: #ff5fa3;
+    color: #b8005c;
+}
+
+.tag-puppy { /*암캐*/
+    background-color: #ffe2c6;
+    border-color: #ff8c2f;
+    color: #a85c00;
+}
+
+.tag-destroyed { /*붕괴*/
+    background-color: #ffd6d6;
+    border-color: #d12a2a;
+    color: #900000;
+}
+
+.tag-mad { /*광기*/
+    background-color: #d6d6ff;
+    border-color: #7a5fff;
+    color: #3a0082;
 }
 
 .tag-returning {

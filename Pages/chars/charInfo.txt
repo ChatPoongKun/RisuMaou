@@ -58,6 +58,16 @@
     }
 
     /* Tabs for Detailed Info */
+    .tabs-container {
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+    }
+
+    .tabs-container::-webkit-scrollbar{
+        display: none;
+    }
+
     .tabs {
         display: flex;
         gap: 0.5rem;
@@ -97,7 +107,7 @@
         border-bottom-color: #383838;
         color: #fff;
     }
-
+/*
     #talents-tab:checked ~ .tab-content > #talents-content,
     #abl-tab:checked ~ .tab-content > #abl-content,
     #exp-tab:checked ~ .tab-content > #exp-content,
@@ -105,6 +115,15 @@
     #narrative-tab:checked ~ .tab-content > #narrative-content {
         display: block;
     }
+*/
+    #talents-tab:checked ~ .tab-content > #talents-content,
+    #abl-tab:checked ~ .tab-content > #abl-content,
+    #exp-tab:checked ~ .tab-content > #exp-content,
+    #appearance-tab:checked ~ .tab-content > #appearance-content,
+    #narrative-tab:checked ~ .tab-content > #narrative-content {
+        display: block;
+    }
+
 
     /* Info Grids within Tabs */
     .info-grid {
@@ -268,7 +287,11 @@
         .tab-content{
             padding: 1rem;
         }
+        
+        .equipment-item {
+        padding: 0.3rem;
     }
+}
 </style>
 
 <div class="container">
@@ -317,12 +340,18 @@
 <div class="line single"></div>
 
 <section class="detailed-info">
-<input type="radio" name="detail-tabs" id="talents-tab" checked hidden><label for="talents-tab" class="x-risu-btn">▋특성</label>
-<input type="radio" name="detail-tabs" id="abl-tab" hidden><label for="abl-tab" class="x-risu-btn">▋능력</label>
-<input type="radio" name="detail-tabs" id="exp-tab" hidden><label for="exp-tab" class="x-risu-btn">▋경험</label>
-<input type="radio" name="detail-tabs" id="appearance-tab" hidden><label for="appearance-tab" class="x-risu-btn">▋외모</label>
-<input type="radio" name="detail-tabs" id="narrative-tab" hidden><label for="narrative-tab" class="x-risu-btn">▋서사</label>
-
+<input type="radio" name="detail-tabs" id="abl-tab" hidden>
+<input type="radio" name="detail-tabs" id="exp-tab" hidden>
+<input type="radio" name="detail-tabs" id="talents-tab" checked hidden>
+<input type="radio" name="detail-tabs" id="appearance-tab" hidden>
+<input type="radio" name="detail-tabs" id="narrative-tab" hidden>
+<div class="tabs-container">
+<label for="talents-tab" class="x-risu-btn">▋특성</label>
+<label for="abl-tab" class="x-risu-btn">▋능력</label>
+<label for="exp-tab" class="x-risu-btn">▋경험</label>
+<label for="appearance-tab" class="x-risu-btn">▋외모</label>
+<label for="narrative-tab" class="x-risu-btn">▋서사</label>
+</div>
 <div class="tab-content">
 <div id="talents-content" class="tab-pane">
 <div class="info-grid">
