@@ -65,6 +65,7 @@ end!!
 [train/13/{{#when::{{getVar::애무계}}::is::1}}애무{{/when}}] function(triggerId)
     setChatVar(triggerId, "cmds", "<span style='text-align:center;'>[[응답 처리중....]]</span>")
     reloadDisplay(triggerId)
+    local char = getChatVar(triggerId, "target")
     --[[
     프롬빌딩: 시스템 프롬 + DB + 캐릭터시트(수치가 0이거나 빈 무의미한 필드를 제거하고 리퀘 보낼 것) + 조교로그
     기존 로그에 조교 커맨드를 덧붙이고 LLM응답을 받아 로그에 덧붙임. 이때, 스탯 변화도 json으로 받아와 스탯창에 적용
@@ -76,9 +77,25 @@ end!!
     exp: 조교 항목별로 스크립트 처리
     !!LLM 비의존적 처리도 응답이 성공한 경우에 한해서만 처리하도록 조치할것.
     ]]
-    local log = getChatVar(triggerId, "trainLog") 
-    log = log .. "<br>{{user}}는 대상을 애무한다."
-    local response = LLMresponse(triggerId,"{{mainprompt}}" .. "{{user}}는 상대를 애무합니다.")
+    local log = getChatVar(triggerId, "trainLog")
+    local command = log .. "<br>{{user}}는 "..char['이름'] .."을 애무한다."
+
+    local request = {
+        role="user",
+        content = command
+        }
+    local currentStat = {}
+    local statsDB = getLoreBookContent(triggerId, "stat.db")
+    for k, v in pairs(
+    log = log .. command.content
+    local request = promptBuild(triggerId, "train.pt", command)
+    local response = LLMresponse(triggerId, request)
+    if response.success then
+        -- 스탯 리퀘를 받아 변경사항으로 처리
+        local stat change
+        
+        
+    end
     log = log .. "<br>" .. response
     print("[log]:<br>"..log)
     setChatVar(triggerId, "trainLog", log)

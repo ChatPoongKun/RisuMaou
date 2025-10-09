@@ -1,0 +1,16 @@
+
+
+cbs 참조
+어느 챗붕의 개념글: https://arca.live/b/characterai/137514168
+
+lua스크립트
+어느 챗붕의 개념글: https://arca.live/b/characterai/137518956
+
+몬스터 아이디어 및 이미지
+비욘드dnd: https://www.dndbeyond.com/monsters
+
+프롬프트
+소악마: https://arca.live/b/characterai/148937312
+보닌은 8.1버전을 썼지만 9.5링크로 대체
+누렁이: https://arca.live/b/characterai/148787170
+보닌은 5.1버전을 썼지만 5.25링크로 대체
