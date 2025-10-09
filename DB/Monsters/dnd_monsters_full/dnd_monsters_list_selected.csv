@@ -1,0 +1,201 @@
+﻿Name_KR,Name_EN,CR,Type,Size
+마네스,Manes,0.125,Fiend,Small
+트위그 블라이트,Twig Blight,0.125,Plant,Small
+슈도 드래곤,Pseudodragon,0.25,Dragon,Tiny
+날개 달린 코볼트,Winged Kobold,0.25,Dragon,Small
+드레치,Dretch,0.25,Fiend,Small
+심연의 닭,Abyssal Chicken,0.25,Fiend,Tiny
+고블린,Goblin,0.25,Humanoid,Small
+드로우,Drow,0.25,Humanoid,Medium
+니들 블라이트,Needle Blight,0.25,Plant,Medium
+바이올렛 펑거스,Violet Fungus,0.25,Plant,Medium
+스켈레톤,Skeleton,0.25,Undead,Medium
+놀 시체,Gnoll Witherling,0.25,Undead,Medium
+좀비,Zombie,0.25,Undead,Medium
+노란 사향 좀비,Yellow Musk Zombie,0.25,Undead,Medium
+게이저,Gazer,0.5,Aberration,Tiny
+마그민,Magmin,0.5,Elemental,Small
+누페리보,Nupperibo,0.5,Fiend,Medium
+캐클러,Cackler,0.5,Fiend,Small
+오크,Orc,0.5,Humanoid,Medium
+놀,Gnoll,0.5,Humanoid,Medium
+홉고블린,Hobgoblin,0.5,Humanoid,Medium
+녹 괴물,Rust Monster,0.5,Monstrosity,Medium
+코카트리스,Cockatrice,0.5,Monstrosity,Small
+다크맨틀,Darkmantle,0.5,Monstrosity,Small
+워그,Worg,0.5,Monstrosity,Large
+회색 점액괴물,Gray Ooze,0.5,Ooze,Medium
+바인 블라이트,Vine Blight,0.5,Plant,Medium
+마이코니드 성체,Myconid Adult,0.5,Plant,Medium
+섀도우,Shadow,0.5,Undead,Medium
+해골 군마,Warhorse Skeleton,0.5,Undead,Large
+해골 연금술사,Skeletal Alchemist,0.5,Undead,Medium
+초커,Choker,1,Aberration,Small
+자이언트 스파이더,Giant Spider,1,Beast,Large
+다이어 울프,Dire Wolf,1,Beast,Large
+허수아비,Scarecrow,1,Construct,Medium
+파이어 스네이크,Fire Snake,1,Elemental,Medium
+고블린 보스,Goblin Boss,1,Fey,Small
+쿼짓,Quasit,1,Fiend,Tiny
+임프,Imp,1,Fiend,Tiny
+마우 데몬,Maw Demon,1,Fiend,Medium
+바르구이,Vargouille,1,Fiend,Tiny
+하프오거,Half-Ogre,1,Giant,Large
+듀에르가,Duergar,1,Humanoid,Medium
+유안티 퓨어블러드,Yuan-ti Pureblood,1,Humanoid,Medium
+버그베어,Bugbear,1,Humanoid,Medium
+데스 도그,Death Dog,1,Monstrosity,Medium
+하피,Harpy,1,Monstrosity,Medium
+씨 스폰,Sea Spawn,1,Monstrosity,Medium
+스펙터,Specter,1,Undead,Medium
+구울,Ghoul,1,Undead,Medium
+기버링 마우더,Gibbering Mouther,2,Aberration,Medium
+노씩,Nothic,2,Aberration,Medium
+인텔렉트 디바우러,Intellect Devourer,2,Aberration,Tiny
+어린 그린 드래곤,Green Dragon Wyrmling,2,Dragon,Medium
+어린 화이트 드래곤,White Dragon Wyrmling,2,Dragon,Medium
+어린 블랙 드래곤,Black Dragon Wyrmling,2,Dragon,Medium
+가고일,Gargoyle,2,Elemental,Medium
+스파인드 데블 (가시 악마),Spined Devil,2,Fiend,Small
+오거,Ogre,2,Giant,Large
+안케그,Ankheg,2,Monstrosity,Large
+머로,Merrow,2,Monstrosity,Large
+미믹,Mimic,2,Monstrosity,Medium
+에터캡,Ettercap,2,Monstrosity,Medium
+그릭,Grick,2,Monstrosity,Medium
+그리폰,Griffon,2,Monstrosity,Large
+오커 젤리,Ochre Jelly,2,Ooze,Large
+젤라티너스 큐브,Gelatinous Cube,2,Ooze,Large
+오거 좀비,Ogre Zombie,2,Undead,Large
+가스트,Ghast,2,Undead,Medium
+윌오위습,Will-o'-Wisp,2,Undead,Tiny
+스펙테이터,Spectator,3,Aberration,Medium
+그렐,Grell,3,Aberration,Medium
+바브드 데블 (수염 악마),Bearded Devil,3,Fiend,Medium
+나이트메어,Nightmare,3,Fiend,Large
+헬 하운드,Hell Hound,3,Fiend,Medium
+웨어울프,Werewolf,3,Humanoid,Medium
+바실리스크,Basilisk,3,Monstrosity,Medium
+만티코어,Manticore,3,Monstrosity,Large
+미노타우로스,Minotaur,3,Monstrosity,Large
+페이즈 스파이더,Phase Spider,3,Monstrosity,Large
+도플갱어,Doppelganger,3,Monstrosity,Medium
+아울베어,Owlbear,3,Monstrosity,Large
+유안티 말리슨,Yuan-ti Malison (Type 1),3,Monstrosity,Medium
+디스플레이서 비스트,Displacer Beast,3,Monstrosity,Large
+후크 호러,Hook Horror,3,Monstrosity,Large
+미라,Mummy,3,Undead,Medium
+와이트,Wight,3,Undead,Medium
+츄울,Chuul,4,Aberration,Large
+어린 레드 드래곤,Red Dragon Wyrmling,4,Dragon,Medium
+예스 하운드,Yeth Hound,4,Fey,Large
+서큐버스,Succubus,4,Fiend,Medium
+바바우,Babau,4,Fiend,Medium
+바게스트,Barghest,4,Fiend,Large
+디북,Dybbuk,4,Fiend,Medium
+메레곤,Merregon,4,Fiend,Medium
+에틴,Ettin,4,Giant,Large
+웨어보어,Wereboar,4,Humanoid,Medium
+라미아,Lamia,4,Monstrosity,Large
+기랄론,Girallon,4,Monstrosity,Large
+블랙 푸딩,Black Pudding,4,Ooze,Large
+고스트,Ghost,4,Undead,Medium
+플레임스컬,Flameskull,4,Undead,Tiny
+데스락,Deathlock,4,Undead,Medium
+본 나가,Bone Naga,4,Undead,Large
+오티그,Otyugh,5,Aberration,Large
+마인드위트니스,Mindwitness,5,Aberration,Large
+플레시 골렘,Flesh Golem,5,Construct,Medium
+샐러맨더,Salamander,5,Elemental,Large
+불의 정령,Fire Elemental,5,Elemental,Large
+나이트 해그,Night Hag,5,Fiend,Medium
+타나룩,Tanarukk,5,Fiend,Medium
+언덕 거인,Hill Giant,5,Giant,Huge
+트롤,Troll,5,Giant,Large
+뷸렛,Bulette,5,Monstrosity,Large
+고르곤,Gorgon,5,Monstrosity,Large
+밴더홉,Banderhobb,5,Monstrosity,Large
+카토블레파스,Catoblepas,5,Monstrosity,Large
+레이스,Wraith,5,Undead,Medium
+뱀파이어 스폰,Vampire Spawn,5,Undead,Medium
+알립,Allip,5,Undead,Medium
+카이어스의 피조물,Spawn of Kyuss,5,Undead,Medium
+고스,Gauth,6,Aberration,Medium
+어린 화이트 드래곤,Young White Dragon,6,Dragon,Large
+와이번,Wyvern,6,Dragon,Large
+투명 추적자,Invisible Stalker,6,Elemental,Medium
+아니스 해그,Annis Hag,6,Fey,Large
+브록,Vrock,6,Fiend,Large
+사이클롭스,Cyclops,6,Giant,Huge
+키메라,Chimera,6,Monstrosity,Large
+드라이더,Drider,6,Monstrosity,Large
+메두사,Medusa,6,Monstrosity,Medium
+보다크,Bodak,6,Undead,Medium
+어린 블랙 드래곤,Young Black Dragon,7,Dragon,Large
+돌 거인,Stone Giant,7,Giant,Huge
+오니,Oni,7,Giant,Large
+혼드 데블 (뿔 악마),Horned Devil,11,Fiend,Large
+베히르,Behir,11,Monstrosity,Huge
+레머라즈,Remorhaz,11,Monstrosity,Huge
+자이노스핑크스,Gynosphinx,11,Monstrosity,Large
+에리니에스,Erinyes,12,Fiend,Medium
+오이놀로스,Oinoloth,12,Fiend,Medium
+회색 포식자,Gray Render,12,Monstrosity,Large
+본클로,Boneclaw,12,Undead,Large
+네오텔리드,Neothelid,13,Aberration,Gargantuan
+비홀더,Beholder,13,Aberration,Large
+어른 화이트 드래곤,Adult White Dragon,13,Dragon,Huge
+락샤사,Rakshasa,13,Fiend,Medium
+날페슈니,Nalfeshnee,13,Fiend,Large
+울트롤로스,Ultroloth,13,Fiend,Medium
+폭풍 거인,Storm Giant,13,Giant,Huge
+다이어 트롤,Dire Troll,13,Giant,Huge
+뱀파이어,Vampire,13,Undead,Medium
+디바우러,Devourer,13,Undead,Large
+엘더 브레인,Elder Brain,14,Aberration,Large
+어른 블랙 드래곤,Adult Black Dragon,14,Dragon,Huge
+아이스 데블 (얼음 악마),Ice Devil,14,Fiend,Large
+화염 거인 드레드노트,Fire Giant Dreadnought,14,Giant,Huge
+데스 타이런트,Death Tyrant,14,Undead,Large
+어른 그린 드래곤,Adult Green Dragon,15,Dragon,Huge
+퍼플 웜,Purple Worm,15,Monstrosity,Gargantuan
+스컬 로드,Skull Lord,15,Undead,Medium
+미라 군주,Mummy Lord,15,Undead,Medium or Small
+아이언 골렘,Iron Golem,16,Construct,Large
+헬파이어 엔진,Hellfire Engine,16,Construct,Huge
+마릴리스,Marilith,16,Fiend,Large
+티티빌루스,Titivilus,16,Fiend,Medium
+스톰 자이언트 정수,Storm Giant Quintessent,16,Giant,Huge
+드래곤 터틀,Dragon Turtle,17,Dragon,Gargantuan
+어른 레드 드래곤,Adult Red Dragon,17,Dragon,Huge
+고리스토,Goristro,17,Fiend,Huge
+안드로스핑크스,Androsphinx,17,Monstrosity,Large
+데스 나이트,Death Knight,17,Undead,Medium or Small
+드라코리치,Dracolich,17,Undead,Huge
+데미리치,Demilich,18,Undead,Tiny
+발러,Balor,19,Fiend,Huge
+레드 어비섀이,Red Abishai,19,Fiend,Medium
+고대 화이트 드래곤,Ancient White Dragon,20,Dragon,Gargantuan
+핏 핀드,Pit Fiend,20,Fiend,Large
+나이트워커,Nightwalker,20,Undead,Huge
+고대 블랙 드래곤,Ancient Black Dragon,21,Dragon,Gargantuan
+몰리데우스,Molydeus,21,Fiend,Huge
+아스트랄 드레드노트,Astral Dreadnought,21,Monstrosity,Gargantuan
+리치,Lich,21,Undead,Medium
+고대 그린 드래곤,Ancient Green Dragon,22,Dragon,Gargantuan
+자라탄,Zaratan,22,Elemental,Gargantuan
+고대 블루 드래곤,Ancient Blue Dragon,23,Dragon,Gargantuan
+프라즈어블루,Fraz-Urb’luu,23,Fiend,Large
+주이블렉스,Juiblex,23,Fiend,Huge
+주그트모이,Zuggtmoy,23,Fiend,Large
+바포메트,Baphomet,23,Fiend,Huge
+크라켄,Kraken,23,Monstrosity,Gargantuan
+고대 레드 드래곤,Ancient Red Dragon,24,Dragon,Gargantuan
+그라즈트,Graz’zt,24,Fiend,Large
+이노그,Yeenoghu,24,Fiend,Huge
+마룻,Marut,25,Construct,Large
+오르커스,Orcus,26,Fiend,Huge
+데모고르곤,Demogorgon,26,Fiend,Huge
+자리엘,Zariel,26,Fiend,Large
+티아마트,Tiamat,30,Fiend,Gargantuan
+타라스크,Tarrasque,30,Monstrosity,Gargantuan

@@ -50,10 +50,10 @@ function hasVal(table, val)
     return false
 end
 
---로어북 주석처리 "///" 제거
+--로어북 컨텐츠 로딩
 function getLoreBookContent(triggerId, lore)
     local rawContent = getLoreBooks(triggerId, lore)[1].content
-    local modContent = string.gsub(rawContent, "%s*///[^\n]*\n?", "\n")
+    local modContent = string.gsub(rawContent, "%s*///[^\n]*\n?", "\n") --로어북 주석처리 "///" 제거
     return modContent
 end
 
@@ -161,14 +161,18 @@ function sysFunction(triggerId, f_code, ...)
 end
 
 function promptBuild(triggerId, ...)
-    local prompts = {...}
+    local prompts = {"system.pt", ...} --시스템 프롬은 기본으로 추가
     local concat = {}
 
     -- 나열된 프롬프트들을 로어북에서 불러와 조합
     for i ,v in ipairs(prompts) do
-        table.insert(concat, json.decode(getLoreBooks(triggerId, v)[1].content))
+        if getLoreBookContent(triggerId, v) == nil then
+            table.insert(concat, ...)
+        end
+        table.insert(concat, getLoreBooks(triggerId, v)[1].content)
     end
-
+    concat = json.decode(concat)
+    debug(concat)
     return concat
 end
 
