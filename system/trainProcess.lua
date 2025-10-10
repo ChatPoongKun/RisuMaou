@@ -1,0 +1,93 @@
+--조교 커맨드에 따른 LLM의 출력을 처리
+function(triggerId, command, roll)
+    debug("trainProcess 실행")
+
+    --버튼 비활성화 및 응답중 표시
+    local old_cmds = getChatVar(triggerId, "cmds")
+    setChatVar(triggerId, "cmds", "<span style='text-align:center;'>[[응답 처리중....]]</span>")
+    reloadDisplay(triggerId)
+
+    --LLM에 전달할 각종 수치에 대한 설명 호출
+    local ablDB = getLoreBooks(triggerId, "abl.db")[1].content:gsub("{",""):gsub("}","")
+    local statDB = getLoreBooks(triggerId, "stat.db")[1].content:gsub("{",""):gsub("}","")
+    --local expDB = getLoreBooks(triggerId, "exp.db")[1].content --토큰만 먹을텐데 경험 수치에 대한 db를 알려줄 필요가 있을까? 일시 보류
+    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db")) -- char와 관련있는 trait만 골라서 전달하기 위해 테이블로 받아옴
+
+    --유저와 조교대상의 정보 호출
+    local user = getLoreBookContent(triggerId, "user")
+    local char = getChatVar(triggerId, "target") --chatvar에서 string으로 정보 호출
+    local target = getState(triggerId, "target")
+    local currentStat = getState(triggerId, "stat") --현재 stat을 호출
+    --char가 가진 trait만 추출
+    for k, _ in pairs(traitDB) do
+        if not hasVal(target, k) then
+            traitDB[k] = nil --char한테 없는 trait 설명은 삭제
+        end
+    end
+    traitDB = json.encode(traitDB)
+
+    local log = getChatVar(triggerId, "trainLog") .. command
+
+    --프롭프트 빌딩
+    local prompt = {
+    promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
+    promptBuild("system", getLoreBookContent(triggerId, "train.pt")),
+    promptBuild("system", ablDB),
+    promptBuild("system", statDB),
+    promptBuild("system", traitDB),
+    promptBuild("system", user),
+    promptBuild("system", char),
+    promptBuild("system", json.encode(currentStat)),
+    promptBuild("user", log)
+    }
+    if roll ~= "" then
+        table.insert(prompt, roll)
+    end
+
+    local response = LLM(triggerId, prompt) --LLM에 응답 요청
+    if not response.success then --LLM응답 실패시 함수 종료
+        alertNormal(triggerId, "LLM응답 실패")
+        setChatVar(triggerId, "cmds", old_cmds)
+        reloadDisplay(triggerId)
+        return false
+    end
+
+    local content = response.result
+    debug("응답: "..content)
+    local statChange = content:match("({.*})")
+    local dialog = content:gsub(statChange, "")
+    statChange = json.decode(statChange)
+    log = log .. "<br>" .. dialog:gsub("json","")
+
+
+--스탯 증가가 충분할 경우 레벨업이 재귀적으로 여러번 시도되도록 할것. (stat증가치 - 이전레벨 요구량 을 기반으로 다음 레벨에서 레벨업 굴림 한번 더 시도)
+
+    --스탯변화값을 가져와 currentstat이 레벨업 하는지를 stat.db의 테이블의 각 레벨값과 비교해 확률적으로 계산    
+    local statRegax = ""
+    local tbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
+
+    for k, v in pairs(statChange) do
+        math.randomseed(os.time())
+        local lv = tostring(currentStat[k])
+        local r = math.random()
+        debug(k .. ":" .. v/tbl[lv] .. " >= " .. r) -- 추후 debug로 변경
+        if v/tbl[lv] >= r then
+            currentStat[k] = lv + 1
+            statRegax = statRegax.. "<br>※ " .. k .. "이(가) " .. lv .. "에서 " .. currentStat[k] .. "로 증가했습니다!"
+        end
+    end
+
+    setChatVar(triggerId, "cmds", old_cmds) --버튼 원복
+    setChatVar(triggerId, "statRegax", statRegax) --stat 변화 설명은 log에 포함되지 않도록 정규식 처리
+    setState(triggerId, "stat", currentStat) --변경된 stat을 state에 반영
+    local stat_c = "{"
+    for k, v in pairs(currentStat) do
+        stat_c = stat_c .. '"'..k..'":"'..v..'",'
+    end
+    stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
+    setChatVar(triggerId, "stat", stat_c) --변경된 stat을 chatVar에 반영
+
+    reloadDisplay(triggerId)
+    setChatVar(triggerId, "trainLog", log)
+
+end

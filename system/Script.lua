@@ -1,7 +1,7 @@
 --기본 변수
 TIME = -1
 SPAMING = 0.2
-DEBUG = 1
+DEBUG = 0
 local CHARLIST = {}
 
 --디버깅용
@@ -41,9 +41,12 @@ function int(str)
 end
 
 --table에 val이 있는지 확인
-function hasVal(table, val)
-    for k, v in pairs(table) do
-        if v== val then
+function hasVal(tbl, val)
+    for k, v in pairs(tbl) do
+        if type(v) == "table" then
+            hasVal(v, val)
+        end
+        if v == val then
             return true
         end
     end
@@ -154,43 +157,17 @@ function sysFunction(triggerId, f_code, ...)
         alertNormal(triggerId, "시스템 커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
         return
     end
-    print("시스템 커맨드 실행: " .. f_code)
     local func, err = createFunctionFromString(funcBody)
     debug(f_code .. " 함수 실행")
     func(triggerId, ...)
 end
 
-function promptBuild(triggerId, ...)
-    local prompts = {"system.pt", ...} --시스템 프롬은 기본으로 추가
-    local concat = {}
-
-    -- 나열된 프롬프트들을 로어북에서 불러와 조합
-    for i ,v in ipairs(prompts) do
-        if getLoreBookContent(triggerId, v) == nil then
-            table.insert(concat, ...)
-        end
-        table.insert(concat, getLoreBooks(triggerId, v)[1].content)
-    end
-    concat = json.decode(concat)
-    debug(concat)
-    return concat
-end
-
-
-function LLMresponse(triggerId, prompt)
+function promptBuild(role, content)
     local prompt = {
-        {
-            role = "system",
-            content = prompt
-        }
+        role = role,
+        content = content
     }
-    local response = LLM(triggerId, prompt)
-    if response.success then
-        debug("response: " .. response.result)
-        return response.result
-    else
-        print("응답실패")
-    end
+    return prompt
 end
 
 listenEdit("editDisplay", function(triggerId, data)
@@ -241,6 +218,7 @@ onButtonClick = async(function(triggerId, data)
         initialize(triggerId)
         print("게임 시작")
     else
+        --스팸처리
         if time()-TIME < SPAMING then
             debug(time, TIME)
             alertError(triggerId, "메시지가 단 시간에 너무 많이 입력되었습니다.")

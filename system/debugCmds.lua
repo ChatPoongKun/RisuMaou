@@ -1,4 +1,5 @@
 function (triggerId)
+    debug("debugCmds 실행")
     key = ""
     functionBody = ""
     

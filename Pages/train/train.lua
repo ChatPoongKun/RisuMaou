@@ -63,42 +63,27 @@ end!!
 end!!
 
 [train/13/{{#when::{{getVar::애무계}}::is::1}}애무{{/when}}] function(triggerId)
-    setChatVar(triggerId, "cmds", "<span style='text-align:center;'>[[응답 처리중....]]</span>")
-    reloadDisplay(triggerId)
-    local char = getChatVar(triggerId, "target")
+    local target = getState(triggerId, "target")
+    --성공확률 계산
+    local roll = "" --조교 성공실패흫 전달할 string
     --[[
-    프롬빌딩: 시스템 프롬 + DB + 캐릭터시트(수치가 0이거나 빈 무의미한 필드를 제거하고 리퀘 보낼 것) + 조교로그
-    기존 로그에 조교 커맨드를 덧붙이고 LLM응답을 받아 로그에 덧붙임. 이때, 스탯 변화도 json으로 받아와 스탯창에 적용
-    stat: 프롬에 설명 포함. llm기반 데이터 변경
-    mark: 프롬에 설명 포함. 스탯변화 결과에 따라 스크립트로 처리
-    abl: 프롬에 설명 포함. 유저의 선택에 따라 juel을 소모해 레벨업
-    trait: 보유한 trait만 프롬에 포함
-    juel: 조교 종료 후 stat 누적치에 따라 획득
-    exp: 조교 항목별로 스크립트 처리
-    !!LLM 비의존적 처리도 응답이 성공한 경우에 한해서만 처리하도록 조치할것.
+    성공확률 계산 로직을 작성할것. 현재는 모두 성공으로 간주
+    기본난이도 n/20으로 두고 abl과 특성, {{user}}의 기교 등에 따른 보정값 적용. n은 20이 넘을 수 있음
+    1~20사이의 난수 생성해 성공여부 판정
+    주사위가 20뜨면 대성공처리
     ]]
-    local log = getChatVar(triggerId, "trainLog")
-    local command = log .. "<br>{{user}}는 "..char['이름'] .."을 애무한다."
+    
+    --체력/기력 소모로직
+    --[[
+    
+    ]]
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."을 어루만진다."
+    print("명령 생성까지 OK")
+    sysFunction(triggerId, "trainProcess.sys", command, roll)
 
-    local request = {
-        role="user",
-        content = command
-        }
-    local currentStat = {}
-    local statsDB = getLoreBookContent(triggerId, "stat.db")
-    for k, v in pairs(
-    log = log .. command.content
-    local request = promptBuild(triggerId, "train.pt", command)
-    local response = LLMresponse(triggerId, request)
-    if response.success then
-        -- 스탯 리퀘를 받아 변경사항으로 처리
-        local stat change
-        
-        
-    end
-    log = log .. "<br>" .. response
-    print("[log]:<br>"..log)
-    setChatVar(triggerId, "trainLog", log)
+    --변화한 스탯에 따른 사정량 변화 처리 필요
+
 end!!
 
 [train/14/{{#when::{{getVar::애무계}}::is::1}}커널링구스{{/when}}] function(triggerId)
