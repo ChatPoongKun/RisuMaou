@@ -1,0 +1,8 @@
+FORM
+
+
+IN
+§TRAINLOG§
+
+OUT
+{{getvar::trainLog}}

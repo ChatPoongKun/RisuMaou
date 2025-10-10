@@ -1,0 +1,11 @@
+{
+    "Lua.diagnostics.globals": [
+        "setState",
+        "setChatVar",
+        "json",
+        "getState",
+        "alertNormal",
+        "reloadDisplay",
+        "getChatVar"
+    ]
+}

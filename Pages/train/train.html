@@ -277,26 +277,26 @@ height: 0.6rem;
 </div>
 </div>
 <div class="stats-grid">
-<div class="stat-item"><span class="stat-label">C쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::C쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">V쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">A쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">B쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::B쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">C쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::C쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">V쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::V쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">A쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::A쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">B쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::B쾌락}}"></div></div>
 <!--요도 성감이 있는 경우에만 U쾌락이 뜨도록 해야 함-->
-<div class="stat-item"><span class="stat-label">U쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::U쾌락}}"></div></div>
-<!--인후 성감이 있는 경우에만 T쾌락이 뜨도록 해야 함-->
-<div class="stat-item"><span class="stat-label">T쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::T쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">S쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::S쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">V윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::V윤활}}"></div></div>
-<div class="stat-item"><span class="stat-label">A윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::A윤활}}"></div></div>
-<div class="stat-item"><span class="stat-label">욕정</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::욕정}}"></div></div>
-<div class="stat-item"><span class="stat-label">온순</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::온순}}"></div></div>
-<div class="stat-item"><span class="stat-label">굴복</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::target}}::굴복}}"></div></div>
-<div class="stat-item"><span class="stat-label">습득</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::습득}}"></div></div>
-<div class="stat-item"><span class="stat-label">수치</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::target}}::수치}}"></div></div>
-<div class="stat-item"><span class="stat-label">고통</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::target}}::고통}}"></div></div>
-<div class="stat-item"><span class="stat-label">공포</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::target}}::공포}}"></div></div>
-<div class="stat-item"><span class="stat-label">불쾌</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::target}}::불쾌}}"></div></div>
-<div class="stat-item"><span class="stat-label">부정</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::target}}::부정}}"></div></div>
+<div class="stat-item"><span class="stat-label">U쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::U쾌락}}"></div></div>
+<!--인후 성감이 있는 경우에만 M쾌락이 뜨도록 해야 함-->
+<div class="stat-item"><span class="stat-label">M쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::M쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">S쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::S쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">V윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::V윤활}}"></div></div>
+<div class="stat-item"><span class="stat-label">A윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::A윤활}}"></div></div>
+<div class="stat-item"><span class="stat-label">욕정</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::욕정}}"></div></div>
+<div class="stat-item"><span class="stat-label">온순</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::온순}}"></div></div>
+<div class="stat-item"><span class="stat-label">굴복</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::굴복}}"></div></div>
+<div class="stat-item"><span class="stat-label">습득</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::습득}}"></div></div>
+<div class="stat-item"><span class="stat-label">수치</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::수치}}"></div></div>
+<div class="stat-item"><span class="stat-label">고통</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::고통}}"></div></div>
+<div class="stat-item"><span class="stat-label">공포</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::공포}}"></div></div>
+<div class="stat-item"><span class="stat-label">불쾌</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::불쾌}}"></div></div>
+<div class="stat-item"><span class="stat-label">부정</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::부정}}"></div></div>
 </div>
 </section>
 
@@ -319,7 +319,7 @@ height: 0.6rem;
 <section class="log-panel">
 <h2>* 메시지</h2>
 <div class="log-content">
-{{getVar::trainLog}}
+§TRAINLOG§
 </div>
 </section>
 

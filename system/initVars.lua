@@ -1,13 +1,13 @@
 function (triggerId)
     --초기 변수 설정
-    print("초기 변수 설정")
+    print("initVars 실행")
     local initVars = {
         gold = "10,000",
         day = 1,
         ampm = 0, --0은 오전 1은 오후
         chars = '["user","마오"]', --리수배열 스타일에 맞게 저장
         DEBUG = DEBUG,
-        expLv = getLoreBookContent(triggerId, "expLv.db")
+        Lvtable = getLoreBookContent(triggerId, "Lvtable.db")
     }
     
     for key, value in pairs(initVars) do
@@ -21,7 +21,7 @@ function (triggerId)
         ]]
 
         --캐릭터에는 정의가 필요한 부분만 넣고 들어가지 않은 trait, juel등의 필드를 db에서 읽어와서 추가
-        local db = {"marks.db", "abl.db", "juel.db", "exp.db", "stat.db"}
+        local db = {"mark.db", "abl.db", "juel.db", "exp.db"}
         local added = ""
         for _, tbl in pairs(db) do
             for key,_ in pairs(json.decode(getLoreBookContent(triggerId, tbl))) do

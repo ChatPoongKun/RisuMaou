@@ -1,4 +1,5 @@
 function (triggerId)
+    debug("turnEnd 실행")
     --시간 흐름 처리
     local day = getChatVar(triggerrId, "day")
     local ampm = getChatVar(triggerrId, "ampm")
@@ -21,11 +22,7 @@ function (triggerId)
             local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
             upsertLocalLoreBook(triggerId, value, json.encode(char), option)
         end
-
-        --하루 종료 처리
-        alertNormal(triggerId, "하루가 지나갑니다...")
-    else
-        alertNormal(triggerId, "당신은 휴식을 취합니다.")
+    --else 오전이 끝날떄의 처리가 필요한 경우 활성화
     end
     day = day + ampm
     ampm = math.abs(ampm - 1)
