@@ -203,14 +203,14 @@ height: 0.6rem;
 <!-- Vertical HP Bar -->
 <div class="v-bar-container">
 <div class="v-bar-track">
-<div class="v-bar-fill x-risu-hp" style="height: {{calc::{{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
+<div class="v-bar-fill x-risu-hp" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
 </div>
 <span class="v-bar-label">HP</span>
 </div>
 <!-- Vertical ST Bar -->
 <div class="v-bar-container">
 <div class="v-bar-track">
-<div class="v-bar-fill x-risu-st" style="height: {{calc::{{tonumber::{{dict_element::{{getvar::target}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대기력}}}} * 100}}%;"></div>
+<div class="v-bar-fill x-risu-st" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대기력}}}} * 100}}%;"></div>
 </div>
 <span class="v-bar-label">기력</span>
 </div>
@@ -218,9 +218,9 @@ height: 0.6rem;
 <div class="v-bar-container">
 <div class="v-bar-track">
 <!-- TODO: Replace with dynamic variables -->
-<div class="v-bar-fill x-risu-ej" style="height: 5%;"></div>
+<div class="v-bar-fill x-risu-ej" style="height: {{? {{tonumber::{{getvar::ej_target}}}}/100}}%;"></div>
 </div>
-<span class="v-bar-label">사정</span>
+<span class="v-bar-label">절정</span>
 </div>
 </div>
 </div>
@@ -303,14 +303,14 @@ height: 0.6rem;
 <div class="line single"></div>
 
 <section class="ejaculation-section">
-<h3>* 사정 게이지 ({{user}})</h3>
+<h3>* 절정 게이지 ({{user}})</h3>
 <div class="x-risu-bar-container">
 <span class="bar-label">{{user}}:</span>
 <div class="progress-bar x-risu-ej">
 <!-- TODO: Replace with dynamic variables -->
-<div class="x-risu-progress-bar-fill x-risu-ej" style="width: 30%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/100}}%;"></div>
 </div>
-<span class="bar-value">3000/10000</span>
+<span class="bar-value">{{getvar::ej_user}}/10000</span>
 </div>
 </section>
 
