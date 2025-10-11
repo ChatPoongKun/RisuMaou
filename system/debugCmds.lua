@@ -10,5 +10,5 @@ function (triggerId)
     alertNormal(triggerId, "강제커맨드 발생. 메인화면으로 돌아갑니다.")
     setState(triggerId, "screen", "main")
     end]]
-    setState(triggerId, key, functionBody)
+    CMDS[key] = functionBody
 end

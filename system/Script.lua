@@ -2,7 +2,7 @@
 TIME = -1
 SPAMING = 0.2
 DEBUG = 0
-local CHARLIST = {}
+CMDS = {}
 
 --디버깅용
 function debug(...)
@@ -118,7 +118,7 @@ function processAndStoreLore(triggerId, loreBookId)
 
     for page, number, description, functionBody in loreEntries:gmatch(pattern) do
         local key = page.."_"..number
-        setState(triggerId, key, functionBody)
+        CMDS[key] = functionBody
         debug(description.."-> funcs['" .. key .. "']에 함수 저장됨.")
         count = count + 1
 
@@ -137,10 +137,10 @@ end
 
 function executeFunction(triggerId, screen, code, ...)
     local f_code = screen.."_"..code
-    local funcBody = getState(triggerId, f_code)
+    local funcBody = CMDS[f_code]
 
     if not funcBody then
-        funcBody = getState(triggerId, code)
+        funcBody = CMDS[code]
         if not funcBody then
             alertNormal(triggerId, "커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
             return
