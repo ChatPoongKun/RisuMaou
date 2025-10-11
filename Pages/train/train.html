@@ -242,7 +242,7 @@ height: 0.6rem;
 <span class="v-bar-label">기력</span>
 </div>
 <!-- Vertical Ejaculation Bar -->
-<div class="v-bar-container" title="{{getvar::ej_target}}">
+<div class="v-bar-container" title="{{? {{getvar::ej_target}}*0.8}}">
 <div class="v-bar-track">
 <!--최대 게이지를 80%까지만 채워서 가득 찼는데 절정하지 않는 모습을 피함-->
 <div class="v-bar-fill x-risu-ej" style="height: {{? {{? {{tonumber::{{getvar::ej_target}}}}*0.8}}/100}}%;"></div>
@@ -335,7 +335,7 @@ height: 0.6rem;
 <span class="bar-label">{{user}}:</span>
 <div class="progress-bar x-risu-ej">
 <!--최대 게이지를 80%까지만 채워서 가득 찼는데 절정하지 않는 모습을 피함-->
-<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{? {{tonumber::{{getvar::ej_user}}}}*0.8}}/120}}%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{? {{tonumber::{{getvar::ej_user}}}}*0.8}}/100}}%;"></div>
 </div>
 <span class="bar-value">{{getvar::ej_user}}/10000</span>
 </div>
