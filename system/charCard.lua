@@ -15,8 +15,8 @@ function(triggerId, name)
         setChatVar(triggerId, "하드계", 0)
         setChatVar(triggerId, "trainLog", "대상이 조교 준비중이다.")
         setChatVar(triggerId, "statRegax", "")
-        setChatVar(triggerId, "orgasm_target", 0)
-        setChatVar(triggerId, "orgasm_user", 0)
+        setChatVar(triggerId, "ej_target", 0) --조교대상 절정치
+        setChatVar(triggerId, "ej_user", 0) --유저 절정치
 
         --스탯 초기화
         local statDB =json.decode(getLoreBookContent(triggerId, "stat.db"))
