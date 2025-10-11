@@ -28,7 +28,7 @@ function(triggerId, command, roll)
 
     local log = getChatVar(triggerId, "trainLog") .. command
 
-    --프롭프트 빌딩
+    --프롬프트 빌딩
     local prompt = {
     promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "train.pt")),
@@ -58,6 +58,15 @@ function(triggerId, command, roll)
     local dialog = content:gsub(statChange, "")
     statChange = json.decode(statChange)
     log = log .. "<br>" .. dialog:gsub("json","")
+
+    --절정치 계산
+    local ejStat = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"}
+    local ej_target = getChatVar(triggerId, "ej_target")
+    for _, v in ipairs(ejStat) do
+        ej_target = ej_target + statChange[v]
+    end
+    setChatVar(triggerId, "ej_target", ej_target)
+    print(target["이름"].."절정치 " .. ej_target)
 
 
 --스탯 증가가 충분할 경우 레벨업이 재귀적으로 여러번 시도되도록 할것. (stat증가치 - 이전레벨 요구량 을 기반으로 다음 레벨에서 레벨업 굴림 한번 더 시도)
