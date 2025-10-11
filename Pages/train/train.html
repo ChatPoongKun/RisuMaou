@@ -174,6 +174,33 @@ height: 0.6rem;
     border-bottom: 1px solid #444;
     padding-bottom: 0.5rem;
 }
+
+.log-panel h2 {
+    font-size: 1.2em;
+}
+
+.log-content {
+    background-color: #111;
+    border: 1px solid #444;
+    padding: 1rem;
+    min-height: 100px;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 4px;
+    font-family: 'Gulim', monospace;
+    font-size: 0.95em;
+    line-height: 1.8;
+}
+
+.log-content p {
+    margin: 0 0 0.5rem 0;
+}
+.log-content p:last-child {
+    margin-bottom: 0;
+}
+
+
+
 @media screen and (max-width: 600px) {
     .stats-grid {
         grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
@@ -201,24 +228,24 @@ height: 0.6rem;
 </div>
 <div class="vertical-bars">
 <!-- Vertical HP Bar -->
-<div class="v-bar-container">
+<div class="v-bar-container" title="{{dict_element::{{getvar::target}}::체력}}">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-hp" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
 </div>
 <span class="v-bar-label">HP</span>
 </div>
 <!-- Vertical ST Bar -->
-<div class="v-bar-container">
+<div class="v-bar-container" title="{{dict_element::{{getvar::target}}::최대기력}}">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-st" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대기력}}}} * 100}}%;"></div>
 </div>
 <span class="v-bar-label">기력</span>
 </div>
 <!-- Vertical Ejaculation Bar -->
-<div class="v-bar-container">
+<div class="v-bar-container" title="{{getvar::ej_target}}">
 <div class="v-bar-track">
-<!-- TODO: Replace with dynamic variables -->
-<div class="v-bar-fill x-risu-ej" style="height: {{? {{tonumber::{{getvar::ej_target}}}}/100}}%;"></div>
+<!--최대 게이지를 80%까지만 채워서 가득 찼는데 절정하지 않는 모습을 피함-->
+<div class="v-bar-fill x-risu-ej" style="height: {{? {{? {{tonumber::{{getvar::ej_target}}}}*0.8}}/100}}%;"></div>
 </div>
 <span class="v-bar-label">절정</span>
 </div>
@@ -307,8 +334,8 @@ height: 0.6rem;
 <div class="x-risu-bar-container">
 <span class="bar-label">{{user}}:</span>
 <div class="progress-bar x-risu-ej">
-<!-- TODO: Replace with dynamic variables -->
-<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/100}}%;"></div>
+<!--최대 게이지를 80%까지만 채워서 가득 찼는데 절정하지 않는 모습을 피함-->
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{? {{tonumber::{{getvar::ej_user}}}}*0.8}}/120}}%;"></div>
 </div>
 <span class="bar-value">{{getvar::ej_user}}/10000</span>
 </div>

@@ -183,31 +183,6 @@ h2, h3 {
     gap: 0.5rem 1rem;
 }
 
-.log-panel h2 {
-    font-size: 1.2em;
-}
-
-.log-content {
-    background-color: #111;
-    border: 1px solid #444;
-    padding: 1rem;
-    min-height: 100px;
-    max-height: 400px;
-    overflow-y: auto;
-    border-radius: 4px;
-    font-family: 'Gulim', monospace;
-    font-size: 0.95em;
-    line-height: 1.8;
-}
-
-.log-content p {
-    margin: 0 0 0.5rem 0;
-}
-.log-content p:last-child {
-    margin-bottom: 0;
-}
-
-
 /* --- PAGE: CHARACTER INFO (from char.css) --- */
 
 .char-header {
@@ -415,7 +390,6 @@ h2, h3 {
 
 
 /* Overrides for character card status bars to match design */
-
 .char-status-bars .x-risu-progress-bar {
     background-color: #000;
     height: 0.9rem;

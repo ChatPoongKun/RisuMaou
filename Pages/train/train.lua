@@ -79,10 +79,21 @@ end!!
     ]]
     --LLM에 전달할 조교 커맨드
     local command =  "<br>{{user}}는 "..target['이름'] .."을 어루만진다."
-    print("명령 생성까지 OK")
     sysFunction(triggerId, "trainProcess.sys", command, roll)
 
-    --변화한 스탯에 따른 사정량 변화 처리 필요
+    --ej 게이지에 따른 사정처리
+    local ej_target = tonumber(getChatVar(triggerId, "ej_target"))
+    if ej_target >= 10000 then
+        --절정치 초기화
+        setChatVar(triggerId, "ej_target", 0)
+        --절정 경험을 추가해야되는데 어느 절정을 올리나 ㅅㅂ
+    end
+    local ej_user = tonumber(getChatVar(triggerId, "ej_user"))
+    if ej_user >= 10000 then
+        --절정치 초기화
+        setChatVar(triggerId, "ej_user", 0)
+        --절정 경험을 추가해야되는데 어느 절정을 올리나 ㅅㅂ
+    end
 
 end!!
 
