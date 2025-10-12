@@ -72,23 +72,41 @@ function(triggerId, command, roll)
 --스탯 증가가 충분할 경우 레벨업이 재귀적으로 여러번 시도되도록 할것. (stat증가치 - 이전레벨 요구량 을 기반으로 다음 레벨에서 레벨업 굴림 한번 더 시도)
 
     --스탯변화값을 가져와 currentstat이 레벨업 하는지를 stat.db의 테이블의 각 레벨값과 비교해 확률적으로 계산    
-    local statRegax = ""
+    local lvUpcomment = ""
     local tbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
+    local statResult = {}
+    math.randomseed(os.time())
+
+    local lvUp
+    lvUp = function(changedStat, currentLv, statName)
+        local lv = currentLv
+        local remainStat = changedStat
+        local r = math.random()
+        print(statName..": "..remainStat/tbl[lv] .. " >= " .. r)
+        if remainStat/tbl[lv] >= r then
+            remainStat = math.max(remainStat - tbl[lv], 0)
+            lv = tostring(lv + 1)
+            lv = lvUp(remainStat, lv, statName)
+            return lv
+        else
+            return lv
+        end
+    end
 
     for k, v in pairs(statChange) do
-        math.randomseed(os.time())
-        local lv = tostring(currentStat[k])
-        local r = math.random()
-        debug(k .. ":" .. v/tbl[lv] .. " >= " .. r) -- 추후 debug로 변경
-        if v/tbl[lv] >= r then
-            currentStat[k] = lv + 1
-            statRegax = statRegax.. "<br>※ " .. k .. "이(가) " .. lv .. "에서 " .. currentStat[k] .. "로 증가했습니다!"
+        if tonumber(v) > 0 then
+            local lv = tostring(currentStat[k])
+            statResult[k] = tonumber(lvUp(v, lv, k))
+            --print(type(currentStat[k]),currentStat[k], type(statResult[k]),statResult[k])
+            if currentStat[k] < statResult[k] then
+                lvUpcomment = lvUpcomment.. "<br>※ " .. k .. "이(가) " .. currentStat[k] .. "에서 " .. statResult[k] .. "로 증가했습니다!"
+            end
         end
     end
 
     setChatVar(triggerId, "cmds", old_cmds) --버튼 원복
-    setChatVar(triggerId, "statRegax", statRegax) --stat 변화 설명은 log에 포함되지 않도록 정규식 처리
-    setState(triggerId, "stat", currentStat) --변경된 stat을 state에 반영
+    setChatVar(triggerId, "statLvUp", lvUpcomment) --stat 변화 설명은 log에 포함되지 않도록 정규식 처리
+    setState(triggerId, "stat", statResult) --변경된 stat을 state에 반영
     local stat_c = "{"
     for k, v in pairs(currentStat) do
         stat_c = stat_c .. '"'..k..'":"'..v..'",'
