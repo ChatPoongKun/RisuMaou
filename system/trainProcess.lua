@@ -63,7 +63,8 @@ function(triggerId, command, roll)
     local ejStat = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"}
     local ej_target = getChatVar(triggerId, "ej_target")
     for _, v in ipairs(ejStat) do
-        ej_target = ej_target + statChange[v]
+        v = statChange[v] or 0
+        ej_target = ej_target + v
     end
     setChatVar(triggerId, "ej_target", ej_target)
     print(target["이름"].."절정치 " .. ej_target)
@@ -75,11 +76,11 @@ function(triggerId, command, roll)
     math.randomseed(os.time())
 
     local lvUp
-    lvUp = function(changedStat, currentLv, statName)
+    lvUp = function(remainStat , currentLv, statName)
         local lv = currentLv
-        local remainStat = changedStat
+        local remainStat = remainStat 
         local r = math.random()
-        print(statName..": "..remainStat/tbl[lv] .. " >= " .. r)
+        debug(statName..": "..remainStat.."/"..tbl[lv]..": "..remainStat/tbl[lv] .. " >= " .. r)
         if remainStat/tbl[lv] >= r then
             remainStat = math.max(remainStat - tbl[lv], 0)
             lv = tostring(lv + 1)
@@ -90,22 +91,24 @@ function(triggerId, command, roll)
         end
     end
 
-    for k, v in pairs(statChange) do
+    for k, _ in pairs(currentStat) do
+        local v = statChange[k] or "0" -- statChange에 해당 키값이 없을 경우 0을 반환하도록 해 에러방지
+        local lv = tostring(currentStat[k])
         if tonumber(v) > 0 then
-            local lv = tostring(currentStat[k])
             statResult[k] = tonumber(lvUp(v, lv, k))
-            --print(type(currentStat[k]),currentStat[k], type(statResult[k]),statResult[k])
+            currentStat[k] = tonumber(currentStat[k])
             if currentStat[k] < statResult[k] then
                 lvUpcomment = lvUpcomment.. "<br>※ " .. k .. "이(가) " .. currentStat[k] .. "에서 " .. statResult[k] .. "로 증가했습니다!"
             end
+        else
+            statResult[k] = lv
         end
     end
-
     setChatVar(triggerId, "cmds", old_cmds) --버튼 원복
     setChatVar(triggerId, "statLvUp", lvUpcomment) --stat 변화 설명은 log에 포함되지 않도록 정규식 처리
     setState(triggerId, "stat", statResult) --변경된 stat을 state에 반영
     local stat_c = "{"
-    for k, v in pairs(currentStat) do
+    for k, v in pairs(statResult) do
         stat_c = stat_c .. '"'..k..'":"'..v..'",'
     end
     stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
