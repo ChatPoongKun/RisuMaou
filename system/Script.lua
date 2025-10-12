@@ -40,14 +40,19 @@ function int(str)
     return str
 end
 
---table에 val이 있는지 확인
+--table에 val이 있는지 확인.
+--신체특성 같은 배열 내에 있는 값도 체크하기 위해 밸류도 함께 체크
+--return으로 밸류를 반환하도록 해 함수 활용성을 높임
 function hasVal(tbl, val)
     for k, v in pairs(tbl) do
-        if type(v) == "table" then
-            hasVal(v, val)
+        if k == val or v == val then
+            return true, v
         end
-        if v == val then
-            return true
+        if type(v) == "table" then
+            local found , foundVal = hasVal(v, val)
+            if found then
+                return found, foundVal
+            end
         end
     end
     return false
