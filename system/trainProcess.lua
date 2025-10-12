@@ -76,8 +76,7 @@ function(triggerId, command, roll)
     local statResult = {}
     math.randomseed(os.time())
 
-    local lvUp
-    lvUp = function(remainStat , currentLv, statName)
+    local function lvUp(remainStat , currentLv, statName)
         local lv = currentLv
         local remainStat = remainStat 
         local r = math.random()
