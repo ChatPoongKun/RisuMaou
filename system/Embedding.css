@@ -415,14 +415,13 @@ h2, h3 {
     --rating: 0; /* Default value */
     --percent: calc(var(--rating) / 10 * 100%);
     display: inline-block;
-    font-size: 1.4rem;
+    font-size: 0.75rem;
     font-family: 'Times New Roman', Times, serif;
     line-height: 1;
 }
 
 .star-rating::before {
-    content: '♥♥♥♥♥';
-    letter-spacing: 2px;
+    content: '♥️♥️♥️♥️♥️';
     background: linear-gradient(90deg, #ec0c4f var(--percent), #555 var(--percent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -439,7 +438,6 @@ h2, h3 {
 
 .skull-rating::before {
     content: '☠️☠️☠️☠️☠️';
-    letter-spacing: 0;
     background: linear-gradient(90deg, #ffffff var(--percent), #555 var(--percent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -463,8 +461,8 @@ h2, h3 {
     }
 
     .star-rating{
-            font-size: 1.2rem;
-        }
+        font-size: 0.65rem;
+    }
         
     .skull-rating{
         font-size: 0.65rem;
