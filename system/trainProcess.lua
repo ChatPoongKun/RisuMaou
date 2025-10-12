@@ -68,9 +68,7 @@ function(triggerId, command, roll)
     setChatVar(triggerId, "ej_target", ej_target)
     print(target["이름"].."절정치 " .. ej_target)
 
-
---스탯 증가가 충분할 경우 레벨업이 재귀적으로 여러번 시도되도록 할것. (stat증가치 - 이전레벨 요구량 을 기반으로 다음 레벨에서 레벨업 굴림 한번 더 시도)
-
+    --스탯 증가가 충분할 경우 레벨업이 재귀적으로 여러번 시도되도록 할것. (stat증가치 - 이전레벨 요구량 을 기반으로 다음 레벨에서 레벨업 굴림 한번 더 시도)
     --스탯변화값을 가져와 currentstat이 레벨업 하는지를 stat.db의 테이블의 각 레벨값과 비교해 확률적으로 계산    
     local lvUpcomment = ""
     local tbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
