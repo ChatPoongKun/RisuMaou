@@ -65,20 +65,56 @@ function getLoreBookContent(triggerId, lore)
     return modContent
 end
 
--- name 캐릭터의 로컬로어북을 챗변수varName으로 할당
-function charToVar(triggerId, varName, name)
-    local name = name
-    if name == getPersonaName(triggerId) then
-        name = "user"
+--테이블을 1차원으로 flatten
+function flatten(tbl)
+    local result = {}
+    -- 입력된 테이블의 모든 요소를 순회
+    local function doFlatten(tbl)
+        for k, v in pairs(tbl) do
+            if type(v) == "table" then --값이 테이블이면 재귀
+                doFlatten(v)
+            elseif type(k) == "number" then --키가 인덱스(배열)이면 키값에 값을 넣고 밸류는 "1"
+                result[v] = "1"
+            else
+                result[k] = v --일반적인 키:값 상태면 그대로 입력
+            end
+        end
     end
-    --캐릭터 정보를 리수 딕셔너리/배열 양식에 맞게 변형 
-    local charInfo = getLoreBookContent(triggerId, name)
-    local charInfo = charInfo:gsub("%[(.-)%]", function(inside)
-        local replace = inside:gsub('"','\\"')
-        return '"[' .. replace .. ']"'
-    end)
-    debug(name.."를 user 변수에 저장")
-    setChatVar(triggerId, varName, charInfo)
+    doFlatten(tbl)
+    return result
+end
+
+-- state에 저장된 테이블을 챗변수varName으로 할당. 입력된 테이블을 1차원으로 flatten함
+function stateToVar(triggerId, tbl, chatVar)
+    --테이블을 리수 딕셔너리/배열 양식에 맞게 변형 
+    local tbl = flatten(tbl)
+    local new_tbl = ""
+    local function checkArray(v) --배열인지 확인
+        for k,_ in pairs(v) do
+            if type(k) ~= "number" then
+                return false
+            end
+        end
+        return true
+    end
+
+    if checkArray(tbl) then --tbl이 배열이면
+        --배열처리
+        new_tbl = "["
+        for _,v in pairs(tbl) do
+            new_tbl = new_tbl .. '"' .. v .. '",'
+        end
+        new_tbl = string.gsub(new_tbl, ",$", "]")
+    else
+        --딕셔너리처리
+        new_tbl = "{"
+        for k,v in pairs(tbl) do
+            new_tbl = new_tbl .. '"' .. k .. '":"' .. v .. '",'
+        end
+        new_tbl = string.gsub(new_tbl, ",$", "}")
+    end
+    debug(chatVar, new_tbl)
+    setChatVar(triggerId, chatVar, new_tbl)
 
 end
 

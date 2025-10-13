@@ -10,10 +10,12 @@ function (triggerId, name)
         setChatVar(triggerId, "statLvUp", "")
         setChatVar(triggerId, "ej_target", 0) --조교대상 절정치
         setChatVar(triggerId, "ej_user", 0) --유저 절정치
-        charToVar(triggerId, "target", name) --대상 캐릭터 로어북을 챗변수에 저장
+        
+        --char를 로어북에서 불러와 1차원으로 flatten
+        local char = json.decode(getLoreBookContent(triggerId, name))
+        char = flatten(char)
 
         --스탯 초기화
-        local char = json.decode(getLoreBookContent(triggerId, name))
         setState(triggerId, "target", char) --대상 캐릭터 로어북 정보를 state에 저장
         local statDB =json.decode(getLoreBookContent(triggerId, "stat.db"))
         local stat = {}
@@ -141,27 +143,8 @@ function (triggerId, name)
                 stat["부정"] = stat["부정"] + 5
             end
         }
-        
-        --char테이블 flatten
-        local function flatten(tbl)
-            local result = {}
-            -- 입력된 테이블의 모든 요소를 순회
-            local function doFlatten(tbl)
-                for k, v in pairs(tbl) do
-                    if type(v) == "table" then
-                        doFlatten(v)
-                    elseif type(k) == "number" then
-                        result[v] = "1"
-                    else
-                        result[k] = v
-                    end
-                end
-            end
-            doFlatten(tbl)
-            return result
-        end
-        char = flatten(char)
-        --평탄화한 char테이블을 순회하며 statBonus 적용
+
+        --평탄화된 char테이블을 순회하며 statBonus 적용
         for k ,v in pairs(char) do
             local v = tonumber(v) or v
             if v ~= 0 then
@@ -171,11 +154,12 @@ function (triggerId, name)
                 end
             end
         end
+        
         --stat을 정수화하고 0~10사이에 있도록 제한
         for k ,v in pairs(stat) do
            stat[k] = math.min(math.max(math.floor(v),0),10)
         end
-        
+        stateToVar(triggerId, char, "target") --대상 캐릭터 로어북을 챗변수에 저장
         setState(triggerId, "stat", stat) --계산된 stat를 state에 저장
 
         --챗변수를 위한 사전처리
