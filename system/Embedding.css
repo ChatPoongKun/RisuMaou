@@ -443,6 +443,28 @@ h2, h3 {
     -webkit-text-fill-color: transparent;
 }
 
+.mark-rating {
+    --rating: 0; /* Default value */
+    --percent: calc(var(--rating) / 3 * 100%);
+    display: inline-block;
+    font-size: 1rem;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1;
+}
+
+.mark-rating::before {
+    content: '⚜️⚜️⚜️';
+    background: linear-gradient(90deg, #f8c65c var(--percent), #555 var(--percent));/*ef9d4e, f8c65c*/
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.neg::before {
+    content: '⚜️⚜️⚜️';
+    background: linear-gradient(90deg, #814689 var(--percent), #555 var(--percent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
 /* Responsive adjustments for char page */
 @media screen and (max-width: 600px) {
