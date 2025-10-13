@@ -72,6 +72,9 @@ function flatten(tbl)
     local function doFlatten(tbl)
         for k, v in pairs(tbl) do
             if type(v) == "table" then --값이 테이블이면 재귀
+                if k == "이상경험 기록" then
+                    result[k] = v --이상경험 기록은 평탄화 금지. 개선방안 고민 필요함    
+                end
                 doFlatten(v)
             elseif type(k) == "number" then --키가 인덱스(배열)이면 키값에 값을 넣고 밸류는 "1"
                 result[v] = "1"
