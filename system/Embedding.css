@@ -482,13 +482,13 @@ h2, h3 {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     }
 
-    .star-rating{
-        font-size: 0.65rem;
+    .star-rating, .skull-rating{
+        font-size: 0.6rem;
     }
-        
+        /*
     .skull-rating{
-        font-size: 0.65rem;
-    }
+        font-size: 0.6rem;
+    }*/
 }
 
 </style>

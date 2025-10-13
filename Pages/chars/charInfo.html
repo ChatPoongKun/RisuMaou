@@ -128,7 +128,7 @@
     /* Info Grids within Tabs */
     .info-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 1rem 0.75rem;
     }
     
@@ -213,7 +213,7 @@
 
     /* Experience Tab - Grid layout */
     #exp-content .info-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     }
     
     .exp-list p, .appearance-content p {
@@ -275,12 +275,12 @@
 
     @media screen and (max-width: 600px){
         .info-grid {
-        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
         gap: 0.75rem 0.5rem;
         }
 
         .marks-grid {
-        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
         gap: 0.75rem 0.5rem;
         }
         
@@ -290,7 +290,17 @@
         
         .equipment-item {
         padding: 0.3rem;
-    }
+        }
+        
+        .abl-item {
+        font-size: 0.65rem;
+        gap:0.3rem;
+        }
+        .info-grid .talent-tag {
+        font-size: 0.9em;
+        margin: 0 0.2rem;
+        border: 1px solid #4f4f4f; /* ADDED */
+        }
 }
 </style>
 
@@ -356,19 +366,19 @@
 <div id="talents-content" class="tab-pane">
 <div class="info-grid">
 <h3>성격</h3>
-{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::성격}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::성격}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
-<h3>체질</h3>
-{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::체질}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::체질}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
-<h3>성적취향</h3>
-{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::성적취향}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::성적취향}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
+{{#each {{getvar::성격}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
 <h3>신체특성</h3>
-{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::신체특성}}}}==0}}}}<span class="talent-tag">없음</span>{{:else}}{{#each {{dict_element::{{getvar::target}}::신체특성}} T}}<span class="talent-tag">[{{slot::T}}]</span>{{/each}}{{/when}}
+{{#each {{getvar::신체특성}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+<h3>성적취향</h3>
+{{#each {{getvar::성적취향}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+<h3>체질</h3>
+{{#each {{getvar::체질}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
 </div>
 </div>
 
 <div id="abl-content" class="tab-pane">
 <div class="info-grid">
-{{#each {{array::C감각::B감각::V감각::A감각::U감각::T감각::V확장::A확장::U확장::순종::욕망::기교::봉사기술::성교기술::화술::노출벽::마조끼::성교중독::자위중독::정액중독::방뇨중독::매춘중독::촉수중독::수간중독}} abil}}
+{{#each {{getvar::abl}} abil}}
 {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::isnot::0}}
 <div class="abl-item"><span>{{slot::abil}}</span>
 <div class="star-rating" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}">
@@ -380,7 +390,7 @@
 
 <div id="exp-content" class="tab-pane">
 <div class="info-grid">
-{{#each {{array::V경험::A경험::C경험::B경험::U경험::T경험::사정경험::성교경험::자위경험::정액경험::출산경험::매춘경험::전투경험}} exp}}
+{{#each {{getvar::exp}} exp}}
 {{#when::{{dict_element::{{getvar::target}}::{{slot::exp}}}}::isnot::0}}
 <div class="talent-tag"><strong>{{slot::exp}}:</strong> {{dict_element::{{getvar::target}}::{{slot::exp}}}}</div>
 {{/when}}
@@ -420,10 +430,10 @@
 <div class="narrative-block"><h3>용사가 된 동기</h3><p>{{dict_element::{{getvar::target}}::용사가 된 동기}}</p></div>{{/when}}
 {{#when::{{dict_element::{{getvar::target}}::용사가 되기 전}}::isnot::null}}
 <div class="narrative-block"><h3>용사가 되기 전</h3><p>{{dict_element::{{getvar::target}}::용사가 되기 전}}</p></div>{{/when}}
-{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::이상경험 기록}}}} > 0}}}}
+<!--{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::이상경험 기록}}}} > 0}}}}
 <div class="narrative-block"><h3>이상경험 기록</h3><ul>
 {{#each {{dict_element::{{getvar::target}}::이상경험 기록}} R}}<li>{{slot::R}}</li>{{/each}}
-</ul></div>{{/when}}
+</ul></div>{{/when}}    이상경험 출력부 개선안 필요-->
 </div>
 </div>
 </section>
