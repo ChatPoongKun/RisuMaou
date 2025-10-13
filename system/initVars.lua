@@ -41,4 +41,34 @@ function (triggerId)
     --유저 정보를 user변수에 테이블로 할당
     local user = json.decode(getLoreBookContent(triggerId, "user"))
     stateToVar(triggerId, user, "user")
+
+    --abl.db에서 각 카테고리의 모든 항목 키값을 각각의 카테고리명 챗변수로 저장
+    local abl = json.decode(getLoreBookContent(triggerId, "abl.db"))
+    local abl_tbl = "["
+    for k, _ in pairs(abl) do
+        abl_tbl = abl_tbl..'"'..k..'",'
+    end
+    abl_tbl = string.gsub(abl_tbl, ",$", "]")-- 마지막 쉼표 대신 괄호 닫기
+    setChatVar(triggerId, "abl", abl_tbl)
+
+    --exp.db에서 각 카테고리의 모든 항목 키값을 각각의 카테고리명 챗변수로 저장
+    local exp = json.decode(getLoreBookContent(triggerId, "exp.db"))
+    local exp_tbl = "["
+    for k, _ in pairs(exp) do
+        exp_tbl = exp_tbl..'"'..k..'",'
+    end
+    exp_tbl = string.gsub(exp_tbl, ",$", "]")-- 마지막 쉼표 대신 괄호 닫기
+    setChatVar(triggerId, "exp", exp_tbl)
+
+    --trait.db에서 각 카테고리의 모든 항목 키값을 각각의 카테고리명 챗변수로 저장
+    local trait = json.decode(getLoreBookContent(triggerId, "trait.db"))
+    for cat, tbl in pairs(trait) do
+        local flat_tbl = flatten(tbl)
+        local cat_tbl = "["
+        for k, _ in pairs(flat_tbl) do
+            cat_tbl = cat_tbl..'"'..k..'",'
+        end
+        cat_tbl = string.gsub(cat_tbl, ",$", "]")-- 마지막 쉼표 대신 괄호 닫기
+        setChatVar(triggerId, cat, cat_tbl)
+    end
 end
