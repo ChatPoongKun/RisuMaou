@@ -27,7 +27,7 @@ function(triggerId, command, roll)
     end
     traitDB = json.encode(traitDB)
 
-    local log = getChatVar(triggerId, "trainLog") .. command
+    local log = getChatVar(triggerId, "trainLog")
 
     --프롬프트 빌딩
     local prompt = {
@@ -39,7 +39,8 @@ function(triggerId, command, roll)
     promptBuild("system", user),
     promptBuild("system", char),
     promptBuild("system", json.encode(currentStat)),
-    promptBuild("user", log)
+    promptBuild("assistant", log),
+    promptBuild("user", command)
     }
     if roll ~= "" then
         table.insert(prompt, roll)
