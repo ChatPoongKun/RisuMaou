@@ -9,7 +9,7 @@ function (triggerId)
         DEBUG = DEBUG,
         Lvtable = getLoreBookContent(triggerId, "Lvtable.db")
     }
-    
+
     for key, value in pairs(initVars) do
         setChatVar(triggerId, key, value)
     end
@@ -39,5 +39,6 @@ function (triggerId)
     end
 
     --유저 정보를 user변수에 테이블로 할당
-    charToVar(triggerId, "user", "user")
+    local user = json.decode(getLoreBookContent(triggerId, "user"))
+    stateToVar(triggerId, user, "user")
 end

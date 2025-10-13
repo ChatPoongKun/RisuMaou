@@ -63,21 +63,24 @@ function(triggerId, command, roll)
     --절정치 계산
     local ej_target = getChatVar(triggerId, "ej_target")
     ej_target = ej_target*0.95 --매턴마다 절정치는 자연감소
+
     local ejPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"} --절정치를 증가시키는 stat
     for k, v in ipairs(ejPlus) do
-        v = statChange[v] or 0
-        ej_target = ej_target + v
+        local val = statChange[v] or 0
+        ej_target = ej_target + val
         debug(k..": +"..v)
     end
+
     local ejSub = {"공포", "불쾌", "부정"} --절정치를 감소시키는 stat
-    for _, v in ipairs(ejSub) do
-        v = statChange[v] or 0
-        ej_target = ej_target - v
+    for k, v in ipairs(ejSub) do
+        local val = statChange[v] or 0
+        ej_target = ej_target - val
         debug(k..": -"..v)
     end
+
     --상황에 따라 달라지는 stat: "굴복", "수치", "고통"
     local submissive = statChange["굴복"] or 0
-    if hasVal(char, "복종각인") == true or char["봉사기술"]> 4 then
+    if hasVal(target, "복종각인") == true or tonumber(target["봉사기술"])> 4 then
         ej_target = ej_target + submissive
         debug("굴복: +"..submissive)
     else
@@ -85,7 +88,7 @@ function(triggerId, command, roll)
         debug("굴복: -"..submissive)
     end
     local exhibition = statChange["수치"] or 0
-    if char["수치"]> 4 then
+    if tonumber(target["노출벽"])> 4 then
         ej_target = ej_target + exhibition
         debug("수치: +"..exhibition)
     else
@@ -93,13 +96,14 @@ function(triggerId, command, roll)
         debug("수치: -"..exhibition)
     end
     local pain = statChange["고통"] or 0
-    if char["고통"]> 4 then
+    if tonumber(target["마조끼"])> 4 then
         ej_target = ej_target + pain
         debug("고통: +"..pain)
     else
         ej_target = ej_target - pain
         debug("고통: -"..pain)
     end
+
     --절정치가 최대 최소값을 넘지 않도록 후처리
     ej_target = math.min(max_ej, math.max(0, math.floor(ej_target)))
     setChatVar(triggerId, "ej_target", ej_target)
