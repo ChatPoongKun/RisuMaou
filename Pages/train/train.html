@@ -317,10 +317,10 @@ height: 0.6rem;
 <div class="stat-item"><span class="stat-label">A윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::A윤활}}"></div></div>
 <div class="stat-item"><span class="stat-label">욕정</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::욕정}}"></div></div>
 <div class="stat-item"><span class="stat-label">온순</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::온순}}"></div></div>
-<div class="stat-item"><span class="stat-label">굴복</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::굴복}}"></div></div>
+<div class="stat-item"><span class="stat-label">굴복</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>4}}::or::{{? {{tonumber::{{dict_element::{{getvar::target}}::복종각인}}}}>0}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::굴복}}"></div></div>
 <div class="stat-item"><span class="stat-label">습득</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::습득}}"></div></div>
-<div class="stat-item"><span class="stat-label">수치</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::수치}}"></div></div>
-<div class="stat-item"><span class="stat-label">고통</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::고통}}"></div></div>
+<div class="stat-item"><span class="stat-label">수치</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::수치}}"></div></div>
+<div class="stat-item"><span class="stat-label">고통</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::고통}}"></div></div>
 <div class="stat-item"><span class="stat-label">공포</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::공포}}"></div></div>
 <div class="stat-item"><span class="stat-label">불쾌</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::불쾌}}"></div></div>
 <div class="stat-item"><span class="stat-label">부정</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::부정}}"></div></div>

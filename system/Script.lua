@@ -55,7 +55,7 @@ function hasVal(tbl, val)
             end
         end
     end
-    return false
+    return false, nil
 end
 
 --로어북 컨텐츠 로딩
