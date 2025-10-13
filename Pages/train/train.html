@@ -308,10 +308,12 @@ height: 0.6rem;
 <div class="stat-item"><span class="stat-label">V쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::V쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">A쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::A쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">B쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::B쾌락}}"></div></div>
-<!--요도 성감이 있는 경우에만 U쾌락이 뜨도록 해야 함-->
+{{#when::{{dict_element::{{getvar::target}}::요도성감}}::vis::1}}
 <div class="stat-item"><span class="stat-label">U쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::U쾌락}}"></div></div>
-<!--인후 성감이 있는 경우에만 M쾌락이 뜨도록 해야 함-->
+{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::인후성감}}::vis::1}}
 <div class="stat-item"><span class="stat-label">M쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::M쾌락}}"></div></div>
+{{/when}}
 <div class="stat-item"><span class="stat-label">S쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::S쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">V윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::V윤활}}"></div></div>
 <div class="stat-item"><span class="stat-label">A윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::A윤활}}"></div></div>
