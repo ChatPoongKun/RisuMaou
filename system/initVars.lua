@@ -6,7 +6,9 @@ function (triggerId)
         day = 1,
         ampm = 0, --0은 오전 1은 오후
         chars = '["user","마오"]', --리수배열 스타일에 맞게 저장
-        DEBUG = DEBUG,
+        difficulty = "보통", --조교난이도
+        allowDeath = 0, --사망방지. 기본값 OFF
+        debug = DEBUG,
         Lvtable = getLoreBookContent(triggerId, "Lvtable.db")
     }
 
