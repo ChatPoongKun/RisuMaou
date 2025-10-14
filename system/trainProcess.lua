@@ -5,7 +5,15 @@ function(triggerId, command, roll)
 
     --버튼 비활성화 및 응답중 표시
     local old_cmds = getChatVar(triggerId, "cmds")
-    setChatVar(triggerId, "cmds", "<span style='text-align:center;'>[[응답 처리중....]]</span>")
+    local loading = [[<div class="loading-container" aria-live="polite" aria-label="응답 처리중">
+    <div class="loading-text">응답 처리중...</div>
+    <div class="loading-dots">
+    <span class="dot-1"></span>
+    <span class="dot-2"></span>
+    <span class="dot-3"></span>
+    </div>
+    </div>]]
+    setChatVar(triggerId, "cmds", loading)
     reloadDisplay(triggerId)
 
     --LLM에 전달할 각종 수치에 대한 설명 호출
