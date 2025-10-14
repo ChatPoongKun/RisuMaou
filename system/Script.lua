@@ -3,6 +3,7 @@ TIME = -1
 SPAMING = 0.2
 DEBUG = 0
 CMDS = {}
+MAXROLL = 30
 
 --디버깅용
 function debug(...)
@@ -29,7 +30,6 @@ function time()
     else
         return os.clock() --35분 지나면 오버플로우로 못씀
     end
-
 end
 
 --정수 포맷팅
@@ -111,10 +111,14 @@ function stateToVar(triggerId, tbl, chatVar)
     else
         --딕셔너리처리
         new_tbl = "{"
-        for k,v in pairs(tbl) do
+        for k, v in pairs(tbl) do
+            if type(v) == "table" then --이상경험기록은 평탄화 안해서 값이 테이블이므로 encode해서 집어넣음 추후 개선안 필요함.
+                v = json.encode(v)
+            end
             new_tbl = new_tbl .. '"' .. k .. '":"' .. v .. '",'
         end
         new_tbl = string.gsub(new_tbl, ",$", "}")
+
     end
     debug(chatVar, new_tbl)
     setChatVar(triggerId, chatVar, new_tbl)
