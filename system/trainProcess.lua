@@ -6,7 +6,7 @@ function(triggerId, command, roll)
     --버튼 비활성화 및 응답중 표시
     local old_cmds = getChatVar(triggerId, "cmds")
     local loading = [[<div class="loading-container" aria-live="polite" aria-label="응답 처리중">
-    <div class="loading-text">응답 처리중...</div>
+    <div class="loading-text">[응답 처리중]</div>
     <div class="loading-dots">
     <span class="dot-1"></span>
     <span class="dot-2"></span>
