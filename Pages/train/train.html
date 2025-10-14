@@ -266,7 +266,7 @@ height: 0.6rem;
 <header class="header">
 <h1>▋조교 메뉴</h1>
 <div class="game-info">
-<span>({{getvar::day}}일째) 《만월》 {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}</span>
+<span>({{getvar::day}}일째) {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}《만월》 {{/when}}{{#when::ampm::vis::0}}낮{{:else}}밤{{/when}}</span>
 </div>
 </header>
 <main>
