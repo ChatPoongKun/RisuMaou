@@ -277,7 +277,7 @@ function(triggerId, dc, HP, SP, command)
 
     --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
     setState(triggerId, "target", target)
-    stateToVar(triggerId, target, "target")
+    stateToVar(triggerId, "target", target)
 
     reloadDisplay(triggerId)
     setChatVar(triggerId, "trainLog", log)

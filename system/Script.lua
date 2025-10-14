@@ -88,7 +88,7 @@ function flatten(tbl)
 end
 
 -- state에 저장된 테이블을 챗변수varName으로 할당. 입력된 테이블을 1차원으로 flatten함
-function stateToVar(triggerId, tbl, chatVar)
+function stateToVar(triggerId, key, tbl)
     --테이블을 리수 딕셔너리/배열 양식에 맞게 변형 
     local tbl = flatten(tbl)
     local new_tbl = ""
@@ -120,8 +120,8 @@ function stateToVar(triggerId, tbl, chatVar)
         new_tbl = string.gsub(new_tbl, ",$", "}")
 
     end
-    debug(chatVar, new_tbl)
-    setChatVar(triggerId, chatVar, new_tbl)
+    debug(key, new_tbl)
+    setChatVar(triggerId, key, new_tbl)
 
 end
 
