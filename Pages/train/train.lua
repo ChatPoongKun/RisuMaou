@@ -167,7 +167,7 @@ end!!
     local train = "볼개그"
 end!!
 
-[train/--/{{#when::V계::vis::1}}--V계--{{/when}}]function end!!
+[train/--/{{#when::V계::vis::1}}--삽입계--{{/when}}]function end!!
 
 [train/31/{{#when::{{getVar::V계}}::is::1}}정상위{{/when}}] function(triggerId)
     local train = "정상위"
@@ -189,7 +189,7 @@ end!!
     local train = "기승위"
 end!!
 
-[train/--/{{#when::A계::vis::1}}--A계--{{/when}}]function end!!
+[train/--/{{#when::A계::vis::1}}--애널계--{{/when}}]function end!!
 
 [train/41/{{#when::{{getVar::A계}}::is::1}}정상위애널{{/when}}] function(triggerId)
     local train = "정상위애널"
