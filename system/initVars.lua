@@ -40,7 +40,7 @@ function (triggerId)
 
     --유저 정보를 user변수에 테이블로 할당
     local user = json.decode(getLoreBookContent(triggerId, "user"))
-    stateToVar(triggerId, user, "user")
+    stateToVar(triggerId, "user", user)
 
     --abl.db에서 각 카테고리의 모든 항목 키값을 각각의 카테고리명 챗변수로 저장
     local abl = json.decode(getLoreBookContent(triggerId, "abl.db"))

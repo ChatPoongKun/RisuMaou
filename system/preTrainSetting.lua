@@ -159,7 +159,7 @@ function (triggerId, name)
         for k ,v in pairs(stat) do
            stat[k] = math.min(math.max(math.floor(v),0),10)
         end
-        stateToVar(triggerId, target, "target") --대상 캐릭터 로어북을 챗변수에 저장
+        stateToVar(triggerId, "target", target) --대상 캐릭터 로어북을 챗변수에 저장
         setState(triggerId, "stat", stat) --계산된 stat를 state에 저장
         --챗변수를 위한 사전처리
         local stat_c = "{"

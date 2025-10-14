@@ -31,5 +31,5 @@ function (triggerId)
     setChatVar(triggerId, "ampm", ampm)
 
     local user = getLoreBookContent(triggerId, "user")
-    stateToVar(triggerId, user, "user") --갱신된 유저정보 변수저장
+    stateToVar(triggerId, "user", user) --갱신된 유저정보 변수저장
 end
