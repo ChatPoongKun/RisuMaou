@@ -58,43 +58,34 @@ end!!
     local train = "가만 지켜본다"
 end!!
 
-[train/12/{{#when::{{getVar::애무계}}::is::1}}회화한다{{/when}}] function(triggerId)
+[train/12/{{#when::{{getVar::애무계}}::is::1}}대화한다{{/when}}] function(triggerId)
     local train = "회화한다"
 end!!
 
 [train/13/{{#when::{{getVar::애무계}}::is::1}}애무{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
-    --성공확률 계산
-    local roll = "" --조교 성공실패흫 전달할 string
-    --[[
-    성공확률 계산 로직을 작성할것. 현재는 모두 성공으로 간주
-    기본난이도 n/20으로 두고 abl과 특성, {{user}}의 기교 등에 따른 보정값 적용. n은 20이 넘을 수 있음
-    1~20사이의 난수 생성해 성공여부 판정
-    주사위가 20뜨면 대성공처리
-    ]]
-    
-    --체력/기력 소모로직
-    --[[
-    
-    ]]
+    local dc = 5 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 50
+    local costSP = 100
+    local dcBonus = 0 --조교 전용 보너스 요소가 있을 수 있음. 높을수록 난이도 상승. 음수면 난이도 감소
+   
     --LLM에 전달할 조교 커맨드
     local command =  "<br>{{user}}는 "..target['이름'] .."을 어루만진다."
-    sysFunction(triggerId, "trainProcess.sys", command, roll)
+    local orgasm_t, orgasm_u = sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, command)
 
-    --ej 게이지에 따른 사정처리
-    local ej_target = tonumber(getChatVar(triggerId, "ej_target"))
-    if ej_target >= 10000 then
-        --절정치 초기화
-        setChatVar(triggerId, "ej_target", 0)
-        --절정 경험을 추가해야되는데 어느 절정을 올리나 ㅅㅂ
+    target = getState(triggerId, "target") --trainProcess에서 처리된 target의 state로 갱신
+    if orgasm_t then
+        target["절정경험"] = target["절정경험"] + 1
     end
-    local ej_user = tonumber(getChatVar(triggerId, "ej_user"))
-    if ej_user >= 10000 then
-        --절정치 초기화
-        setChatVar(triggerId, "ej_user", 0)
-        --절정 경험을 추가해야되는데 어느 절정을 올리나 ㅅㅂ
-    end
-
+    --[[ 유저의 절정처리 미구현
+    if orgasm_u then
+        user["절정경험"] = user["절정경험"] + 1
+    end]]
+    
+    --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
+    setState(triggerId, "target", target)
+    stateToVar(triggerId, target, "target")
+    
 end!!
 
 [train/14/{{#when::{{getVar::애무계}}::is::1}}커널링구스{{/when}}] function(triggerId)
