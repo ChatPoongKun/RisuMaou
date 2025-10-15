@@ -2,7 +2,6 @@
 TIME = -1
 SPAMING = 0.2
 DEBUG = 0
-CMDS = {}
 MAXROLL = 30
 
 --디버깅용
@@ -134,7 +133,6 @@ function initialize(triggerId)
     end
     setState(triggerId, "screen", "main")
     processAndStoreLore(triggerId, "main.lua")
-
 end
 
 -- 문자열 함수를 실제 함수 객체로 변환
@@ -163,10 +161,11 @@ function processAndStoreLore(triggerId, loreBookId)
     local pattern = "%[(%w+)/(%S+)/([^%]]+)%]%s*(function.-end)!!"
     local count = 0
     local cmds = ""
+    local funcs = getState(triggerId, "funcs") or {}
 
     for page, number, description, functionBody in loreEntries:gmatch(pattern) do
         local key = page.."_"..number
-        CMDS[key] = functionBody
+        funcs[key] = functionBody
         debug(description.."-> funcs['" .. key .. "']에 함수 저장됨.")
         count = count + 1
 
@@ -179,16 +178,18 @@ function processAndStoreLore(triggerId, loreBookId)
         
     end
     setChatVar(triggerId, "cmds", cmds)
+    setState(triggerId, "funcs", funcs)
     reloadDisplay(triggerId)
     debug("처리 완료. 총 " .. count .. "개의 함수를 저장했습니다.\n")
 end
 
 function executeFunction(triggerId, screen, code, ...)
     local f_code = screen.."_"..code
-    local funcBody = CMDS[f_code]
+    local funcs = getState(triggerId, "funcs")
+    local funcBody = funcs[f_code]
 
     if not funcBody then
-        funcBody = CMDS[code]
+        funcBody = funcs[code]
         if not funcBody then
             alertNormal(triggerId, "커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
             return
