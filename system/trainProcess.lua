@@ -28,8 +28,6 @@ function(triggerId, dc, HP, SP, command)
     local target = getState(triggerId, "target") --대상정보를 state에서 테이블로 호출
     local currentStat = getState(triggerId, "stat") --현재 stat을 호출
 
-
-
     --[[성공굴림]]
     --보너스 요소: 유저 기교당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
     --패널티 요소: 대상의 2^반발각인, 부정적 stat당 1
@@ -87,12 +85,12 @@ function(triggerId, dc, HP, SP, command)
     local rollMsg = ""
     if roll == MAXROLL then
         rollMsg = "조교 대성공!"
-        print(roll..">="..dc, rollMsg)
+        debug(roll..">="..dc, rollMsg)
     elseif roll + rollBonus <= dc then
         rollMsg = "조교 실패"
-        print(roll..">="..dc, rollMsg)
+        debug(roll..">="..dc, rollMsg)
     else
-        print(roll..">="..dc, "성공")
+        debug(roll..">="..dc, "성공")
         
     end
 
@@ -115,17 +113,15 @@ function(triggerId, dc, HP, SP, command)
     --[[
         HP가 낮을 경우 설정에 따라 실신 혹은 사망 처리
     ]]
-    
+
     --계산된 체력 기력을 콤마가 포함된 문자열로 변환해 저장
     target["체력"] = int(hp)
     target["기력"] = int(sp)
 
-    
 
-    
     --[[프롬프트 빌딩]]
     --기존 로그 불러옴
-    local log = getChatVar(triggerId, "trainLog")
+    local oldLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
     --target가 가진 trait만 추출해 LLM에 정보제공
     for k, _ in pairs(traitDB) do
         if not hasVal(target, k) then
@@ -147,7 +143,7 @@ function(triggerId, dc, HP, SP, command)
     promptBuild("system", user),
     promptBuild("system", target_c),
     promptBuild("system", json.encode(statProm)),
-    promptBuild("assistant", log),
+    promptBuild("assistant", oldLog),
     promptBuild("user", command)
     }
     if rollMsg ~= "" then
@@ -167,7 +163,7 @@ function(triggerId, dc, HP, SP, command)
     local statChange = content:match("({.*})")
     local dialog = content:gsub(statChange, "")
     statChange = json.decode(statChange)
-    log = log .. "<br>" .. dialog:gsub("json","")
+    local newLog = "<br>" .. dialog:gsub("json","")
 
     --절정치 계산
     local ej_target = getChatVar(triggerId, "ej_target")
@@ -275,12 +271,13 @@ function(triggerId, dc, HP, SP, command)
     stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
     setChatVar(triggerId, "stat", stat_c) --변경된 stat을 chatVar에 반영
 
-    --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
+    --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 juel변환하고 로어북으로 반영.
     setState(triggerId, "target", target)
     stateToVar(triggerId, "target", target)
 
     reloadDisplay(triggerId)
-    setChatVar(triggerId, "trainLog", log)
+    setChatVar(triggerId, "oldLog", oldLog)
+    setChatVar(triggerId, "newLog", newLog)
 
     return orgasm_t, orgasm_u --대상과 유저의 절정 여부 반환
 
