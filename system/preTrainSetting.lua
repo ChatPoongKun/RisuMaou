@@ -28,7 +28,7 @@ function (triggerId, name)
         --abl같은 특정테이블만 순회하는것보다 확장성이 뛰어남
         local ablBase = 0.2 --abl*ablBase가 stat의 최소치를 보장해 높은 abl의 효과를 보장하도록 함
         local ablRatio = 0.5 --abl*ablRatio*math.random()을 더해 매 조교마다 조금씩 다른 stat치로 시작하도록 함
-        local statBonus = {
+        local statBonus = { --한글키값을 넣기위해 ["키값"]구조 적용
             --abl
             ["C감각"] = function(v)
                 stat["C쾌락"] = stat["C쾌락"] + v*(ablBase + ablRatio*math.random()) --자동 형변환 하겠지..
@@ -142,6 +142,26 @@ function (triggerId, name)
             end,
             ["광기"] = function(v)
                 stat["부정"] = stat["부정"] + 5
+            end,
+
+            --mark
+            ["고통각인"] = function(v)
+                stat["고통"] = stat["고통"] + v*1
+            end,
+            ["쾌락각인"] = function(v)
+                stat["욕정"] = stat["욕정"] + v*1
+            end,
+            ["공포각인"] = function(v)
+                stat["공포"] = stat["공포"] + v*1
+            end,
+            ["복종각인"] = function(v)
+                stat["온순"] = stat["온순"] + v*1
+            end,
+            ["치욕각인"] = function(v)
+                stat["굴복"] = stat["굴복"] + v*1
+            end,
+            ["반발각인"] = function(v)
+                stat["부정"] = stat["부정"] + v*2
             end
         }
 
