@@ -1,7 +1,8 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, command)
     debug("trainProcess 실행")
-    local max_ej = 10000 --최대 절정치
+    local ej_target_max = tonumber(getChatVar(triggerId, "ej_target_max")) --대상의 최대 절정치
+    local ej_user_max = tonumber(getChatVar(triggerId, "ej_user_max")) --대상의 최대 절정치
 
     --버튼 비활성화 및 응답중 표시
     local old_cmds = getChatVar(triggerId, "cmds")
@@ -211,18 +212,20 @@ function(triggerId, dc, HP, SP, command)
     end
 
     --절정치가 최대 최소값을 넘지 않도록 후처리
-    ej_target = math.min(max_ej, math.max(0, math.floor(ej_target)))
+    ej_target = math.min(ej_target_max, math.max(0, math.floor(ej_target)))
     setChatVar(triggerId, "ej_target", ej_target)
     debug(target["이름"].."절정치: " .. ej_target)
 
     --절정여부 체크
     local orgasm_t, orgasm_u = false, false
-    if ej_target > max_ej then
+    if ej_target > ej_target_max then
         orgasm_t = true
+        setChatVar(triggerId, "ej_target_max", ej_target_max*1.2)
     end
     --[[유저 절정처리 미구현
-        if ej_user > max_ej then
+        if ej_user > ej_user_max then
             orgasm_u = true
+            setChatVar(triggerId, "ej_user_max", ej_user_max*1.2)
         end
     ]]
 
