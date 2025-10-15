@@ -283,7 +283,7 @@ height: 0.6rem;
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-hp" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
 </div>
-<span class="v-bar-label">HP</span>
+<span class="v-bar-label">체력</span>
 </div>
 <!-- Vertical ST Bar -->
 <div class="v-bar-container" title="{{dict_element::{{getvar::target}}::최대기력}}">
@@ -399,7 +399,7 @@ height: 0.6rem;
 <section class="log-panel">
 <h2>* 메시지</h2>
 <div class="log-content">
-{{#when::{{? {{getvar::oldLog}}!=""}}}}<details>
+{{#when::{{? {{getvar::oldLog}}!=}}}}<details>
 <summary>이전 조교기록</summary>
 {{getvar::oldLog}}
 </details>
