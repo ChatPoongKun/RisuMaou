@@ -399,7 +399,12 @@ height: 0.6rem;
 <section class="log-panel">
 <h2>* 메시지</h2>
 <div class="log-content">
-{{getvar::trainLog}}
+{{#when::{{? {{getvar::oldLog}}!=""}}}}<details>
+<summary>이전 조교기록</summary>
+{{getvar::oldLog}}
+</details>
+{{/when}}
+{{getvar::newLog}}
 {{getvar::statLvUp}}
 </div>
 </section>
