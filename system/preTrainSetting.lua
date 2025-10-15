@@ -6,15 +6,20 @@ function (triggerId, name)
         setChatVar(triggerId, "A계", 0)
         setChatVar(triggerId, "봉사계", 0)
         setChatVar(triggerId, "하드계", 0)
-        setChatVar(triggerId, "trainLog", "대상이 조교 준비중이다.")
+        setChatVar(triggerId, "oldLog", "")
+        setChatVar(triggerId, "newLog", "대상이 조교 준비중이다.")
         setChatVar(triggerId, "statLvUp", "")
         setChatVar(triggerId, "ej_target", 0) --조교대상 절정치
         setChatVar(triggerId, "ej_user", 0) --유저 절정치
-        charToVar(triggerId, "target", name) --대상 캐릭터 로어북을 챗변수에 저장
+        setChatVar(triggerId, "ej_target_max", 10000) --조교대상 절정최대치
+        setChatVar(triggerId, "ej_user_max", 10000) --유저 절정 최대치
+
+        --target를 로어북에서 불러와 1차원으로 flatten
+        local target = json.decode(getLoreBookContent(triggerId, name))
+        target = flatten(target)
 
         --스탯 초기화
-        local char = json.decode(getLoreBookContent(triggerId, name))
-        setState(triggerId, "target", char) --대상 캐릭터 로어북 정보를 state에 저장
+        setState(triggerId, "target", target) --대상 캐릭터 로어북 정보를 state에 저장
         local statDB =json.decode(getLoreBookContent(triggerId, "stat.db"))
         local stat = {}
         for k, _ in pairs(statDB) do
@@ -25,7 +30,7 @@ function (triggerId, name)
         --abl같은 특정테이블만 순회하는것보다 확장성이 뛰어남
         local ablBase = 0.2 --abl*ablBase가 stat의 최소치를 보장해 높은 abl의 효과를 보장하도록 함
         local ablRatio = 0.5 --abl*ablRatio*math.random()을 더해 매 조교마다 조금씩 다른 stat치로 시작하도록 함
-        local statBonus = {
+        local statBonus = { --한글키값을 넣기위해 ["키값"]구조 적용
             --abl
             ["C감각"] = function(v)
                 stat["C쾌락"] = stat["C쾌락"] + v*(ablBase + ablRatio*math.random()) --자동 형변환 하겠지..
@@ -139,30 +144,31 @@ function (triggerId, name)
             end,
             ["광기"] = function(v)
                 stat["부정"] = stat["부정"] + 5
+            end,
+
+            --mark
+            ["고통각인"] = function(v)
+                stat["고통"] = stat["고통"] + v*1
+            end,
+            ["쾌락각인"] = function(v)
+                stat["욕정"] = stat["욕정"] + v*1
+            end,
+            ["공포각인"] = function(v)
+                stat["공포"] = stat["공포"] + v*1
+            end,
+            ["복종각인"] = function(v)
+                stat["온순"] = stat["온순"] + v*1
+            end,
+            ["치욕각인"] = function(v)
+                stat["굴복"] = stat["굴복"] + v*1
+            end,
+            ["반발각인"] = function(v)
+                stat["부정"] = stat["부정"] + v*2
             end
         }
-        
-        --char테이블 flatten
-        local function flatten(tbl)
-            local result = {}
-            -- 입력된 테이블의 모든 요소를 순회
-            local function doFlatten(tbl)
-                for k, v in pairs(tbl) do
-                    if type(v) == "table" then
-                        doFlatten(v)
-                    elseif type(k) == "number" then
-                        result[v] = "1"
-                    else
-                        result[k] = v
-                    end
-                end
-            end
-            doFlatten(tbl)
-            return result
-        end
-        char = flatten(char)
-        --평탄화한 char테이블을 순회하며 statBonus 적용
-        for k ,v in pairs(char) do
+
+        --평탄화된 target테이블을 순회하며 statBonus 적용
+        for k ,v in pairs(target) do
             local v = tonumber(v) or v
             if v ~= 0 then
                 local suc, _ = pcall(statBonus[k], v)
@@ -171,13 +177,13 @@ function (triggerId, name)
                 end
             end
         end
+
         --stat을 정수화하고 0~10사이에 있도록 제한
         for k ,v in pairs(stat) do
            stat[k] = math.min(math.max(math.floor(v),0),10)
         end
-        
+        stateToVar(triggerId, "target", target) --대상 캐릭터 로어북을 챗변수에 저장
         setState(triggerId, "stat", stat) --계산된 stat를 state에 저장
-
         --챗변수를 위한 사전처리
         local stat_c = "{"
         for k, v in pairs(stat) do

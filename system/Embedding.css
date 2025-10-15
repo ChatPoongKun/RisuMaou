@@ -411,7 +411,7 @@ h2, h3 {
 }
 
 /* Rating System */
-.star-rating {
+.rating {
     --rating: 0; /* Default value */
     --percent: calc(var(--rating) / 10 * 100%);
     display: inline-block;
@@ -420,29 +420,51 @@ h2, h3 {
     line-height: 1;
 }
 
-.star-rating::before {
+.heart::before {
     content: '♥️♥️♥️♥️♥️';
     background: linear-gradient(90deg, #ec0c4f var(--percent), #555 var(--percent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.skull-rating {
-    --rating: 0; /* Default value */
-    --percent: calc(var(--rating) / 10 * 100%);
-    display: inline-block;
-    font-size: 0.75rem;
-    font-family: 'Times New Roman', Times, serif;
-    line-height: 1;
-}
-
-.skull-rating::before {
+.skull::before {
     content: '☠️☠️☠️☠️☠️';
-    background: linear-gradient(90deg, #ffffff var(--percent), #555 var(--percent));
+    background: linear-gradient(90deg, #ffffff var(--percent), #555 var(--percent)); /*#ffffff*/
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
+.mark::before {
+    font-size: 1rem;
+    --percent: calc(var(--rating) / 3 * 100%);
+    content: '⚜️⚜️⚜️';
+    background: linear-gradient(90deg, #f8c65c var(--percent), #555 var(--percent));/*ef9d4e, f8c65c*/
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.neg::before {
+    background: linear-gradient(90deg, #bd4ece var(--percent), #555 var(--percent));/*#814689, bd4ece*/
+    -webkit-background-clip: text;
+}
+
+.heart.x-risu-is-full {
+    text-shadow: 0 0 0.5rem #ec0c4f, 0 0 1rem #ec0c4f;
+    -webkit-text-stroke: 1rem #ff8bb4;
+}
+
+.skull.x-risu-is-full {
+    text-shadow: 0 0 0.5rem #000, 0 0 1rem #000;
+    -webkit-text-stroke: 1rem #ffffff;
+}
+
+.mark.x-risu-is-full {
+    text-shadow: 0 0 0.5rem #d1843c , 0 0 1rem #f8c65c;
+}
+
+.neg.x-risu-is-full {
+    text-shadow: 0 0 0.5rem #6f3577, 0 0 1rem #bd4ece;
+}
 
 /* Responsive adjustments for char page */
 @media screen and (max-width: 600px) {
@@ -460,13 +482,13 @@ h2, h3 {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     }
 
-    .star-rating{
-        font-size: 0.65rem;
+    .rating{
+        font-size: 0.6rem;
     }
-        
+        /*
     .skull-rating{
-        font-size: 0.65rem;
-    }
+        font-size: 0.6rem;
+    }*/
 }
 
 </style>
