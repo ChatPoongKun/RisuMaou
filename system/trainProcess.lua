@@ -41,13 +41,13 @@ function(triggerId, dc, HP, SP, command)
             rollBonus = rollBonus + target[v]*2
         end
     end
-    local dcPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"} --성공굴림 보너스 stat
+    local dcPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락", "공포"} --성공굴림 보너스 stat
     for _, v in ipairs(dcPlus) do
         local val = currentStat[v]
         rollBonus = rollBonus + val
         debug("성공굴림: "..v.." +"..val)
     end
-    local dcMinus = {"공포", "불쾌", "부정"} --성공굴림 마이너스 stat
+    local dcMinus = {"불쾌", "부정"} --성공굴림 마이너스 stat
     for _, v in ipairs(dcMinus) do
         local val = currentStat[v]
         rollBonus = rollBonus - val
