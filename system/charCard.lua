@@ -2,7 +2,12 @@ function(triggerId, name)
     debug("charCard 실행")
     local screen = getState(triggerId, "screen")
     if screen == "charList" then
-        charToVar(triggerId, "target", name)
+        if name == getPersonaName(triggerId) then
+            name = "user"
+        end
+        local target = json.decode(getLoreBookContent(triggerId, name))
+        print(target)
+        stateToVar(triggerId, "target", target)
         setState(triggerId, "screen", "charInfo") --캐릭터 상세 정보 화면으로 이동
 
     elseif screen == "preTrain" then

@@ -199,13 +199,64 @@ height: 0.6rem;
     margin-bottom: 0;
 }
 
+.loading-container {
+    grid-column: 1 / -1; /* Span all columns in the command-container grid */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    color: #ccc;
+    font-family: 'Gulim', monospace;
+    text-align: center;
+    min-height: 80px; /* Ensure it has some height */
+}
 
+.loading-text {
+    font-size: 1.1em;
+    margin-bottom: 0.3rem;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.loading-dots span {
+    width: 12px;
+    height: 12px;
+    background-color: #ffffbf; /* Using a highlight color from the theme */
+    border-radius: 50%;
+    animation: pulse 1.4s infinite ease-in-out both;
+}
+
+.loading-dots .dot-1 {
+    animation-delay: -0.32s;
+}
+
+.loading-dots .dot-2 {
+    animation-delay: -0.16s;
+}
+
+@keyframes pulse {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1.0);
+        opacity: 1;
+    }
+}
 
 @media screen and (max-width: 600px) {
     .stats-grid {
         grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
         font-size: 0.8rem;
         }
+    .stat-label {
+        font-size: 0.8rem;
+    }
 }
 </style>
 
@@ -215,7 +266,7 @@ height: 0.6rem;
 <header class="header">
 <h1>▋조교 메뉴</h1>
 <div class="game-info">
-<span>({{getvar::day}}일째) 《만월》 {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}</span>
+<span>({{getvar::day}}일째) {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}《만월》 {{/when}}{{#when::ampm::vis::0}}낮{{:else}}밤{{/when}}</span>
 </div>
 </header>
 <main>
@@ -232,7 +283,7 @@ height: 0.6rem;
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-hp" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
 </div>
-<span class="v-bar-label">HP</span>
+<span class="v-bar-label">체력</span>
 </div>
 <!-- Vertical ST Bar -->
 <div class="v-bar-container" title="{{dict_element::{{getvar::target}}::최대기력}}">
@@ -242,10 +293,9 @@ height: 0.6rem;
 <span class="v-bar-label">기력</span>
 </div>
 <!-- Vertical Ejaculation Bar -->
-<div class="v-bar-container" title="{{? {{getvar::ej_target}}*0.8}}">
+<div class="v-bar-container" title="{{getvar::ej_target}}/{{getvar::ej_target_max}}">
 <div class="v-bar-track">
-<!--최대 게이지를 80%까지만 채워서 가득 찼는데 절정하지 않는 모습을 피함-->
-<div class="v-bar-fill x-risu-ej" style="height: {{? {{? {{tonumber::{{getvar::ej_target}}}}*0.8}}/100}}%;"></div>
+<div class="v-bar-fill x-risu-ej" style="height: {{? {{tonumber::{{getvar::ej_target}}}}/{{tonumber{{getvar::ej_target_max}}}}}}%;"></div>
 </div>
 <span class="v-bar-label">절정</span>
 </div>
@@ -304,26 +354,28 @@ height: 0.6rem;
 </div>
 </div>
 <div class="stats-grid">
-<div class="stat-item"><span class="stat-label">C쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::C쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">V쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::V쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">A쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::A쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">B쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::B쾌락}}"></div></div>
-<!--요도 성감이 있는 경우에만 U쾌락이 뜨도록 해야 함-->
-<div class="stat-item"><span class="stat-label">U쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::U쾌락}}"></div></div>
-<!--인후 성감이 있는 경우에만 M쾌락이 뜨도록 해야 함-->
-<div class="stat-item"><span class="stat-label">M쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::M쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">S쾌락</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::S쾌락}}"></div></div>
-<div class="stat-item"><span class="stat-label">V윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::V윤활}}"></div></div>
-<div class="stat-item"><span class="stat-label">A윤활</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::A윤활}}"></div></div>
-<div class="stat-item"><span class="stat-label">욕정</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::욕정}}"></div></div>
-<div class="stat-item"><span class="stat-label">온순</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::온순}}"></div></div>
-<div class="stat-item"><span class="stat-label">굴복</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::굴복}}"></div></div>
-<div class="stat-item"><span class="stat-label">습득</span> <div class="star-rating" style="--rating: {{dict_element::{{getvar::stat}}::습득}}"></div></div>
-<div class="stat-item"><span class="stat-label">수치</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::수치}}"></div></div>
-<div class="stat-item"><span class="stat-label">고통</span> <div class="{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>=4}}}}star{{:else}}skull{{/when}}-rating" style="--rating: {{dict_element::{{getvar::stat}}::고통}}"></div></div>
-<div class="stat-item"><span class="stat-label">공포</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::공포}}"></div></div>
-<div class="stat-item"><span class="stat-label">불쾌</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::불쾌}}"></div></div>
-<div class="stat-item"><span class="stat-label">부정</span> <div class="skull-rating" style="--rating: {{dict_element::{{getvar::stat}}::부정}}"></div></div>
+<div class="stat-item"><span class="stat-label">C쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::C쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::C쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">V쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::V쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::V쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">A쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::A쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::A쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">B쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::B쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::B쾌락}}"></div></div>
+{{#when::{{dict_element::{{getvar::target}}::요도성감}}::vis::1}}
+<div class="stat-item"><span class="stat-label">U쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::U쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::U쾌락}}"></div></div>
+{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::인후성감}}::vis::1}}
+<div class="stat-item"><span class="stat-label">M쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::M쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::M쾌락}}"></div></div>
+{{/when}}
+<div class="stat-item"><span class="stat-label">S쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::S쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::S쾌락}}"></div></div>
+<div class="stat-item"><span class="stat-label">V윤활</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::V윤활}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::V윤활}}"></div></div>
+<div class="stat-item"><span class="stat-label">A윤활</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::A윤활}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::A윤활}}"></div></div>
+<div class="stat-item"><span class="stat-label">욕정</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::욕정}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::욕정}}"></div></div>
+<div class="stat-item"><span class="stat-label">온순</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::온순}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::온순}}"></div></div>
+<div class="stat-item"><span class="stat-label">굴복</span> <div class="rating {{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>4}}::or::{{? {{tonumber::{{dict_element::{{getvar::target}}::복종각인}}}}>0}}}}heart{{:else}}skull{{/when}} {{#when::{{dict_element::{{getvar::stat}}::굴복}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::굴복}}"></div></div>
+<div class="stat-item"><span class="stat-label">습득</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::습득}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::습득}}"></div></div>
+<div class="stat-item"><span class="stat-label">수치</span> <div class="rating {{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>4}}}}heart{{:else}}skull{{/when}} {{#when::{{dict_element::{{getvar::stat}}::수치}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::수치}}"></div></div>
+<div class="stat-item"><span class="stat-label">고통</span> <div class="rating {{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>4}}}}heart{{:else}}skull{{/when}} {{#when::{{dict_element::{{getvar::stat}}::고통}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::고통}}"></div></div>
+<div class="stat-item"><span class="stat-label">공포</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::공포}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::공포}}"></div></div>
+<div class="stat-item"><span class="stat-label">불쾌</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::불쾌}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::불쾌}}"></div></div>
+<div class="stat-item"><span class="stat-label">부정</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::부정}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::부정}}"></div></div>
 </div>
 </section>
 
@@ -334,10 +386,9 @@ height: 0.6rem;
 <div class="x-risu-bar-container">
 <span class="bar-label">{{user}}:</span>
 <div class="progress-bar x-risu-ej">
-<!--최대 게이지를 80%까지만 채워서 가득 찼는데 절정하지 않는 모습을 피함-->
-<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{? {{tonumber::{{getvar::ej_user}}}}*0.8}}/100}}%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{tonumber::{{getvar::ej_user_max}}}}}}%;"></div>
 </div>
-<span class="bar-value">{{getvar::ej_user}}/10000</span>
+<span class="bar-value">{{getvar::ej_user}}/{{getvar::ej_user_max}}</span>
 </div>
 </section>
 
@@ -346,7 +397,12 @@ height: 0.6rem;
 <section class="log-panel">
 <h2>* 메시지</h2>
 <div class="log-content">
-{{getvar::trainLog}}
+{{#when::{{? {{getvar::oldLog}}!=}}}}<details>
+<summary>이전 조교기록</summary>
+{{getvar::oldLog}}
+</details>
+{{/when}}
+{{getvar::newLog}}
 {{getvar::statLvUp}}
 </div>
 </section>

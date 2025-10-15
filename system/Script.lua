@@ -2,7 +2,7 @@
 TIME = -1
 SPAMING = 0.2
 DEBUG = 0
-CMDS = {}
+MAXROLL = 30
 
 --디버깅용
 function debug(...)
@@ -29,7 +29,6 @@ function time()
     else
         return os.clock() --35분 지나면 오버플로우로 못씀
     end
-
 end
 
 --정수 포맷팅
@@ -55,7 +54,7 @@ function hasVal(tbl, val)
             end
         end
     end
-    return false
+    return false, nil
 end
 
 --로어북 컨텐츠 로딩
@@ -65,20 +64,63 @@ function getLoreBookContent(triggerId, lore)
     return modContent
 end
 
--- name 캐릭터의 로컬로어북을 챗변수varName으로 할당
-function charToVar(triggerId, varName, name)
-    local name = name
-    if name == getPersonaName(triggerId) then
-        name = "user"
+--테이블을 1차원으로 flatten
+function flatten(tbl)
+    local result = {}
+    -- 입력된 테이블의 모든 요소를 순회
+    local function doFlatten(tbl)
+        for k, v in pairs(tbl) do
+            if type(v) == "table" then --값이 테이블이면 재귀
+                if k == "이상경험 기록" then
+                    result[k] = v --이상경험 기록은 평탄화 금지. 개선방안 고민 필요함    
+                end
+                doFlatten(v)
+            elseif type(k) == "number" then --키가 인덱스(배열)이면 키값에 값을 넣고 밸류는 "1"
+                result[v] = "1"
+            else
+                result[k] = v --일반적인 키:값 상태면 그대로 입력
+            end
+        end
     end
-    --캐릭터 정보를 리수 딕셔너리/배열 양식에 맞게 변형 
-    local charInfo = getLoreBookContent(triggerId, name)
-    local charInfo = charInfo:gsub("%[(.-)%]", function(inside)
-        local replace = inside:gsub('"','\\"')
-        return '"[' .. replace .. ']"'
-    end)
-    debug(name.."를 user 변수에 저장")
-    setChatVar(triggerId, varName, charInfo)
+    doFlatten(tbl)
+    return result
+end
+
+-- state에 저장된 테이블을 챗변수varName으로 할당. 입력된 테이블을 1차원으로 flatten함
+function stateToVar(triggerId, key, tbl)
+    --테이블을 리수 딕셔너리/배열 양식에 맞게 변형 
+    local tbl = flatten(tbl)
+    local new_tbl = ""
+    local function checkArray(v) --배열인지 확인
+        for k,_ in pairs(v) do
+            if type(k) ~= "number" then
+                return false
+            end
+        end
+        return true
+    end
+
+    if checkArray(tbl) then --tbl이 배열이면
+        --배열처리
+        new_tbl = "["
+        for _,v in pairs(tbl) do
+            new_tbl = new_tbl .. '"' .. v .. '",'
+        end
+        new_tbl = string.gsub(new_tbl, ",$", "]")
+    else
+        --딕셔너리처리
+        new_tbl = "{"
+        for k, v in pairs(tbl) do
+            if type(v) == "table" then --이상경험기록은 평탄화 안해서 값이 테이블이므로 encode해서 집어넣음 추후 개선안 필요함.
+                v = json.encode(v)
+            end
+            new_tbl = new_tbl .. '"' .. k .. '":"' .. v .. '",'
+        end
+        new_tbl = string.gsub(new_tbl, ",$", "}")
+
+    end
+    debug(key, new_tbl)
+    setChatVar(triggerId, key, new_tbl)
 
 end
 
@@ -91,7 +133,6 @@ function initialize(triggerId)
     end
     setState(triggerId, "screen", "main")
     processAndStoreLore(triggerId, "main.lua")
-
 end
 
 -- 문자열 함수를 실제 함수 객체로 변환
@@ -120,10 +161,11 @@ function processAndStoreLore(triggerId, loreBookId)
     local pattern = "%[(%w+)/(%S+)/([^%]]+)%]%s*(function.-end)!!"
     local count = 0
     local cmds = ""
+    local funcs = getState(triggerId, "funcs") or {}
 
     for page, number, description, functionBody in loreEntries:gmatch(pattern) do
         local key = page.."_"..number
-        CMDS[key] = functionBody
+        funcs[key] = functionBody
         debug(description.."-> funcs['" .. key .. "']에 함수 저장됨.")
         count = count + 1
 
@@ -136,16 +178,18 @@ function processAndStoreLore(triggerId, loreBookId)
         
     end
     setChatVar(triggerId, "cmds", cmds)
+    setState(triggerId, "funcs", funcs)
     reloadDisplay(triggerId)
     debug("처리 완료. 총 " .. count .. "개의 함수를 저장했습니다.\n")
 end
 
 function executeFunction(triggerId, screen, code, ...)
     local f_code = screen.."_"..code
-    local funcBody = CMDS[f_code]
+    local funcs = getState(triggerId, "funcs")
+    local funcBody = funcs[f_code]
 
     if not funcBody then
-        funcBody = CMDS[code]
+        funcBody = funcs[code]
         if not funcBody then
             alertNormal(triggerId, "커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
             return
