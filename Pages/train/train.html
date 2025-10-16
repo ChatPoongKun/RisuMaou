@@ -481,7 +481,7 @@ visibility: hidden;
 <h2>* 메시지</h2>
 <div class="log-wrapper">
 <div class="log-content">
-{{#when::{{? {{getvar::oldLog}}!=""}}}}<details>
+{{#when::{{? {{getvar::oldLog}}!= }}}}<details>
 <summary>이전 조교기록</summary>
 {{getvar::oldLog}}
 </details>
@@ -489,7 +489,7 @@ visibility: hidden;
 {{getvar::newLog}}
 {{getvar::statLvUp}}
 </div>
-{{#when::{{? {{getvar::sucEffect}}!=""}}}}{{getvar::sucEffect}}{{/when}}
+{{#when::{{? {{getvar::sucEffect}}!= }}}}{{getvar::sucEffect}}{{/when}}
 <!-- 성공실패 예시
 <div class="success-animation"><div class="animation-text fail">실패</div></div>
 <div class="success-animation"><div class="animation-text success">대성공</div></div>
