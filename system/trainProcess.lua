@@ -3,6 +3,8 @@ function(triggerId, dc, HP, SP, command)
     debug("trainProcess 실행")
     local ej_target_max = tonumber(getChatVar(triggerId, "ej_target_max")) --대상의 최대 절정치
     local ej_user_max = tonumber(getChatVar(triggerId, "ej_user_max")) --대상의 최대 절정치
+    local sucEffect = ""
+    setChatVar(triggerId, "sucEffect", sucEffect) --sucEffect 초기화
 
     --버튼 비활성화 및 응답중 표시
     local old_cmds = getChatVar(triggerId, "cmds")
@@ -86,13 +88,14 @@ function(triggerId, dc, HP, SP, command)
     local rollMsg = ""
     if roll == MAXROLL then
         rollMsg = "조교 대성공!"
+        sucEffect = [[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
         debug(roll..">="..dc, rollMsg)
     elseif roll + rollBonus <= dc then
         rollMsg = "조교 실패"
+        sucEffect = [[<div class="success-animation"><div class="animation-text fail">]]..rollMsg..[[</div></div>]]
         debug(roll..">="..dc, rollMsg)
     else
         debug(roll..">="..dc, "성공")
-        
     end
 
     --HP,SP 소모 계산
@@ -281,6 +284,7 @@ function(triggerId, dc, HP, SP, command)
     reloadDisplay(triggerId)
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
+    setChatVar(triggerId, "sucEffect", sucEffect)
 
     return orgasm_t, orgasm_u --대상과 유저의 절정 여부 반환
 
