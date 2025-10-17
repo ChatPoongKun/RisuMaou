@@ -318,6 +318,88 @@ end!!
     local train = "야외플레이"
 end!!
 
-[train/199/돌아가기] function(triggerId)
-    setState(triggerId, "screen", "main")
+[train/199/조교종료] function(triggerId)
+
+    local target = getState(triggerId, "target") --조교 종료시의 캐릭터 정보를 호출
+    local exp = json.decode(getLoreBookContent(triggerId, "EXPtable.db")) --경험치 테이블 호출
+    local juelText = {} --주얼획득 안내
+
+    --조교 시작전의 주얼수치를 호출
+    local juelDB = json.decode(getLoreBookContent(triggerId, "juel.db")) --주얼 리스트를 juel.db에서 호출
+
+    --조교 종료시의 stat레벨에 따라 statExp를 저장
+    local stat = getState(triggerId, "stat")
+    local statExp = {}
+
+    for k, v in pairs(stat) do
+        if tonumber(v) > 0 then
+            local lvMin = tostring(math.max(0, v-1))
+            statExp[k] = math.random(exp[lvMin], exp[tostring(v)]) --stat 경험치를 랜덤하게 얻되 범위는 stat레벨-1에서 현재 레벨까지로 설정
+            if statExp[k] == 0 then statExp[k] = nil end --statexp를 1이상 얻지못하면 테이블에서 제거
+        end
+    end
+
+    --statExp에 따라 juel을 획득
+    local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
+    local juelAdd = {}
+    for k, v in pairs(statExp) do
+        local db = statDB[k]
+        local len = #db
+
+        for i, j in ipairs(db) do
+            local total = (len-1)*len*0.5 --설명배열이 하나 있으므로 1~len-1까지의 값을 합산
+            if juelDB[j] then
+                juelAdd[j] = math.floor(statExp[k]*(len-i+1)/total) --앞쪽에 위치한 juel부터 더 높은 가중치로 exp를 분배
+            end
+            if juelAdd[j] == 0 then juelAdd[j] = nil end
+        end
+    end
+
+    local deduct = juelAdd["부정"] or 0
+    juelAdd["부정"] = nil
+    if len(juelAdd) > 0 then
+print("deduct: "..deduct)
+        --오름차순 정렬
+        table.sort(juelAdd, function(a, b)
+            return a.value < b.value
+        end)
+        --부정 juel 균등 차감
+        local lastCost = 0
+        for i, item in ipairs(juelAdd) do
+            local len = len(juelAdd) - i + 1 --차감 대상의 수
+            local cost = item.value - lastCost --현재 단계에서 차감해야할 비용
+            local sub = cost * len --현재 단계에서 필요한 총비용
+print("sss")
+            if deduct >= sub then --부정구슬이 남으면
+                deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
+                lastCost = item.value
+            else --안남으면
+                cost = cost + deduct/len --n빵
+                deduct = 0
+                break
+            end
+        end
+        for k, v in pairs(juelAdd) do
+            local sub = math.min(lastCost, v)
+            local juel = tonumber(target[k])
+            juelText[k] = k..": "..juel.." + "..v.." - "..sub.." = "..juel+v-sub.."<br>"
+            target[k] = juel + v - sub
+        end
+    end
+    juelAdd["부정"] = deduct
+    local juelTextconcat = ""
+    if len(juelText) > 0 then
+        for _,v in pairs(juelText) do
+            juelTextconcat = juelTextconcat .. v
+        end
+    else
+        juelTextconcat = "능력치 변동없음"
+    end
+    
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
+    stateToVar(triggerId, "target", target)
+
+    setChatVar(triggerId, "juelText", juelTextconcat)
+    setState(triggerId, "screen", "postTrain")
 end!!
