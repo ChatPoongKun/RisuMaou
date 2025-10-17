@@ -367,19 +367,19 @@
 <div id="talents-content" class="tab-pane">
 <div class="info-grid">
 <h3>성격</h3>
-{{#each {{getvar::성격}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{#each {{getvar::성격List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
 <h3>신체특성</h3>
-{{#each {{getvar::신체특성}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{#each {{getvar::신체특성List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
 <h3>성적취향</h3>
-{{#each {{getvar::성적취향}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{#each {{getvar::성적취향List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
 <h3>체질</h3>
-{{#each {{getvar::체질}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{#each {{getvar::체질List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
 </div>
 </div>
 
 <div id="abl-content" class="tab-pane">
 <div class="info-grid">
-{{#each {{getvar::abl}} abil}}
+{{#each {{getvar::ablList}} abil}}
 {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::isnot::0}}
 <div class="abl-item"><span>{{slot::abil}}</span>
 <div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}">
@@ -391,7 +391,7 @@
 
 <div id="exp-content" class="tab-pane">
 <div class="info-grid">
-{{#each {{getvar::exp}} exp}}
+{{#each {{getvar::expList}} exp}}
 {{#when::{{dict_element::{{getvar::target}}::{{slot::exp}}}}::isnot::0}}
 <div class="talent-tag"><strong>{{slot::exp}}:</strong> {{dict_element::{{getvar::target}}::{{slot::exp}}}}</div>
 {{/when}}
@@ -457,7 +457,7 @@
 <section class="jewel-section">
 <h2>* 주얼</h2>
 <div class="jewel-grid">
-{{#each {{array::V쾌락::A쾌락::B쾌락::U쾌락::욕정::온순::굴복::기술::수치::고통::공포::부정}} juel}}
+{{#each {{getvar::juelList}} juel}}
 {{#when::{{dict_element::{{getvar::target}}::{{slot::juel}}}}::isnot::0}}
 <div class="talent-tag"><strong>{{slot::juel}}:</strong> {{dict_element::{{getvar::target}}::{{slot::juel}}}}</div>
 {{/when}}
