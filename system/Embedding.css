@@ -454,7 +454,7 @@ h2, h3 {
 }
 
 .skull.x-risu-is-full {
-    text-shadow: 0 0 0.5rem #000, 0 0 1rem #000;
+    text-shadow: 0 0 0.5rem #5a0365, 0 0 1rem #5a0365;
     -webkit-text-stroke: 1rem #ffffff;
 }
 
