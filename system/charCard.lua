@@ -6,7 +6,6 @@ function(triggerId, name)
             name = "user"
         end
         local target = json.decode(getLoreBookContent(triggerId, name))
-        print(target)
         stateToVar(triggerId, "target", target)
         setState(triggerId, "screen", "charInfo") --캐릭터 상세 정보 화면으로 이동
 
