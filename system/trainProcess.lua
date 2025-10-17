@@ -1,12 +1,18 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, command)
     debug("trainProcess 실행")
-    local ej_target_max = tonumber(getChatVar(triggerId, "ej_target_max")) --대상의 최대 절정치
-    local ej_user_max = tonumber(getChatVar(triggerId, "ej_user_max")) --대상의 최대 절정치
+    --[[초기화]]
+    math.randomseed(os.time())
     local sucEffect = ""
     setChatVar(triggerId, "sucEffect", sucEffect) --sucEffect 초기화
 
-    --버튼 비활성화 및 응답중 표시
+    --[[유저와 조교대상의 정보 호출]]
+    local user = getLoreBookContent(triggerId, "user") --유저의 정보를 로어북에서 string으로 호출
+    local target_c = getChatVar(triggerId, "target") --대상정보를 chatvar에서 string으로 호출
+    local target = getState(triggerId, "target") --대상정보를 state에서 테이블로 호출
+    local currentStat = getState(triggerId, "stat") --현재 stat을 호출
+
+    --[[버튼 비활성화 및 응답중 표시]]
     local old_cmds = getChatVar(triggerId, "cmds")
     local loading = [[<div class="loading-container" aria-live="polite" aria-label="응답 처리중">
     <div class="loading-text">[응답 처리중]</div>
@@ -19,17 +25,37 @@ function(triggerId, dc, HP, SP, command)
     setChatVar(triggerId, "cmds", loading)
     reloadDisplay(triggerId)
 
-    --LLM에 전달할 각종 수치에 대한 설명 호출
-    local ablDB = getLoreBooks(triggerId, "abl.db")[1].content:gsub("{",""):gsub("}","")
-    local statDB = getLoreBooks(triggerId, "stat.db")[1].content:gsub("{",""):gsub("}","")
-    --local expDB = getLoreBooks(triggerId, "exp.db")[1].content --토큰만 먹을텐데 경험 수치에 대한 db를 알려줄 필요가 있을까? 일시 보류
-    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db")) -- target과 관련있는 trait만 골라서 전달하기 위해 테이블로 받아옴
+    --[[LLM에 전달할 각종 수치에 대한 설명 호출]]
+    --abl 설명
+    local ablDB = json.decode(getLoreBookContent(triggerId, "abl.db"))
+    --설명파트만 추출
+    for k,v in pairs(ablDB) do
+        ablDB[k] = v[1]
+    end
 
-    --유저와 조교대상의 정보 호출
-    local user = getLoreBookContent(triggerId, "user") --유저의 정보를 로어북에서 string으로 호출
-    local target_c = getChatVar(triggerId, "target") --대상정보를 chatvar에서 string으로 호출
-    local target = getState(triggerId, "target") --대상정보를 state에서 테이블로 호출
-    local currentStat = getState(triggerId, "stat") --현재 stat을 호출
+    --stat 설명
+    local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
+    --설명파트만 추출
+    for k,v in pairs(statDB) do
+        statDB[k] = v[1]
+    end
+    --스탯을 n/10으로 작성해 LLM이 현재 수준이 어느정도인지 판단하도록 함
+    local statProm = {}
+    for k,v in pairs(currentStat) do
+        statProm[k] = v.."/10"
+    end
+
+    --local expDB = getLoreBooks(triggerId, "exp.db")[1].content --토큰만 먹을텐데 경험 수치에 대한 db를 알려줄 필요가 있을까? 일시 보류
+    
+    --trait 설명
+    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db")) -- target과 관련있는 trait만 골라서 전달하기 위해 테이블로 받아옴
+    --target가 가진 trait에 대한 설명만 추출해 LLM에 정보제공
+    for k, _ in pairs(traitDB) do
+        if not hasVal(target, k) then
+            traitDB[k] = nil --target한테 없는 trait 설명은 삭제
+        end
+    end
+    traitDB = json.encode(traitDB)
 
     --[[성공굴림]]
     --보너스 요소: 유저 기교당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
@@ -126,30 +152,19 @@ function(triggerId, dc, HP, SP, command)
     --[[프롬프트 빌딩]]
     --기존 로그 불러옴
     local oldLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
-    --target가 가진 trait만 추출해 LLM에 정보제공
-    for k, _ in pairs(traitDB) do
-        if not hasVal(target, k) then
-            traitDB[k] = nil --target한테 없는 trait 설명은 삭제
-        end
-    end
-    traitDB = json.encode(traitDB)
-    --스탯을 n/10으로 작성해 LLM이 현재 수준이 어느정도인지 판단하도록 함
-    local statProm = {}
-    for k,v in pairs(currentStat) do
-        statProm[k] = v.."/10"
-    end
     local prompt = {
     promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "train.pt")),
-    promptBuild("system", ablDB),
-    promptBuild("system", statDB),
+    promptBuild("system", "abl: "..json.encode(ablDB)),
+    promptBuild("system", "stat: "..json.encode(statDB)),
     promptBuild("system", traitDB),
     promptBuild("system", user),
     promptBuild("system", target_c),
-    promptBuild("system", json.encode(statProm)),
+    promptBuild("system", "current stat: "..json.encode(statProm)),
     promptBuild("assistant", oldLog),
     promptBuild("user", command)
     }
+
     if rollMsg ~= "" then
         table.insert(prompt, promptBuild("system", rollMsg))
     end
@@ -215,11 +230,14 @@ function(triggerId, dc, HP, SP, command)
     end
 
     --절정치가 최대 최소값을 넘지 않도록 후처리
+    local ej_target_max = tonumber(getChatVar(triggerId, "ej_target_max")) --대상의 최대 절정치
+    local ej_user_max = tonumber(getChatVar(triggerId, "ej_user_max")) --유저의 최대 절정치
     ej_target = math.min(ej_target_max, math.max(0, math.floor(ej_target)))
     setChatVar(triggerId, "ej_target", ej_target)
     debug(target["이름"].."절정치: " .. ej_target)
 
     --절정여부 체크
+
     local orgasm_t, orgasm_u = false, false
     if ej_target > ej_target_max then
         orgasm_t = true
@@ -236,7 +254,7 @@ function(triggerId, dc, HP, SP, command)
     local lvUpcomment = ""
     local tbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
     local statResult = {}
-    math.randomseed(os.time())
+    
 
     local lvUp
     lvUp = function(remainStat , currentLv, statName)
