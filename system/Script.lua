@@ -39,6 +39,20 @@ function int(str)
     return str
 end
 
+--테이블 길이 파악
+function len(tbl)
+    local len = 0
+    if type(tbl) ~= "table" then
+        debug(tbl.."은 올바른 테이블이 아닙니다.")
+        return false
+        end
+    for k, v in pairs(tbl) do
+        len = len + 1
+    end
+    return len
+end
+
+
 --table에 val이 있는지 확인.
 --신체특성 같은 배열 내에 있는 값도 체크하기 위해 밸류도 함께 체크
 --return으로 밸류를 반환하도록 해 함수 활용성을 높임
