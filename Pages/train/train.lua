@@ -65,8 +65,8 @@ end!!
 [train/13/{{#when::{{getVar::애무계}}::is::1}}애무{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 5 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 50
-    local costSP = 100
+    local costHP = 10
+    local costSP = 20
     local dcBonus = 0 --조교 전용 보너스 요소가 있을 수 있음. 높을수록 난이도 상승. 음수면 난이도 감소
    
     --LLM에 전달할 조교 커맨드
