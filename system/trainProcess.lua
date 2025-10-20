@@ -28,10 +28,6 @@ function(triggerId, dc, HP, SP, command)
     --[[LLM에 전달할 각종 수치에 대한 설명 호출]]
     --abl 설명
     local ablDB = json.decode(getLoreBookContent(triggerId, "abl.db"))
-    --설명파트만 추출
-    for k,v in pairs(ablDB) do
-        ablDB[k] = v[1]
-    end
 
     --stat 설명
     local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
@@ -151,7 +147,12 @@ function(triggerId, dc, HP, SP, command)
 
     --[[프롬프트 빌딩]]
     --기존 로그 불러옴
-    local oldLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
+    local oldLog
+    if getChatVar(triggerId, "oldLog") == "[조교시작]" then
+        oldLog = getChatVar(triggerId, "newLog")
+    else
+        oldLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
+    end
     local prompt = {
     promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "train.pt")),
@@ -171,7 +172,7 @@ function(triggerId, dc, HP, SP, command)
 
     local response = LLM(triggerId, prompt) --LLM에 응답 요청
     if not response.success then --LLM응답 실패시 함수 종료
-        alertNormal(triggerId, "LLM응답 실패")
+        alertNormal(triggerId, "LLM응답 실패<br>"..response.result)
         setChatVar(triggerId, "cmds", old_cmds)
         reloadDisplay(triggerId)
         return false
@@ -299,11 +300,11 @@ function(triggerId, dc, HP, SP, command)
     setState(triggerId, "target", target)
     stateToVar(triggerId, "target", target)
 
-    reloadDisplay(triggerId)
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
     setChatVar(triggerId, "sucEffect", sucEffect)
 
+    reloadDisplay(triggerId)
     return orgasm_t, orgasm_u --대상과 유저의 절정 여부 반환
 
 end
