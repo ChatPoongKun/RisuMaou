@@ -243,6 +243,11 @@ listenEdit("editDisplay", function(triggerId, data)
     --현재 페이지에 맞는 html호출
     local html = getLoreBookContent(triggerId, screen..".html")
     setChatVar(triggerId, "html", html)
+    local gameStart = getLoreBookContent(triggerId, "gameStart.html")
+    setChatVar(triggerId, "gamestart", gameStart)
+    if gameStart ~= html then
+        setChatVar(triggerId, "gamestart", "")
+    end
 end)
 
 --기본 입력창을 통해 리퀘가 가는걸 방지 + 입력한 번호 캐치해서 함수수행
