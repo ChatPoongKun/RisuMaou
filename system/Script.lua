@@ -184,9 +184,9 @@ function processAndStoreLore(triggerId, loreBookId)
         count = count + 1
 
         --cmds 챗변수에 버튼들 입력
-        if number == "--" then --구분선 처리
+        if number == "hr" then --구분선 처리
             cmds = cmds .. "<div style='text-align:center;border-bottom:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'>"..description.."</div>"
-        else
+        elseif description ~= "hidden" then
             cmds = cmds.."<button class='btn command-btn' risu-btn='"..number.."'>["..number.."] "..description.."</button>"
         end
         

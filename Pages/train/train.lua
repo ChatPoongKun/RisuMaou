@@ -52,7 +52,7 @@ end!!
     setChatVar(triggerId, cat, tgl)
 end!!
 
-[train/--/{{#when::애무계::vis::1}}--애무계--{{/when}}]function end!!
+[train/hr/{{#when::애무계::vis::1}}--애무계--{{/when}}]function end!!
 
 [train/11/{{#when::{{getVar::애무계}}::is::1}}가만 지켜본다{{/when}}] function(triggerId)
     local train = "가만 지켜본다"
@@ -120,7 +120,7 @@ end!!
     local train = "애널 핥기"
 end!!
 
-[train/--/{{#when::도구계::vis::1}}--도구계--{{/when}}]function end!!
+[train/hr/{{#when::도구계::vis::1}}--도구계--{{/when}}]function end!!
 
 [train/21/{{#when::{{getVar::도구계}}::is::1}}진동하는보석{{/when}}] function(triggerId)
     local train = "진동하는 보석"
@@ -167,7 +167,7 @@ end!!
     local train = "볼개그"
 end!!
 
-[train/--/{{#when::V계::vis::1}}--삽입계--{{/when}}]function end!!
+[train/hr/{{#when::V계::vis::1}}--삽입계--{{/when}}]function end!!
 
 [train/31/{{#when::{{getVar::V계}}::is::1}}정상위{{/when}}] function(triggerId)
     local train = "정상위"
@@ -189,7 +189,7 @@ end!!
     local train = "기승위"
 end!!
 
-[train/--/{{#when::A계::vis::1}}--애널계--{{/when}}]function end!!
+[train/hr/{{#when::A계::vis::1}}--애널계--{{/when}}]function end!!
 
 [train/41/{{#when::{{getVar::A계}}::is::1}}정상위애널{{/when}}] function(triggerId)
     local train = "정상위애널"
@@ -211,7 +211,7 @@ end!!
     local train = "기승위애널"
 end!!
 
-[train/--/{{#when::봉사계::vis::1}}--봉사계--{{/when}}]function end!!
+[train/hr/{{#when::봉사계::vis::1}}--봉사계--{{/when}}]function end!!
 
 [train/51/{{#when::{{getVar::봉사계}}::is::1}}수음{{/when}}] function(triggerId)
     local train = "수음"
@@ -246,7 +246,7 @@ end!!
     local train = "리밍"
 end!!
 
-[train/--/{{#when::하드계::vis::1}}--하드계--{{/when}}]function end!!
+[train/hr/{{#when::하드계::vis::1}}🔱 하드계{{/when}}]function end!!
 
 [train/91/{{#when::{{getVar::하드계}}::is::1}}스팽킹{{/when}}] function(triggerId)
     local train = "스팽킹"
@@ -292,7 +292,7 @@ end!!
     local train = "양구멍피스트"
 end!!
 
-[train/--/ ]function end!!
+[train/hr/ ]function end!!
 
 [train/101/로션] function(triggerId)
     local train = "로션"
@@ -358,7 +358,7 @@ end!!
     local deduct = juelAdd["부정"] or 0
     juelAdd["부정"] = nil
     if len(juelAdd) > 0 then
-print("deduct: "..deduct)
+    debug("차감대상 부정구슬: "..deduct)
         --오름차순 정렬
         table.sort(juelAdd, function(a, b)
             return a.value < b.value
@@ -369,7 +369,6 @@ print("deduct: "..deduct)
             local len = len(juelAdd) - i + 1 --차감 대상의 수
             local cost = item.value - lastCost --현재 단계에서 차감해야할 비용
             local sub = cost * len --현재 단계에서 필요한 총비용
-print("sss")
             if deduct >= sub then --부정구슬이 남으면
                 deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
                 lastCost = item.value
