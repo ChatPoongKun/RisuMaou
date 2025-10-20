@@ -27,6 +27,11 @@ end!!
     setChatVar(triggerId, "allowDeath", allowDeath)
 end!!
 
+[config/901/조교기록 | {{#when::{{getvar::history}}::is::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
+    local history = getChatVar(triggerId, "history")
+    history = math.abs(history-1)
+    setChatVar(triggerId, "history", history)
+end!!
 
 [config/hr/<h2 style="text-align:left;margin-top:1rem;">▋ 디버깅</h2>]function end!!
 

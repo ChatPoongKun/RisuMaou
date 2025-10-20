@@ -319,11 +319,12 @@ end!!
 end!!
 
 [train/199/조교종료] function(triggerId)
-
     local target = getState(triggerId, "target") --조교 종료시의 캐릭터 정보를 호출
+    local allJuels = getState(triggerId, "juel") --모든 대상의 juel을 호출
+    local juelCurrent = allJuels[target["이름"]]
+    local juelSum = juelCurrent
     local exp = json.decode(getLoreBookContent(triggerId, "EXPtable.db")) --경험치 테이블 호출
     local juelText = {} --주얼획득 안내
-
     --조교 시작전의 주얼수치를 호출
     local juelDB = json.decode(getLoreBookContent(triggerId, "juel.db")) --주얼 리스트를 juel.db에서 호출
 
@@ -338,11 +339,10 @@ end!!
             if statExp[k] == 0 then statExp[k] = nil end --statexp를 1이상 얻지못하면 테이블에서 제거
         end
     end
-
     --statExp에 따라 juel을 획득
     local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
     local juelAdd = {}
-    for k, v in pairs(statExp) do
+    for k, v in pairs(statExp) do --juel획득량 계산
         local db = statDB[k]
         local len = #db
 
@@ -350,42 +350,49 @@ end!!
             local total = (len-1)*len*0.5 --설명배열이 하나 있으므로 1~len-1까지의 값을 합산
             if juelDB[j] then
                 juelAdd[j] = math.floor(statExp[k]*(len-i+1)/total) --앞쪽에 위치한 juel부터 더 높은 가중치로 exp를 분배
+                juelSum[j] = juelCurrent[j] + juelAdd[j]
             end
             if juelAdd[j] == 0 then juelAdd[j] = nil end
         end
     end
 
-    local deduct = juelAdd["부정"] or 0
-    juelAdd["부정"] = nil
-    if len(juelAdd) > 0 then
+    local deductOld = juelCurrent["부정"]
+    local deduct = deductOld + (juelAdd["부정"] or 0)
+    juelSum["부정"] = nil
     debug("차감대상 부정구슬: "..deduct)
-        --오름차순 정렬
-        table.sort(juelAdd, function(a, b)
-            return a.value < b.value
-        end)
-        --부정 juel 균등 차감
-        local lastCost = 0
-        for i, item in ipairs(juelAdd) do
-            local len = len(juelAdd) - i + 1 --차감 대상의 수
-            local cost = item.value - lastCost --현재 단계에서 차감해야할 비용
-            local sub = cost * len --현재 단계에서 필요한 총비용
-            if deduct >= sub then --부정구슬이 남으면
-                deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
-                lastCost = item.value
-            else --안남으면
-                cost = cost + deduct/len --n빵
-                deduct = 0
-                break
-            end
-        end
-        for k, v in pairs(juelAdd) do
-            local sub = math.min(lastCost, v)
-            local juel = tonumber(target[k])
-            juelText[k] = k..": "..juel.." + "..v.." - "..sub.." = "..juel+v-sub.."<br>"
-            target[k] = juel + v - sub
+    --오름차순 정렬
+    table.sort(juelSum, function(a, b)
+        return a.value < b.value
+    end)
+
+    --부정 juel 균등 차감
+    local lastCost = 0
+    for i, item in ipairs(juelSum) do
+        local len = len(juelSum) - i + 1 --차감 대상의 수
+        local cost = item.value - lastCost --현재 단계에서 차감해야할 비용
+        local sub = cost * len --현재 단계에서 필요한 총비용
+        if deduct >= sub then --부정구슬이 남으면
+            deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
+            lastCost = item.value
+        else --안남으면
+            cost = cost + deduct/len --n빵
+            deduct = 0
+            break
         end
     end
-    juelAdd["부정"] = deduct
+
+    for k, v in pairs(juelAdd) do
+        local sub = math.min(lastCost, v)
+        local juel = tonumber(juelCurrent[k])
+        juelText[k] = k..": "..juel.." + "..v.." - "..sub.." = "..juel+v-sub.."<br>"
+        juelSum[k] = juel + v - sub
+    end
+
+    if deductOld > 0 or juelAdd["부정"] ~= nil then
+        juelText["부정"] = "부정: "..juelCurrent["부정"].." + "..(juelAdd["부정"] or 0).." - "..deductOld + (juelAdd["부정"] or 0)-deduct.." = "..deduct
+    end
+    juelSum["부정"] = deduct --남은 부정구슬 다시입력
+
     local juelTextconcat = ""
     if len(juelText) > 0 then
         for _,v in pairs(juelText) do
@@ -394,11 +401,21 @@ end!!
     else
         juelTextconcat = "능력치 변동없음"
     end
-    
+
     local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
     upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
     stateToVar(triggerId, "target", target)
-
+    
+    allJuels[target["이름"]] = juelSum
+    setState(triggerId, "juel", allJuels)
+    stateToVar(triggerId, "targetJuel", juelSum)
     setChatVar(triggerId, "juelText", juelTextconcat)
+
+    addChat(triggerId, "user", "{{".."getvar::html".."}}")
+    local ampm = getChatVar(triggerId,"ampm")
+    if ampm == 0 then ampm ="낮" else ampm="밤" end
+    local lastTrainLog = "<div class='history' style='visibility:hidden;'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..getChatVar(triggerId,"oldLog")..getChatVar(triggerId,"newLog").."</p></div>"
+    setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
+
     setState(triggerId, "screen", "postTrain")
 end!!
