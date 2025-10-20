@@ -459,8 +459,8 @@
 <h2>* 주얼</h2>
 <div class="jewel-grid">
 {{#each {{getvar::juelList}} juel}}
-{{#when::{{dict_element::{{getvar::target}}::{{slot::juel}}}}::isnot::0}}
-<div class="talent-tag"><strong>{{slot::juel}}:</strong> {{dict_element::{{getvar::target}}::{{slot::juel}}}}</div>
+{{#when::{{dict_element::{{getvar::targetJuel}}::{{slot::juel}}}}::isnot::0}}
+<div class="talent-tag"><strong>{{slot::juel}}:</strong> {{dict_element::{{getvar::targetJuel}}::{{slot::juel}}}}</div>
 {{/when}}
 {{/each}}
 </div>
