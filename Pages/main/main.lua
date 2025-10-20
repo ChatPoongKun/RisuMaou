@@ -127,7 +127,7 @@ end!!
     sysFunction(triggerId, "turnEnd.sys")
 end!!
 
-[main/--/ ] function end!!
+[main/hr/ ] function end!!
 
 [main/777/설정] function(triggerId)
     local screen = "config"
