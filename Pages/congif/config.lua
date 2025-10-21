@@ -11,11 +11,11 @@
         setChatVar(triggerId, "difficulty", "보통")
     elseif difficulty == "보통" then
         print("보통->어려움")
-        MAXROLL = 40
+        MAXROLL = 20
         setChatVar(triggerId, "difficulty", "어려움")
     else
         print("어려움->쉬움")
-        MAXROLL = 25
+        MAXROLL = 40
         setChatVar(triggerId, "difficulty", "쉬움")
     end
 end!!
