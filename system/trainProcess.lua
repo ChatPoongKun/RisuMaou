@@ -303,6 +303,7 @@ function(triggerId, dc, HP, SP, command)
     setState(triggerId, "target", target)
     stateToVar(triggerId, "target", target)
 
+    --로그저장
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
     setChatVar(triggerId, "sucEffect", sucEffect)
