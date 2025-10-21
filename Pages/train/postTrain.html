@@ -23,7 +23,10 @@ color: #fff;
 font-family: monospace;
 font-weight: bold;
 }
-
+.x-risu-btn:hover {
+    background-color: #888;
+    border-color: #aaa;
+}
 @media screen and (max-width: 600px) {
     .stats-grid {
     font-size: 0.8rem;
@@ -68,10 +71,10 @@ font-weight: bold;
 </section>
 
 <section class="ability-section">
-<h2>* 능력</h2>
+<h2>* 능력 업그레이드</h2>
 <div class="stats-grid">
 {{#each {{getvar::ablList}} abil}}
-<div class="stat-item" risu-btn="{{slot::abil}}">
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
 <span class="stat-label">{{slot::abil}}</span>
 <div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
 </div>
