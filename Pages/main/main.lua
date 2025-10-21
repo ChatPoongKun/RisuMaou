@@ -1,7 +1,6 @@
 [main/100/조교 시작] function(triggerId)
     local screen = "preTrain"
 
------------------------------
     setState(triggerId, "screen", screen)
     local chars = json.decode(getChatVar(triggerId, "chars"))
     
