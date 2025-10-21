@@ -117,13 +117,7 @@ end!!
 end!!
 
 [main/199/휴식] function(triggerId)
-    --하루가 지나갈때의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 rest.sys 함수로 별도처리
-    local ampm = getChatVar(triggerId, "ampm")
-    if ampm == "1" then
-        alertNormal(triggerId, "하루가 지나갑니다...")
-    else
-        alertNormal(triggerId, "당신은 휴식을 취합니다.")
-    end
+    --하루가 지나갈때의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 별도처리
     sysFunction(triggerId, "turnEnd.sys")
 end!!
 
