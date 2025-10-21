@@ -68,10 +68,11 @@ end!!
     local costHP = 10
     local costSP = 20
     local dcBonus = 0 --조교 전용 보너스 요소가 있을 수 있음. 높을수록 난이도 상승. 음수면 난이도 감소
-   
+    local exps = {"애정경험"}
+
     --LLM에 전달할 조교 커맨드
     local command =  "<br>{{user}}는 "..target['이름'] .."을 어루만진다."
-    local orgasm_t, orgasm_u = sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, command)
+    local orgasm_t, orgasm_u = sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 
     target = getState(triggerId, "target") --trainProcess에서 처리된 target의 state로 갱신
     if orgasm_t then
@@ -81,6 +82,10 @@ end!!
     if orgasm_u then
         user["절정경험"] = user["절정경험"] + 1
     end]]
+    
+    --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
+    setState(triggerId, "target", target)
+    stateToVar(triggerId, "target", target)
     
 end!!
 
