@@ -231,23 +231,26 @@ function(triggerId, dc, HP, SP, command)
     end
 
     --절정치가 최대 최소값을 넘지 않도록 후처리
-    local ej_target_max = tonumber(getChatVar(triggerId, "ej_target_max")) --대상의 최대 절정치
-    local ej_user_max = tonumber(getChatVar(triggerId, "ej_user_max")) --유저의 최대 절정치
+    local orgasmMultiplier = 1.2
+    local orgasmDefault = 10000
+    local ej_target_max = orgasmDefault*(orgasmMultiplier^tonumber(getChatVar(triggerId, "ejCount_t"))) --대상의 최대 절정치
+    local ej_user_max = orgasmDefault*(orgasmMultiplier^tonumber(getChatVar(triggerId, "ejCount_u"))) --유저의 최대 절정치
     ej_target = math.min(ej_target_max, math.max(0, math.floor(ej_target)))
     setChatVar(triggerId, "ej_target", ej_target)
     debug(target["이름"].."절정치: " .. ej_target)
 
     --절정여부 체크
-
-    local orgasm_t, orgasm_u = false, false
+    local orgasm_t, orgasm_u, orgasmCount = false, false, 0
     if ej_target > ej_target_max then
         orgasm_t = true
-        setChatVar(triggerId, "ej_target_max", ej_target_max*1.2)
+        orgasmCount = getChatVar(triggerId, "ejCount_t")
+        setChatVar(triggerId, "ejCount_t", orgasmCount)
     end
     --[[유저 절정처리 미구현
         if ej_user > ej_user_max then
             orgasm_u = true
-            setChatVar(triggerId, "ej_user_max", ej_user_max*1.2)
+            orgasmCount = getChatVar(triggerId, "ejCount_u")
+            setChatVar(triggerId, "ejCount_u", orgasmCount)
         end
     ]]
 

@@ -143,7 +143,7 @@ h2, h3 {
 /* Unified colors. Using brighter ones from char.css where available. */
 .x-risu-progress-bar-fill.x-risu-hp { background-image: linear-gradient(to right, #e46557, #eb1d1d); } /*체력*/
 .x-risu-progress-bar-fill.x-risu-st { background-image: linear-gradient(to right, #ecd162, #f1c40f); } /*기력*/
-.x-risu-progress-bar-fill.x-risu-sp { background-image: linear-gradient(to right, #ecd162, #f1c40f); } /*정액량*/
+.x-risu-progress-bar-fill.x-risu-pe { background-image: linear-gradient(to right, #ded5b0, #eed87f); } /*요의*/
 .x-risu-progress-bar-fill.x-risu-ej { background-image: linear-gradient(to right, #e06884, #ce025b); } /*사정게이지*/
 
 .bar-value {
