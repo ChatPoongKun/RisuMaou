@@ -130,6 +130,13 @@ end!!
 end!!
 
 [postTrain/199/조교종료] function(triggerId)
+    --변수 초기화
+    setState(triggerId, "target", "")
+    setChatVar(triggerId, "target", "")
+    setState(triggerId, "stat", "")
+    setChatVar(triggerId, "stat", "")
+    setChatVar(triggerId, "targetJuel", "")
+    
     sysFunction(triggerId, "turnEnd.sys")
     setState(triggerId, "screen", "main")
 end!!

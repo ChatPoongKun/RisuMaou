@@ -15,6 +15,7 @@ function (triggerId, name)
         setChatVar(triggerId, "요의", 0) --조교대상 요의
         setChatVar(triggerId, "ejCount_t", 0) --조교대상 절정 회수 초기화
         setChatVar(triggerId, "ejCount_u", 0) --유저 절정 회수 초기화
+        setChatVar(triggerId, "charList", "") --조교대상 리스트 초기화
 
         --target를 로어북에서 불러와 1차원으로 flatten
         local target = json.decode(getLoreBookContent(triggerId, name))

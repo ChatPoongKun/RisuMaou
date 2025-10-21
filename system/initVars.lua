@@ -7,7 +7,7 @@ function (triggerId)
         ampm = 0, --0은 오전 1은 오후
         chars = '["user","마오"]', --리수배열 스타일에 맞게 저장
         difficulty = "보통", --조교난이도
-        blockDeath = 1, --사망방지. 기본값 OFF
+        blockDeath = 0, --사망방지. 기본값 OFF
         history = 0, --과거 조교기록 보기. 기본값 OFF
         debug = DEBUG,
     }
