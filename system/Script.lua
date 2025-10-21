@@ -133,7 +133,7 @@ function stateToVar(triggerId, key, tbl)
         new_tbl = string.gsub(new_tbl, ",$", "}")
 
     end
-    debug(key, new_tbl)
+    debug("state to chatVar: "..key, new_tbl)
     setChatVar(triggerId, key, new_tbl)
 
 end
