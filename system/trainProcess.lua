@@ -247,14 +247,14 @@ function(triggerId, dc, HP, SP, exps, command)
     for k, v in ipairs(ejPlus) do
         local val = statChange[v] or 0
         ej_target = ej_target + val
-        debug(k..": +"..v)
+        debug("절정치: "..v.."(+"..val..")")
     end
 
     local ejMinus = {"공포", "불쾌", "부정"} --절정치를 감소시키는 stat
     for k, v in ipairs(ejMinus) do
         local val = statChange[v] or 0
         ej_target = ej_target - val
-        debug(k..": -"..v)
+        debug("절정치: "..v.."(-"..val..")")
     end
 
     --상황에 따라 달라지는 stat: "굴복", "수치", "고통"
@@ -262,26 +262,26 @@ function(triggerId, dc, HP, SP, exps, command)
     ejCon = statChange["굴복"] or 0
     if hasVal(target, "복종각인") == true or tonumber(target["봉사기술"])> 4 then
         ej_target = ej_target + ejCon
-        debug("굴복: +"..ejCon)
+        debug("절정치: 굴복(+"..ejCon..")")
     else
         ej_target = ej_target - ejCon
-        debug("굴복: -"..ejCon)
+        debug("절정치: 굴복(-"..ejCon..")")
     end
     ejCon = statChange["수치"] or 0
     if tonumber(target["노출벽"])> 4 then
         ej_target = ej_target + ejCon
-        debug("수치: +"..ejCon)
+        debug("절정치: 수치(+"..ejCon..")")
     else
         ej_target = ej_target - ejCon
-        debug("수치: -"..ejCon)
+        debug("절정치: 수치(-"..ejCon..")")
     end
     ejCon = statChange["고통"] or 0
     if tonumber(target["마조끼"])> 4 then
         ej_target = ej_target + ejCon
-        debug("고통: +"..ejCon)
+        debug("절정치: 고통(+"..ejCon..")")
     else
         ej_target = ej_target - ejCon
-        debug("고통: -"..ejCon)
+        debug("절정치: 고통(-"..ejCon..")")
     end
 
     --절정치가 최대 최소값을 넘지 않도록 후처리
@@ -308,21 +308,19 @@ function(triggerId, dc, HP, SP, exps, command)
         end
     ]]
 
-    --스탯변화값을 가져와 currentstat이 레벨업 하는지를 stat.db의 테이블의 각 레벨값과 비교해 확률적으로 계산    
+    --스탯변화값을 가져와 currentstat이 레벨업 하는지를 stat.db의 테이블의 각 레벨값과 비교해 확률적으로 계산
     local lvUpcomment = ""
     local tbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
     local statResult = {}
-    
 
     local lvUp
     lvUp = function(remainStat , currentLv, statName)
-        local lv = currentLv
-        local remainStat = remainStat 
+        local lv = tostring(currentLv+1)
+        local remainStat = remainStat
         local r = math.random()
-        debug(statName..": "..remainStat.."/"..tbl[lv]..": "..remainStat/tbl[lv] .. " >= " .. r)
-        if remainStat/tbl[lv] >= r then
+        debug(statName..": "..remainStat.."/"..tbl[lv]..": "..remainStat/tbl[lv] .. " > " .. r)
+        if remainStat/tbl[lv] > r then
             remainStat = math.max(remainStat - tbl[lv], 0)
-            lv = tostring(lv + 1)
             lv = lvUp(remainStat, lv, statName)
             return lv
         else
@@ -332,7 +330,7 @@ function(triggerId, dc, HP, SP, exps, command)
 
     for k, _ in pairs(currentStat) do
         local v = statChange[k] or "0" -- statChange에 해당 키값이 없을 경우 0을 반환하도록 해 에러방지
-        local lv = tostring(currentStat[k])
+        local lv = currentStat[k]
         if tonumber(v) > 0 then
             statResult[k] = tonumber(lvUp(v, lv, k))
             currentStat[k] = tonumber(currentStat[k])
