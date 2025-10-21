@@ -20,11 +20,11 @@
     end
 end!!
 
-[config/101/사망방지 | {{#when::{{getvar::allowDeath}}::is::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
-    local allowDeath = getChatVar(triggerId, "allowDeath")
+[config/101/사망방지 | {{#when::{{getvar::blockDeath}}::is::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
+    local blockDeath = getChatVar(triggerId, "blockDeath")
 
-    allowDeath = math.abs(allowDeath-1)
-    setChatVar(triggerId, "allowDeath", allowDeath)
+    blockDeath = math.abs(blockDeath-1)
+    setChatVar(triggerId, "blockDeath", blockDeath)
 end!!
 
 [config/901/조교기록 | {{#when::{{getvar::history}}::is::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
