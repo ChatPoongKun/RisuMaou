@@ -411,11 +411,13 @@ end!!
     stateToVar(triggerId, "targetJuel", juelSum)
     setChatVar(triggerId, "juelText", juelTextconcat)
 
+    --이전챗에 로그 저장후 게임 화면 생성
     addChat(triggerId, "user", "{{".."getvar::html".."}}")
     local ampm = getChatVar(triggerId,"ampm")
     if ampm == 0 then ampm ="낮" else ampm="밤" end
     local lastTrainLog = "<div class='history' style='visibility:hidden;'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..getChatVar(triggerId,"oldLog")..getChatVar(triggerId,"newLog").."</p></div>"
     setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
 
+    --화면 변경
     setState(triggerId, "screen", "postTrain")
 end!!
