@@ -4,7 +4,7 @@ function(triggerId, dc, HP, SP, exps, command)
     --[[초기화]]
     math.randomseed(os.time())
     local sucEffect = ""
-    setChatVar(triggerId, "sucEffect", sucEffect) --sucEffect 초기화
+    setChatVar(triggerId, "sucEffect", sucEffect) --실패/대성공 표기를 위한 sucEffect 초기화
 
     --[[유저와 조교대상의 정보 호출]]
     local user = getLoreBookContent(triggerId, "user") --유저의 정보를 로어북에서 string으로 호출
@@ -136,9 +136,57 @@ function(triggerId, dc, HP, SP, exps, command)
         sp = 0
     end
     hp = math.max(hp - costHP, 0)
-    --[[
-        HP가 낮을 경우 설정에 따라 실신 혹은 사망 처리
-    ]]
+    
+    --HP가 낮을 경우 설정에 따라 실신 혹은 사망 처리
+    if hp < 1 then
+        local ampm = getChatVar(triggerId,"ampm")
+        if ampm == 0 then ampm ="낮" else ampm="밤" end
+
+        local blockDeath = tonumber(getChatVar(triggerId, "blockDeath"))
+        if blockDeath == 1 then --실신처리
+            target["조교실신경험"] = target["조교실신경험"] + 1
+            target["condition"] = "실신"
+            setState(triggerId, "target", target)
+            setChatVar(triggerId, "target", target)
+            local newLog = getChatVar(triggerId, "newLog")
+            newLog = newLog .. "<p>대상은 가혹한 조교를 견디지 못하고 실신했다.</p>"
+            setChatVar(triggerId, "newLog", newLog)
+            executeFunction(triggerId, "train", "199") --조교종료 화면으로 넘어가 juel을 얻고 어빌처리는 할 수 있도록 함
+            alertNormal(triggerId, "대상은 가혹한 조교를 견디지 못하고 실신했습니다. 조교를 종료합니다.")
+
+        else --사망처리.
+            --변수 초기화
+            setState(triggerId, "target", "")
+            setChatVar(triggerId, "target", "")
+            setState(triggerId, "stat", "")
+            setChatVar(triggerId, "stat", "")
+            setChatVar(triggerId, "targetJuel", "")
+            
+            --캐릭터 정보 변경
+            target["condition"] = "사망"
+            target["체력"] = 0
+            target["기력"] = 0
+            local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+            upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
+
+            --사망 로그 적용
+            local totalLog
+            if getChatVar(triggerId, "oldLog") == "[조교시작]" then
+                totalLog = getChatVar(triggerId, "newLog")
+            else
+                totalLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
+            end
+            local lastTrainLog = "<div class='history' style='visibility:hidden;'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..totalLog.."</p><p>대상은 가혹한 조교를 견디지 못하고 사망했다.</p></div>"
+            addChat(triggerId, "user", "{{".."getvar::html".."}}")
+            setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
+            setState(triggerId, "screen", "main")
+            processAndStoreLore(triggerId, "main.lua")
+            alertNormal(triggerId, "대상이 가혹한 조교를 견디지 못하고 사망했습니다. 조교를 종료합니다.")
+        end
+        
+        
+        return false
+    end
 
     --계산된 체력 기력을 콤마가 포함된 문자열로 변환해 저장
     target["체력"] = int(hp)
