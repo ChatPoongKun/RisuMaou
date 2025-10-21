@@ -9,6 +9,7 @@ function (triggerId)
     function(triggerId)
     alertNormal(triggerId, "강제커맨드 발생. 메인화면으로 돌아갑니다.")
     setState(triggerId, "screen", "main")
+    setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
     end]]
     funcs[key] = functionBody
 

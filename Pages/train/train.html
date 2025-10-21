@@ -467,7 +467,7 @@ visibility: hidden;
 <div class="progress-bar x-risu-ej">
 <div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{tonumber::{{getvar::ej_user_max}}}}}}%;"></div>
 </div>
-<span class="bar-value">{{getvar::ej_user}}/{{getvar::ej_user_max}}</span>
+<span class="bar-value">{{getvar::ej_user}}/{{? 10000*{{? 1.2^{{getvar::ejCount_t}}}}}}</span>
 </div>
 </section>
 
