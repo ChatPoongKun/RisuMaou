@@ -50,19 +50,28 @@ font-weight: bold;
 {{#each {{getvar::juelList}} juel}}
 <div class="stat-item">
 <span class="stat-label">{{slot::juel}}</span>
-<span class="stat-value">{{dict_element::{{getvar::target}}::{{slot::juel}}}}</span>
+<span class="stat-value">{{dict_element::{{getvar::targetJuel}}::{{slot::juel}}}}</span>
 </div>
 {{/each}}
 </div>
 </section>
 
-<div class="line single"></div>
+<section class="exp-section">
+<h2>* 경험</h2>
+<div class="stats-grid">
+{{#each {{getvar::expList}} exp}}
+{{#when::{{dict_element::{{getvar::target}}::{{slot::exp}}}}::isnot::0}}
+<div class="exp-tag"><strong>{{slot::exp}}:</strong> {{dict_element::{{getvar::target}}::{{slot::exp}}}}</div>
+{{/when}}
+{{/each}}
+</div>
+</section>
 
 <section class="ability-section">
 <h2>* 능력</h2>
 <div class="stats-grid">
 {{#each {{getvar::ablList}} abil}}
-<div class="stat-item">
+<div class="stat-item" risu-btn="{{slot::abil}}">
 <span class="stat-label">{{slot::abil}}</span>
 <div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
 </div>
