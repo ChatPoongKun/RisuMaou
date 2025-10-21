@@ -1,5 +1,5 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
-function(triggerId, dc, HP, SP, command)
+function(triggerId, dc, HP, SP, exps, command)
     debug("trainProcess 실행")
     --[[초기화]]
     math.randomseed(os.time())
@@ -172,18 +172,24 @@ function(triggerId, dc, HP, SP, command)
 
     local response = LLM(triggerId, prompt) --LLM에 응답 요청
     if not response.success then --LLM응답 실패시 함수 종료
-        alertNormal(triggerId, "LLM응답 실패<br>"..response.result)
+        alertNormal(triggerId, "LLM응답 실패"..response.result)
         setChatVar(triggerId, "cmds", old_cmds)
         reloadDisplay(triggerId)
         return false
     end
 
+    --응답/stat변동 구분처리
     local content = response.result
     debug("응답: "..content)
     local statChange = content:match("({.*})")
     local dialog = content:gsub(statChange, "")
     statChange = json.decode(statChange)
     local newLog = "<br>" .. dialog:gsub("json","")
+
+    --경험 누적
+    for _, k in ipairs(exps) do
+        target[k] = target[k] + 1
+    end
 
     --절정치 계산
     local ej_target = getChatVar(triggerId, "ej_target")
@@ -299,15 +305,15 @@ function(triggerId, dc, HP, SP, command)
     stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
     setChatVar(triggerId, "stat", stat_c) --변경된 stat을 chatVar에 반영
 
-    --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 juel변환하고 로어북으로 반영.
-    setState(triggerId, "target", target)
-    stateToVar(triggerId, "target", target)
-
     --로그저장
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
     setChatVar(triggerId, "sucEffect", sucEffect)
 
+    --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
+    setState(triggerId, "target", target)
+    stateToVar(triggerId, "target", target)
+    
     reloadDisplay(triggerId)
     return orgasm_t, orgasm_u --대상과 유저의 절정 여부 반환
 
