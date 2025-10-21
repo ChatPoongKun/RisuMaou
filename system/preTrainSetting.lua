@@ -12,8 +12,9 @@ function (triggerId, name)
         setChatVar(triggerId, "statLvUp", " ")
         setChatVar(triggerId, "ej_target", 0) --조교대상 절정치
         setChatVar(triggerId, "ej_user", 0) --유저 절정치
-        setChatVar(triggerId, "ej_target_max", 10000) --조교대상 절정최대치
-        setChatVar(triggerId, "ej_user_max", 10000) --유저 절정 최대치
+        setChatVar(triggerId, "요의", 0) --조교대상 요의
+        setChatVar(triggerId, "ejCount_t", 0) --조교대상 절정 회수 초기화
+        setChatVar(triggerId, "ejCount_u", 0) --유저 절정 회수 초기화
 
         --target를 로어북에서 불러와 1차원으로 flatten
         local target = json.decode(getLoreBookContent(triggerId, name))
