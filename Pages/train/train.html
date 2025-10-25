@@ -251,7 +251,7 @@ position: absolute;
 inset: 0; /* a modern way for top/right/bottom/left: 0 */
 z-index: 10;
 overflow: hidden; /* Hide panels as they move out */
-animation: hide-container 0.1s 0.9s forwards;
+animation: hide-container 0.2s 0.8s forwards;
 }
 
 /* The two black panels covering the content */
@@ -263,7 +263,7 @@ top: 0;
 width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
 height: 100%;
 background-color: #111; /* Match log background */
-animation: open-panels 0.6s ease-in-out 0.4s forwards;
+animation: open-panels 0.4s ease-in-out 0.6s forwards;
 }
 
 .success-animation::before {
@@ -485,7 +485,7 @@ visibility: hidden;
 {{getvar::newLog}}
 {{getvar::statLvUp}}
 </div>
-{{#when::{{? {{getvar::sucEffect}}!= }}}}{{getvar::sucEffect}}{{/when}}
+{{getvar::sucEffect}}
 <!-- 성공실패 예시
 <div class="success-animation"><div class="animation-text fail">실패</div></div>
 <div class="success-animation"><div class="animation-text success">대성공</div></div>
