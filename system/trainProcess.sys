@@ -54,7 +54,7 @@ function(triggerId, dc, HP, SP, exps, command)
     traitDB = json.encode(traitDB)
 
     --[[성공굴림]]
-    --보너스 요소: 유저 기교당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
+    --보너스 요소: 유저 레벨당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
     --패널티 요소: 대상의 2^반발각인, 부정적 stat당 1
     local rollBonus = 0
     rollBonus = rollBonus + json.decode(user)["레벨"] - 1 --유저 레벨당 1, 1레벨부터 시작이므로 1을 차감
@@ -66,6 +66,7 @@ function(triggerId, dc, HP, SP, exps, command)
             rollBonus = rollBonus + target[v]*2
         end
     end
+    --[[stat영향은 각 조교에 개별 정의
     local dcPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락", "공포"} --성공굴림 보너스 stat
     for _, v in ipairs(dcPlus) do
         local val = currentStat[v]
@@ -104,11 +105,12 @@ function(triggerId, dc, HP, SP, exps, command)
         rollBonus = rollBonus - dcCon
         debug("성공굴림: 고통 -"..dcCon)
     end
+    ]]
 
     --최종 주사위굴림
-    local roll = math.random(1, MAXROLL)
+    local roll = math.random()*MAXROLL --소숫점 보너스를 제대로 반영하기 위해 수정
     local rollMsg = ""
-    if roll == MAXROLL then
+    if roll > MAXROLL - 1 then
         rollMsg = "조교 대성공!"
         sucEffect = [[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
         debug(roll..">="..dc, rollMsg)
@@ -235,8 +237,10 @@ function(triggerId, dc, HP, SP, exps, command)
     local newLog = "<br>" .. dialog:gsub("json","")
 
     --경험 누적
-    for _, k in ipairs(exps) do
-        target[k] = target[k] + 1
+    if #exps > 0 then
+        for _, k in ipairs(exps) do
+            target[k] = target[k] + 1
+        end
     end
 
     --절정치 계산
@@ -308,6 +312,16 @@ function(triggerId, dc, HP, SP, exps, command)
         end
     ]]
 
+    --절정경험 추가
+    target = getState(triggerId, "target") --trainProcess에서 처리된 target의 state로 갱신
+    if orgasm_t then
+        target["절정경험"] = target["절정경험"] + 1
+    end
+    --[[ 유저의 절정처리 미구현
+    if orgasm_u then
+        user["절정경험"] = user["절정경험"] + 1
+    end]]
+
     --스탯변화값을 가져와 currentstat이 레벨업 하는지를 stat.db의 테이블의 각 레벨값과 비교해 확률적으로 계산
     local lvUpcomment = ""
     local tbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
@@ -359,8 +373,6 @@ function(triggerId, dc, HP, SP, exps, command)
     --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
     setState(triggerId, "target", target)
     stateToVar(triggerId, "target", target)
-    
-    reloadDisplay(triggerId)
-    return orgasm_t, orgasm_u --대상과 유저의 절정 여부 반환
 
+    reloadDisplay(triggerId)
 end
