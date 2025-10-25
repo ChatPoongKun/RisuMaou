@@ -72,7 +72,7 @@ end!!
     end
     debug("charList: "..charList)
     setChatVar(triggerId, "charList", charList)
-
+    
 end!!
 
 [main/102/포로 처분] function(triggerId)
@@ -128,6 +128,6 @@ end!!
 end!!
 
 [main/999/마계사전] function(triggerId)
-    local screen = "마계사전"
-    alertNormal(triggerId, screen.." 미구현")
+    local screen = "dictionary"
+    setState(triggerId, "screen", screen)
 end!!
