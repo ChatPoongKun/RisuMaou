@@ -321,12 +321,9 @@ end!!
 
 [train/199/조교종료] function(triggerId)
     local target = getState(triggerId, "target") --조교 종료시의 캐릭터 정보를 호출
+    local exp = json.decode(getLoreBookContent(triggerId, "EXPtable.db")) --경험치 테이블 호출
     local allJuels = getState(triggerId, "juel") --모든 대상의 juel을 호출
     local juelCurrent = allJuels[target["이름"]]
-    local juelSum = juelCurrent
-    local exp = json.decode(getLoreBookContent(triggerId, "EXPtable.db")) --경험치 테이블 호출
-    local juelText = {} --주얼획득 안내
-    --조교 시작전의 주얼수치를 호출
     local juelDB = json.decode(getLoreBookContent(triggerId, "juel.db")) --주얼 리스트를 juel.db에서 호출
 
     --조교 종료시의 stat레벨에 따라 statExp를 저장
@@ -343,6 +340,9 @@ end!!
     --statExp에 따라 juel을 획득
     local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
     local juelAdd = {}
+    local juelSubtract = {}
+    local juelSum = juelCurrent
+    local juelSort = {}
     for k, v in pairs(statExp) do --juel획득량 계산
         local db = statDB[k]
         local len = #db
@@ -353,72 +353,84 @@ end!!
                 juelAdd[j] = math.floor(statExp[k]*(len-i+1)/total) --앞쪽에 위치한 juel부터 더 높은 가중치로 exp를 분배
                 juelSum[j] = juelCurrent[j] + juelAdd[j]
             end
-            if juelAdd[j] == 0 then juelAdd[j] = nil end
         end
     end
 
-    local deductOld = juelCurrent["부정"]
-    local deduct = deductOld + (juelAdd["부정"] or 0)
-    juelSum["부정"] = nil
-    debug("차감대상 부정구슬: "..deduct)
-    --오름차순 정렬
-    table.sort(juelSum, function(a, b)
-        return a.value < b.value
-    end)
+    --부정이 0보다 큰 경우에만 차감로직 실행
+    local deductLevel = 0 --최종 차감하게 될 주얼의 양
+    local deduct = juelSum["부정"] --차감 대상 부정구슬의 양
+    if juelSum["부정"] > 0 then
+print(json.encode(juelSum))
+        --juelSort에 부정을 제외한 0이상의 주얼 입력
+        for k, v in pairs(juelSum) do
+            if k ~= "부정" then
+                print(juelSum[k])
+                table.insert(juelSort, v)
+            end
+        end
 
-    --부정 juel 균등 차감
-    local lastCost = 0
-    for i, item in ipairs(juelSum) do
-        local len = len(juelSum) - i + 1 --차감 대상의 수
-        local cost = item.value - lastCost --현재 단계에서 차감해야할 비용
-        local sub = cost * len --현재 단계에서 필요한 총비용
-        if deduct >= sub then --부정구슬이 남으면
-            deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
-            lastCost = item.value
-        else --안남으면
-            cost = cost + deduct/len --n빵
-            deduct = 0
-            break
+        --juelSort 오름차순 정렬
+        table.sort(juelSort, function(a, b)
+            return a < b
+        end)
+print(json.encode(juelSort))
+        --deductLevel계산
+        for i, v in ipairs(juelSort) do
+            local len = #juelSort - i + 1 --남은 차감 대상의 수
+            local cost = v - deductLevel --현재 단계에서 차감해야할 비용
+            local sub = cost * len --현재 단계에서 필요한 총비용
+            if deduct >= sub then --부정구슬이 남으면
+                deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
+                deductLevel = v
+            else --안남으면 for문 중단
+                deductLevel = math.floor(deductLevel + deduct/len)
+                break
+            end
+        end
+print("부정: "..juelSum["부정"])
+print(deductLevel)
+    end
+
+    --실제 주얼에 획득/차감 반영
+    local juelText = ""
+    for k, v in pairs(juelCurrent) do
+        local pp = juelAdd[k] or 0
+        local mm = math.min(deductLevel, v)
+
+        --juel 변동 텍스트
+        if pp ~= 0 or mm ~= 0 then
+            if k =="부정" then
+                juelText = juelText .. k ..": " .. v .. " + " .. pp .. " - " .. deduct .. " = " .. v+pp-deduct .. "<br>"
+            else
+                juelText = juelText .. k ..": " .. v .. " + " .. pp .. " - " .. mm .. " = " .. v+pp-mm .. "<br>"
+            end
+        end
+        --juelCurrent에 변동값 반영
+        if k =="부정" then
+            juelCurrent[k] = juelCurrent[k] - deduct
+        else
+            juelCurrent[k] = math.max(juelCurrent[k] + (juelAdd[k] or 0) - deductLevel, 0)
         end
     end
 
-    for k, v in pairs(juelAdd) do
-        local sub = math.min(lastCost, v)
-        local juel = tonumber(juelCurrent[k])
-        juelText[k] = k..": "..juel.." + "..v.." - "..sub.." = "..juel+v-sub.."<br>"
-        juelSum[k] = juel + v - sub
-    end
-
-    if deductOld > 0 or juelAdd["부정"] ~= nil then
-        juelText["부정"] = "부정: "..juelCurrent["부정"].." + "..(juelAdd["부정"] or 0).." - "..deductOld + (juelAdd["부정"] or 0)-deduct.." = "..deduct
-    end
-    juelSum["부정"] = deduct --남은 부정구슬 다시입력
-
-    local juelTextconcat = ""
-    if len(juelText) > 0 then
-        for _,v in pairs(juelText) do
-            juelTextconcat = juelTextconcat .. v
-        end
-    else
-        juelTextconcat = "능력치 변동없음"
-    end
-
+    --조교로 변경된 target값을 로어북에 업데이트
     local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
     upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
     stateToVar(triggerId, "target", target)
     
-    allJuels[target["이름"]] = juelSum
+    --갱신된 juel 정보를 변수에 업데이트
+    stateToVar(triggerId, "targetJuel", juelCurrent)
+    allJuels[target["이름"]] = juelCurrent
     setState(triggerId, "juel", allJuels)
-    stateToVar(triggerId, "targetJuel", juelSum)
-    setChatVar(triggerId, "juelText", juelTextconcat)
+    setChatVar(triggerId, "juelText", juelText)
 
-    --이전챗에 로그 저장후 게임 화면 생성
+    --조교 로그를 저장후 게임 화면 생성챗을 추가
     addChat(triggerId, "user", "{{".."getvar::html".."}}")
     local ampm = getChatVar(triggerId,"ampm")
     if ampm == 0 then ampm ="낮" else ampm="밤" end
     local lastTrainLog = "<div class='history' style='visibility:hidden;'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..getChatVar(triggerId,"oldLog")..getChatVar(triggerId,"newLog").."</p></div>"
     setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
 
-    --화면 변경
+    --조교후 화면으로 이동
     setState(triggerId, "screen", "postTrain")
 end!!
