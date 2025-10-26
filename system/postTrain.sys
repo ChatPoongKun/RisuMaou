@@ -1,4 +1,4 @@
-function (triggerId, name)
+function (triggerId)
     local target = getState(triggerId, "target") --조교 종료시의 캐릭터 정보를 호출
     local exp = json.decode(getLoreBookContent(triggerId, "EXPtable.db")) --경험치 테이블 호출
     local allJuels = getState(triggerId, "juel") --모든 대상의 juel을 호출
@@ -19,8 +19,10 @@ function (triggerId, name)
     --statExp에 따라 juel을 획득
     local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
     local juelAdd = {}
-    local juelSubtract = {}
-    local juelSum = juelCurrent
+    local juelSum = {}
+    for k, v in pairs(juelCurrent) do --deep copy
+        juelSum[k] = v
+    end
     local juelSort = {}
     for k, v in pairs(statExp) do --juel획득량 계산
         local db = statDB[k]
@@ -36,14 +38,17 @@ function (triggerId, name)
     end
 
     --부정이 0보다 큰 경우에만 차감로직 실행
-    local deductLevel = 0 --최종 차감하게 될 주얼의 양
+    local deductLevel = 0 --각 주얼에서 차감하게 될 양
     local deduct = juelSum["부정"] --차감 대상 부정구슬의 양
-    if juelSum["부정"] > 0 then
-print(json.encode(juelSum))
+    local deductSum = 0 --실제 차감한 부정 구슬의 합계
+    if deduct > 0 then
+
+print("init"..json.encode(juelCurrent))
+print("add"..json.encode(juelAdd))
+print("sum"..json.encode(juelSum))
         --juelSort에 부정을 제외한 0이상의 주얼 입력
         for k, v in pairs(juelSum) do
             if k ~= "부정" then
-                print(juelSum[k])
                 table.insert(juelSort, v)
             end
         end
@@ -60,33 +65,36 @@ print(json.encode(juelSort))
             local sub = cost * len --현재 단계에서 필요한 총비용
             if deduct >= sub then --부정구슬이 남으면
                 deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
+                deductSum = deductSum + sub
                 deductLevel = v
             else --안남으면 for문 중단
-                deductLevel = math.floor(deductLevel + deduct/len)
+                deductLevel = deductLevel + math.floor(deduct/len)
+                deductSum = deductSum + deductLevel*len
                 break
             end
         end
-print("부정: "..juelSum["부정"])
-print(deductLevel)
+print("최초부정: "..juelCurrent["부정"])
+print("증가부정: "..(juelAdd["부정"] or 0))
+print("합계부정: "..juelSum["부정"])
     end
 
     --실제 주얼에 획득/차감 반영
     local juelText = ""
-    for k, v in pairs(juelCurrent) do
+    for k, v in pairs(juelSum) do
         local pp = juelAdd[k] or 0
         local mm = math.min(deductLevel, v)
 
         --juel 변동 텍스트
         if pp ~= 0 or mm ~= 0 then
             if k =="부정" then
-                juelText = juelText .. k ..": " .. v .. " + " .. pp .. " - " .. deduct .. " = " .. v+pp-deduct .. "<br>"
+                juelText = juelText .. k ..": " .. juelCurrent[k] .. " + " .. pp .. " - " .. deductSum .. " = " .. juelCurrent[k]+pp-deductSum .. "<br>"
             else
-                juelText = juelText .. k ..": " .. v .. " + " .. pp .. " - " .. mm .. " = " .. v+pp-mm .. "<br>"
+                juelText = juelText .. k ..": " .. juelCurrent[k] .. " + " .. pp .. " - " .. mm .. " = " .. juelCurrent[k]+pp-mm .. "<br>"
             end
         end
         --juelCurrent에 변동값 반영
         if k =="부정" then
-            juelCurrent[k] = juelCurrent[k] - deduct
+            juelCurrent[k] = juelCurrent[k] + (juelAdd[k] or 0) - deductSum
         else
             juelCurrent[k] = math.max(juelCurrent[k] + (juelAdd[k] or 0) - deductLevel, 0)
         end
