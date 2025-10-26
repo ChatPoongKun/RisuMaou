@@ -146,7 +146,7 @@ end!!
     dcBonus = dcBonus - target["순종"] * 0.5
 
     local exps = {"자위경험", "C경험"}
-    if target["성교경험"] > 0  and target["V감각"] > 4 then
+    if tonumber(target["성교경험"]) > 0  and tonumber(target["V감각"]) > 4 then
         table.insert(exps, "V경험")
     end
 
@@ -188,7 +188,7 @@ end!!
     dcBonus = dcBonus - target["M감각"] * 0.5
 
     local exps = {"애정경험"}
-    if target["인후성감"]==1 then
+    if tonumber(target["인후성감"]) == 1 then
         table.insert(exps, "M경험")
     end
 
