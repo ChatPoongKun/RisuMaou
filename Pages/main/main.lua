@@ -86,8 +86,8 @@ end!!
 end!!
 
 [main/104/상점] function(triggerId)
-    local screen = "상점"
-    alertNormal(triggerId, screen.." 미구현")
+    local screen = "shop"
+    setState(triggerId, "screen", screen)
 end!!
 
 [main/105/장비 관리] function(triggerId)
