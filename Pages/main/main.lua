@@ -88,6 +88,14 @@ end!!
 [main/104/상점] function(triggerId)
     local screen = "shop"
     setState(triggerId, "screen", screen)
+    local itemList = json.decode(getLoreBookContent(triggerId, "items.db"))["조교도구"]
+    local contents = ""
+
+    for k,v in pairs(itemList) do
+        local price = int(v[1])
+        contents = contents .. "<div class='shop-item' data-name='"..k.."' data-price='"..price.."'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
+    end
+    setChatVar(triggerId, "tools", contents)
 end!!
 
 [main/105/장비 관리] function(triggerId)

@@ -14,11 +14,11 @@ border-radius: 4px;
 }
 
 .shop-pane {
-display: none;
+display: block;
 animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Tab switching logic */
+/* Tab switching logic 
 #tab-tools:checked ~ .shop-content > #tools-pane,
 #tab-consumables:checked ~ .shop-content > #consumables-pane,
 #tab-traps:checked ~ .shop-content > #traps-pane {
@@ -29,12 +29,12 @@ input[name="shop-tabs"]:checked + label {
 background-color: #666;
 border-color: #888;
 color: #fff;
-}
+}*/
 
 /* Item grid and card styles */
 .shop-item-grid {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 gap: 1rem;
 }
 
@@ -230,97 +230,19 @@ gap: 0.1rem;
 </header>
 
 <main>
-<!-- Tab controls -->
-<input type="radio" name="shop-tabs" id="tab-tools" checked hidden>
-<input type="radio" name="shop-tabs" id="tab-consumables" hidden>
-<input type="radio" name="shop-tabs" id="tab-traps" hidden>
 
 <div class="shop-tabs">
-<label for="tab-tools" class="x-risu-btn">조교도구</label>
-<label for="tab-consumables" class="x-risu-btn">소모품</label>
-<label for="tab-traps" class="x-risu-btn">함정</label>
+<label class="x-risu-btn" risu-btn="shop_tools">조교도구</label>
+<label class="x-risu-btn" risu-btn="shop_consumables">소모품</label>
+<label class="x-risu-btn" risu-btn="shop_traps">함정</label>
 </div>
 
 <!-- Tab content -->
 <div class="shop-content">
 <!-- Training Tools Pane -->
-<div id="tools-pane" class="shop-pane">
+<div class="shop-pane">
 <div class="shop-item-grid">
-<div class="shop-item" data-name="딜도" data-price="100">
-<div class="item-image">♥</div>
-<div class="item-info">
-<span class="item-name">딜도</span>
-<span class="item-price">100 Gold</span>
-</div>
-</div>
-<div class="shop-item" data-name="바이브레이터" data-price="250">
-<div class="item-image">♨</div>
-<div class="item-info">
-<span class="item-name">바이브레이터</span>
-<span class="item-price">250 Gold</span>
-</div>
-</div>
-<div class="shop-item" data-name="촉수" data-price="500">
-<div class="item-image">⚘</div>
-<div class="item-info">
-<span class="item-name">촉수</span>
-<span class="item-price">500 Gold</span>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Consumables Pane -->
-<div id="consumables-pane" class="shop-pane">
-<div class="shop-item-grid">
-<div class="shop-item" data-name="미약" data-price="150">
-<div class="item-image">⚘</div>
-<div class="item-info">
-<span class="item-name">미약</span>
-<span class="item-price">150 Gold</span>
-</div>
-</div>
-<div class="shop-item" data-name="정력제" data-price="150">
-<div class="item-image">☨</div>
-<div class="item-info">
-<span class="item-name">정력제</span>
-<span class="item-price">150 Gold</span>
-</div>
-</div>
-<div class="shop-item" data-name="회복약" data-price="80">
-<div class="item-image">☩</div>
-<div class="item-info">
-<span class="item-name">회복약</span>
-<span class="item-price">80 Gold</span>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Traps Pane -->
-<div id="traps-pane" class="shop-pane">
-<div class="shop-item-grid">
-<div class="shop-item" data-name="끈끈이 함정" data-price="200">
-<div class="item-image">☷</div>
-<div class="item-info">
-<span class="item-name">끈끈이 함정</span>
-<span class="item-price">200 Gold</span>
-</div>
-</div>
-<div class="shop-item" data-name="독화살 함정" data-price="350">
-<div class="item-image">⌖</div>
-<div class="item-info">
-<span class="item-name">독화살 함정</span>
-<span class="item-price">350 Gold</span>
-</div>
-</div>
-<div class="shop-item" data-name="최음가스 함정" data-price="400">
-<div class="item-image">☁</div>
-<div class="item-info">
-<span class="item-name">최음가스 함정</span>
-<span class="item-price">400 Gold</span>
-</div>
-</div>
+{{getvar::tools}}
 </div>
 </div>
 </div>
