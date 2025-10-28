@@ -4,7 +4,7 @@
 
     for k,v in pairs(itemList) do
         local price = int(v[1])
-        contents = contents .. "<div class='shop-item' data-name='"..k.."' data-price='"..price.."'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
+        contents = contents .. "<div class='shop-item'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
     end
     setChatVar(triggerId, "tools", contents)
 end!!
@@ -15,7 +15,7 @@ end!!
 
     for k,v in pairs(itemList) do
         local price = int(v[1])
-        contents = contents .. "<div class='shop-item' data-name='"..k.."' data-price='"..price.."'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
+        contents = contents .. "<div class='shop-item'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
     end
     setChatVar(triggerId, "tools", contents)
 end!!
@@ -26,7 +26,7 @@ end!!
 
     for k,v in pairs(itemList) do
         local price = int(v[1])
-        contents = contents .. "<div class='shop-item' data-name='"..k.."' data-price='"..price.."'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
+        contents = contents .. "<div class='shop-item'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
     end
     setChatVar(triggerId, "tools", contents)
 end!!
