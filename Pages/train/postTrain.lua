@@ -3,23 +3,23 @@
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
-    --요구주얼 및 경험 정의
-    local rJuel = "C쾌락"
+    --요구흔적 및 경험 정의
+    local rTrace = "C쾌락"
     local rExp = "C경험"
-    local targetJuel = getState(triggerId, "juel")[target["이름"]]
-    local juelExp = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))[tostring(ablLv+1)]
+    local targetTrace = getState(triggerId, "trace")[target["이름"]]
+    local traceExp = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))[tostring(ablLv+1)]
     local expExp = (ablLv+1)*(ablLv+2)*5 --어빌렙의 등차수열 합 * 10
 
-    if targetJuel[rJuel] > juelExp then
+    if targetTrace[rTrace] > traceExp then
         if target[rExp] > expExp then
-            targetJuel[rJuel] = targetJuel[rJuel]- juelExp
+            targetTrace[rTrace] = targetTrace[rTrace]- traceExp
             target[abl] = target[abl]+1
             alertNormal(triggerId, abl.."레벨 상승! ("..ablLv.."->"..(ablLv+1)..")")
         else
             alertNormal(triggerId, "레벨업 불가: "..rExp.." 경험 "..(expExp - target[rExp]).."부족")
         end
     else
-        alertNormal(triggerId, "레벨업 불가: "..rJuel.." 주얼 "..(juelExp - targetJuel[rJuel]).."부족")
+        alertNormal(triggerId, "레벨업 불가: "..rTrace.." 흔적 "..(traceExp - targetTrace[rTrace]).."부족")
     end
 
 end!!
@@ -135,7 +135,7 @@ end!!
     setChatVar(triggerId, "target", "")
     setState(triggerId, "stat", "")
     setChatVar(triggerId, "stat", "")
-    setChatVar(triggerId, "targetJuel", "")
+    setChatVar(triggerId, "targetTrace", "")
     
     sysFunction(triggerId, "turnEnd.sys")
     setState(triggerId, "screen", "main")
