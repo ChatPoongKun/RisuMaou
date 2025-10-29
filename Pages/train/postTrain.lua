@@ -1,17 +1,17 @@
-[postTrain/C감각/hidden] function(triggerId)
-    local abl = "C감각"
+[postTrain/C민감도/hidden] function(triggerId)
+    local abl = "C민감도"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
     --요구흔적 및 경험 정의
-    local rTrace = "C쾌락"
+    local rTrace = "C감각"
     local rExp = "C경험"
     local targetTrace = getState(triggerId, "trace")[target["이름"]]
     local traceExp = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))[tostring(ablLv+1)]
     local expExp = (ablLv+1)*(ablLv+2)*5 --어빌렙의 등차수열 합 * 10
 
     if targetTrace[rTrace] > traceExp then
-        if target[rExp] > expExp then
+        if tonumber(target[rExp]) > expExp then
             targetTrace[rTrace] = targetTrace[rTrace]- traceExp
             target[abl] = target[abl]+1
             alertNormal(triggerId, abl.."레벨 상승! ("..ablLv.."->"..(ablLv+1)..")")
@@ -21,39 +21,38 @@
     else
         alertNormal(triggerId, "레벨업 불가: "..rTrace.." 흔적 "..(traceExp - targetTrace[rTrace]).."부족")
     end
-
 end!!
 
-[postTrain/B감각/hidden] function(triggerId)
-    local abl = "B감각"
+[postTrain/B민감도/hidden] function(triggerId)
+    local abl = "B민감도"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
 end!!
 
-[postTrain/V감각/hidden] function(triggerId)
-    local abl = "V감각"
+[postTrain/V민감도/hidden] function(triggerId)
+    local abl = "V민감도"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
 end!!
 
-[postTrain/A감각/hidden] function(triggerId)
-    local abl = "A감각"
+[postTrain/A민감도/hidden] function(triggerId)
+    local abl = "A민감도"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
 end!!
 
-[postTrain/U감각/hidden] function(triggerId)
-    local abl = "U감각"
+[postTrain/U민감도/hidden] function(triggerId)
+    local abl = "U민감도"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
 end!!
 
-[postTrain/M감각/hidden] function(triggerId)
-    local abl = "M감각"
+[postTrain/M민감도/hidden] function(triggerId)
+    local abl = "M민감도"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
@@ -80,15 +79,15 @@ end!!
 
 end!!
 
-[postTrain/순종/hidden] function(triggerId)
-    local abl = "순종"
+[postTrain/순응/hidden] function(triggerId)
+    local abl = "순응"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
 end!!
 
-[postTrain/욕망/hidden] function(triggerId)
-    local abl = "욕망"
+[postTrain/성욕/hidden] function(triggerId)
+    local abl = "성욕"
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
@@ -113,6 +112,24 @@ end!!
     local target = getState(triggerId, "target")
     local ablLv = target[abl]
 
+        --요구흔적 및 경험 정의
+    local rTrace = "발정"
+    local rExp = "조교회화경험"
+    local targetTrace = getState(triggerId, "trace")[target["이름"]]
+    local traceExp = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))[tostring(ablLv+1)]
+    local expExp = (ablLv+1)*(ablLv+2)*5 --어빌렙의 등차수열 합 * 10
+
+    if targetTrace[rTrace] > traceExp then
+        if tonumber(target[rExp]) > expExp then
+            targetTrace[rTrace] = targetTrace[rTrace]- traceExp
+            target[abl] = target[abl]+1
+            alertNormal(triggerId, abl.."레벨 상승! ("..ablLv.."->"..(ablLv+1)..")")
+        else
+            alertNormal(triggerId, "레벨업 불가: "..rExp.." 경험 "..(expExp - target[rExp]).."부족")
+        end
+    else
+        alertNormal(triggerId, "레벨업 불가: "..rTrace.." 흔적 "..(traceExp - targetTrace[rTrace]).."부족")
+    end
 end!!
 
 [postTrain/노출벽/hidden] function(triggerId)
