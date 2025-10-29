@@ -1,7 +1,7 @@
 --기본 변수
 TIME = -1
 SPAMING = 0.2
-DEBUG = 1
+DEBUG = 0
 MAXROLL = 30
 
 --디버깅용
