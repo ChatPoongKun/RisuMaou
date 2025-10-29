@@ -153,7 +153,7 @@ function(triggerId, dc, HP, SP, exps, command)
             local newLog = getChatVar(triggerId, "newLog")
             newLog = newLog .. "<p>대상은 가혹한 조교를 견디지 못하고 실신했다.</p>"
             setChatVar(triggerId, "newLog", newLog)
-            executeFunction(triggerId, "train", "199") --조교종료 화면으로 넘어가 juel을 얻고 어빌처리는 할 수 있도록 함
+            executeFunction(triggerId, "train", "199") --조교종료 화면으로 넘어가 Trace을 얻고 어빌처리는 할 수 있도록 함
             alertNormal(triggerId, "대상은 가혹한 조교를 견디지 못하고 실신했습니다. 조교를 종료합니다.")
 
         else --사망처리.
@@ -162,7 +162,7 @@ function(triggerId, dc, HP, SP, exps, command)
             setChatVar(triggerId, "target", "")
             setState(triggerId, "stat", "")
             setChatVar(triggerId, "stat", "")
-            setChatVar(triggerId, "targetJuel", "")
+            setChatVar(triggerId, "targetTrace", "")
             
             --캐릭터 정보 변경
             target["condition"] = "사망"

@@ -48,12 +48,12 @@ font-weight: bold;
 <div class="line single"></div>
 
 <section class="jewel-section">
-<h2>* 주얼</h2>
+<h2>* 흔적</h2>
 <div class="stats-grid">
-{{#each {{getvar::juelList}} juel}}
+{{#each {{getvar::traceList}} trace}}
 <div class="stat-item">
-<span class="stat-label">{{slot::juel}}</span>
-<span class="stat-value">{{dict_element::{{getvar::targetJuel}}::{{slot::juel}}}}</span>
+<span class="stat-label">{{slot::trace}}</span>
+<span class="stat-value">{{dict_element::{{getvar::targetTrace}}::{{slot::trace}}}}</span>
 </div>
 {{/each}}
 </div>
@@ -83,10 +83,10 @@ font-weight: bold;
 </section>
 
 <section class="log-panel">
-<h2>* 주얼 변화</h2>
+<h2>* 흔적 변화</h2>
 
 <div class="log-content">
-{{getvar::juelText}}
+{{getvar::traceText}}
 </div>
 </section>
 <!--<div class="line single"></div>-->

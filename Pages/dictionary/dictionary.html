@@ -39,7 +39,7 @@ display: none;
 #cat-trait:checked ~ .category-content > #trait-pane,
 #cat-mark:checked ~ .category-content > #mark-pane,
 #cat-stat:checked ~ .category-content > #stat-pane,
-#cat-juel:checked ~ .category-content > #juel-pane {
+#cat-trace:checked ~ .category-content > #trace-pane {
 display: block;
 }
 
@@ -134,7 +134,7 @@ display: block;
 #stat-pleasure:checked ~ .x-risu-description-wrapper #stat-pleasure-desc,
 #stat-lust:checked ~ .x-risu-description-wrapper #stat-lust-desc,
 #stat-resist:checked ~ .x-risu-description-wrapper #stat-resist-desc,
-#juel-main:checked ~ .x-risu-description-wrapper #juel-main-desc {
+#trace-main:checked ~ .x-risu-description-wrapper #trace-main-desc {
 display: block;
 }
 
@@ -157,14 +157,14 @@ to { opacity: 1; transform: translateY(0); }
 <input type="radio" name="category-tabs" id="cat-trait" hidden>
 <input type="radio" name="category-tabs" id="cat-mark" hidden>
 <input type="radio" name="category-tabs" id="cat-stat" hidden>
-<input type="radio" name="category-tabs" id="cat-juel" hidden>
+<input type="radio" name="category-tabs" id="cat-trace" hidden>
 
 <div class="category-tabs">
 <label for="cat-abl" class="x-risu-btn">능력</label>
 <label for="cat-trait" class="x-risu-btn">특성</label>
 <label for="cat-mark" class="x-risu-btn">각인</label>
 <label for="cat-stat" class="x-risu-btn">스테이터스</label>
-<label for="cat-juel" class="x-risu-btn">주얼</label>
+<label for="cat-trace" class="x-risu-btn">흔적</label>
 </div>
 
 <!-- Content Area -->
@@ -272,7 +272,7 @@ to { opacity: 1; transform: translateY(0); }
 <label for="stat-list" class="back-btn">« 뒤로가기</label>
 <div class="entry-block" id="stat-pleasure-desc">
 <h3>스테이터스 &gt; 쾌락</h3>
-<p>조교를 통해 느끼는 긍정적인 감응입니다. 이 수치가 높을수록 조교에 순응적으로 변하며, 쾌락에 약해집니다. 조교 중 획득하는 주얼 양에 영향을 줍니다.</p>
+<p>조교를 통해 느끼는 긍정적인 감응입니다. 이 수치가 높을수록 조교에 순응적으로 변하며, 쾌락에 약해집니다. 조교 중 획득하는 흔적 양에 영향을 줍니다.</p>
 </div>
 <div class="entry-block" id="stat-lust-desc">
 <h3>스테이터스 &gt; 욕정</h3>
@@ -286,21 +286,21 @@ to { opacity: 1; transform: translateY(0); }
 </div>
 </div>
 
-<!-- JUEL (주얼) Pane -->
-<div id="juel-pane" class="category-pane">
+<!-- trace (흔적) Pane -->
+<div id="trace-pane" class="category-pane">
 <div class="view-controller">
-<input type="radio" name="juel-view" id="juel-list" class="list-toggle" checked hidden>
-<input type="radio" name="juel-view" id="juel-main" class="sub-cat-toggle" hidden>
+<input type="radio" name="trace-view" id="trace-list" class="list-toggle" checked hidden>
+<input type="radio" name="trace-view" id="trace-main" class="sub-cat-toggle" hidden>
 
 <div class="sub-category-grid">
-<label for="juel-main" class="sub-cat-btn">주얼이란?</label>
+<label for="trace-main" class="sub-cat-btn">흔적이란?</label>
 </div>
 
 <div class="x-risu-description-wrapper">
-<label for="juel-list" class="back-btn">« 뒤로가기</label>
-<div class="entry-block" id="juel-main-desc">
-<h3>주얼 &gt; 주얼이란?</h3>
-<p>조교를 통해 얻을 수 있는 특수한 성과물로, 대상의 정기가 결정화된 것입니다. 대상의 특정 성향이나 능력을 강화시키는 데 사용됩니다. 조교의 방향성에 따라 다양한 종류의 주얼을 획득할 수 있습니다.</p>
+<label for="trace-list" class="back-btn">« 뒤로가기</label>
+<div class="entry-block" id="trace-main-desc">
+<h3>흔적 &gt; 흔적이란?</h3>
+<p>조교를 통해 얻을 수 있는 특수한 성과물로, 대상의 정기가 결정화된 것입니다. 대상의 특정 성향이나 능력을 강화시키는 데 사용됩니다. 조교의 방향성에 따라 다양한 종류의 흔적을 획득할 수 있습니다.</p>
 </div>
 </div>
 </div>
