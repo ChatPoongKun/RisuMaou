@@ -273,7 +273,6 @@ function(triggerId, dc, HP, SP, exps, command)
     ]]
 
     --절정경험 추가
-    target = getState(triggerId, "target") --trainProcess에서 처리된 target의 state로 갱신
     if orgasm_t then
         target["절정경험"] = target["절정경험"] + 1
     end
