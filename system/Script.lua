@@ -1,7 +1,7 @@
 --기본 변수
 TIME = -1
 SPAMING = 0.2
-DEBUG = 0
+DEBUG = 1
 MAXROLL = 30
 
 --디버깅용
@@ -208,23 +208,23 @@ function executeFunction(triggerId, screen, code, ...)
     if not funcBody then
         funcBody = funcs[code]
         if not funcBody then
-            alertNormal(triggerId, "커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
+            alertNormal(triggerId, "커맨드 오류: " .. ("존재하지 않는 커맨드"))
             return
         end
     end
         local func, err = createFunctionFromString(funcBody)
-        debug(f_code .. " 함수 실행")
+        debug(f_code .. " 함수 실행(exeFunc)")
         func(triggerId, ...)
 end
 
 function sysFunction(triggerId, f_code, ...)
     local funcBody = getLoreBookContent(triggerId, f_code)
     if not funcBody then
-        alertNormal(triggerId, "시스템 커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
+        alertNormal(triggerId, "시스템 커맨드 오류: " .. ("존재하지 않는 커맨드"))
         return
     end
     local func, err = createFunctionFromString(funcBody)
-    debug(f_code .. " 함수 실행")
+    debug(f_code .. " 함수 실행(sysFunc)")
     func(triggerId, ...)
 end
 
