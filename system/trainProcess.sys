@@ -66,46 +66,6 @@ function(triggerId, dc, HP, SP, exps, command)
             rollBonus = rollBonus + target[v]*2
         end
     end
-    --[[stat영향은 각 조교에 개별 정의
-    local dcPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락", "공포"} --성공굴림 보너스 stat
-    for _, v in ipairs(dcPlus) do
-        local val = currentStat[v]
-        rollBonus = rollBonus + val
-        debug("성공굴림: "..v.." +"..val)
-    end
-    local dcMinus = {"불쾌", "부정"} --성공굴림 마이너스 stat
-    for _, v in ipairs(dcMinus) do
-        local val = currentStat[v]
-        rollBonus = rollBonus - val
-        debug("성공굴림: "..v.." -"..val)
-    end
-    --상황에 따라 달라지는 stat: "굴복", "수치", "고통"
-    local dcCon = 0
-    dcCon = currentStat["굴복"] or 0
-    if hasVal(target, "복종각인") == true or tonumber(target["봉사기술"])> 4 then
-        rollBonus = rollBonus + dcCon
-        debug("성공굴림: 굴복 +"..dcCon)
-    else
-        rollBonus = rollBonus - dcCon
-        debug("성공굴림: 굴복 -"..dcCon)
-    end
-    dcCon = currentStat["수치"] or 0
-    if tonumber(target["노출벽"])> 4 then
-        rollBonus = rollBonus + dcCon
-        debug("성공굴림: 수치 +"..dcCon)
-    else
-        rollBonus = rollBonus - dcCon
-        debug("성공굴림: 수치 -"..dcCon)
-    end
-    dcCon = currentStat["고통"] or 0
-    if tonumber(target["마조끼"])> 4 then
-        rollBonus = rollBonus + dcCon
-        debug("성공굴림: 고통 +"..dcCon)
-    else
-        rollBonus = rollBonus - dcCon
-        debug("성공굴림: 고통 -"..dcCon)
-    end
-    ]]
 
     --최종 주사위굴림
     local roll = math.random()*MAXROLL --소숫점 보너스를 제대로 반영하기 위해 수정
@@ -138,7 +98,7 @@ function(triggerId, dc, HP, SP, exps, command)
         sp = 0
     end
     hp = math.max(hp - costHP, 0)
-    
+
     --HP가 낮을 경우 설정에 따라 실신 혹은 사망 처리
     if hp < 1 then
         local ampm = getChatVar(triggerId,"ampm")
@@ -153,7 +113,7 @@ function(triggerId, dc, HP, SP, exps, command)
             local newLog = getChatVar(triggerId, "newLog")
             newLog = newLog .. "<p>대상은 가혹한 조교를 견디지 못하고 실신했다.</p>"
             setChatVar(triggerId, "newLog", newLog)
-            executeFunction(triggerId, "train", "199") --조교종료 화면으로 넘어가 Trace을 얻고 어빌처리는 할 수 있도록 함
+            executeFunction(triggerId, "train", "199") --조교종료 화면으로 넘어가 trace를 얻고 어빌처리는 할 수 있도록 함
             alertNormal(triggerId, "대상은 가혹한 조교를 견디지 못하고 실신했습니다. 조교를 종료합니다.")
 
         else --사망처리.
@@ -228,12 +188,12 @@ function(triggerId, dc, HP, SP, exps, command)
         return false
     end
 
-    --응답/stat변동 구분처리
+    --응답과 stat경험치 구분처리
     local content = response.result
     debug("응답: "..content)
-    local statChange = content:match("({.*})")
-    local dialog = content:gsub(statChange, "")
-    statChange = json.decode(statChange)
+    local statEXP = content:match("({.*})")
+    local dialog = content:gsub(statEXP, "")
+    statEXP = json.decode(statEXP)
     local newLog = "<br>" .. dialog:gsub("json","")
 
     --경험 누적
@@ -249,21 +209,21 @@ function(triggerId, dc, HP, SP, exps, command)
 
     local ejPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"} --절정치를 증가시키는 stat
     for k, v in ipairs(ejPlus) do
-        local val = statChange[v] or 0
+        local val = statEXP[v] or 0
         ej_target = ej_target + val
         debug("절정치: "..v.."(+"..val..")")
     end
 
     local ejMinus = {"공포", "불쾌", "부정"} --절정치를 감소시키는 stat
     for k, v in ipairs(ejMinus) do
-        local val = statChange[v] or 0
+        local val = statEXP[v] or 0
         ej_target = ej_target - val
         debug("절정치: "..v.."(-"..val..")")
     end
 
     --상황에 따라 달라지는 stat: "굴복", "수치", "고통"
     local ejCon
-    ejCon = statChange["굴복"] or 0
+    ejCon = statEXP["굴복"] or 0
     if hasVal(target, "복종각인") == true or tonumber(target["봉사기술"])> 4 then
         ej_target = ej_target + ejCon
         debug("절정치: 굴복(+"..ejCon..")")
@@ -271,7 +231,7 @@ function(triggerId, dc, HP, SP, exps, command)
         ej_target = ej_target - ejCon
         debug("절정치: 굴복(-"..ejCon..")")
     end
-    ejCon = statChange["수치"] or 0
+    ejCon = statEXP["수치"] or 0
     if tonumber(target["노출벽"])> 4 then
         ej_target = ej_target + ejCon
         debug("절정치: 수치(+"..ejCon..")")
@@ -279,7 +239,7 @@ function(triggerId, dc, HP, SP, exps, command)
         ej_target = ej_target - ejCon
         debug("절정치: 수치(-"..ejCon..")")
     end
-    ejCon = statChange["고통"] or 0
+    ejCon = statEXP["고통"] or 0
     if tonumber(target["마조끼"])> 4 then
         ej_target = ej_target + ejCon
         debug("절정치: 고통(+"..ejCon..")")
@@ -343,7 +303,7 @@ function(triggerId, dc, HP, SP, exps, command)
     end
 
     for k, _ in pairs(currentStat) do
-        local v = statChange[k] or "0" -- statChange에 해당 키값이 없을 경우 0을 반환하도록 해 에러방지
+        local v = statEXP[k] or "0" -- statEXP에 해당 키값이 없을 경우 0을 반환하도록 해 에러방지
         local lv = currentStat[k]
         if tonumber(v) > 0 then
             statResult[k] = tonumber(lvUp(v, lv, k))
@@ -356,7 +316,7 @@ function(triggerId, dc, HP, SP, exps, command)
         end
     end
     setChatVar(triggerId, "cmds", old_cmds) --버튼 원복
-    setChatVar(triggerId, "statLvUp", lvUpcomment) --stat 변화 설명은 log에 포함되지 않도록 정규식 처리
+    setChatVar(triggerId, "statLvUp", lvUpcomment) --stat 변화 설명은 log에 포함되지 않도록 별도 처리
     setState(triggerId, "stat", statResult) --변경된 stat을 state에 반영
     local stat_c = "{"
     for k, v in pairs(statResult) do
