@@ -60,7 +60,7 @@ end!!
     local costHP = 5
     local costSP = 10
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
 
     local exps = {}
 
@@ -75,7 +75,7 @@ end!!
     local costHP = 5
     local costSP = 10
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
 
     local exps = {"조교회화경험"}
 
@@ -90,11 +90,10 @@ end!!
     local costHP = 10
     local costSP = 20
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
     dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.1 -- "+"임
 
     local exps = {}
-
     --LLM에 전달할 조교 커맨드
     local command =  "<br>{{user}}는 "..target['이름'] .."을 어루만진다."
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
@@ -106,7 +105,7 @@ end!!
     local costHP = 15
     local costSP = 30
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
     dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 0.7
 
     local exps = {"C경험"}
@@ -122,8 +121,9 @@ end!!
     local costHP = 15
     local costSP = 40
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
     dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
+    
     local exps = {"A경험"}
 
     --LLM에 전달할 조교 커맨드
@@ -137,13 +137,13 @@ end!!
     local costHP = 15
     local costSP = 30
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
     dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.3
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.3
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
     dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
-    dcBonus = dcBonus - target["순종"] * 0.5
+    dcBonus = dcBonus - target["순응"] * 0.5
 
     local exps = {"자위경험", "C경험"}
     if tonumber(target["성교경험"]) > 0  and tonumber(target["V감각"]) > 4 then
@@ -161,7 +161,7 @@ end!!
     local costHP = 10
     local costSP = 20
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
 
     local exps = {"B경험"}
@@ -177,15 +177,15 @@ end!!
     local costHP = 10
     local costSP = 20
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
     dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 0.3
     dcBonus = dcBonus - getState(triggerId, "stat")["M쾌락"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.2
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
-    dcBonus = dcBonus - target["순종"] * 0.5
+    dcBonus = dcBonus - target["순응"] * 0.5
     dcBonus = dcBonus - target["봉사기술"] * 0.2
-    dcBonus = dcBonus - target["M감각"] * 0.5
+    dcBonus = dcBonus - target["M민감도"] * 0.5
 
     local exps = {"애정경험"}
     if tonumber(target["인후성감"]) == 1 then
@@ -203,12 +203,12 @@ end!!
     local costHP = 15
     local costSP = 30
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
     dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 1.1
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.2
     dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
-    dcBonus = dcBonus - target["순종"] * 0.5
+    dcBonus = dcBonus - target["순응"] * 0.5
     dcBonus = dcBonus - target["노출벽"] * 0.5
     dcBonus = dcBonus - target["마조끼"] * 0.2
 
@@ -225,14 +225,14 @@ end!!
     local costHP = 20
     local costSP = 35
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
     dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.4
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
     dcBonus = dcBonus - (getState(triggerId, "stat")["V윤활"] - 5) * 1.0
     dcBonus = dcBonus - (target["V확장"] - 2) * 1.0
-    dcBonus = dcBonus - target["V감각"] * 0.4
-    dcBonus = dcBonus - target["욕망"] * 0.3
+    dcBonus = dcBonus - target["V민감도"] * 0.4
+    dcBonus = dcBonus - target["성욕"] * 0.3
 
     local exps = {"V경험"}
 
@@ -247,14 +247,14 @@ end!!
     local costHP = 15
     local costSP = 27
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
-    dcBonus = dcBonus + getState(triggerId, "stat")["부정"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
     dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.2
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
     dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
-    dcBonus = dcBonus - target["A감각"] * 0.3
-    dcBonus = dcBonus - target["욕망"] * 0.2
-    dcBonus = dcBonus - target["순종"] * 0.1
+    dcBonus = dcBonus - target["A민감도"] * 0.3
+    dcBonus = dcBonus - target["성욕"] * 0.2
+    dcBonus = dcBonus - target["순응"] * 0.1
 
     local exps = {"A경험"}
 
