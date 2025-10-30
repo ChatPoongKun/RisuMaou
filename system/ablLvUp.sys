@@ -1,0 +1,35 @@
+function (triggerId, abl, rTrace, rExp)
+    local target = getState(triggerId, "target")
+    local ablLv = target[abl]
+    if ablLv >= 10 then
+        alertNormal(triggerId, abl..": 이미 최대레벨입니다.")
+        return
+    end
+
+    local allTrace = getState(triggerId, "trace")
+    local targetTrace = allTrace[target["이름"]]
+    local traceExp = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))[tostring(ablLv+1)]
+    local expExp = (ablLv+1)*(ablLv+2)*5 --어빌렙의 등차수열 합 * 10
+
+    if targetTrace[rTrace] >= traceExp then
+        if tonumber(target[rExp]) >= expExp then
+            targetTrace[rTrace] = targetTrace[rTrace]- traceExp
+            target[abl] = target[abl]+1
+            alertNormal(triggerId, abl.."레벨 상승! ("..ablLv.."->"..(ablLv+1)..")")
+            --변경된 trace와 abl정보 저장
+            allTrace[target["이름"]] = targetTrace
+            setState(triggerId, "trace", allTrace)
+            stateToVar(triggerId, "targetTrace", targetTrace)
+            setState(triggerId, "target", target)
+            stateToVar(triggerId, "target", target)
+
+        else
+            alertNormal(triggerId, "레벨업 불가: "..rExp.." 경험 "..(expExp - target[rExp]).."부족")
+        end
+    else
+        alertNormal(triggerId, "레벨업 불가: "..rTrace.." 흔적 "..(traceExp - targetTrace[rTrace]).."부족")
+    end
+    --캐릭터 정보를 로컬로어북에 저장
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
+end
