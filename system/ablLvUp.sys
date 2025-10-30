@@ -1,6 +1,6 @@
 function (triggerId, abl, rTrace, rExp)
     local target = getState(triggerId, "target")
-    local ablLv = target[abl]
+    local ablLv = tonumber(target[abl])
     if ablLv >= 10 then
         alertNormal(triggerId, abl..": 이미 최대레벨입니다.")
         return
