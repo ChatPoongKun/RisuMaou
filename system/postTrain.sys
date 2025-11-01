@@ -118,6 +118,8 @@ print("합계부정: "..traceSum["부정"])
     local lastTrainLog = "<div class='history' style='visibility:hidden;'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..getChatVar(triggerId,"oldLog")..getChatVar(triggerId,"newLog").."</p></div>"
     setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
 
+    --능력 선택 초기화
+    setChatVar(triggerId, "selectedAbl", "none")
     --조교후 화면으로 이동
     setState(triggerId, "screen", "postTrain")
 end

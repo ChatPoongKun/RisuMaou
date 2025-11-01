@@ -1,15 +1,31 @@
 [postTrain/C민감도/hidden] function(triggerId)
     local abl = "C민감도"
-    local rTrace = "C감각"
-    local rExp = "C경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["C감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["C경험"] = {15,60,135,240,375,540,735,960,1215,1500}
+    })
+    table.insert(lvUpConditions,{
+        ["C감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/B민감도/hidden] function(triggerId)
     local abl = "B민감도"
-    local rTrace = "B감각"
-    local rExp = "B경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["B감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["B경험"] = {15,60,135,240,375,540,735,960,1215,1500}
+    })
+    table.insert(lvUpConditions,{
+        ["B감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/V민감도/hidden] function(triggerId)
@@ -108,6 +124,60 @@ end!!
     local rTrace = "상처"
     local rExp = "피학경험"
     sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+end!!
+
+[postTrain/return/hidden] function(triggerId)
+    setChatVar(triggerId, "selectedAbl", "none")
+end!!
+
+[postTrain/ablLvUp1/hidden] function(triggerId)
+    debug("첫번째 조건으로 레벨업")
+    --첫번째 배열은 렙업대상 어빌명. 배열 2번부터가 조건1번
+    debug(json.encode(getState(triggerId, "selectedCondition")[1]))
+    debug(json.encode(getState(triggerId, "selectedCondition")[2]))
+    local abl = getState(triggerId, "selectedCondition")[1]
+    local selectedCondition = getState(triggerId, "selectedCondition")[2]
+    sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition)
+end!!
+
+[postTrain/ablLvUp2/hidden] function(triggerId)
+    debug("두번째 조건으로 레벨업")
+    --첫번째 배열은 렙업대상 어빌명. 배열 2번부터가 조건1번
+    debug(json.encode(getState(triggerId, "selectedCondition")[1]))
+    debug(json.encode(getState(triggerId, "selectedCondition")[3]))
+    local abl = getState(triggerId, "selectedCondition")[1]
+    local selectedCondition = getState(triggerId, "selectedCondition")[3]
+    sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition)
+end!!
+
+[postTrain/ablLvUp3/hidden] function(triggerId)
+    debug("세번째 조건으로 레벨업")
+    --첫번째 배열은 렙업대상 어빌명. 배열 2번부터가 조건1번
+    debug(json.encode(getState(triggerId, "selectedCondition")[1]))
+    debug(json.encode(getState(triggerId, "selectedCondition")[4]))
+    local abl = getState(triggerId, "selectedCondition")[1]
+    local selectedCondition = getState(triggerId, "selectedCondition")[4]
+    sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition)
+end!!
+
+[postTrain/ablLvUp4/hidden] function(triggerId)
+    debug("네번째 조건으로 레벨업")
+    --첫번째 배열은 렙업대상 어빌명. 배열 2번부터가 조건1번
+    debug(json.encode(getState(triggerId, "selectedCondition")[1]))
+    debug(json.encode(getState(triggerId, "selectedCondition")[5]))
+    local abl = getState(triggerId, "selectedCondition")[1]
+    local selectedCondition = getState(triggerId, "selectedCondition")[5]
+    sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition)
+end!!
+
+[postTrain/ablLvUp5/hidden] function(triggerId)
+    debug("다섯번째 조건으로 레벨업")
+    --첫번째 배열은 렙업대상 어빌명. 배열 2번부터가 조건1번
+    debug(json.encode(getState(triggerId, "selectedCondition")[1]))
+    debug(json.encode(getState(triggerId, "selectedCondition")[6]))
+    local abl = getState(triggerId, "selectedCondition")[1]
+    local selectedCondition = getState(triggerId, "selectedCondition")[6]
+    sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition)
 end!!
 
 [postTrain/199/조교종료] function(triggerId)
