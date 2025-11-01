@@ -225,7 +225,7 @@ function sysFunction(triggerId, f_code, ...)
     end
     local func, err = createFunctionFromString(funcBody)
     debug(f_code .. " 함수 실행(sysFunc)")
-    func(triggerId, ...)
+    return func(triggerId, ...)
 end
 
 function promptBuild(role, content)

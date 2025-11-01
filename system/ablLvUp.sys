@@ -1,34 +1,59 @@
-function (triggerId, abl, rTrace, rExp)
+function (triggerId, abl, selectedCondition, alert)
     local target = getState(triggerId, "target")
     local ablLv = tonumber(target[abl])
-    if ablLv >= 10 then
-        alertNormal(triggerId, abl..": 이미 최대레벨입니다.")
-        return
-    end
-
     local allTrace = getState(triggerId, "trace")
-    local targetTrace = allTrace[target["이름"]]
-    local traceExp = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))[tostring(ablLv+1)]
-    local expExp = (ablLv+1)*(ablLv+2)*5 --어빌렙의 등차수열 합 * 10
-
-    if targetTrace[rTrace] >= traceExp then
-        if tonumber(target[rExp]) >= expExp then
-            targetTrace[rTrace] = targetTrace[rTrace]- traceExp
-            target[abl] = target[abl]+1
-            alertNormal(triggerId, abl.."레벨 상승! ("..ablLv.."->"..(ablLv+1)..")")
-            --변경된 trace와 abl정보 저장
-            allTrace[target["이름"]] = targetTrace
-            setState(triggerId, "trace", allTrace)
-            stateToVar(triggerId, "targetTrace", targetTrace)
-            setState(triggerId, "target", target)
-            stateToVar(triggerId, "target", target)
-
-        else
-            alertNormal(triggerId, "레벨업 불가: "..rExp.." 경험 "..(expExp - target[rExp]).."부족")
-        end
-    else
-        alertNormal(triggerId, "레벨업 불가: "..rTrace.." 흔적 "..(traceExp - targetTrace[rTrace]).."부족")
+    local targetTrace = allTrace[target["이름"] ]
+    local alert = alert
+    if alert == nil then
+        alert = true
     end
+
+    --레벨업 조건 확인
+    for k, v in pairs(selectedCondition) do
+        if targetTrace[k] then
+            print("targetTrace", k, targetTrace[k], v)
+            if tonumber(targetTrace[k]) < v then
+                if alert == true then
+                    alertNormal(triggerId, "레벨업 불가: "..k.." 흔적 "..(v - (targetTrace[k] or 0)).."부족")
+                end
+                --능력 선택 초기화
+                setChatVar(triggerId, "selectedAbl", "none")
+                return false
+            end
+        end
+        if target[k] then
+            print("target", k, target[k], v)
+            if tonumber(target[k]) < v then
+                if alert == true then
+                    alertNormal(triggerId, "레벨업 불가: "..k.." "..(v - (target[k] or 0)).."부족")
+                end
+                --능력 선택 초기화
+                setChatVar(triggerId, "selectedAbl", "none")
+                return false
+            end
+        end
+    end
+    --t/f확인용이면 true 반환하고 끝내기
+    if alert == false then
+        return true
+    end
+    --레벨업 처리
+    alertNormal(triggerId, abl.."레벨 상승! ("..ablLv.."->"..(ablLv+1)..")")
+    target[abl] = tostring(ablLv + 1)
+    for k, v in pairs(selectedCondition) do
+        if targetTrace[k] then
+            targetTrace[k] = targetTrace[k] - v
+        end
+    end
+    --능력 선택 초기화
+    setChatVar(triggerId, "selectedAbl", "none")
+    --변경된 trace와 abl정보 저장
+    allTrace[target["이름"] ] = targetTrace
+    setState(triggerId, "trace", allTrace)
+    stateToVar(triggerId, "targetTrace", targetTrace)
+    setState(triggerId, "target", target)
+    stateToVar(triggerId, "target", target)
+
     --캐릭터 정보를 로컬로어북에 저장
     local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
     upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)

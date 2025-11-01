@@ -1,0 +1,32 @@
+function (triggerId, abl, lvUpConditions)
+    local target = getState(triggerId, "target")
+    local ablLv = tonumber(target[abl])
+    if ablLv >= 10 then
+        alertNormal(triggerId, abl..": 이미 최대레벨입니다.")
+        return
+    end
+
+    --레벨업 조건 html표현식
+    local selectedAbl = ""
+    local selectedCondition = {abl}
+    for i, condition in ipairs(lvUpConditions) do
+        selectedCondition[i+1] = {}
+        for k, v in pairs(condition) do
+            selectedCondition[i+1][k] = v[ablLv]
+        end
+        --조건을 미리 검토해 렙업이 가능한 조건에는 녹색 테두리로 표기
+        local available = ""
+        if sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition[i+1], false) then
+        available = "available"
+        end
+        selectedAbl = selectedAbl .. "<div class='lvUpConditions btn "..available.."' risu-btn='ablLvUp"..i.."'>"
+        for k, v in pairs(condition) do
+            selectedAbl = selectedAbl .. "<span><b>"..k.."</b>: "..v[ablLv].."</span><br>"
+        end
+        selectedAbl = selectedAbl .. "</div>"
+    end
+
+    selectedAbl = selectedAbl .. "<div class='line'></div><div class='btn' risu-btn='return'>".."돌아가기".."</div>"
+    setChatVar(triggerId, "selectedAbl", selectedAbl)
+    setState(triggerId, "selectedCondition", selectedCondition)
+end
