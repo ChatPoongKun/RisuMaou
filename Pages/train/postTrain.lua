@@ -4,7 +4,7 @@
 
     table.insert(lvUpConditions,{
         ["C감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
-        ["C경험"] = {15,60,135,240,375,540,735,960,1215,1500}
+        ["C경험"] = {10,30,60,100,150,210,280,360,450,550}
     })
     table.insert(lvUpConditions,{
         ["C감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
@@ -19,7 +19,7 @@ end!!
 
     table.insert(lvUpConditions,{
         ["B감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
-        ["B경험"] = {15,60,135,240,375,540,735,960,1215,1500}
+        ["B경험"] = {10,30,60,100,150,210,280,360,450,550}
     })
     table.insert(lvUpConditions,{
         ["B감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
@@ -30,105 +30,215 @@ end!!
 
 [postTrain/V민감도/hidden] function(triggerId)
     local abl = "V민감도"
-    local rTrace = "V감각"
-    local rExp = "V경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["V감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["V경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["V감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/A민감도/hidden] function(triggerId)
     local abl = "A민감도"
-    local rTrace = "A감각"
-    local rExp = "A경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["A감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["A경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["A감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/U민감도/hidden] function(triggerId)
     local abl = "U민감도"
-    local rTrace = "U감각"
-    local rExp = "U경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["U감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["요도경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["U감각"] = {20,55,148,403,1097,2981,8103,22026,59874,162755},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/M민감도/hidden] function(triggerId)
     local abl = "M민감도"
-    local rTrace = "복종"
-    local rExp = "펠라경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["순종"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["애정경험"] = {10,30,60,100,150,210,280,360,450,550},
+        ["비접촉절정"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["펠라경험"] = {10,30,60,100,150,210,280,360,450,550},
+        ["정음경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/V확장/hidden] function(triggerId)
     local abl = "V확장"
-    local rTrace = "발정"
-    local rExp = "V확장경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["V감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {20,55,148,403,1097,2981,8103,22026,59874,162755},
+        ["V확장경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/A확장/hidden] function(triggerId)
     local abl = "A확장"
-    local rTrace = "발정"
-    local rExp = "A확장경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["A감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {20,55,148,403,1097,2981,8103,22026,59874,162755},
+        ["A확장경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/U확장/hidden] function(triggerId)
     local abl = "U확장"
-    local rTrace = "굴욕"
-    local rExp = "요도경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["U감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {20,55,148,403,1097,2981,8103,22026,59874,162755},
+        ["요도경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/순응/hidden] function(triggerId)
     local abl = "순응"
-    local rTrace = "순종"
-    local rExp = "애정경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["순종"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["애정경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["복종"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["굴욕"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/성욕/hidden] function(triggerId)
     local abl = "성욕"
-    local rTrace = "발정"
-    local rExp = "절정경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["절정경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["자위경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["C감각"] = {3,7,20,55,148,403,1097,2981,8103,22026},
+        ["B감각"] = {3,7,20,55,148,403,1097,2981,8103,22026},
+        ["A감각"] = {3,7,20,55,148,403,1097,2981,8103,22026},
+        ["V감각"] = {3,7,20,55,148,403,1097,2981,8103,22026}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/봉사기술/hidden] function(triggerId)
     local abl = "봉사기술"
-    local rTrace = "기술"
-    local rExp = "봉사경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["순종"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["봉사경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["복종"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["불안"] = {20,55,148,403,1097,2981,8103,22026,59874,162755}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/성교기술/hidden] function(triggerId)
     local abl = "성교기술"
-    local rTrace = "기술"
-    local rExp = "성교경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["기술"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["성교경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["기술"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["애널성교경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/화술/hidden] function(triggerId)
     local abl = "화술"
-    local rTrace = "발정"
-    local rExp = "조교회화경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["애정"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["조교회화경험"] = {10,30,60,100,150,210,280,360,450,550}
+    })
+    table.insert(lvUpConditions,{
+        ["B감각"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/노출벽/hidden] function(triggerId)
     local abl = "노출벽"
-    local rTrace = "굴욕"
-    local rExp = "비접촉절정"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["굴욕"] = {20,55,148,403,1097,2981,8103,22026,59874,162755},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874}
+    })
+    table.insert(lvUpConditions,{
+        ["굴욕"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["발정"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["절정경험"] = {30,60,100,150,210,280,360,450,550,750}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
 [postTrain/마조끼/hidden] function(triggerId)
     local abl = "마조끼"
-    local rTrace = "상처"
-    local rExp = "피학경험"
-    sysFunction(triggerId, "ablLvUp.sys", abl, rTrace, rExp)
+    local lvUpConditions = {}
+
+    table.insert(lvUpConditions,{
+        ["상처"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["불안"] = {7,20,55,148,403,1097,2981,8103,22026,59874},
+        ["피학경험"] = {30,60,100,150,210,280,360,450,550,750}
+    })
+    table.insert(lvUpConditions,{
+        ["발정"] = {20,55,148,403,1097,2981,8103,22026,59874,162755},
+        ["피학경험"] = {30,60,100,150,210,280,360,450,550,750}
+    })
+    sysFunction(triggerId, "ablLvUpConditionSelect.sys", abl, lvUpConditions)
 end!!
 
-[postTrain/return/hidden] function(triggerId)
-    setChatVar(triggerId, "selectedAbl", "none")
-end!!
 
 [postTrain/ablLvUp1/hidden] function(triggerId)
     debug("첫번째 조건으로 레벨업")
@@ -180,6 +290,10 @@ end!!
     sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition)
 end!!
 
+[postTrain/return/hidden] function(triggerId)
+    setChatVar(triggerId, "selectedAbl", "none")
+end!!
+
 [postTrain/199/조교종료] function(triggerId)
     --변수 초기화
     setState(triggerId, "target", "")
@@ -187,7 +301,7 @@ end!!
     setState(triggerId, "stat", "")
     setChatVar(triggerId, "stat", "")
     setChatVar(triggerId, "targetTrace", "")
-    
+
     sysFunction(triggerId, "turnEnd.sys")
     setState(triggerId, "screen", "main")
 end!!
