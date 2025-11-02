@@ -68,16 +68,22 @@ padding: 0.2rem;
 </div>
 </section>
 
+{{settempvar::exps::blank}}
+{{#each {{getvar::expList}} exp}}
+{{#if {{? {{dict_element::{{getvar::target}}::{{slot::exp}}}}!=0}}}}
+{{#if {{? {{gettempvar::exps}}==blank}}}}{{settempvar::exps::{{blank}}}}{{/if}}
+{{settempvar::exps::{{gettempvar::exps}}<div class="exp-tag"><strong>{{slot::exp}}:</strong> {{dict_element::{{getvar::target}}::{{slot::exp}}}}</div>}}
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::exps}}!=blank}}}}
 <section class="exp-section">
 <h2>* 경험</h2>
 <div class="stats-grid">
-{{#each {{getvar::expList}} exp}}
-{{#when::{{dict_element::{{getvar::target}}::{{slot::exp}}}}::isnot::0}}
-<div class="exp-tag"><strong>{{slot::exp}}:</strong> {{dict_element::{{getvar::target}}::{{slot::exp}}}}</div>
-{{/when}}
-{{/each}}
+{{gettempvar::exps}}
 </div>
 </section>
+{{/if}}
+
 
 <section class="ability-section">
 <h2>* 능력 업그레이드</h2>
