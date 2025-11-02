@@ -3,12 +3,9 @@
 height: 0.6rem;
 }
 
-
-
-/* MODIFIED: Target Profile Section */
 .target-profile {
     display: flex;
-    flex-wrap: wrap; /* ADDED for responsiveness */
+    flex-wrap: wrap;
     gap: 1rem;
     align-items: flex-start;
     background-color: #303030;
@@ -16,7 +13,6 @@ height: 0.6rem;
     border-radius: 4px;
 }
 
-/* NEW: Wrapper for portrait and bars */
 .target-visuals {
     display: flex;
     gap: 1rem;
@@ -38,8 +34,8 @@ height: 0.6rem;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem; /* Space between header and details */
-    min-width: 280px; /* Helps determine wrapping point */
+    gap: 0.75rem;
+    min-width: 280px;
 }
 
 .target-header {
@@ -55,11 +51,10 @@ height: 0.6rem;
     font-size: 1.5em;
 }
 
-/* NEW: Vertical Bars */
 .vertical-bars {
     display: flex;
     gap: 0.75rem;
-    height: 128px; /* Match portrait height */
+    height: 128px;
     flex-shrink: 0;
 }
 .v-bar-container {
@@ -78,7 +73,7 @@ height: 0.6rem;
     padding: 2px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Align fill to bottom */
+    justify-content: flex-end;
 }
 .v-bar-fill {
     width: 100%;
@@ -89,12 +84,15 @@ height: 0.6rem;
     font-size: 0.8em;
     font-weight: bold;
 }
-.v-bar-fill.x-risu-hp { background-image: linear-gradient(to top, #e46557, #eb1d1d); }
-.v-bar-fill.x-risu-st { background-image: linear-gradient(to top, #ecd162, #f1c40f); }
-.v-bar-fill.x-risu-ej { background-image: linear-gradient(to top, #e06884, #ce025b); }
+.v-bar-fill.x-risu-hp { background-image: linear-gradient(to top, #e46557, #eb1d1d); } /*체력*/
+.v-bar-fill.x-risu-st { background-image: linear-gradient(to top, #ecd162, #f1c40f); } /*기력*/
+.v-bar-fill.x-risu-pe { background-image: linear-gradient(to top, #ded5b0, #eed87f); } /*요의*/
+.v-bar-fill.x-risu-ej { background-image: linear-gradient(to top, #e06884, #ce025b); } /*사정게이지*/
 
+.bar-value{
+    flex-basis: 3rem;
+}
 
-/* NEW: Target Details Grid */
 .target-details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
@@ -122,7 +120,6 @@ height: 0.6rem;
     font-size: 1.2em;
 }
 
-/* MODIFIED: Stats Section Header for Toggle */
 .stats-header {
     display: flex;
     /*justify-content: space-between;*/
@@ -139,23 +136,22 @@ height: 0.6rem;
 
 }
 
-/* NEW: Logic for showing/hiding stats */
 #stats-expanded:checked ~ .stats-header .expand-btn,
 #stats-collapsed:checked ~ .stats-header .collapse-btn {
     display: none;
 }
-#stats-collapsed:checked ~ .stats-grid {
+#stats-collapsed:checked ~ .info-grid {
     display: none;
 }
 
-.stats-grid {
+/*.stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 0.5rem;
     background-color: #303030;
     padding: 1rem;
     border-radius: 4px;
-}
+}*/
 .stat-item {
     display: flex;
     justify-content: space-between;
@@ -200,7 +196,7 @@ height: 0.6rem;
 }
 
 .loading-container {
-    grid-column: 1 / -1; /* Span all columns in the command-container grid */
+    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -209,7 +205,7 @@ height: 0.6rem;
     color: #ccc;
     font-family: 'Gulim', monospace;
     text-align: center;
-    min-height: 80px; /* Ensure it has some height */
+    min-height: 80px;
 }
 
 .loading-text {
@@ -225,7 +221,7 @@ height: 0.6rem;
 .loading-dots span {
     width: 12px;
     height: 12px;
-    background-color: #ffffbf; /* Using a highlight color from the theme */
+    background-color: #ffffbf;
     border-radius: 50%;
     animation: pulse 1.4s infinite ease-in-out both;
 }
@@ -249,11 +245,99 @@ height: 0.6rem;
     }
 }
 
+/*성공여부표시 애니메이션*/
+.log-wrapper {
+position: relative; /* Container for the absolute positioned overlay */
+}
+
+.success-animation {
+position: absolute;
+inset: 0; /* a modern way for top/right/bottom/left: 0 */
+z-index: 10;
+overflow: hidden; /* Hide panels as they move out */
+animation: hide-container 0.2s 0.8s forwards;
+}
+
+/* The two black panels covering the content */
+.success-animation::before,
+.success-animation::after {
+content: '';
+position: absolute;
+top: 0;
+width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
+height: 100%;
+background-color: #111; /* Match log background */
+animation: open-panels 0.4s ease-in-out 0.6s forwards;
+}
+
+.success-animation::before {
+left: 0;
+transform-origin: left;
+}
+
+.success-animation::after {
+right: 0;
+transform-origin: right;
+}
+
+.animation-text {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+
+font-size: 3em;
+font-weight: bold;
+font-family: 'Arial Black', sans-serif;
+
+z-index: 1; /* Above panels */
+white-space: nowrap; /* Prevent text wrapping */
+animation: text-appear-and-fade 1s ease-in-out forwards;
+}
+.success{
+    color: #f8c65c;
+    text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;
+}
+
+.fail{
+    color: #dc4747;
+    text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;
+}
+
+@keyframes text-appear-and-fade {
+0% {
+opacity: 0;
+transform: translate(-50%, -50%) scale(0.8);
+}
+5% { /* Appear */
+opacity: 1;
+transform: translate(-50%, -50%) scale(1);
+}
+100% { /* Fade out */
+opacity: 0;
+transform: translate(-50%, -50%) scale(1.1);
+}
+}
+
+@keyframes open-panels {
+from {
+transform: scaleX(1);
+}
+to {
+transform: scaleX(0);
+}
+}
+
+@keyframes hide-container {
+to {
+/* Hides the element and makes it non-interactive */
+visibility: hidden;
+}
+}
+/*성공여부표시 애니메이션*/
+
+
 @media screen and (max-width: 600px) {
-    .stats-grid {
-        grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-        font-size: 0.8rem;
-        }
     .stat-label {
         font-size: 0.8rem;
     }
@@ -279,23 +363,30 @@ height: 0.6rem;
 </div>
 <div class="vertical-bars">
 <!-- Vertical HP Bar -->
-<div class="v-bar-container" title="{{dict_element::{{getvar::target}}::체력}}">
+<div class="v-bar-container">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-hp" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대체력}}}} * 100}}%;"></div>
 </div>
 <span class="v-bar-label">체력</span>
 </div>
 <!-- Vertical ST Bar -->
-<div class="v-bar-container" title="{{dict_element::{{getvar::target}}::최대기력}}">
+<div class="v-bar-container">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-st" style="height: {{? {{tonumber::{{dict_element::{{getvar::target}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::target}}::최대기력}}}} * 100}}%;"></div>
 </div>
 <span class="v-bar-label">기력</span>
 </div>
-<!-- Vertical Ejaculation Bar -->
-<div class="v-bar-container" title="{{getvar::ej_target}}/{{getvar::ej_target_max}}">
+<!-- Vertical Pee Bar -->
+<div class="v-bar-container">
 <div class="v-bar-track">
-<div class="v-bar-fill x-risu-ej" style="height: {{? {{tonumber::{{getvar::ej_target}}}}/{{tonumber{{getvar::ej_target_max}}}}}}%;"></div>
+<div class="v-bar-fill x-risu-pe" style="height: {{getvar::요의}}%;"></div>
+</div>
+<span class="v-bar-label">요의</span>
+</div>
+<!-- Vertical Ejaculation Bar -->
+<div class="v-bar-container" title="{{getvar::ej_target}}/{{? 10000*{{? 1.2^{{getvar::ejCount_t}}}}}}">
+<div class="v-bar-track">
+<div class="v-bar-fill x-risu-ej" style="height: {{? {{getvar::ej_target}}/{{? 100*{{? 1.2^{{getvar::ejCount_t}}}}}}}}%;"></div>
 </div>
 <span class="v-bar-label">절정</span>
 </div>
@@ -320,20 +411,8 @@ height: 0.6rem;
 <span class="detail-value">{{dict_element::{{getvar::target}}::애널정액}}ml</span>
 </div>
 <div class="detail-item">
-<span class="detail-label">C절정</span>
-<span class="detail-value">{{dict_element::{{getvar::target}}::C쾌락경험}}회</span>
-</div>
-<div class="detail-item">
-<span class="detail-label">V절정</span>
-<span class="detail-value">{{dict_element::{{getvar::target}}::V쾌락경험}}회</span>
-</div>
-<div class="detail-item">
-<span class="detail-label">A절정</span>
-<span class="detail-value">{{dict_element::{{getvar::target}}::A쾌락경험}}회</span>
-</div>
-<div class="detail-item">
-<span class="detail-label">B절정</span>
-<span class="detail-value">{{dict_element::{{getvar::target}}::B쾌락경험}}회</span>
+<span class="detail-label">절정</span>
+<span class="detail-value">{{getvar::ejCount_t}}회</span>
 </div>
 </div>
 </div>
@@ -353,7 +432,7 @@ height: 0.6rem;
 <label for="stats-expanded" class="toggle-btn expand-btn x-risu-btn">펼치기</label>
 </div>
 </div>
-<div class="stats-grid">
+<div class="info-grid">
 <div class="stat-item"><span class="stat-label">C쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::C쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::C쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">V쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::V쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::V쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">A쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::A쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::A쾌락}}"></div></div>
@@ -370,25 +449,24 @@ height: 0.6rem;
 <div class="stat-item"><span class="stat-label">욕정</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::욕정}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::욕정}}"></div></div>
 <div class="stat-item"><span class="stat-label">온순</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::온순}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::온순}}"></div></div>
 <div class="stat-item"><span class="stat-label">굴복</span> <div class="rating {{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::봉사기술}}}}>4}}::or::{{? {{tonumber::{{dict_element::{{getvar::target}}::복종각인}}}}>0}}}}heart{{:else}}skull{{/when}} {{#when::{{dict_element::{{getvar::stat}}::굴복}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::굴복}}"></div></div>
-<div class="stat-item"><span class="stat-label">습득</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::습득}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::습득}}"></div></div>
 <div class="stat-item"><span class="stat-label">수치</span> <div class="rating {{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::노출벽}}}}>4}}}}heart{{:else}}skull{{/when}} {{#when::{{dict_element::{{getvar::stat}}::수치}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::수치}}"></div></div>
 <div class="stat-item"><span class="stat-label">고통</span> <div class="rating {{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::마조끼}}}}>4}}}}heart{{:else}}skull{{/when}} {{#when::{{dict_element::{{getvar::stat}}::고통}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::고통}}"></div></div>
 <div class="stat-item"><span class="stat-label">공포</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::공포}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::공포}}"></div></div>
 <div class="stat-item"><span class="stat-label">불쾌</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::불쾌}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::불쾌}}"></div></div>
-<div class="stat-item"><span class="stat-label">부정</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::부정}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::부정}}"></div></div>
+<div class="stat-item"><span class="stat-label">저항</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::저항}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::저항}}"></div></div>
 </div>
 </section>
 
 <div class="line single"></div>
 
 <section class="ejaculation-section">
-<h3>* 절정 게이지 ({{user}})</h3>
+<h3>* {{user}}</h3>
 <div class="x-risu-bar-container">
-<span class="bar-label">{{user}}:</span>
+<span class="bar-label"> 절정:</span>
 <div class="progress-bar x-risu-ej">
-<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{tonumber::{{getvar::ej_user_max}}}}}}%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%;"></div>
 </div>
-<span class="bar-value">{{getvar::ej_user}}/{{getvar::ej_user_max}}</span>
+<span class="bar-value">{{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%</span>
 </div>
 </section>
 
@@ -396,14 +474,21 @@ height: 0.6rem;
 
 <section class="log-panel">
 <h2>* 메시지</h2>
+<div class="log-wrapper">
 <div class="log-content">
-{{#when::{{? {{getvar::oldLog}}!=}}}}<details>
+{{#when::{{? {{getvar::oldLog}}!=[조교시작]}}}}<details>
 <summary>이전 조교기록</summary>
 {{getvar::oldLog}}
 </details>
 {{/when}}
 {{getvar::newLog}}
 {{getvar::statLvUp}}
+</div>
+{{getvar::sucEffect}}
+<!-- 성공실패 예시
+<div class="success-animation"><div class="animation-text fail">실패</div></div>
+<div class="success-animation"><div class="animation-text success">대성공</div></div>
+-->
 </div>
 </section>
 

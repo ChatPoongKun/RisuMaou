@@ -52,75 +52,218 @@ end!!
     setChatVar(triggerId, cat, tgl)
 end!!
 
-[train/--/{{#when::애무계::vis::1}}--애무계--{{/when}}]function end!!
+[train/hr/{{#when::애무계::vis::1}}--애무계--{{/when}}]function end!!
 
 [train/11/{{#when::{{getVar::애무계}}::is::1}}가만 지켜본다{{/when}}] function(triggerId)
-    local train = "가만 지켜본다"
+    local target = getState(triggerId, "target")
+    local dc = 0 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 5
+    local costSP = 10
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+
+    local exps = {}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 아무것도 하지 않고"..target['이름'] .."을 가만히 관찰한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/12/{{#when::{{getVar::애무계}}::is::1}}대화한다{{/when}}] function(triggerId)
-    local train = "회화한다"
+    local target = getState(triggerId, "target")
+    local dc = 0 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 5
+    local costSP = 10
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+
+    local exps = {"조교회화경험"}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."에게 말을 건다.."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/13/{{#when::{{getVar::애무계}}::is::1}}애무{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 5 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 50
-    local costSP = 100
-    local dcBonus = 0 --조교 전용 보너스 요소가 있을 수 있음. 높을수록 난이도 상승. 음수면 난이도 감소
-   
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.1 -- "+"임
+
+    local exps = {}
     --LLM에 전달할 조교 커맨드
     local command =  "<br>{{user}}는 "..target['이름'] .."을 어루만진다."
-    local orgasm_t, orgasm_u = sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, command)
-
-    target = getState(triggerId, "target") --trainProcess에서 처리된 target의 state로 갱신
-    if orgasm_t then
-        target["절정경험"] = target["절정경험"] + 1
-    end
-    --[[ 유저의 절정처리 미구현
-    if orgasm_u then
-        user["절정경험"] = user["절정경험"] + 1
-    end]]
-
-    --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
-    setState(triggerId, "target", target)
-    stateToVar(triggerId, "target", target)
-    
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/14/{{#when::{{getVar::애무계}}::is::1}}커널링구스{{/when}}] function(triggerId)
-    local train = "커널링구스"
+    local target = getState(triggerId, "target")
+    local dc = 20 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 15
+    local costSP = 30
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 0.7
+
+    local exps = {"C경험"}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."의 다리를 벌리고 비부를 혀로 핥는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/15/{{#when::{{getVar::애무계}}::is::1}}애널애무{{/when}}] function(triggerId)
-    local train = "애널애무"
+    local target = getState(triggerId, "target")
+    local dc = 30 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 15
+    local costSP = 40
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
+    
+    local exps = {"A경험"}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."의 애널을 부드럽게 어루만진다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/16/{{#when::{{getVar::애무계}}::is::1}}자위{{/when}}] function(triggerId)
-    local train = "자위"
+    local target = getState(triggerId, "target")
+    local dc = 25 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 15
+    local costSP = 30
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
+    dcBonus = dcBonus - target["순응"] * 0.5
+
+    local exps = {"자위경험", "C경험"}
+    if tonumber(target["성교경험"]) > 0  and tonumber(target["V감각"]) > 4 then
+        table.insert(exps, "V경험")
+    end
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."에게 스스로 자위 할 것을 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/17/{{#when::{{getVar::애무계}}::is::1}}가슴 애무{{/when}}] function(triggerId)
-    local train = "가슴애무"
+    local target = getState(triggerId, "target")
+    local dc = 5 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+
+    local exps = {"B경험"}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."의 가슴을 어루만진다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/18/{{#when::{{getVar::애무계}}::is::1}}키스{{/when}}] function(triggerId)
-    local train = "키스"
+    local target = getState(triggerId, "target")
+    local dc = 12 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["M쾌락"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.2
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
+    dcBonus = dcBonus - target["순응"] * 0.5
+    dcBonus = dcBonus - target["봉사기술"] * 0.2
+    dcBonus = dcBonus - target["M민감도"] * 0.5
+
+    local exps = {"애정경험"}
+    if tonumber(target["인후성감"]) == 1 then
+        table.insert(exps, "M경험")
+    end
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."와 입을 맞춘다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/19/{{#when::{{getVar::애무계}}::is::1}}조개벌리기{{/when}}] function(triggerId)
-    local train = "보지 벌리기"
+    local target = getState(triggerId, "target")
+    local dc = 18 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 15
+    local costSP = 30
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 1.1
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.2
+    dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
+    dcBonus = dcBonus - target["순응"] * 0.5
+    dcBonus = dcBonus - target["노출벽"] * 0.5
+    dcBonus = dcBonus - target["마조끼"] * 0.2
+
+    local exps = {"자위경험"}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."가 스스로 보지를 벌려보이도록 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/110/{{#when::{{getVar::애무계}}::is::1}}손가락 넣기{{/when}}] function(triggerId)
-    local train = "손가락 넣기"
+    local target = getState(triggerId, "target")
+    local dc = 18 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 20
+    local costSP = 35
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.4
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
+    dcBonus = dcBonus - (getState(triggerId, "stat")["V윤활"] - 5) * 1.0
+    dcBonus = dcBonus - (target["V확장"] - 2) * 1.0
+    dcBonus = dcBonus - target["V민감도"] * 0.4
+    dcBonus = dcBonus - target["성욕"] * 0.3
+
+    local exps = {"V경험"}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."의 질 안으로 손가락을 밀어넣는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/111/{{#when::{{getVar::애무계}}::is::1}}애널 핥기{{/when}}] function(triggerId)
-    local train = "애널 핥기"
+    local target = getState(triggerId, "target")
+    local dc = 45 --조교의 난이도. 높을수록 성공확률 낮음
+    local costHP = 15
+    local costSP = 27
+    local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.2
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
+    dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
+    dcBonus = dcBonus - target["A민감도"] * 0.3
+    dcBonus = dcBonus - target["성욕"] * 0.2
+    dcBonus = dcBonus - target["순응"] * 0.1
+
+    local exps = {"A경험"}
+
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 "..target['이름'] .."의 애널 주변을 혀로 핥는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/--/{{#when::도구계::vis::1}}--도구계--{{/when}}]function end!!
+[train/hr/{{#when::도구계::vis::1}}--도구계--{{/when}}]function end!!
 
 [train/21/{{#when::{{getVar::도구계}}::is::1}}진동하는보석{{/when}}] function(triggerId)
     local train = "진동하는 보석"
@@ -167,7 +310,7 @@ end!!
     local train = "볼개그"
 end!!
 
-[train/--/{{#when::V계::vis::1}}--삽입계--{{/when}}]function end!!
+[train/hr/{{#when::V계::vis::1}}--삽입계--{{/when}}]function end!!
 
 [train/31/{{#when::{{getVar::V계}}::is::1}}정상위{{/when}}] function(triggerId)
     local train = "정상위"
@@ -189,7 +332,7 @@ end!!
     local train = "기승위"
 end!!
 
-[train/--/{{#when::A계::vis::1}}--애널계--{{/when}}]function end!!
+[train/hr/{{#when::A계::vis::1}}--애널계--{{/when}}]function end!!
 
 [train/41/{{#when::{{getVar::A계}}::is::1}}정상위애널{{/when}}] function(triggerId)
     local train = "정상위애널"
@@ -211,7 +354,7 @@ end!!
     local train = "기승위애널"
 end!!
 
-[train/--/{{#when::봉사계::vis::1}}--봉사계--{{/when}}]function end!!
+[train/hr/{{#when::봉사계::vis::1}}--봉사계--{{/when}}]function end!!
 
 [train/51/{{#when::{{getVar::봉사계}}::is::1}}수음{{/when}}] function(triggerId)
     local train = "수음"
@@ -246,7 +389,7 @@ end!!
     local train = "리밍"
 end!!
 
-[train/--/{{#when::하드계::vis::1}}--하드계--{{/when}}]function end!!
+[train/hr/{{#when::하드계::vis::1}}🔱 하드계{{/when}}]function end!!
 
 [train/91/{{#when::{{getVar::하드계}}::is::1}}스팽킹{{/when}}] function(triggerId)
     local train = "스팽킹"
@@ -292,7 +435,7 @@ end!!
     local train = "양구멍피스트"
 end!!
 
-[train/--/ ]function end!!
+[train/hr/ ]function end!!
 
 [train/101/로션] function(triggerId)
     local train = "로션"
@@ -318,6 +461,6 @@ end!!
     local train = "야외플레이"
 end!!
 
-[train/199/돌아가기] function(triggerId)
-    setState(triggerId, "screen", "main")
+[train/199/조교종료] function(triggerId)
+    sysFunction(triggerId, "postTrain.sys")
 end!!
