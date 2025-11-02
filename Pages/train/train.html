@@ -89,6 +89,10 @@ height: 0.6rem;
 .v-bar-fill.x-risu-pe { background-image: linear-gradient(to top, #ded5b0, #eed87f); } /*요의*/
 .v-bar-fill.x-risu-ej { background-image: linear-gradient(to top, #e06884, #ce025b); } /*사정게이지*/
 
+.bar-value{
+    flex-basis: 3rem;
+}
+
 .target-details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
@@ -136,18 +140,18 @@ height: 0.6rem;
 #stats-collapsed:checked ~ .stats-header .collapse-btn {
     display: none;
 }
-#stats-collapsed:checked ~ .stats-grid {
+#stats-collapsed:checked ~ .info-grid {
     display: none;
 }
 
-.stats-grid {
+/*.stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 0.5rem;
     background-color: #303030;
     padding: 1rem;
     border-radius: 4px;
-}
+}*/
 .stat-item {
     display: flex;
     justify-content: space-between;
@@ -334,10 +338,6 @@ visibility: hidden;
 
 
 @media screen and (max-width: 600px) {
-    .stats-grid {
-        grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-        font-size: 0.8rem;
-        }
     .stat-label {
         font-size: 0.8rem;
     }
@@ -432,7 +432,7 @@ visibility: hidden;
 <label for="stats-expanded" class="toggle-btn expand-btn x-risu-btn">펼치기</label>
 </div>
 </div>
-<div class="stats-grid">
+<div class="info-grid">
 <div class="stat-item"><span class="stat-label">C쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::C쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::C쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">V쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::V쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::V쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">A쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::A쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::A쾌락}}"></div></div>
@@ -460,13 +460,13 @@ visibility: hidden;
 <div class="line single"></div>
 
 <section class="ejaculation-section">
-<h3>* 절정 게이지 ({{user}})</h3>
+<h3>* {{user}}</h3>
 <div class="x-risu-bar-container">
-<span class="bar-label">{{user}}:</span>
+<span class="bar-label"> 절정:</span>
 <div class="progress-bar x-risu-ej">
 <div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%;"></div>
 </div>
-<span class="bar-value">{{getvar::ej_user}}/{{? 10000*{{? 1.2^{{getvar::ejCount_t}}}}}}</span>
+<span class="bar-value">{{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%</span>
 </div>
 </section>
 
