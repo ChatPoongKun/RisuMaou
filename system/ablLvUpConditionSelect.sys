@@ -15,7 +15,7 @@ function (triggerId, abl, lvUpConditions)
             selectedCondition[i+1][k] = v[ablLv+1]
         end
         --조건을 미리 검토해 렙업이 가능한 조건에는 녹색 테두리로 표기
-        local available = ""
+        local available = "notAvailable"
         if sysFunction(triggerId, "ablLvUp.sys", abl, selectedCondition[i+1], false) then
         available = "available"
         end
