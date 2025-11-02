@@ -28,10 +28,12 @@ background-color: #888;
 border-color: #aaa;
 }
 .lvUpConditions{
-border-color: #a00606;
+box-shadow: 0px 0px 10px -2px #a00606;
+border-radius: 0.2rem;
 }
 .lvUpConditions.x-risu-available{
-border-color: #07b218;
+box-shadow: 0px 0px 10px -2px #07b218;
+border-radius: 0.2rem;
 }
 
 @media screen and (max-width: 600px) {
@@ -80,16 +82,32 @@ padding: 0.2rem;
 <section class="ability-section">
 <h2>* 능력 업그레이드</h2>
 <div class="stats-grid">
-{{#when::{{? {{getvar::selectedAbl}}=="none"}}}}
+{{#when::{{? {{getvar::selectedAbl}}==none}}}}
 {{#each {{getvar::ablList}} abil}}
+{{#when {{and::{{notequal::{{slot::abil}}::M민감도}}::{{notequal::{{slot::abil}}::U민감도}}}}}}
 <div class="stat-item btn" risu-btn="{{slot::abil}}">
 <span class="stat-label">{{slot::abil}}</span>
 <div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
 </div>
+{{/when}}
+{{#when {{and::{{equal::{{slot::abil}}::M민감도}}::{{equal::{{dict_element::{{getvar::target}}::인후성감}}::1}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
+{{#when {{and::{{equal::{{slot::abil}}::U민감도}}::{{equal::{{dict_element::{{getvar::target}}::요도성감}}::1}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
 {{/each}}
 {{/when}}
-{{#when::{{? {{getvar::selectedAbl}}!="none"}}}}
+{{#when::{{? {{getvar::selectedAbl}}!=none}}}}
 {{getvar::selectedAbl}}
+<div style='text-align:center;border-bottom:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'></div>
+<div class='btn' risu-btn='return'>돌아가기</div>
 {{/when}}
 </div>
 </section>
