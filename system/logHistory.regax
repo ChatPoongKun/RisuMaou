@@ -1,0 +1,9 @@
+FORM
+
+
+IN
+class='history' style='visibility:hidden;'
+
+OUT
+
+class='history' style='visibility:{{#when::{{? {{getvar::history}}==0}}}}hidden{{:else}}visible{{/when}};'

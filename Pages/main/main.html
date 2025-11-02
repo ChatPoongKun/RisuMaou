@@ -39,10 +39,14 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    font-size:1rem;
+}
+.tabs > .btn{
+    padding:0.2rem 0.5rem;
 }
 
 .tab-content {
-    margin-top: 1rem;
+    margin-top: 0.2rem;
     padding: 1.5rem;
     background-color: #303030;
     border-radius: 4px;
@@ -118,6 +122,12 @@
     .character-portrait {
         width: 5rem;
         height: 5rem;
+    }
+    .tabs {
+    font-size:0.8rem;
+    }
+    .tabs > .btn{
+    padding:0 0.3rem;
     }
 }
 
@@ -217,6 +227,7 @@
 <div class="line single"></div>
 
 <section class="command-panel">
+<!--
 <div class="command-header">
 <h2>* {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}의 일정</h2>
 <p>※ 휴식을 하는경우 경우 남은시간동안 업무를 처리합니다.</p>
@@ -224,6 +235,7 @@
 <div class="status-message">
 <p>[새로운 시작] 당신은 막 봉인에서 깨어났습니다.</p>
 </div>
+-->
 <h3>▋Commands</h3>
 <div class="command-container">
 {{getvar::cmds}}

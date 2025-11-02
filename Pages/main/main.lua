@@ -1,7 +1,6 @@
 [main/100/조교 시작] function(triggerId)
     local screen = "preTrain"
 
------------------------------
     setState(triggerId, "screen", screen)
     local chars = json.decode(getChatVar(triggerId, "chars"))
     
@@ -73,7 +72,7 @@ end!!
     end
     debug("charList: "..charList)
     setChatVar(triggerId, "charList", charList)
-
+    
 end!!
 
 [main/102/포로 처분] function(triggerId)
@@ -87,8 +86,16 @@ end!!
 end!!
 
 [main/104/상점] function(triggerId)
-    local screen = "상점"
-    alertNormal(triggerId, screen.." 미구현")
+    local screen = "shop"
+    setState(triggerId, "screen", screen)
+    local itemList = json.decode(getLoreBookContent(triggerId, "items.db"))["조교도구"]
+    local contents = ""
+
+    for k,v in pairs(itemList) do
+        local price = int(v[1])
+        contents = contents .. "<div class='shop-item'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
+    end
+    setChatVar(triggerId, "tools", contents)
 end!!
 
 [main/105/장비 관리] function(triggerId)
@@ -117,17 +124,11 @@ end!!
 end!!
 
 [main/199/휴식] function(triggerId)
-    --하루가 지나갈때의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 rest.sys 함수로 별도처리
-    local ampm = getChatVar(triggerId, "ampm")
-    if ampm == "1" then
-        alertNormal(triggerId, "하루가 지나갑니다...")
-    else
-        alertNormal(triggerId, "당신은 휴식을 취합니다.")
-    end
+    --하루가 지나갈때의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 별도처리
     sysFunction(triggerId, "turnEnd.sys")
 end!!
 
-[main/--/ ] function end!!
+[main/hr/ ] function end!!
 
 [main/777/설정] function(triggerId)
     local screen = "config"
@@ -135,6 +136,6 @@ end!!
 end!!
 
 [main/999/마계사전] function(triggerId)
-    local screen = "마계사전"
-    alertNormal(triggerId, screen.." 미구현")
+    local screen = "dictionary"
+    setState(triggerId, "screen", screen)
 end!!

@@ -6,7 +6,7 @@ CHARACTER::(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\|(.+?)\
 
 OUT
 
-<div class="character-card" risu-btn="$1_charInfo_$2">
+<div class="character-card $13" risu-btn="$1_charInfo_$2">
 <div class="char-info">
 <p class="char-name-line">
 [$1] <span class="char-condition">[$13] </span>$2<span class="char-level"> Lv.$3 </span>

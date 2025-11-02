@@ -1,0 +1,141 @@
+<style>
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 0.5rem;
+background-color: #303030;
+padding: 1rem;
+border-radius: 4px;
+}
+.stat-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background-color: #2a2a2a;
+padding: 0.2rem 0.5rem;
+border-radius: 4px;
+}
+.stat-label {
+font-weight: bold;
+}
+.stat-value {
+color: #fff;
+font-family: monospace;
+font-weight: bold;
+}
+.x-risu-btn{
+border-radius: 0.2rem;
+}
+.lvUpConditions.x-risu-available:hover{
+box-shadow: 0px 0px 20px -2px #07b218;
+}
+.lvUpConditions.x-risu-notAvailable:hover{
+box-shadow: 0px 0px 20px -2px #a00606;
+}
+
+@media screen and (max-width: 600px) {
+.stats-grid {
+font-size: 0.8rem;
+grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+padding: 0.3rem;
+}
+.stat-item {
+padding: 0.2rem;
+}
+.available{
+box-shadow: 0px 0px 20px -2px #07b218;
+}
+.notAvailable{
+box-shadow: 0px 0px 20px -2px #a00606;
+}
+}
+</style>
+
+<div class="container">
+<div class="line double"></div>
+<header class="header">
+<h1>▋조교 결과</h1>
+</header>
+
+<div class="line single"></div>
+
+<section class="jewel-section">
+<h2>* 조교의 흔적</h2>
+<div class="stats-grid">
+{{#each {{getvar::traceList}} trace}}
+<div class="stat-item">
+<span class="stat-label">{{slot::trace}}</span>
+<span class="stat-value">{{dict_element::{{getvar::targetTrace}}::{{slot::trace}}}}</span>
+</div>
+{{/each}}
+</div>
+</section>
+
+{{settempvar::exps::blank}}
+{{#each {{getvar::expList}} exp}}
+{{#if {{? {{dict_element::{{getvar::target}}::{{slot::exp}}}}!=0}}}}
+{{#if {{? {{gettempvar::exps}}==blank}}}}{{settempvar::exps::{{blank}}}}{{/if}}
+{{settempvar::exps::{{gettempvar::exps}}<div class="exp-tag"><strong>{{slot::exp}}:</strong> {{dict_element::{{getvar::target}}::{{slot::exp}}}}</div>}}
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::exps}}!=blank}}}}
+<section class="exp-section">
+<h2>* 경험</h2>
+<div class="stats-grid">
+{{gettempvar::exps}}
+</div>
+</section>
+{{/if}}
+
+
+<section class="ability-section">
+<h2>* 능력 업그레이드</h2>
+<div class="stats-grid">
+{{#when::{{? {{getvar::selectedAbl}}==none}}}}
+{{#each {{getvar::ablList}} abil}}
+{{#when {{and::{{notequal::{{slot::abil}}::M민감도}}::{{notequal::{{slot::abil}}::U민감도}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
+{{#when {{and::{{equal::{{slot::abil}}::M민감도}}::{{equal::{{dict_element::{{getvar::target}}::인후성감}}::1}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
+{{#when {{and::{{equal::{{slot::abil}}::U민감도}}::{{equal::{{dict_element::{{getvar::target}}::요도성감}}::1}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
+{{/each}}
+{{/when}}
+{{#when::{{? {{getvar::selectedAbl}}!=none}}}}
+{{getvar::selectedAbl}}
+<div style='text-align:center;border-bottom:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'></div>
+<div class='btn' risu-btn='return'>돌아가기</div>
+{{/when}}
+</div>
+</section>
+
+<section class="log-panel">
+<h2>* 흔적 변화</h2>
+
+<div class="log-content">
+{{getvar::traceText}}
+</div>
+</section>
+<!--<div class="line single"></div>-->
+
+<section class="command-panel">
+<h3>▋Commands</h3>
+<div class="command-container">
+{{getVar::cmds}}
+</div>
+</section>
+
+<div class="line double"></div>
+</div>

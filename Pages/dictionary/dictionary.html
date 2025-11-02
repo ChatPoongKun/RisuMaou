@@ -1,0 +1,321 @@
+<style>
+/* Main category buttons/tabs container */
+.category-tabs {
+display: flex;
+flex-wrap: wrap;
+gap: 0.5rem;
+border-bottom: 1px solid #555;
+padding-bottom: 0.75rem;
+margin-bottom: 0.75rem;
+}
+
+/* Styling for the tab labels */
+.category-tabs label {
+padding: 0.5rem 1.25rem;
+background-color: #444;
+border: 1px solid #666;
+color: #e0e0e0;
+cursor: pointer;
+border-radius: 4px;
+transition: all 0.2s ease;
+}
+
+/* The content area for all categories */
+.category-content {
+padding: 1rem;
+background-color: #303030;
+border-radius: 4px;
+min-height: 300px;
+position: relative;
+}
+
+/* Individual category pane, hidden by default */
+.category-pane {
+display: none;
+}
+
+/* Show the pane when its radio is checked */
+#cat-abl:checked ~ .category-content > #abl-pane,
+#cat-trait:checked ~ .category-content > #trait-pane,
+#cat-mark:checked ~ .category-content > #mark-pane,
+#cat-stat:checked ~ .category-content > #stat-pane,
+#cat-trace:checked ~ .category-content > #trace-pane {
+display: block;
+}
+
+/* Style the active tab */
+input[name="category-tabs"]:checked + label {
+background-color: #666;
+border-color: #888;
+color: #fff;
+}
+
+/* --- New Hierarchical View Styles --- */
+
+.sub-category-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+gap: 0.75rem;
+animation: fadeIn 0.3s ease-in-out;
+}
+
+.sub-cat-btn {
+background-color: #3f3f3f;
+border: 1px solid #555;
+padding: 0.75rem;
+text-align: center;
+border-radius: 4px;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+.sub-cat-btn:hover {
+background-color: #4f4f4f;
+border-color: #777;
+color: #fff;
+}
+
+.x-risu-description-wrapper {
+display: none; /* Hidden by default */
+animation: fadeIn 0.3s ease-in-out;
+}
+
+.back-btn {
+display: inline-block;
+margin-bottom: 1.5rem;
+background-color: #4a4a4a;
+padding: 0.4rem 1rem;
+border-radius: 4px;
+cursor: pointer;
+font-weight: bold;
+transition: background-color 0.2s ease;
+}
+.back-btn:hover {
+background-color: #5a5a5a;
+}
+
+.entry-block {
+display: none; /* Hidden by default, shown by toggle */
+}
+
+.entry-block h3 {
+font-size: 1.2em;
+color: #ffffbf; /* Highlight color */
+margin-bottom: 0.75rem;
+border-bottom: 1px solid #4f4f4f;
+padding-bottom: 0.5rem;
+}
+
+.entry-block p {
+background-color: #2a2a2a;
+padding: 1rem;
+border-radius: 4px;
+line-height: 1.7;
+margin: 0;
+}
+
+/* --- CSS Logic for View Toggling --- */
+/* Hide sub-category grid when a detail view is active */
+.view-controller input.sub-cat-toggle:checked ~ .sub-category-grid {
+display: none;
+}
+/* Show the description wrapper when a detail view is active */
+.view-controller input.sub-cat-toggle:checked ~ .x-risu-description-wrapper {
+display: block;
+}
+
+/* Show the specific entry-block for the checked radio */
+#abl-tech:checked ~ .x-risu-description-wrapper #abl-tech-desc,
+#abl-sens:checked ~ .x-risu-description-wrapper #abl-sens-desc,
+#trait-pers:checked ~ .x-risu-description-wrapper #trait-pers-desc,
+#trait-phys:checked ~ .x-risu-description-wrapper #trait-phys-desc,
+#mark-pleasure:checked ~ .x-risu-description-wrapper #mark-pleasure-desc,
+#mark-obey:checked ~ .x-risu-description-wrapper #mark-obey-desc,
+#mark-rebel:checked ~ .x-risu-description-wrapper #mark-rebel-desc,
+#stat-pleasure:checked ~ .x-risu-description-wrapper #stat-pleasure-desc,
+#stat-lust:checked ~ .x-risu-description-wrapper #stat-lust-desc,
+#stat-resist:checked ~ .x-risu-description-wrapper #stat-resist-desc,
+#trace-main:checked ~ .x-risu-description-wrapper #trace-main-desc {
+display: block;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="container">
+<div class="line double"></div>
+
+<header class="header">
+<h1>▋ 마계사전</h1>
+</header>
+
+<main>
+<!-- Top-level category tabs -->
+<input type="radio" name="category-tabs" id="cat-abl" hidden checked>
+<input type="radio" name="category-tabs" id="cat-trait" hidden>
+<input type="radio" name="category-tabs" id="cat-mark" hidden>
+<input type="radio" name="category-tabs" id="cat-stat" hidden>
+<input type="radio" name="category-tabs" id="cat-trace" hidden>
+
+<div class="category-tabs">
+<label for="cat-abl" class="x-risu-btn">능력</label>
+<label for="cat-trait" class="x-risu-btn">특성</label>
+<label for="cat-mark" class="x-risu-btn">각인</label>
+<label for="cat-stat" class="x-risu-btn">스테이터스</label>
+<label for="cat-trace" class="x-risu-btn">흔적</label>
+</div>
+
+<!-- Content Area -->
+<div class="category-content">
+
+<!-- ABL (능력) Pane -->
+<div id="abl-pane" class="category-pane">
+<div class="view-controller">
+<input type="radio" name="abl-view" id="abl-list" class="list-toggle" checked hidden>
+<input type="radio" name="abl-view" id="abl-tech" class="sub-cat-toggle" hidden>
+<input type="radio" name="abl-view" id="abl-sens" class="sub-cat-toggle" hidden>
+
+<div class="sub-category-grid">
+<label for="abl-tech" class="sub-cat-btn">봉사기술</label>
+<label for="abl-sens" class="sub-cat-btn">성감</label>
+</div>
+
+<div class="x-risu-description-wrapper">
+<label for="abl-list" class="back-btn">« 뒤로가기</label>
+<div class="entry-block" id="abl-tech-desc">
+<h3>능력 &gt; 봉사기술</h3>
+<p>대상을 기쁘게 하는 기술에 대한 숙련도입니다. 수치가 높을수록 상대에게 더 큰 쾌락을 줄 수 있으며, 조교 커맨드의 효율이 증가합니다.</p>
+</div>
+<div class="entry-block" id="abl-sens-desc">
+<h3>능력 &gt; 성감</h3>
+<p>신체 각 부위가 느끼는 쾌감의 정도를 나타냅니다. 개발될수록 더 민감해지고 쉽게 절정에 도달할 수 있습니다. 특정 부위의 성감이 높으면 관련된 조교 효과가 증폭됩니다.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- TRAIT (특성) Pane -->
+<div id="trait-pane" class="category-pane">
+<div class="view-controller">
+<input type="radio" name="trait-view" id="trait-list" class="list-toggle" checked hidden>
+<input type="radio" name="trait-view" id="trait-pers" class="sub-cat-toggle" hidden>
+<input type="radio" name="trait-view" id="trait-phys" class="sub-cat-toggle" hidden>
+
+<div class="sub-category-grid">
+<label for="trait-pers" class="sub-cat-btn">성격</label>
+<label for="trait-phys" class="sub-cat-btn">체질</label>
+</div>
+
+<div class="x-risu-description-wrapper">
+<label for="trait-list" class="back-btn">« 뒤로가기</label>
+<div class="entry-block" id="trait-pers-desc">
+<h3>특성 &gt; 성격</h3>
+<p>캐릭터의 기본적인 기질을 나타냅니다. 조교나 특정 이벤트를 통해 변화할 수 있으며, 행동 양식에 영향을 줍니다. (예: 완고함, 음란함, 순종적)</p>
+</div>
+<div class="entry-block" id="trait-phys-desc">
+<h3>특성 &gt; 체질</h3>
+<p>선천적으로 타고난 신체적 특성입니다. 쉽게 바뀌지 않으며, 특정 상황에서 이점이나 불이익으로 작용할 수 있습니다. (예: 민감체질, 마력친화)</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- MARK (각인) Pane -->
+<div id="mark-pane" class="category-pane">
+<div class="view-controller">
+<input type="radio" name="mark-view" id="mark-list" class="list-toggle" checked hidden>
+<input type="radio" name="mark-view" id="mark-pleasure" class="sub-cat-toggle" hidden>
+<input type="radio" name="mark-view" id="mark-obey" class="sub-cat-toggle" hidden>
+<input type="radio" name="mark-view" id="mark-rebel" class="sub-cat-toggle" hidden>
+
+<div class="sub-category-grid">
+<label for="mark-pleasure" class="sub-cat-btn">쾌락각인</label>
+<label for="mark-obey" class="sub-cat-btn">복종각인</label>
+<label for="mark-rebel" class="sub-cat-btn">반발각인</label>
+</div>
+
+<div class="x-risu-description-wrapper">
+<label for="mark-list" class="back-btn">« 뒤로가기</label>
+<div class="entry-block" id="mark-pleasure-desc">
+<h3>각인 &gt; 쾌락각인</h3>
+<p>쾌락에 대한 역치를 낮추고 감도를 증폭시키는 각인. 쾌락에 중독되기 쉬워지며, 성적인 행위에 대한 저항감을 약화시킵니다.</p>
+</div>
+<div class="entry-block" id="mark-obey-desc">
+<h3>각인 &gt; 복종각인</h3>
+<p>정신에 직접 작용하여 복종심을 심는 각인. 각인 주체의 명령에 거역하기 힘들어지며, 자발적인 복종 행동을 유도합니다.</p>
+</div>
+<div class="entry-block" id="mark-rebel-desc">
+<h3>각인 &gt; 반발각인</h3>
+<p>지배에 대한 저항 정신을 상징하는 각인. 굴복이나 복종과 관련된 상태 변화에 강한 저항력을 부여하며, 정신력을 쉽게 잃지 않게 합니다.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- STAT (스테이터스) Pane -->
+<div id="stat-pane" class="category-pane">
+<div class="view-controller">
+<input type="radio" name="stat-view" id="stat-list" class="list-toggle" checked hidden>
+<input type="radio" name="stat-view" id="stat-pleasure" class="sub-cat-toggle" hidden>
+<input type="radio" name="stat-view" id="stat-lust" class="sub-cat-toggle" hidden>
+<input type="radio" name="stat-view" id="stat-resist" class="sub-cat-toggle" hidden>
+
+<div class="sub-category-grid">
+<label for="stat-pleasure" class="sub-cat-btn">쾌락</label>
+<label for="stat-lust" class="sub-cat-btn">욕정</label>
+<label for="stat-resist" class="sub-cat-btn">부정</label>
+</div>
+
+<div class="x-risu-description-wrapper">
+<label for="stat-list" class="back-btn">« 뒤로가기</label>
+<div class="entry-block" id="stat-pleasure-desc">
+<h3>스테이터스 &gt; 쾌락</h3>
+<p>조교를 통해 느끼는 긍정적인 감응입니다. 이 수치가 높을수록 조교에 순응적으로 변하며, 쾌락에 약해집니다. 조교 중 획득하는 흔적 양에 영향을 줍니다.</p>
+</div>
+<div class="entry-block" id="stat-lust-desc">
+<h3>스테이터스 &gt; 욕정</h3>
+<p>성적인 욕구의 정도를 나타냅니다. 수치가 높아지면 이성적인 판단력이 흐려지고 본능에 충실한 행동을 보이기 쉽습니다. 특정 커맨드의 성공률을 높입니다.</p>
+</div>
+<div class="entry-block" id="stat-resist-desc">
+<h3>스테이터스 &gt; 부정</h3>
+<p>조교 행위에 대한 저항감이나 불쾌감을 나타냅니다. 이 수치가 높을수록 조교에 저항하고 반발하기 쉽습니다. 조교 효율을 떨어트리는 주요 원인입니다.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- trace (흔적) Pane -->
+<div id="trace-pane" class="category-pane">
+<div class="view-controller">
+<input type="radio" name="trace-view" id="trace-list" class="list-toggle" checked hidden>
+<input type="radio" name="trace-view" id="trace-main" class="sub-cat-toggle" hidden>
+
+<div class="sub-category-grid">
+<label for="trace-main" class="sub-cat-btn">흔적이란?</label>
+</div>
+
+<div class="x-risu-description-wrapper">
+<label for="trace-list" class="back-btn">« 뒤로가기</label>
+<div class="entry-block" id="trace-main-desc">
+<h3>흔적 &gt; 흔적이란?</h3>
+<p>조교를 통해 얻을 수 있는 특수한 성과물로, 대상의 정기가 결정화된 것입니다. 대상의 특정 성향이나 능력을 강화시키는 데 사용됩니다. 조교의 방향성에 따라 다양한 종류의 흔적을 획득할 수 있습니다.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+<div class="line single"></div>
+
+<section class="command-panel">
+<h3>▋Commands</h3>
+<div class="command-container">
+{{getVar::cmds}}
+</div>
+</section>
+
+<div class="line double"></div>
+</div>

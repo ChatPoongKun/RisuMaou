@@ -9,6 +9,16 @@ function (triggerId)
     function(triggerId)
     alertNormal(triggerId, "강제커맨드 발생. 메인화면으로 돌아갑니다.")
     setState(triggerId, "screen", "main")
+    setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
+    end]]
+    funcs[key] = functionBody
+
+    --5882: 화면 리프레시
+    key = "5882"
+    functionBody = [[
+    function(triggerId)
+    alertNormal(triggerId, "강제커맨드 발생. 화면을 다시 로딩합니다.")
+    setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
     end]]
     funcs[key] = functionBody
 

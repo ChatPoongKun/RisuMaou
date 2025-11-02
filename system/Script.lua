@@ -35,9 +35,26 @@ end
 function int(str)
     if tonumber(str) ~= nil and tonumber(str)>=1000 then --숫자변환이 불가하면 바이패스하고 입력값을 다시 반환
         str = string.reverse(string.reverse(string.format("%.0f", str)):gsub("(%d%d%d)", "%1,"))
+        if string.sub(str, 1, 1) == "," then
+            str = string.sub(str, 2)
+        end
     end
     return str
 end
+
+--테이블 길이 파악
+function len(tbl)
+    local len = 0
+    if type(tbl) ~= "table" then
+        debug(tbl.."은 올바른 테이블이 아닙니다.")
+        return false
+        end
+    for k, v in pairs(tbl) do
+        len = len + 1
+    end
+    return len
+end
+
 
 --table에 val이 있는지 확인.
 --신체특성 같은 배열 내에 있는 값도 체크하기 위해 밸류도 함께 체크
@@ -119,7 +136,7 @@ function stateToVar(triggerId, key, tbl)
         new_tbl = string.gsub(new_tbl, ",$", "}")
 
     end
-    debug(key, new_tbl)
+    debug("state to chatVar: "..key, new_tbl)
     setChatVar(triggerId, key, new_tbl)
 
 end
@@ -158,7 +175,7 @@ function processAndStoreLore(triggerId, loreBookId)
     debug(loreBookId .. "로어북에서 함수 호출")
     local loreEntries = getLoreBookContent(triggerId, loreBookId)
 
-    local pattern = "%[(%w+)/(%S+)/([^%]]+)%]%s*(function.-end)!!"
+    local pattern = "%[(%S+)/(%S+)/([^%]]+)%]%s*(function.-end)!!"
     local count = 0
     local cmds = ""
     local funcs = getState(triggerId, "funcs") or {}
@@ -170,9 +187,9 @@ function processAndStoreLore(triggerId, loreBookId)
         count = count + 1
 
         --cmds 챗변수에 버튼들 입력
-        if number == "--" then --구분선 처리
+        if number == "hr" then --구분선 처리
             cmds = cmds .. "<div style='text-align:center;border-bottom:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'>"..description.."</div>"
-        else
+        elseif description ~= "hidden" then
             cmds = cmds.."<button class='btn command-btn' risu-btn='"..number.."'>["..number.."] "..description.."</button>"
         end
         
@@ -191,24 +208,24 @@ function executeFunction(triggerId, screen, code, ...)
     if not funcBody then
         funcBody = funcs[code]
         if not funcBody then
-            alertNormal(triggerId, "커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
+            alertNormal(triggerId, "커맨드 오류: " .. ("존재하지 않는 커맨드"))
             return
         end
     end
         local func, err = createFunctionFromString(funcBody)
-        debug(f_code .. " 함수 실행")
+        debug(f_code .. " 함수 실행(exeFunc)")
         func(triggerId, ...)
 end
 
 function sysFunction(triggerId, f_code, ...)
     local funcBody = getLoreBookContent(triggerId, f_code)
     if not funcBody then
-        alertNormal(triggerId, "시스템 커맨드 오류: " .. (err or "존재하지 않는 커맨드"))
+        alertNormal(triggerId, "시스템 커맨드 오류: " .. ("존재하지 않는 커맨드"))
         return
     end
     local func, err = createFunctionFromString(funcBody)
-    debug(f_code .. " 함수 실행")
-    func(triggerId, ...)
+    debug(f_code .. " 함수 실행(sysFunc)")
+    return func(triggerId, ...)
 end
 
 function promptBuild(role, content)
@@ -229,6 +246,11 @@ listenEdit("editDisplay", function(triggerId, data)
     --현재 페이지에 맞는 html호출
     local html = getLoreBookContent(triggerId, screen..".html")
     setChatVar(triggerId, "html", html)
+    local gameStart = getLoreBookContent(triggerId, "gameStart.html")
+    setChatVar(triggerId, "gamestart", gameStart)
+    if gameStart ~= html then
+        setChatVar(triggerId, "gamestart", "")
+    end
 end)
 
 --기본 입력창을 통해 리퀘가 가는걸 방지 + 입력한 번호 캐치해서 함수수행

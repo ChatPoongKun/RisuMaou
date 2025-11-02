@@ -4,6 +4,11 @@ function (triggerId)
     local day = getChatVar(triggerrId, "day")
     local ampm = getChatVar(triggerrId, "ampm")
     local chars = json.decode(getChatVar(triggerrId, "chars"))
+    if ampm == "1" then
+        alertNormal(triggerId, "하루가 지나갑니다...")
+    else
+        alertNormal(triggerId, "당신은 휴식을 취합니다.")
+    end
 
     if ampm == "1" then
         --체력/기력 회복처리
@@ -30,6 +35,6 @@ function (triggerId)
     setChatVar(triggerId, "day", day)
     setChatVar(triggerId, "ampm", ampm)
 
-    local user = getLoreBookContent(triggerId, "user")
+    local user = json.decode(getLoreBookContent(triggerId, "user"))
     stateToVar(triggerId, "user", user) --갱신된 유저정보 변수저장
 end
