@@ -126,21 +126,6 @@
 
 
     /* Info Grids within Tabs */
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem 0.75rem;
-    }
-    
-    .info-grid h3 {
-        font-size: 1.1em;
-        color: #ffffff;
-        grid-column: 1 / -1;
-        margin-top: 0.5rem;
-        margin-bottom: 0rem;
-        border-bottom: 1px solid #4f4f4f;
-        /*padding-bottom: 0.5rem;*/
-    }
     .info-grid h3:first-child {
         margin-top: 0;
     }
@@ -242,7 +227,7 @@
         margin-right: 0.5em;
     }
     
-    /* Jewel Section */
+    /* Jewel Section
     .jewel-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -250,7 +235,7 @@
         background-color: #3a3a3a;
         padding: 1rem;
         border-radius: 4px;
-    }
+    }*/
 
     /* Narrative Tab */
     .narrative-block {
@@ -446,7 +431,7 @@
 <div class="marks-grid">
 <div class="mark-item"><span class="bar-label">고통:</span> <div class="rating mark {{#when::{{dict_element::{{getvar::target}}::고통각인}}::is::3}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::고통각인}}"></div></div>
 <div class="mark-item"><span class="bar-label">쾌락:</span> <div class="rating mark {{#when::{{dict_element::{{getvar::target}}::쾌락각인}}::is::3}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::쾌락각인}}"></div></div>
-<div class="mark-item"><span class="bar-label">쾌락:</span> <div class="rating mark {{#when::{{dict_element::{{getvar::target}}::공포각인}}::is::3}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::공포각인}}"></div></div>
+<div class="mark-item"><span class="bar-label">공포:</span> <div class="rating mark {{#when::{{dict_element::{{getvar::target}}::공포각인}}::is::3}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::공포각인}}"></div></div>
 <div class="mark-item"><span class="bar-label">복종:</span> <div class="rating mark {{#when::{{dict_element::{{getvar::target}}::복종각인}}::is::3}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::복종각인}}"></div></div>
 <div class="mark-item"><span class="bar-label">치욕:</span> <div class="rating mark {{#when::{{dict_element::{{getvar::target}}::치욕각인}}::is::3}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::치욕각인}}"></div></div>
 <div class="mark-item"><span class="bar-label">반발:</span> <div class="rating mark neg {{#when::{{dict_element::{{getvar::target}}::반발각인}}::is::3}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::반발각인}}"></div></div>
@@ -455,9 +440,9 @@
 
 <div class="line single"></div>
 
-<section class="jewel-section">
+<section class="trace-section">
 <h2>* 흔적</h2>
-<div class="jewel-grid">
+<div class="info-grid">
 {{#each {{getvar::traceList}} trace}}
 {{#when::{{dict_element::{{getvar::targetTrace}}::{{slot::trace}}}}::isnot::0}}
 <div class="talent-tag"><strong>{{slot::trace}}:</strong> {{dict_element::{{getvar::targetTrace}}::{{slot::trace}}}}</div>
