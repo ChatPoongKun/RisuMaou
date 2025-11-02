@@ -23,17 +23,14 @@ color: #fff;
 font-family: monospace;
 font-weight: bold;
 }
-.x-risu-btn:hover {
-background-color: #888;
-border-color: #aaa;
-}
-.lvUpConditions{
-box-shadow: 0px 0px 10px -2px #a00606;
+.x-risu-btn{
 border-radius: 0.2rem;
 }
-.lvUpConditions.x-risu-available{
-box-shadow: 0px 0px 10px -2px #07b218;
-border-radius: 0.2rem;
+.lvUpConditions.x-risu-available:hover{
+box-shadow: 0px 0px 20px -2px #07b218;
+}
+.lvUpConditions.x-risu-notAvailable:hover{
+box-shadow: 0px 0px 20px -2px #a00606;
 }
 
 @media screen and (max-width: 600px) {
@@ -44,6 +41,12 @@ padding: 0.3rem;
 }
 .stat-item {
 padding: 0.2rem;
+}
+.available{
+box-shadow: 0px 0px 20px -2px #07b218;
+}
+.notAvailable{
+box-shadow: 0px 0px 20px -2px #a00606;
 }
 }
 </style>
