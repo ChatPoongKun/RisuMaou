@@ -88,14 +88,9 @@ end!!
 [main/104/상점] function(triggerId)
     local screen = "shop"
     setState(triggerId, "screen", screen)
-    local itemList = json.decode(getLoreBookContent(triggerId, "items.db"))["조교도구"]
-    local contents = ""
-
-    for k,v in pairs(itemList) do
-        local price = int(v[1])
-        contents = contents .. "<div class='shop-item'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
-    end
-    setChatVar(triggerId, "tools", contents)
+    local itemCat = "조교도구"
+    setChatVar(triggerId, "itemCat", itemCat)
+    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
 end!!
 
 [main/105/장비 관리] function(triggerId)
@@ -113,7 +108,7 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/108/실험실] function(triggerId)
+[main/108/{{#when::{{? {{dict_element::{{getvar::inventory}}::음마지식}}==1}}}}실험실{{/when}}] function(triggerId)
     local screen = "실험실"
     alertNormal(triggerId, screen.." 미구현")
 end!!
