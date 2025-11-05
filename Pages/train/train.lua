@@ -43,7 +43,7 @@ end!!
     setChatVar(triggerId, cat, tgl)
 end!!
 
-[train/9/하드 | {{#when::하드계::vis::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
+[train/9/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::레벨}}}}>3}}}}하드 | {{#when::하드계::vis::1}}ON{{:else}}OFF{{/when}}{{/when}}] function(triggerId)
     local cat = "하드계"
     local s, tgl = pcall(getChatVar, triggerId, cat)
     if s and tgl ~= "null" then tgl = math.abs(tonumber(tgl)-1)
@@ -52,7 +52,7 @@ end!!
     setChatVar(triggerId, cat, tgl)
 end!!
 
-[train/hr/{{#when::애무계::vis::1}}--애무계--{{/when}}]function end!!
+[train/hr/{{#when::애무계::vis::1}}🔻애무계{{/when}}]function end!!
 
 [train/11/{{#when::{{getVar::애무계}}::is::1}}가만 지켜본다{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
@@ -263,54 +263,56 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/hr/{{#when::도구계::vis::1}}--도구계--{{/when}}]function end!!
+[train/hr/{{#when::도구계::vis::1}}🔻도구계{{/when}}]function end!!
 
-[train/21/{{#when::{{getVar::도구계}}::is::1}}진동하는보석{{/when}}] function(triggerId)
-    local train = "진동하는 보석"
+[train/21/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::심장석}}==1}}}}심장석 애무{{/when}}{{/when}}] function(triggerId)
+    local train = "심장석 애무"
 end!!
 
-[train/22/{{#when::{{getVar::도구계}}::is::1}}꿀단지웜{{/when}}] function(triggerId)
+[train/22/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::꿀단지웜}}==1}}}}꿀단지웜{{/when}}{{/when}}] function(triggerId)
     local train = "꿀단지웜"
 end!!
 
-[train/23/{{#when::{{getVar::도구계}}::is::1}}진동지팡이{{/when}}] function(triggerId)
-    local train = "진동 지팡이"
-end!!
-
-[train/24/{{#when::{{getVar::도구계}}::is::1}}애널웜{{/when}}] function(triggerId)
+[train/23/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널웜}}==1}}}}애널웜{{/when}}{{/when}}] function(triggerId)
     local train = "애널웜"
 end!!
 
-[train/25/{{#when::{{getVar::도구계}}::is::1}}클리캡{{/when}}] function(triggerId)
-    local train = "클리캡"
+[train/24/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널플러그}}==1}}}}애널플러그{{/when}}{{/when}}] function(triggerId)
+    local train = "애널플러그"
 end!!
 
-[train/26/{{#when::{{getVar::도구계}}::is::1}}유두캡{{/when}}] function(triggerId)
-    local train = "유두캡"
-end!!
-
-[train/27/{{#when::{{getVar::도구계}}::is::1}}착유기{{/when}}] function(triggerId)
-    local train = "착유기"
-end!!
-
-[train/28/{{#when::{{getVar::도구계}}::is::1}}오나홀{{/when}}] function(triggerId)
-    --활성화 조건에 자지가 있다는 조건 추가할 것
-    local train = "오나홀"
-end!!
-
-[train/29/{{#when::{{getVar::도구계}}::is::1}}애널비즈{{/when}}] function(triggerId)
+[train/25/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널비즈}}==1}}}}애널비즈{{/when}}{{/when}}] function(triggerId)
     local train = "애널비즈"
 end!!
 
-[train/210/{{#when::{{getVar::도구계}}::is::1}}아이마스크{{/when}}] function(triggerId)
-    local train = "아이마스크"
+[train/26/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::눈가리개}}==1}}}}눈가리개{{/when}}{{/when}}] function(triggerId)
+    local train = "눈가리개"
 end!!
 
-[train/211/{{#when::{{getVar::도구계}}::is::1}}볼개그{{/when}}] function(triggerId)
+[train/27/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::볼개그}}==1}}}}볼개그{{/when}}{{/when}}] function(triggerId)
     local train = "볼개그"
 end!!
 
-[train/hr/{{#when::V계::vis::1}}--삽입계--{{/when}}]function end!!
+[train/28/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::O링개그}}==1}}}}O링개그{{/when}}{{/when}}] function(triggerId)
+    local train = "O링개그"
+end!!
+
+[train/29/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::점액달팽이}}==1}}}}클리캡{{/when}}{{/when}}] function(triggerId)
+    local train = "클리캡"
+end!!
+
+[train/210/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::유두달팽이}}==1}}}}유두캡{{/when}}{{/when}}] function(triggerId)
+    local train = "유두캡"
+end!!
+
+[train/211/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::착유기}}==1}}}}착유기{{/when}}{{/when}}] function(triggerId)
+    local train = "착유기"
+end!!
+
+--오나홀 항목을 추가하고 활성화 조건에 자지가 있다는 조건 추가할 것
+--관장기, 로프, 채찍은 하드계로
+
+[train/hr/{{#when::V계::vis::1}}🔻삽입계{{/when}}]function end!!
 
 [train/31/{{#when::{{getVar::V계}}::is::1}}정상위{{/when}}] function(triggerId)
     local train = "정상위"
@@ -332,7 +334,7 @@ end!!
     local train = "기승위"
 end!!
 
-[train/hr/{{#when::A계::vis::1}}--애널계--{{/when}}]function end!!
+[train/hr/{{#when::A계::vis::1}}🔻애널계{{/when}}]function end!!
 
 [train/41/{{#when::{{getVar::A계}}::is::1}}정상위애널{{/when}}] function(triggerId)
     local train = "정상위애널"
@@ -354,7 +356,7 @@ end!!
     local train = "기승위애널"
 end!!
 
-[train/hr/{{#when::봉사계::vis::1}}--봉사계--{{/when}}]function end!!
+[train/hr/{{#when::봉사계::vis::1}}🔻봉사계{{/when}}]function end!!
 
 [train/51/{{#when::{{getVar::봉사계}}::is::1}}수음{{/when}}] function(triggerId)
     local train = "수음"
@@ -389,7 +391,7 @@ end!!
     local train = "리밍"
 end!!
 
-[train/hr/{{#when::하드계::vis::1}}🔱 하드계{{/when}}]function end!!
+[train/hr/{{#when::하드계::vis::1}}🔱하드계{{/when}}]function end!!
 
 [train/91/{{#when::{{getVar::하드계}}::is::1}}스팽킹{{/when}}] function(triggerId)
     local train = "스팽킹"
@@ -437,27 +439,27 @@ end!!
 
 [train/hr/ ]function end!!
 
-[train/101/로션] function(triggerId)
+[train/101/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::로션}}}}>0}}}}로션{{/when}}] function(triggerId)
     local train = "로션"
 end!!
 
-[train/102/미약] function(triggerId)
+[train/102/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::미약}}}}>0}}}}미약{{/when}}] function(triggerId)
     local train = "미약"
 end!!
 
-[train/103/이뇨제] function(triggerId)
+[train/103/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::이뇨제}}}}>0}}}}이뇨제{{/when}}] function(triggerId)
     local train = "이뇨제"
 end!!
 
-[train/104/콘돔] function(triggerId)
+[train/104/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::콘돔}}}}>0}}}}콘돔{{/when}}] function(triggerId)
     local train = "이뇨제"
 end!!
 
-[train/105/수정구] function(triggerId)
+[train/105/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::수정구}}}}>0}}}}수정구{{/when}}] function(triggerId)
     local train = "수정구"
 end!!
 
-[train/106/야외플레이] function(triggerId)
+[train/106/{{#when::{{? {{dict_element::{{getvar::inventory}}::개목걸이}}==1}}}}야외플레이{{/when}}] function(triggerId)
     local train = "야외플레이"
 end!!
 
