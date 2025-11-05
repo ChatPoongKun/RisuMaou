@@ -1,0 +1,16 @@
+function (triggerId, itemName)
+    setChatVar(triggerId, "itemName", itemName)
+    setChatVar(triggerId, "itemQuantity", 1)
+
+    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local item
+    for _, v in pairs(items) do
+        if v[itemName] then
+            item = v[itemName]
+            break
+        end
+    end
+    setChatVar(triggerId, "itemPrice", int(item[1]))
+    setChatVar(triggerId, "itemTotalPrice", int(item[1]))
+    setChatVar(triggerId, "itemDetail", item[2])
+end

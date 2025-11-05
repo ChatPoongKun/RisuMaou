@@ -79,9 +79,10 @@
 
 .item-grid, .dungeon-floor-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    /*gap: 0.75rem;*/
+    /*margin-top: 0.5rem;*/
+    /*place-items: center;*/
 }
 
 .dungeon-floor-grid {
@@ -153,7 +154,7 @@
 <div class="character-info-wrapper">
 <div class="character-details">
 <div class="panel-header">
-<h2>* 마왕 {{user}}</h2>
+<h2>Lv. {{dict_element::{{getvar::user}}::레벨}} 마왕 {{user}}</h2> 
 </div>
 </div>
 <div class="player-status">
@@ -195,16 +196,50 @@
 
 <div class="tab-content">
 <div id="skills-content" class="tab-pane">
-<p>기교Lv: 15Lv</p>
-<p>소지 지식: 【조합지식】【마계지식】【음마지식】</p>
+<!--너무 쌩 하드코딩인데 each의 slot이 settempvar 안에서 제대로 안돌아가서 쩔수..-->
+{{#if {{? {{dict_element::{{getvar::inventory}}::조합지식}}==1||{{dict_element::{{getvar::inventory}}::마계지식}}==1||{{dict_element::{{getvar::inventory}}::금단의지식}}==1}}}}
+<div>
+<b>∇보유지식∇</b><br><strong>
+{{#if {{? {{dict_element::{{getvar::inventory}}::조합지식}}==1}}}}【조합지식】{{/if}}
+{{#if {{? {{dict_element::{{getvar::inventory}}::마계지식}}==1}}}}【마계지식】{{/if}}
+{{#if {{? {{dict_element::{{getvar::inventory}}::금단의지식}}==1}}}}【금단의지식】{{/if}}
+</strong>
+</div>
+{{/if}}
+
+<p></p>
+<div><b>∇조교도구∇</b></div>
 <div class="item-grid">
-<span>슬라임젤리(10)</span>
-<span>마수의 가죽(5)</span>
-<span>회복약(3)</span>
-<span>마력결정(22)</span>
+{{settempvar::tools::0}}
+{{#each {{getvar::조교도구List}} tool}}
+{{#if {{? {{dict_element::{{getvar::inventory}}::{{slot::tool}}}}==1}}}}
+<p style="margin:0;">❮{{slot::tool}}❯</p>
+{{settempvar::tools::1}}
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::tools}}==0}}}}
+<p style="margin:0; justify-self:left;">❮없음❯</p>
+{{/if}}
+</div>
+<p></p>
+<div><b>∇소모품∇</b></div>
+<div class="item-grid">
+{{settempvar::consumables::0}}
+{{#each {{getvar::소모품List}} consumable}}
+{{#if {{? {{tonumber::{{dict_element::{{getvar::inventory}}::{{slot::consumable}}}}}}>0}}}}
+<p style="margin:0;">❮{{slot::consumable}}❯ {{dict_element::{{getvar::inventory}}::{{slot::consumable}}}}개</p>
+{{settempvar::consumables::1}}
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::consumables}}==0}}}}
+<p style="margin:0; justify-self:left;">❮없음❯</p>
+{{/if}}
 </div>
 </div>
+
+
 <div id="traps-content" class="tab-pane">
+<p>더미 데이터 입니다.</p>
 <div class="item-grid">
 <span>끈끈이 함정(5)</span>
 <span>독화살 함정(2)</span>
@@ -213,6 +248,7 @@
 </div>
 </div>
 <div id="dungeon-content" class="tab-pane">
+<p>더미 데이터 입니다.</p>
 <p>던전Lv: 5Lv (경험치: 1250) | 함정Lv: 3Lv | 현재의 용사 초기Lv: 10Lv</p>
 <div class="dungeon-floor-grid">
 <div><strong>제1계층:</strong> 부하 50체, 용사: 0인, 영격: 0인, 시설: 없음</div>
