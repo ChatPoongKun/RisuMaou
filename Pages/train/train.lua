@@ -461,6 +461,16 @@ end!!
     local train = "야외플레이"
 end!!
 
+[train/open/hidden] function(triggerId)
+    setChatVar(triggerId, "statOpen", "checked")
+    setChatVar(triggerId, "statClose", "")
+end!!
+
+[train/close/hidden] function(triggerId)
+    setChatVar(triggerId, "statOpen", "")
+    setChatVar(triggerId, "statClose", "checked")
+end!!
+
 [train/199/조교종료] function(triggerId)
     sysFunction(triggerId, "postTrain.sys")
 end!!
