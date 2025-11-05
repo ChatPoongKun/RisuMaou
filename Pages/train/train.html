@@ -423,13 +423,13 @@ visibility: hidden;
 <div class="line single"></div>
 
 <section class="stats-section">
-<input type="radio" name="stats-toggle" id="stats-expanded" checked hidden>
-<input type="radio" name="stats-toggle" id="stats-collapsed" hidden>
+<input type="radio" name="stats-toggle" id="stats-expanded" {{getvar::statOpen}} hidden>
+<input type="radio" name="stats-toggle" id="stats-collapsed" {{getvar::statClose}} hidden>
 <div class="stats-header">
 <h2>* Stats</h2>
 <div class="toggle-buttons">
-<label for="stats-collapsed" class="toggle-btn collapse-btn x-risu-btn">접기</label>
-<label for="stats-expanded" class="toggle-btn expand-btn x-risu-btn">펼치기</label>
+<label for="stats-collapsed" class="toggle-btn collapse-btn x-risu-btn" risu-btn="close">접기</label>
+<label for="stats-expanded" class="toggle-btn expand-btn x-risu-btn" risu-btn="open">펼치기</label>
 </div>
 </div>
 <div class="info-grid">
