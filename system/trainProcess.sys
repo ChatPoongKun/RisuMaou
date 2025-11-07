@@ -85,12 +85,15 @@ function(triggerId, dc, HP, SP, exps, command)
     --HP,SP 소모 계산
     local costHP, costSP
     if string.gmatch(roll, "실패") then --조교가 실패하는 경우 체력 기력소모 증가
-        costHP = HP *1.5
-        costSP = SP *1.5
+        costHP = HP *1.5 + dc- (roll + rollBonus)
+        costSP = SP *1.5 + dc- (roll + rollBonus)
     elseif string.gmatch(roll, "대성공") then --조교가 대성공 하면 체력 기력 소모 감소
         costHP = HP *0.8
         costSP = SP *0.8
     end
+    --비용 정수화
+    costHP = math.floor(costHP)
+    costSP = math.floor(costSP)
     local hp, sp = tonumber(target["체력"]), tonumber(target["기력"])
     sp = sp - costSP
     if sp < 0 then --기력이 부족한 경우 기력 소모의 두배만큼 체력소모
@@ -153,7 +156,6 @@ function(triggerId, dc, HP, SP, exps, command)
     --계산된 체력 기력을 콤마가 포함된 문자열로 변환해 저장
     target["체력"] = int(hp)
     target["기력"] = int(sp)
-
 
     --[[프롬프트 빌딩]]
     --기존 로그 불러옴
