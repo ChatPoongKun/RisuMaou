@@ -172,7 +172,7 @@ end
 --- 로어 텍스트를 처리하여 funcs 테이블에 저장
 function processAndStoreLore(triggerId, loreBookId)
     -- 1. loreBookId를 이용해 실제 로어 내용들을 가져옴
-    debug(loreBookId .. "로어북에서 함수 호출")
+    --debug(loreBookId .. "로어북에서 함수 호출")
     local loreEntries = getLoreBookContent(triggerId, loreBookId)
 
     local pattern = "%[(%S+)/(%S+)/([^%]]+)%]%s*(function.-end)!!"
@@ -183,7 +183,7 @@ function processAndStoreLore(triggerId, loreBookId)
     for page, number, description, functionBody in loreEntries:gmatch(pattern) do
         local key = page.."_"..number
         funcs[key] = functionBody
-        debug(description.."-> funcs['" .. key .. "']에 함수 저장됨.")
+        --debug(description.."-> funcs['" .. key .. "']에 함수 저장됨.")
         count = count + 1
 
         --cmds 챗변수에 버튼들 입력
