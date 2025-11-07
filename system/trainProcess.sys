@@ -68,7 +68,7 @@ function(triggerId, dc, HP, SP, exps, command)
     end
 
     --최종 주사위굴림
-    local roll = math.random()*MAXROLL --소숫점 보너스를 제대로 반영하기 위해 수정
+    local roll = math.random()*MAXROLL
     local rollMsg = ""
     if roll > MAXROLL - 1 then
         rollMsg = "조교 대성공!"
@@ -82,28 +82,32 @@ function(triggerId, dc, HP, SP, exps, command)
         debug(roll..">="..dc, "성공")
     end
 
-    --HP,SP 소모 계산
-    local costHP, costSP
-    if string.gmatch(roll, "실패") then --조교가 실패하는 경우 체력 기력소모 증가
-        costHP = HP *1.5 + dc- (roll + rollBonus)
-        costSP = SP *1.5 + dc- (roll + rollBonus)
-    elseif string.gmatch(roll, "대성공") then --조교가 대성공 하면 체력 기력 소모 감소
-        costHP = HP *0.8
-        costSP = SP *0.8
+    --HP,SP 비용 계산
+    local costHP, costSP = HP, SP
+    if string.find(rollMsg, "실패") then --조교가 실패하는 경우 체력 기력소모 증가
+        costHP = costHP + math.max(dc- (roll + rollBonus), 0)
+        costSP = costSP + math.max(dc- (roll + rollBonus), 0)
+    elseif string.find(rollMsg, "대성공") then --조교가 대성공 하면 체력 기력 소모 감소
+        costHP = costHP *0.8
+        costSP = costSP *0.8
     end
+    print("costHP: "..costHP, "costSP: "..costSP)
     --비용 정수화
     costHP = math.floor(costHP)
     costSP = math.floor(costSP)
-    local hp, sp = tonumber(target["체력"]), tonumber(target["기력"])
-    sp = sp - costSP
-    if sp < 0 then --기력이 부족한 경우 기력 소모의 두배만큼 체력소모
-        hp = hp - sp *2
-        sp = 0
+    print("costHP: "..costHP, "costSP: "..costSP)
+    --실제 HP,SP 차감처리
+    local currentHP, currentSP = tonumber(target["체력"]), tonumber(target["기력"])
+    if currentSP < costSP then --기력이 부족한 경우 부족한 기력 소모의 두배만큼 체력소모
+        costHP = costHP + ((costSP-currentSP) *2)
     end
-    hp = math.max(hp - costHP, 0)
+    print("hp: "..currentHP, costHP)
+    print("sp: "..currentSP, costSP)
+    currentHP = math.max(currentHP - costHP, 0)
+    currentSP = math.max(currentSP - costSP, 0)
 
     --HP가 낮을 경우 설정에 따라 실신 혹은 사망 처리
-    if hp < 1 then
+    if currentHP < 1 then
         local ampm = getChatVar(triggerId,"ampm")
         if ampm == 0 then ampm ="낮" else ampm="밤" end
 
@@ -148,14 +152,13 @@ function(triggerId, dc, HP, SP, exps, command)
             processAndStoreLore(triggerId, "main.lua")
             alertNormal(triggerId, "대상이 가혹한 조교를 견디지 못하고 사망했습니다. 조교를 종료합니다.")
         end
-        
-        
+
         return false
     end
 
     --계산된 체력 기력을 콤마가 포함된 문자열로 변환해 저장
-    target["체력"] = int(hp)
-    target["기력"] = int(sp)
+    target["체력"] = int(currentHP)
+    target["기력"] = int(currentSP)
 
     --[[프롬프트 빌딩]]
     --기존 로그 불러옴
@@ -197,6 +200,12 @@ function(triggerId, dc, HP, SP, exps, command)
     local dialog = content:gsub(statEXP, "")
     statEXP = json.decode(statEXP)
     local newLog = "<br>" .. dialog:gsub("json","")
+
+    --[[dc에 따른 statEXP 획득 제어
+    for k,v in pairs(statEXP) do
+        local ratio = dc * 0.02 --난이도 50에서 statEXP를 100%받도록 조정
+        statEXP[k] = v * ratio
+    end]]
 
     --경험 누적
     if #exps > 0 then
@@ -290,13 +299,13 @@ function(triggerId, dc, HP, SP, exps, command)
 
     local lvUp
     lvUp = function(remainStat , currentLv, statName)
-        local lv = tostring(currentLv+1)
+        local lv = tostring(currentLv)
         local remainStat = remainStat
         local r = math.random()
         debug(statName..": "..remainStat.."/"..tbl[lv]..": "..remainStat/tbl[lv] .. " > " .. r)
         if remainStat/tbl[lv] > r then
             remainStat = math.max(remainStat - tbl[lv], 0)
-            lv = lvUp(remainStat, lv, statName)
+            lv = lvUp(remainStat, lv+1, statName)
             return lv
         else
             return lv
