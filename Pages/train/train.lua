@@ -222,8 +222,8 @@ end!!
 [train/110/{{#when::{{getVar::애무계}}::is::1}}손가락 넣기{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 18 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 20
-    local costSP = 35
+    local costHP = 15
+    local costSP = 30
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
     dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
     dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.4
@@ -245,7 +245,7 @@ end!!
     local target = getState(triggerId, "target")
     local dc = 45 --조교의 난이도. 높을수록 성공확률 낮음
     local costHP = 15
-    local costSP = 27
+    local costSP = 35
     local dcBonus = 0 --전용 보너스 요소가 있다면 아래에서 조건 추가할것. 높을수록 난이도 상승. 음수면 난이도 감소
     dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
     dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
