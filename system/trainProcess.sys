@@ -204,12 +204,16 @@ function(triggerId, dc, HP, SP, exps, command)
     statEXP = json.decode(statEXP)
     local newLog = "<br>" .. dialog:gsub("json","")
 
-    --dc에 따른 statEXP 획득 제한
+    --dc에 따른 statEXP 획득 제어
     for k,v in pairs(statEXP) do
         local maxLv = math.floor(dc*0.15) --난이도 60이면 9렙, 67이면 10렙 경험치까지 받을 수 있음
         local limit = EXPtbl[maxLv]
         statEXP[k] = math.min(v, limit)
     end
+
+    --trait에 따른 statEXP 획득 제어
+    statEXP["U쾌락"] = statEXP["U쾌락"] * target["요도성감"]
+    statEXP["M쾌락"] = statEXP["M쾌락"] * target["인후성감"]
 
     --경험 누적
     if #exps > 0 then
