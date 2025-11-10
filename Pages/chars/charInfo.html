@@ -130,14 +130,14 @@
         margin-top: 0;
     }
     
-    .info-grid .talent-tag {
+    .talent-tag {
         background-color: #2a2a2a;
-        padding: 0.1rem 0.3rem;
-        border-radius: 2px;
+        padding: 0.3rem;
         font-family: monospace;
         font-size: 0.9em;
         margin: 0 0.2rem;
-        border: 1px solid #4f4f4f; 
+        border: 1px solid #4f4f4f;
+        border-radius: 4px;
     }
 
     .mark-item {
@@ -155,19 +155,18 @@
     .marks-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
     .marks-grid .mark-item {
         justify-content: space-between;
         background-color: #3a3a3a;
-        padding: 0.5rem 1rem;
+        padding: 0.2rem 0.5rem;
         border-radius: 4px;
     }
     .marks-grid .mark-item .bar-label {
         flex-basis: auto;
         text-align: left;
     }
-
 
     /* Talents Tab - Flexbox layout for tags */
     #talents-content .info-grid {
@@ -187,7 +186,6 @@
     }
     .abl-item {
         display: flex;
-        /* justify-content: space-between; -- REMOVED */
         align-items: center;
         gap: 1rem;
         padding: 0.2rem 0.5rem; 
@@ -214,11 +212,11 @@
     .equipment-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
     .equipment-item {
         background-color: #3a3a3a;
-        padding: 0.75rem;
+        padding: 0.3rem;
         border-radius: 4px;
     }
     .equipment-item .item-type {
@@ -267,7 +265,7 @@
 
         .marks-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
-        gap: 0.75rem 0.5rem;
+        gap: 0.3rem 0.5rem;
         }
         
         .tab-content{
@@ -275,17 +273,20 @@
         }
         
         .equipment-item {
-        padding: 0.3rem;
+        padding: 0.2rem;
+        font-size: 0.85rem;
         }
         
         .abl-item {
         font-size: 0.65rem;
         gap:0.3rem;
+        padding: 0 0.2rem;
         }
-        .info-grid .talent-tag {
-        font-size: 0.9em;
+
+        .talent-tag {
+        font-size: 0.65rem;
         margin: 0 0.2rem;
-        border: 1px solid #4f4f4f; 
+        padding: 0.2rem;
         }
 }
 </style>
@@ -336,14 +337,14 @@
 <div class="line single"></div>
 
 <section class="detailed-info">
-<input type="radio" name="detail-tabs" id="abl-tab" hidden>
+<input type="radio" name="detail-tabs" id="abl-tab" checked hidden>
 <input type="radio" name="detail-tabs" id="exp-tab" hidden>
-<input type="radio" name="detail-tabs" id="talents-tab" checked hidden>
+<input type="radio" name="detail-tabs" id="talents-tab" hidden>
 <input type="radio" name="detail-tabs" id="appearance-tab" hidden>
 <input type="radio" name="detail-tabs" id="narrative-tab" hidden>
 <div class="tabs-container">
-<label for="talents-tab" class="x-risu-btn">▋특성</label>
 <label for="abl-tab" class="x-risu-btn">▋능력</label>
+<label for="talents-tab" class="x-risu-btn">▋특성</label>
 <label for="exp-tab" class="x-risu-btn">▋경험</label>
 <label for="appearance-tab" class="x-risu-btn">▋외모</label>
 <label for="narrative-tab" class="x-risu-btn">▋서사</label>
@@ -352,25 +353,64 @@
 <div id="talents-content" class="tab-pane">
 <div class="info-grid">
 <h3>성격</h3>
-{{#each {{getvar::성격List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{settempvar::성격::0}}
+{{#each {{getvar::성격List}} T}}
+{{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
+{{settempvar::성격::1}}
+<span class="talent-tag">[{{slot::T}}]</span>
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::성격}}=0}}}}
+<span class="talent-tag">[없음]</span>
+{{/if}}
 <h3>신체특성</h3>
-{{#each {{getvar::신체특성List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{settempvar::신체::0}}
+{{#each {{getvar::신체특성List}} T}}
+{{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
+{{settempvar::신체::1}}
+<span class="talent-tag">[{{slot::T}}]</span>
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::신체}}=0}}}}
+<span class="talent-tag">[없음]</span>
+{{/if}}
 <h3>성적취향</h3>
-{{#each {{getvar::성적취향List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{settempvar::취향::0}}
+{{#each {{getvar::성적취향List}} T}}
+{{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
+{{settempvar::취향::1}}
+<span class="talent-tag">[{{slot::T}}]</span>
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::취향}}=0}}}}
+<span class="talent-tag">[없음]</span>
+{{/if}}
 <h3>체질</h3>
-{{#each {{getvar::체질List}} T}}{{#when::{{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}<span class="talent-tag">[{{slot::T}}]</span>{{/when}}{{/each}}
+{{settempvar::체질::0}}
+{{#each {{getvar::체질List}} T}}
+{{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
+{{settempvar::체질::1}}
+<span class="talent-tag">[{{slot::T}}]</span>
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::체질}}=0}}}}
+<span class="talent-tag">[없음]</span>
+{{/if}}
 </div>
 </div>
 
 <div id="abl-content" class="tab-pane">
 <div class="info-grid">
+{{settempvar::ablCount::0}}
 {{#each {{getvar::ablList}} abil}}
-{{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::isnot::0}}
+{{#if {{? {{dict_element::{{getvar::target}}::{{slot::abil}}}}!=0}}}}
+{{settempvar::ablCount::1}}
 <div class="abl-item"><span>{{slot::abil}}</span>
 <div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}">
 </div></div>
-{{/when}}
+{{/if}}
 {{/each}}
+{{#if {{? {{gettempvar::ablCount}}=0}}}}<div class="abl-item">[없음]</div>{{/if}}
 </div>
 </div>
 
