@@ -62,7 +62,7 @@ end!!
     setChatVar(triggerId, "inventory", json.encode(inventory))
     local itemCat = getChatVar(triggerId, "itemCat")
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
-    setChatVar(triggerId, "itemDetail", message)
+    setChatVar(triggerId, "screenEffect", message)
 end!!
 
 [shop/심장석/hidden] function(triggerId)

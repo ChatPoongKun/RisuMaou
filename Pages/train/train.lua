@@ -464,13 +464,11 @@ end!!
 end!!
 
 [train/open/hidden] function(triggerId)
-    setChatVar(triggerId, "statOpen", "checked")
-    setChatVar(triggerId, "statClose", "")
+    setChatVar(triggerId, "statFold", "0")
 end!!
 
 [train/close/hidden] function(triggerId)
-    setChatVar(triggerId, "statOpen", "")
-    setChatVar(triggerId, "statClose", "checked")
+    setChatVar(triggerId, "statFold", "1")
 end!!
 
 [train/199/조교종료] function(triggerId)
