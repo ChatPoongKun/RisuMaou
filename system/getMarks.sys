@@ -1,0 +1,53 @@
+function (triggerId, stats)
+    local markDB = json.decode(getLoreBookContent(triggerId, "mark.db"))
+    local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
+    local target = getState(triggerId, "target")
+    local markBase = 25 --각인 획득 베이스 수치
+    local markSum = 0 --모든 각인의 합계
+    local screenEffect = ""
+
+    for k, _ in pairs(markDB) do
+        if target[k] > 0 then
+            markSum = markSum + 1
+        end
+    end
+
+    --반발각인
+    if target["반발각인"] < 3 then
+        local maxP = math.max(stats["저항"], (stats["수치"]+stats["고통"]+stats["불쾌"])*0.2 + stats["저항"]*0.5)
+        if maxP > markBase * EXPtbl[markSum] then
+            if maxP > markBase * EXPtbl[markSum+1] then
+                if maxP > markBase * EXPtbl[markSum+2] then
+                    target["반발각인"] = target["반발각인"] + 3
+                    screenEffect = "<div class='mark neggative'>💢 반발각인+3 획득!!</div>"
+                end
+                target["반발각인"] = target["반발각인"] + 2
+                screenEffect = "<div class='mark neggative'>💢 반발각인+2 획득!!</div>"
+            end
+            target["반발각인"] = target["반발각인"] + 1
+            screenEffect = "<div class='mark neggative'>💢 반발각인 획득!!</div>"
+            setChatVar(triggerId, "screenEffect", screenEffect)
+            return --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료
+        end
+    end
+
+    --쾌락각인
+    if target["쾌락각인"] < 3 then
+        local maxP = math.max(stats["C쾌락"], stats["V쾌락"], stats["B쾌락"], stats["A쾌락"], stats["U쾌락"], stats["M쾌락"], stats["S쾌락"], (stats["C쾌락"]+stats["V쾌락"]+stats["B쾌락"]+stats["A쾌락"])*0.2)
+        if maxP > markBase * EXPtbl[markSum] then
+            if maxP > markBase * EXPtbl[markSum+1] then
+                if maxP > markBase * EXPtbl[markSum+2] then
+                    target["쾌락각인"] = target["쾌락각인"] + 3
+                    screenEffect = "<div class='mark neggative'>💦 쾌락각인+3 획득!!</div>"
+                end
+                target["쾌락각인"] = target["쾌락각인"] + 2
+                screenEffect = "<div class='mark neggative'>💦 쾌락각인+2 획득!!</div>"
+            end
+            target["쾌락각인"] = target["쾌락각인"] + 1
+            screenEffect = "<div class='mark neggative'>💦 쾌락각인 획득!!</div>"
+            setChatVar(triggerId, "screenEffect", screenEffect)
+            return --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료
+        end
+    end
+
+end

@@ -218,7 +218,7 @@ function(triggerId, dc, HP, SP, exps, command)
     statEXP["M쾌락"] = (statEXP["M쾌락"] or 0) * (target["인후성감"] or 0)
 
     --각인획득 판정. 각인 획득시 screenEffect를 덮어 씀
-    --sysFunction(triggerId, "getMarks.sys", statEXP)
+    sysFunction(triggerId, "getMarks.sys", statEXP)
 
     --절정치 계산
     local ej_target = getChatVar(triggerId, "ej_target")
