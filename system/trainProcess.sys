@@ -3,8 +3,98 @@ function(triggerId, dc, HP, SP, exps, command)
     debug("trainProcess 실행")
     --[[초기화]]
     math.randomseed(os.time())
-    local sucEffect = ""
-    setChatVar(triggerId, "sucEffect", sucEffect) --실패/대성공 표기를 위한 sucEffect 초기화
+    local screenEffect = [[<style>
+        .log-wrapper {
+        position: relative; /* Container for the absolute positioned overlay */
+        }
+
+        .success-animation {
+        position: absolute;
+        inset: 0; /* a modern way for top/right/bottom/left: 0 */
+        z-index: 10;
+        overflow: hidden; /* Hide panels as they move out */
+        animation: hide-container 0.2s 0.8s forwards;
+        }
+
+        /* The two black panels covering the content */
+        .success-animation::before,
+        .success-animation::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
+        height: 100%;
+        background-color: #111; /* Match log background */
+        animation: open-panels 0.4s ease-in-out 0.6s forwards;
+        }
+
+        .success-animation::before {
+        left: 0;
+        transform-origin: left;
+        }
+
+        .success-animation::after {
+        right: 0;
+        transform-origin: right;
+        }
+
+        .animation-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        font-size: 3em;
+        font-weight: bold;
+        font-family: 'Arial Black', sans-serif;
+
+        z-index: 1; /* Above panels */
+        white-space: nowrap; /* Prevent text wrapping */
+        animation: text-appear-and-fade 1s ease-in-out forwards;
+        }
+        .success{
+            color: #f8c65c;
+            text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;
+        }
+
+        .fail{
+            color: #dc4747;
+            text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;
+        }
+
+        @keyframes text-appear-and-fade {
+        0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+        }
+        5% { /* Appear */
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        }
+        100% { /* Fade out */
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.1);
+        }
+        }
+
+        @keyframes open-panels {
+        from {
+        transform: scaleX(1);
+        }
+        to {
+        transform: scaleX(0);
+        }
+        }
+
+        @keyframes hide-container {
+        to {
+        /* Hides the element and makes it non-interactive */
+        visibility: hidden;
+        }
+        }
+        </style>
+    ]]
+    setChatVar(triggerId, "screenEffect", screenEffect) --실패/대성공 표기를 위한 screenEffect 초기화
     
     --경험치 테이블 호출
     local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
@@ -75,11 +165,11 @@ function(triggerId, dc, HP, SP, exps, command)
     local rollMsg = ""
     if roll > MAXROLL - 1 then
         rollMsg = "조교 대성공!"
-        sucEffect = [[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
+        screenEffect = screenEffect..[[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
         debug(roll..">="..dc, rollMsg)
     elseif roll + rollBonus <= dc then
         rollMsg = "조교 실패"
-        sucEffect = [[<div class="success-animation"><div class="animation-text fail">]]..rollMsg..[[</div></div>]]
+        screenEffect = screenEffect..[[<div class="success-animation"><div class="animation-text fail">]]..rollMsg..[[</div></div>]]
         debug(roll..">="..dc, rollMsg)
     else
         debug(roll..">="..dc, "성공")
@@ -207,20 +297,17 @@ function(triggerId, dc, HP, SP, exps, command)
     --dc에 따른 statEXP 획득 제어
     for k,v in pairs(statEXP) do
         local maxLv = math.floor(dc*0.15) --난이도 60이면 9렙, 67이면 10렙 경험치까지 받을 수 있음
-        local limit = EXPtbl[maxLv]
+        local limit = EXPtbl[tostring(maxLv)]
         statEXP[k] = math.min(v, limit)
     end
 
     --trait에 따른 statEXP 획득 제어
-    statEXP["U쾌락"] = statEXP["U쾌락"] * target["요도성감"]
-    statEXP["M쾌락"] = statEXP["M쾌락"] * target["인후성감"]
+    print(statEXP["U쾌락"], target["요도성감"])
+    statEXP["U쾌락"] = (statEXP["U쾌락"] or 0) * (target["요도성감"] or 0)
+    statEXP["M쾌락"] = (statEXP["M쾌락"] or 0) * (target["인후성감"] or 0)
 
-    --경험 누적
-    if #exps > 0 then
-        for _, k in ipairs(exps) do
-            target[k] = target[k] + 1
-        end
-    end
+    --각인획득 제어
+    --sysFunction(triggerId, "getMarks.sys", statEXP)
 
     --절정치 계산
     local ej_target = getChatVar(triggerId, "ej_target")
@@ -291,6 +378,13 @@ function(triggerId, dc, HP, SP, exps, command)
         end
     ]]
 
+    --경험 추가
+    if #exps > 0 then
+        for _, k in ipairs(exps) do
+            target[k] = target[k] + 1
+        end
+    end
+
     --절정경험 추가
     if orgasm_t then
         target["절정경험"] = target["절정경험"] + 1
@@ -302,9 +396,7 @@ function(triggerId, dc, HP, SP, exps, command)
 
     --스탯변화값을 가져와 currentstat이 레벨업 하는지를 stat.db의 테이블의 각 레벨값과 비교해 확률적으로 계산
     local lvUpcomment = ""
-    
     local statResult = {}
-
     local lvUp
     lvUp = function(remainStat , currentLv, statName)
         local lv = tostring(currentLv)
@@ -333,6 +425,7 @@ function(triggerId, dc, HP, SP, exps, command)
             statResult[k] = lv
         end
     end
+
     setChatVar(triggerId, "cmds", old_cmds) --버튼 원복
     setChatVar(triggerId, "statLvUp", lvUpcomment) --stat 변화 설명은 log에 포함되지 않도록 별도 처리
     setState(triggerId, "stat", statResult) --변경된 stat을 state에 반영
@@ -346,7 +439,7 @@ function(triggerId, dc, HP, SP, exps, command)
     --로그저장
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
-    setChatVar(triggerId, "sucEffect", sucEffect)
+    setChatVar(triggerId, "screenEffect", screenEffect)
 
     --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
     setState(triggerId, "target", target)
