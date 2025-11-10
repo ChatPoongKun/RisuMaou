@@ -148,7 +148,7 @@ function(triggerId, dc, HP, SP, exps, command)
             else
                 totalLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
             end
-            local lastTrainLog = "<div class='history' style='visibility:hidden;'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..totalLog.."</p><p>대상은 가혹한 조교를 견디지 못하고 사망했다.</p></div>"
+            local lastTrainLog = "<div class='history'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..totalLog.."</p><p>대상은 가혹한 조교를 견디지 못하고 사망했다.</p></div>"
             addChat(triggerId, "user", "{{".."getvar::html".."}}")
             setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
             setState(triggerId, "screen", "main")

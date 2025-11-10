@@ -106,8 +106,9 @@ h2, h3 {
     border-color: #666;
 }
 
-/* --- MERGED STYLES from train.css and char.css --- */
-
+.history{
+    visibility: {{#when::history::vis::1}}visible{{:else}}hidden{{/when}};
+}
 /* --- SHARED COMPONENTS (Progress Bars & Status) --- */
 
 .x-risu-bar-container {
