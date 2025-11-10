@@ -384,7 +384,7 @@ visibility: hidden;
 <span class="v-bar-label">요의</span>
 </div>
 <!-- Vertical Ejaculation Bar -->
-<div class="v-bar-container" title="{{getvar::ej_target}}/{{? 10000*{{? 1.2^{{getvar::ejCount_t}}}}}}">
+<div class="v-bar-container" title="{{getvar::ej_target}}/{{? 1000*{{? 1.2^{{getvar::ejCount_t}}}}}}">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-ej" style="height: {{? {{getvar::ej_target}}/{{? 100*{{? 1.2^{{getvar::ejCount_t}}}}}}}}%;"></div>
 </div>
@@ -469,7 +469,7 @@ S쾌락은 일단 숨겨두기
 <div class="progress-bar x-risu-ej">
 <div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%;"></div>
 </div>
-<span class="bar-value">{{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%</span>
+<span class="bar-value">{{? {{tonumber::{{getvar::ej_user}}}}/{{? 1000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%</span>
 </div>
 </section>
 
