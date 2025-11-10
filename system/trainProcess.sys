@@ -267,7 +267,7 @@ function(triggerId, dc, HP, SP, exps, command)
 
     --절정치가 최대 최소값을 넘지 않도록 후처리
     local orgasmMultiplier = 1.2
-    local orgasmDefault = 10000
+    local orgasmDefault = 1000
     local ej_target_max = orgasmDefault*(orgasmMultiplier^tonumber(getChatVar(triggerId, "ejCount_t"))) --대상의 최대 절정치
     local ej_user_max = orgasmDefault*(orgasmMultiplier^tonumber(getChatVar(triggerId, "ejCount_u"))) --유저의 최대 절정치
     ej_target = math.min(ej_target_max, math.max(0, math.floor(ej_target)))
