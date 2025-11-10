@@ -3,97 +3,7 @@ function(triggerId, dc, HP, SP, exps, command)
     debug("trainProcess 실행")
     --[[초기화]]
     math.randomseed(os.time())
-    local screenEffect = [[<style>
-        .log-wrapper {
-        position: relative; /* Container for the absolute positioned overlay */
-        }
-
-        .success-animation {
-        position: absolute;
-        inset: 0; /* a modern way for top/right/bottom/left: 0 */
-        z-index: 10;
-        overflow: hidden; /* Hide panels as they move out */
-        animation: hide-container 0.2s 0.8s forwards;
-        }
-
-        /* The two black panels covering the content */
-        .success-animation::before,
-        .success-animation::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
-        height: 100%;
-        background-color: #111; /* Match log background */
-        animation: open-panels 0.4s ease-in-out 0.6s forwards;
-        }
-
-        .success-animation::before {
-        left: 0;
-        transform-origin: left;
-        }
-
-        .success-animation::after {
-        right: 0;
-        transform-origin: right;
-        }
-
-        .animation-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
-        font-size: 3em;
-        font-weight: bold;
-        font-family: 'Arial Black', sans-serif;
-
-        z-index: 1; /* Above panels */
-        white-space: nowrap; /* Prevent text wrapping */
-        animation: text-appear-and-fade 1s ease-in-out forwards;
-        }
-        .success{
-            color: #f8c65c;
-            text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;
-        }
-
-        .fail{
-            color: #dc4747;
-            text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;
-        }
-
-        @keyframes text-appear-and-fade {
-        0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8);
-        }
-        5% { /* Appear */
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-        }
-        100% { /* Fade out */
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(1.1);
-        }
-        }
-
-        @keyframes open-panels {
-        from {
-        transform: scaleX(1);
-        }
-        to {
-        transform: scaleX(0);
-        }
-        }
-
-        @keyframes hide-container {
-        to {
-        /* Hides the element and makes it non-interactive */
-        visibility: hidden;
-        }
-        }
-        </style>
-    ]]
+    local screenEffect = ""
     setChatVar(triggerId, "screenEffect", screenEffect) --실패/대성공 표기를 위한 screenEffect 초기화
     
     --경험치 테이블 호출
@@ -165,15 +75,16 @@ function(triggerId, dc, HP, SP, exps, command)
     local rollMsg = ""
     if roll > MAXROLL - 1 then
         rollMsg = "조교 대성공!"
-        screenEffect = screenEffect..[[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
+        screenEffect = [[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
         debug(roll..">="..dc, rollMsg)
     elseif roll + rollBonus <= dc then
         rollMsg = "조교 실패"
-        screenEffect = screenEffect..[[<div class="success-animation"><div class="animation-text fail">]]..rollMsg..[[</div></div>]]
+        screenEffect = [[<div class="success-animation"><div class="animation-text fail">]]..rollMsg..[[</div></div>]]
         debug(roll..">="..dc, rollMsg)
     else
         debug(roll..">="..dc, "성공")
     end
+    
 
     --HP,SP 비용 계산
     local costHP, costSP = HP, SP
@@ -306,7 +217,7 @@ function(triggerId, dc, HP, SP, exps, command)
     statEXP["U쾌락"] = (statEXP["U쾌락"] or 0) * (target["요도성감"] or 0)
     statEXP["M쾌락"] = (statEXP["M쾌락"] or 0) * (target["인후성감"] or 0)
 
-    --각인획득 제어
+    --각인획득 판정. 각인 획득시 screenEffect를 덮어 씀
     --sysFunction(triggerId, "getMarks.sys", statEXP)
 
     --절정치 계산
@@ -436,14 +347,18 @@ function(triggerId, dc, HP, SP, exps, command)
     stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
     setChatVar(triggerId, "stat", stat_c) --변경된 stat을 chatVar에 반영
 
-    --로그저장
+    --로그표시
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
-    setChatVar(triggerId, "screenEffect", screenEffect)
+
+    --실패/대성공 전역화면 효과 저장
+    if getChatVar(triggerId, "screenEffect") ~= "" then
+        setChatVar(triggerId, "screenEffect", screenEffect)
+    end
 
     --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
     setState(triggerId, "target", target)
     stateToVar(triggerId, "target", target)
-
+    
     reloadDisplay(triggerId)
 end
