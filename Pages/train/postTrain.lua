@@ -300,6 +300,7 @@ end!!
     setChatVar(triggerId, "target", "")
     setState(triggerId, "stat", "")
     setChatVar(triggerId, "stat", "")
+    setChatVar(triggerId, "traceText", "")
     setChatVar(triggerId, "targetTrace", "")
 
     sysFunction(triggerId, "turnEnd.sys")
