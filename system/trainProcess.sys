@@ -95,18 +95,16 @@ function(triggerId, dc, HP, SP, exps, command)
         costHP = costHP *0.8
         costSP = costSP *0.8
     end
-    print("costHP: "..costHP, "costSP: "..costSP)
     --비용 정수화
     costHP = math.floor(costHP)
     costSP = math.floor(costSP)
-    print("costHP: "..costHP, "costSP: "..costSP)
     --실제 HP,SP 차감처리
     local currentHP, currentSP = tonumber(target["체력"]), tonumber(target["기력"])
     if currentSP < costSP then --기력이 부족한 경우 부족한 기력 소모의 두배만큼 체력소모
         costHP = costHP + ((costSP-currentSP) *2)
     end
-    print("hp: "..currentHP, costHP)
-    print("sp: "..currentSP, costSP)
+    debug("hp: "..currentHP, "cost: "..costHP)
+    debug("sp: "..currentSP, "cost: "..costSP)
     currentHP = math.max(currentHP - costHP, 0)
     currentSP = math.max(currentSP - costSP, 0)
 
@@ -213,12 +211,11 @@ function(triggerId, dc, HP, SP, exps, command)
     end
 
     --trait에 따른 statEXP 획득 제어
-    print(statEXP["U쾌락"], target["요도성감"])
     statEXP["U쾌락"] = (statEXP["U쾌락"] or 0) * (target["요도성감"] or 0)
     statEXP["M쾌락"] = (statEXP["M쾌락"] or 0) * (target["인후성감"] or 0)
 
     --각인획득 판정. 각인 획득시 screenEffect를 덮어 씀
-    sysFunction(triggerId, "getMarks.sys", statEXP)
+    target = sysFunction(triggerId, "getMark.sys", statEXP, target)
 
     --절정치 계산
     local ej_target = getChatVar(triggerId, "ej_target")
@@ -351,8 +348,8 @@ function(triggerId, dc, HP, SP, exps, command)
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
 
-    --실패/대성공 전역화면 효과 저장
-    if getChatVar(triggerId, "screenEffect") ~= "" then
+    --실패/대성공 전역화면 효과 저장. getMark에서 챗변수가 입력되지 않았다면 현재 조교 성공실패 html을 입력
+    if getChatVar(triggerId, "screenEffect") == "" then
         setChatVar(triggerId, "screenEffect", screenEffect)
     end
 

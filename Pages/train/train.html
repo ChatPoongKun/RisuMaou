@@ -247,10 +247,6 @@ height: 0.6rem;
 
 
 /*조교실패&대성공 전역화면효과*/
-.log-wrapper {
-position: relative; /* Container for the absolute positioned overlay */
-}
-
 .success-animation {
 position: absolute;
 inset: 0; /* a modern way for top/right/bottom/left: 0 */
@@ -334,6 +330,60 @@ to {
 /* Hides the element and makes it non-interactive */
 visibility: hidden;
 }
+}
+
+
+/*각인획득 전역화면효과*/
+.getMark {
+position: absolute;
+inset: 0; /* a modern way for top/right/bottom/left: 0 */
+z-index: 10;
+overflow: hidden; /* Hide panels as they move out */
+animation: hide-container 0.4s 1.6s forwards;
+}
+
+/* The two black panels covering the content */
+.getMark::before,
+.getMark::after {
+content: '';
+position: absolute;
+top: 0;
+width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
+height: 100%;
+background-color: #111; /* Match log background */
+animation: open-panels 0.8s ease-in-out 1.2s forwards;
+}
+
+.getMark::before {
+left: 0;
+transform-origin: left;
+}
+
+.getMark::after {
+right: 0;
+transform-origin: right;
+}
+
+.getMarkText {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+
+font-size: 3em;
+font-weight: bold;
+font-family: 'Arial Black', sans-serif;
+color: #f8c65c;
+/*text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;*/
+
+z-index: 1; /* Above panels */
+white-space: nowrap; /* Prevent text wrapping */
+animation: text-appear-and-fade 2.0s ease-in-out forwards;
+}
+
+.neggative{
+    color: #dc4747;
+    /*text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;*/
 }
 
 
