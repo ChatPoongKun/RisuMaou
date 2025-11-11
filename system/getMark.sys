@@ -2,7 +2,7 @@ function (triggerId, stats, target)
     local markDB = json.decode(getLoreBookContent(triggerId, "mark.db"))
     local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
     local target = target
-    local markBase = 0.1 --각인 획득 베이스 수치
+    local markBase = 25 --각인 획득 베이스 수치
     local markSum = 0 --모든 각인의 합계
     local screenEffect = ""
 
