@@ -440,7 +440,7 @@ h2, h3 {
 }
 
 .neg::before {
-    background: linear-gradient(90deg, #bd4ece var(--percent), #555 var(--percent));/*#814689, bd4ece*/
+    background: linear-gradient(90deg, #c17ecb var(--percent), #555 var(--percent));/*#814689, bd4ece*/
     -webkit-background-clip: text;
 }
 
@@ -459,7 +459,7 @@ h2, h3 {
 }
 
 .neg.x-risu-is-full {
-    text-shadow: 0 0 0.5rem #6f3577, 0 0 1rem #bd4ece;
+    text-shadow: 0 0 0.5rem #e1a4ea, 0 0 1rem #bd4ece;
 }
 
 /* Responsive adjustments for char page */
