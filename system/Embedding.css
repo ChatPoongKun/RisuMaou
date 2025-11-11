@@ -179,6 +179,10 @@ h2, h3 {
     /*padding-bottom: 0.5rem;*/
 }
 
+.info-grid p {
+    margin-bottom: 0.3rem;
+}
+
 /* --- PAGE: CHARACTER INFO (from char.css) --- */
 
 .char-header {
