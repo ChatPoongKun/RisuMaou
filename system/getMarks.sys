@@ -14,7 +14,7 @@ function (triggerId, stats)
 
     --반발각인
     if target["반발각인"] < 3 then
-        local maxP = math.max(stats["저항"], (stats["수치"]+stats["고통"]+stats["불쾌"])*0.2 + stats["저항"]*0.5)
+        local maxP = math.max(stats["저항"], (stats["수치"]+stats["고통"]+stats["불쾌"])*0.1 + stats["저항"]*0.5)
         if maxP > markBase * EXPtbl[markSum] then
             if maxP > markBase * EXPtbl[markSum+1] then
                 if maxP > markBase * EXPtbl[markSum+2] then
@@ -31,6 +31,82 @@ function (triggerId, stats)
         end
     end
 
+    --고통각인
+    if target["고통각인"] < 3 then
+        local maxP = math.max(stats["고통"], (stats["공포"]+stats["불쾌"])*0.15 + stats["고통"]*0.5)
+        if maxP > markBase * EXPtbl[markSum] then
+            if maxP > markBase * EXPtbl[markSum+1] then
+                if maxP > markBase * EXPtbl[markSum+2] then
+                    target["고통각인"] = target["고통각인"] + 3
+                    screenEffect = "<div class='mark'>🪱 고통각인+3 획득!!</div>"
+                end
+                target["고통각인"] = target["고통각인"] + 2
+                screenEffect = "<div class='mark'>🪱 고통각인+2 획득!!</div>"
+            end
+            target["고통각인"] = target["고통각인"] + 1
+            screenEffect = "<div class='mark'>🪱 고통각인 획득!!</div>"
+            setChatVar(triggerId, "screenEffect", screenEffect)
+            return --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료
+        end
+    end
+
+    --공포각인
+    if target["공포각인"] < 3 then
+        local maxP = math.max(stats["공포"], (stats["굴복"]+stats["고통"]+stats["불쾌"])*0.1 + stats["공포"]*0.5)
+        if maxP > markBase * EXPtbl[markSum] then
+            if maxP > markBase * EXPtbl[markSum+1] then
+                if maxP > markBase * EXPtbl[markSum+2] then
+                    target["공포각인"] = target["공포각인"] + 3
+                    screenEffect = "<div class='mark'>🩻 공포각인+3 획득!!</div>"
+                end
+                target["공포각인"] = target["공포각인"] + 2
+                screenEffect = "<div class='mark'>🩻 공포각인+2 획득!!</div>"
+            end
+            target["공포각인"] = target["공포각인"] + 1
+            screenEffect = "<div class='mark'>🩻 공포각인 획득!!</div>"
+            setChatVar(triggerId, "screenEffect", screenEffect)
+            return --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료
+        end
+    end
+
+    --복종각인
+    if target["복종각인"] < 3 then
+        local maxP = math.max(stats["온순"], (stats["욕정"]+stats["굴복"])*0.15 + stats["온순"]*0.5)
+        if maxP > markBase * EXPtbl[markSum] then
+            if maxP > markBase * EXPtbl[markSum+1] then
+                if maxP > markBase * EXPtbl[markSum+2] then
+                    target["복종각인"] = target["복종각인"] + 3
+                    screenEffect = "<div class='mark'>🙏 복종각인+3 획득!!</div>"
+                end
+                target["복종각인"] = target["복종각인"] + 2
+                screenEffect = "<div class='mark'>🙏 복종각인+2 획득!!</div>"
+            end
+            target["복종각인"] = target["복종각인"] + 1
+            screenEffect = "<div class='mark'>🙏 복종각인 획득!!</div>"
+            setChatVar(triggerId, "screenEffect", screenEffect)
+            return --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료
+        end
+    end
+
+    --치욕각인
+    if target["치욕각인"] < 3 then
+        local maxP = math.max(stats["수치"], stats["굴복"]*0.4 + stats["수치"]*0.4)
+        if maxP > markBase * EXPtbl[markSum] then
+            if maxP > markBase * EXPtbl[markSum+1] then
+                if maxP > markBase * EXPtbl[markSum+2] then
+                    target["치욕각인"] = target["치욕각인"] + 3
+                    screenEffect = "<div class='mark'>⛓️‍💥 치욕각인+3 획득!!</div>"
+                end
+                target["치욕각인"] = target["치욕각인"] + 2
+                screenEffect = "<div class='mark'>⛓️‍💥 치욕각인+2 획득!!</div>"
+            end
+            target["치욕각인"] = target["치욕각인"] + 1
+            screenEffect = "<div class='mark'>⛓️‍💥 치욕각인 획득!!</div>"
+            setChatVar(triggerId, "screenEffect", screenEffect)
+            return --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료
+        end
+    end
+
     --쾌락각인
     if target["쾌락각인"] < 3 then
         local maxP = math.max(stats["C쾌락"], stats["V쾌락"], stats["B쾌락"], stats["A쾌락"], stats["U쾌락"], stats["M쾌락"], stats["S쾌락"], (stats["C쾌락"]+stats["V쾌락"]+stats["B쾌락"]+stats["A쾌락"])*0.2)
@@ -38,13 +114,13 @@ function (triggerId, stats)
             if maxP > markBase * EXPtbl[markSum+1] then
                 if maxP > markBase * EXPtbl[markSum+2] then
                     target["쾌락각인"] = target["쾌락각인"] + 3
-                    screenEffect = "<div class='mark neggative'>💦 쾌락각인+3 획득!!</div>"
+                    screenEffect = "<div class='mark neggative'>⭐ 쾌락각인+3 획득!!</div>"
                 end
                 target["쾌락각인"] = target["쾌락각인"] + 2
-                screenEffect = "<div class='mark neggative'>💦 쾌락각인+2 획득!!</div>"
+                screenEffect = "<div class='mark neggative'>⭐ 쾌락각인+2 획득!!</div>"
             end
             target["쾌락각인"] = target["쾌락각인"] + 1
-            screenEffect = "<div class='mark neggative'>💦 쾌락각인 획득!!</div>"
+            screenEffect = "<div class='mark neggative'>⭐ 쾌락각인 획득!!</div>"
             setChatVar(triggerId, "screenEffect", screenEffect)
             return --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료
         end
