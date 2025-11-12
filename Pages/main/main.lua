@@ -134,3 +134,8 @@ end!!
     local screen = "dictionary"
     setState(triggerId, "screen", screen)
 end!!
+
+[main/1234/intro test] function(triggerId)
+    local screen = "intro"
+    setState(triggerId, "screen", screen)
+end!!
