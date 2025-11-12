@@ -466,6 +466,58 @@ h2, h3 {
     text-shadow: 0 0 0.5rem #e1a4ea, 0 0 1rem #bd4ece;
 }
 
+/* Tabs for Detailed Info */
+.tabs-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    height: 2rem;
+}
+
+.tabs-container::-webkit-scrollbar{
+    display: none;
+}
+
+/*.tabs {
+    border-bottom: 1px solid #555;
+    padding-bottom: 0.5rem;
+}*/
+
+.tabs {
+    padding: 0.3rem 0.75rem;
+    background-color: #444;
+    border: 1px solid #666;
+    color: #e0e0e0;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    transition: all 0.2s ease;
+    position: relative;
+    bottom: -0.6rem;
+}
+
+.tab-content {
+    margin-top: 0;
+    padding: 1.3rem;
+    background-color: #383838;
+    border: 1px solid #555;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    min-height: 200px;
+}
+
+.tab-content > .tab-pane {
+    display: none;
+}
+
+input[name="detail-tabs"]:checked + label {
+    background-color: #383838;
+    border-color: #555;
+    border-bottom-color: #383838;
+    color: #fff;
+}
+
+
+
 /* Responsive adjustments for char page */
 @media screen and (max-width: 600px) {
     .info-grid {

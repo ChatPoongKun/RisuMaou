@@ -57,65 +57,6 @@
         border-radius: 4px;
     }
 
-    /* Tabs for Detailed Info */
-    .tabs-container {
-        overflow-x: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
-    }
-
-    .tabs-container::-webkit-scrollbar{
-        display: none;
-    }
-
-    .tabs {
-        display: flex;
-        gap: 0.5rem;
-        border-bottom: 1px solid #555;
-        padding-bottom: 0.5rem;
-    }
-
-    .tabs label {
-        padding: 0.5rem 1rem;
-        background-color: #444;
-        border: 1px solid #666;
-        color: #e0e0e0;
-        cursor: pointer;
-        border-radius: 4px 4px 0 0;
-        transition: all 0.2s ease;
-        position: relative;
-        bottom: -1px;
-    }
-
-    .tab-content {
-        margin-top: 0;
-        padding: 1.3rem;
-        background-color: #383838;
-        border: 1px solid #555;
-        border-top: none;
-        border-radius: 0 0 4px 4px;
-        min-height: 200px;
-    }
-
-    .tab-content > .tab-pane {
-        display: none;
-    }
-
-    input[name="detail-tabs"]:checked + label {
-        background-color: #383838;
-        border-color: #555;
-        border-bottom-color: #383838;
-        color: #fff;
-    }
-/*
-    #talents-tab:checked ~ .tab-content > #talents-content,
-    #abl-tab:checked ~ .tab-content > #abl-content,
-    #exp-tab:checked ~ .tab-content > #exp-content,
-    #appearance-tab:checked ~ .tab-content > #appearance-content,
-    #narrative-tab:checked ~ .tab-content > #narrative-content {
-        display: block;
-    }
-*/
     #talents-tab:checked ~ .tab-content > #talents-content,
     #abl-tab:checked ~ .tab-content > #abl-content,
     #exp-tab:checked ~ .tab-content > #exp-content,
@@ -337,17 +278,17 @@
 <div class="line single"></div>
 
 <section class="detailed-info">
-<input type="radio" name="detail-tabs" id="abl-tab" checked hidden>
+<input type="radio" name="detail-tabs" id="abl-tab" hidden>
 <input type="radio" name="detail-tabs" id="exp-tab" hidden>
 <input type="radio" name="detail-tabs" id="talents-tab" hidden>
-<input type="radio" name="detail-tabs" id="appearance-tab" hidden>
+<input type="radio" name="detail-tabs" id="appearance-tab" checked hidden>
 <input type="radio" name="detail-tabs" id="narrative-tab" hidden>
 <div class="tabs-container">
-<label for="abl-tab" class="x-risu-btn">▋능력</label>
-<label for="talents-tab" class="x-risu-btn">▋특성</label>
-<label for="exp-tab" class="x-risu-btn">▋경험</label>
-<label for="appearance-tab" class="x-risu-btn">▋외모</label>
-<label for="narrative-tab" class="x-risu-btn">▋서사</label>
+<label for="appearance-tab" class="x-risu-btn tabs">▋외모</label>
+<label for="abl-tab" class="x-risu-btn tabs">▋능력</label>
+<label for="talents-tab" class="x-risu-btn tabs">▋특성</label>
+<label for="exp-tab" class="x-risu-btn tabs">▋경험</label>
+<label for="narrative-tab" class="x-risu-btn tabs">▋서사</label>
 </div>
 <div class="tab-content">
 <div id="talents-content" class="tab-pane">
