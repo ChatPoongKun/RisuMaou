@@ -465,10 +465,12 @@ end!!
 
 [train/open/hidden] function(triggerId)
     setChatVar(triggerId, "statFold", "0")
+    setChatVar(triggerId, "screenEffect", "")
 end!!
 
 [train/close/hidden] function(triggerId)
     setChatVar(triggerId, "statFold", "1")
+    setChatVar(triggerId, "screenEffect", "")
 end!!
 
 [train/199/조교종료] function(triggerId)
