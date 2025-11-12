@@ -167,7 +167,7 @@ function (triggerId, name)
                 stat["굴복"] = stat["굴복"] + v*1
             end,
             ["반발각인"] = function(v)
-                stat["부정"] = stat["부정"] + v*2
+                stat["저항"] = stat["저항"] + v*2
             end
         }
 
