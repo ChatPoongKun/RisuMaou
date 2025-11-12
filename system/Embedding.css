@@ -478,11 +478,6 @@ h2, h3 {
     display: none;
 }
 
-/*.tabs {
-    border-bottom: 1px solid #555;
-    padding-bottom: 0.5rem;
-}*/
-
 .tabs {
     padding: 0.3rem 0.75rem;
     background-color: #444;
@@ -509,12 +504,12 @@ h2, h3 {
     display: none;
 }
 
-input[name="detail-tabs"]:checked + label {
+/*input[name="tabs"]:checked + label{
     background-color: #383838;
     border-color: #555;
     border-bottom-color: #383838;
     color: #fff;
-}
+}*/
 
 
 
