@@ -3,8 +3,8 @@ function (triggerId)
     local key, functionBody
     local funcs = getState(triggerId, "funcs") or {}
 
-    --6974: 메인화면으로 복귀
-    key = "6974"
+    --0000: 메인화면으로 복귀
+    key = "0000"
     functionBody = [[
     function(triggerId)
     alertNormal(triggerId, "강제커맨드 발생. 메인화면으로 돌아갑니다.")
@@ -13,8 +13,8 @@ function (triggerId)
     end]]
     funcs[key] = functionBody
 
-    --5882: 화면 리프레시
-    key = "5882"
+    --911: 화면 리프레시
+    key = "911"
     functionBody = [[
     function(triggerId)
     alertNormal(triggerId, "강제커맨드 발생. 화면을 다시 로딩합니다.")
