@@ -1,61 +1,11 @@
 <style>
-/* Tab Navigation */
-.settings-tabs {
-display: flex;
-flex-wrap: wrap;
-gap: 0.5rem;
-border-bottom: 1px solid #555;
-padding-bottom: 0.75rem;
-margin-bottom: 1.5rem;
-}
-
 .settings-content {
 background-color: #303030;
 padding: 1.5rem;
-border-radius: 4px;
-min-height: 300px;
-}
-
-.tab-pane {
-display: none;
-}
-
-/* Show the active tab pane */
-#tab-dk:checked ~ .settings-content > #dk-pane,
-#tab-mk:checked ~ .settings-content > #mk-pane,
-#tab-play:checked ~ .settings-content > #play-pane,
-#tab-system:checked ~ .settings-content > #system-pane {
-display: block;
-}
-
-/* Style the active tab label */
-input[name="settings-tabs"]:checked + label {
-background-color: #666;
-border-color: #888;
-color: #fff;
-}
-
-
-/* Settings Grid Layout */
-.settings-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-gap: 1.5rem;
-}
-
-.setting-item {
-display: flex;
-flex-direction: column;
-gap: 0.5rem;
-}
-
-.setting-item h3 {
-font-size: 1.1em;
-color: #e0e0e0;
-margin: 0;
-padding-bottom: 0.5rem;
-border-bottom: 1px solid #444;
-grid-column: 1 / -1; /* Span full width in grid */
+border: 1px solid #555;
+border-bottom-left-radius: 0.5rem;
+border-bottom-right-radius: 0.5rem;
+min-height: 16rem;
 }
 
 .setting-label {
@@ -74,40 +24,10 @@ border-radius: 4px;
 font-size: 1em;
 font-family: inherit;
 }
+
 .text-input:focus {
 outline: none;
 border-color: #888;
-}
-
-/* Radio Button Toggles */
-.radio-toggle-group {
-display: flex;
-gap: 0.5rem;
-flex-wrap: wrap;
-}
-.radio-toggle-group input[type="radio"] {
-display: none;
-}
-.radio-toggle-group label {
-flex-grow: 1;
-text-align: center;
-padding: 0.5rem 1rem;
-background-color: #444;
-border: 1px solid #666;
-color: #e0e0e0;
-cursor: pointer;
-border-radius: 4px;
-transition: all 0.2s ease;
-min-width: 50px;
-}
-.radio-toggle-group input[type="radio"]:checked + label {
-background-color: #666;
-border-color: #888;
-color: #fff;
-box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
-}
-.radio-toggle-group label:hover {
-background-color: #555;
 }
 
 /* CSS-only Toggle Switch */
@@ -119,8 +39,8 @@ gap: 0.75rem;
 .switch {
 position: relative;
 display: inline-block;
-width: 50px;
-height: 26px;
+width: 3rem;
+height: 1.5rem;
 flex-shrink: 0;
 }
 .switch input {
@@ -137,25 +57,23 @@ right: 0;
 bottom: 0;
 background-color: #444;
 border: 1px solid #666;
-transition: .4s;
-border-radius: 26px;
+border-radius: 1rem;
 }
 .slider:before {
 position: absolute;
 content: "";
-height: 18px;
-width: 18px;
-left: 4px;
+height: 1rem;
+width: 1rem;
+left: 0.2rem;
 bottom: 3px;
 background-color: #ccc;
-transition: .4s;
-border-radius: 50%;
+border-radius: 1rem;
 }
 input:checked + .slider {
 background-color: #60d9f7;
 }
 input:checked + .slider:before {
-transform: translateX(24px);
+transform: translateX(1.5rem);
 background-color: white;
 }
 
@@ -164,180 +82,128 @@ font-size: 0.85em;
 color: #aaa;
 margin-top: 0.25rem;
 }
+
+@media screen and (max-width: 600px) {
+    .settings-content {
+    padding: 1rem;
+    }
+    .switch {
+    height: 1.2rem;
+    width: 2.5rem;
+    }
+    .slider:before {
+    position: absolute;
+    content: "";
+    height: 0.8rem;
+    width: 0.8rem;
+    left: 0.2rem;
+    bottom: 3px;
+    background-color: #ccc;
+    border-radius: 1rem;
+    }
+    input:checked + .slider:before {
+    transform: translateX(1.5em);
+    }
+}
 </style>
 
 <div class="container">
 <div class="line double"></div>
 
 <header class="header">
-<h1>▋ 게임 시작 설정</h1>
+<h1>▋ 게임 설정</h1>
 </header>
 
 <main>
-<!-- Hidden radio buttons to control tabs -->
-<input type="radio" name="tabs" id="tab-dk" hidden checked>
-<input type="radio" name="tabs" id="tab-mk" hidden>
-<input type="radio" name="tabs" id="tab-play" hidden>
-<input type="radio" name="tabs" id="tab-system" hidden>
 
 <div class="tabs-container">
-<label for="tab-dk" class="x-risu-btn tabs">마왕</label>
-<label for="tab-mk" class="x-risu-btn tabs">광왕</label>
-<label for="tab-play" class="x-risu-btn tabs">플레이</label>
-<label for="tab-system" class="x-risu-btn tabs">시스템</label>
+<input type="radio" name="tabs" id="user" hidden {{#if {{equal::{{getvar::category}}::user}}}}checked{{/if}}>
+<label for="user" class="tabs" risu-btn="user">마왕</label>
+
+<input type="radio" name="tabs" id="king" hidden {{#if {{equal::{{getvar::category}}::king}}}}checked{{/if}}>
+<label for="king" class="tabs" risu-btn="king">광왕</label>
+
+<input type="radio" name="tabs" id="play" hidden {{#if {{equal::{{getvar::category}}::play}}}}checked{{/if}}>
+<label for="play" class="tabs" risu-btn="play">플레이</label>
+
+<input type="radio" name="tabs" id="system" hidden {{#if {{equal::{{getvar::category}}::system}}}}checked{{/if}}>
+<label for="system" class="tabs" risu-btn="system">시스템</label>
 </div>
 
-<div class="settings-content">
-<!-- Demon King Pane -->
-<div id="dk-pane" class="tab-pane">
-<div class="settings-grid">
-<div class="setting-item" style="grid-column: 1 / -1;"><h3>* 기본 정보</h3></div>
-<div class="setting-item">
-<label class="setting-label">성별</label>
-<div class="radio-toggle-group">
-<input type="radio" id="dk-gender-male" name="dk-gender-toggle" value="남성" checked>
-<label for="dk-gender-male">남성</label>
-<input type="radio" id="dk-gender-female" name="dk-gender-toggle" value="여성">
-<label for="dk-gender-female">여성</label>
-</div>
-</div>
-<div class="setting-item">
-<label class="setting-label">나잇대</label>
-<div class="radio-toggle-group">
-<input type="radio" id="dk-age-young" name="dk-age-toggle" value="청년">
-<label for="dk-age-young">청년</label>
-<input type="radio" id="dk-age-adult" name="dk-age-toggle" value="성년" checked>
-<label for="dk-age-adult">성년</label>
-<input type="radio" id="dk-age-old" name="dk-age-toggle" value="장년">
-<label for="dk-age-old">장년</label>
-</div>
-</div>
-<div class="setting-item">
-<label for="dk-hair" class="setting-label">헤어스타일</label>
-<input type="text" id="dk-hair" name="dk-hair" class="text-input" value="어깨까지 내려오는 흑발">
-</div>
+<div class="tab-content">
+<div class="info-grid">
+{{#when::category::vis::user}}
+<div style="grid-column: 1 / -1;"><h3>* 기본 정보</h3></div>
+<div class='btn command-btn' risu-btn='userGender'><strong>성별: </strong>{{dict_element::{{getvar::user}}::성별}}</div>
+<div class='btn command-btn' risu-btn='userAge'><strong>외형: </strong>{{dict_element::{{getvar::user}}::외형}}</div>
+<div style="grid-column: 1 / -1; margin-top: 1rem;"><h3>* 신체 정보</h3></div>
+{{#if {{notequal::{{dict_element::{{getvar::user}}::성별}}::남성}}}}<div class='btn command-btn' risu-btn='userBreast'><strong>가슴: </strong>{{dict_element::{{getvar::user}}::가슴}}</div>{{/if}}
+{{#if {{notequal::{{dict_element::{{getvar::user}}::성별}}::남성}}}}<div class='btn command-btn' risu-btn='userTit'><strong>유두: </strong>{{dict_element::{{getvar::user}}::유두}}</div>{{/if}}
+<div class='btn command-btn' risu-btn='userPubes'><strong>음모: </strong>{{dict_element::{{getvar::user}}::음모}}</div>
+{{#if {{notequal::{{dict_element::{{getvar::user}}::성별}}::여성}}}}<div class='btn command-btn' risu-btn='userPenis'><strong>페니스: </strong>{{dict_element::{{getvar::user}}::페니스}}</div>{{/if}}
+<div class='btn command-btn' risu-btn='userHair' {{#if {{? {{screenwidth}}>600}}}}style="grid-column: span 2"{{/if}}><strong>헤어스타일: </strong>{{dict_element::{{getvar::user}}::헤어스타일}}</div>
+{{/when}}
 
-<div class="setting-item" style="grid-column: 1 / -1; margin-top: 1rem;"><h3>* 신체 정보</h3></div>
-<div class="setting-item">
-<label class="setting-label">가슴 크기</label>
-<div class="radio-toggle-group">
-<input type="radio" id="dk-bust-none" name="dk-bust-toggle" value="없음" checked>
-<label for="dk-bust-none">없음</label>
-<input type="radio" id="dk-bust-small" name="dk-bust-toggle" value="작음">
-<label for="dk-bust-small">작음</label>
-<input type="radio" id="dk-bust-medium" name="dk-bust-toggle" value="보통">
-<label for="dk-bust-medium">보통</label>
-<input type="radio" id="dk-bust-large" name="dk-bust-toggle" value="큼">
-<label for="dk-bust-large">큼</label>
-</div>
-</div>
-<div class="setting-item">
-<label class="setting-label">유두</label>
-<div class="radio-toggle-group">
-<input type="radio" id="dk-nipples-normal" name="dk-nipples-toggle" value="평범함" checked>
-<label for="dk-nipples-normal">평범함</label>
-<input type="radio" id="dk-nipples-small" name="dk-nipples-toggle" value="작음">
-<label for="dk-nipples-small">작음</label>
-<input type="radio" id="dk-nipples-large" name="dk-nipples-toggle" value="큼">
-<label for="dk-nipples-large">큼</label>
-</div>
-</div>
-<div class="setting-item">
-<label class="setting-label">음모</label>
-<div class="radio-toggle-group">
-<input type="radio" id="dk-pubic-none" name="dk-pubic-toggle" value="없음">
-<label for="dk-pubic-none">없음</label>
-<input type="radio" id="dk-pubic-small" name="dk-pubic-toggle" value="적음">
-<label for="dk-pubic-small">적음</label>
-<input type="radio" id="dk-pubic-medium" name="dk-pubic-toggle" value="보통" checked>
-<label for="dk-pubic-medium">보통</label>
-<input type="radio" id="dk-pubic-large" name="dk-pubic-toggle" value="많음">
-<label for="dk-pubic-large">많음</label>
-</div>
-</div>
-<div class="setting-item">
-<label class="setting-label">페니스</label>
-<div class="radio-toggle-group">
-<input type="radio" id="dk-penis-normal" name="dk-penis-toggle" value="인간 사이즈" checked>
-<label for="dk-penis-normal">인간</label>
-<input type="radio" id="dk-penis-demon" name="dk-penis-toggle" value="평균적인 마족">
-<label for="dk-penis-demon">마족</label>
-<input type="radio" id="dk-penis-huge" name="dk-penis-toggle" value="거대함">
-<label for="dk-penis-huge">거대함</label>
-</div>
-</div>
-</div>
-</div>
+{{#when::category::vis::king}}
+<div style="grid-column: 1 / -1;"><h3>* 기본 정보</h3></div>
+<div class='btn command-btn' risu-btn='kingGender'><strong>성별: </strong>{{dict_element::{{getvar::king}}::성별}}</div>
+<div class='btn command-btn' risu-btn='kingAge'><strong>외형: </strong>{{dict_element::{{getvar::king}}::외형}}</div>
+<div style="grid-column: 1 / -1; margin-top: 1rem;"><h3>* 신체 정보</h3></div>
+{{#if {{notequal::{{dict_element::{{getvar::king}}::성별}}::남성}}}}<div class='btn command-btn' risu-btn='kingBreast'><strong>가슴: </strong>{{dict_element::{{getvar::king}}::가슴}}</div>{{/if}}
+{{#if {{notequal::{{dict_element::{{getvar::king}}::성별}}::남성}}}}<div class='btn command-btn' risu-btn='kingTit'><strong>유두: </strong>{{dict_element::{{getvar::king}}::유두}}</div>{{/if}}
+<div class='btn command-btn' risu-btn='kingPubes'><strong>음모: </strong>{{dict_element::{{getvar::king}}::음모}}</div>
+{{#if {{notequal::{{dict_element::{{getvar::king}}::성별}}::여성}}}}<div class='btn command-btn' risu-btn='kingPenis'><strong>페니스: </strong>{{dict_element::{{getvar::king}}::페니스}}</div>{{/if}}
+<div class='btn command-btn' risu-btn='kingHair' {{#if {{? {{screenwidth}}>600}}}}style="grid-column: span 2"{{/if}}><strong>헤어스타일: </strong>{{dict_element::{{getvar::king}}::헤어스타일}}</div>
+{{/when}}
 
-<!-- Mad King Pane -->
-<div id="mk-pane" class="tab-pane">
-<div class="settings-grid">
-<div class="setting-item">
-<label class="setting-label">성별</label>
-<div class="radio-toggle-group">
-<input type="radio" id="mk-gender-male" name="mk-gender-toggle" value="남성" checked>
-<label for="mk-gender-male">남성</label>
-<input type="radio" id="mk-gender-female" name="mk-gender-toggle" value="여성">
-<label for="mk-gender-female">여성</label>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Gameplay Pane -->
-<div id="play-pane" class="tab-pane">
-<div class="settings-grid">
-<div class="setting-item">
-<label class="setting-label">난이도</label>
-<div class="radio-toggle-group">
-<input type="radio" id="diff-easy" name="diff-toggle" value="쉬움">
-<label for="diff-easy">쉬움</label>
-<input type="radio" id="diff-normal" name="diff-toggle" value="보통" checked>
-<label for="diff-normal">보통</label>
-<input type="radio" id="diff-hard" name="diff-toggle" value="어려움">
-<label for="diff-hard">어려움</label>
-</div>
-</div>
-<div class="setting-item">
+{{#when::category::vis::play}}
+<div class='btn command-btn' risu-btn='difficulty'><strong>난이도: </strong>{{getvar::difficulty}}</div>
+<div risu-btn="blockDeath" style="grid-column: 1 / -1;">
 <label class="setting-label">사망 방지</label>
-<div class="switch-container">
 <label class="switch">
-<input type="checkbox" name="death-prevent" checked>
+<input type="checkbox" name="death-prevent" {{#when::blockDeath::vis::1}}checked{{/when}}>
 <span class="slider"></span>
 </label>
-<span>(활성화)</span>
-</div>
-<p class="setting-description">활성화 시 체력이 0이 되어도 사망하지 않습니다.</p>
-</div>
-</div>
-</div>
 
-<!-- System Pane -->
-<div id="system-pane" class="tab-pane">
-<div class="settings-grid">
-<div class="setting-item">
-<label class="setting-label">조교 기록</label>
-<div class="switch-container">
+{{#when::blockDeath::vis::0}}
+<p class="setting-description">체력이 0이 되면 캐릭터가 영구적으로 사망합니다.</p>
+{{/when}}
+{{#when::blockDeath::vis::1}}
+<p class="setting-description">체력이 0이 되어도 캐릭터가 사망하지 않습니다.</p>
+{{/when}}
+</div>
+{{/when}}
+
+{{#when::category::vis::system}}
+<div risu-btn="history" style="grid-column: 1 / -1;">
+<label class="setting-label">로그 표시</label>
 <label class="switch">
-<input type="checkbox" name="train-log" checked>
+<input type="checkbox" name="history" {{#when::history::vis::1}}checked{{/when}}>
 <span class="slider"></span>
 </label>
-<span>(활성화)</span>
+
+{{#when::history::vis::0}}
+<p class="setting-description">조교 및 전투 로그를 숨깁니다.</p>
+{{/when}}
+{{#when::history::vis::1}}
+<p class="setting-description">조교 및 전투 로그를 보여줍니다.</p>
+{{/when}}
 </div>
-<p class="setting-description">조교 로그를 상세하게 기록합니다.</p>
-</div>
-<div class="setting-item">
-<label class="setting-label">디버그 모드</label>
-<div class="switch-container">
+<div risu-btn="debug" style="grid-column: 1 / -1;">
+<label class="setting-label">디버그 표시</label>
 <label class="switch">
-<input type="checkbox" name="debug-mode">
+<input type="checkbox" name="debug" {{#when::debug::vis::1}}checked{{/when}}>
 <span class="slider"></span>
 </label>
-<span>(비활성화)</span>
+
+{{#when::debug::vis::0}}
+<p class="setting-description">콘솔에 디버그 메시지를 출력하지 않습니다.</p>
+{{/when}}
+{{#when::debug::vis::1}}
+<p class="setting-description">콘솔에 디버그 메시지를 출력합니다.</p>
+{{/when}}
 </div>
-<p class="setting-description">개발자용 디버그 옵션을 활성화합니다.</p>
-</div>
-</div>
+{{/when}}
 </div>
 </div>
 </main>
