@@ -89,7 +89,7 @@ end!!
     local screen = "shop"
     setState(triggerId, "screen", screen)
     local itemCat = "조교도구"
-    setChatVar(triggerId, "itemCat", itemCat)
+    setChatVar(triggerId, "category", itemCat)
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
 end!!
 
@@ -132,10 +132,5 @@ end!!
 
 [main/999/마계사전] function(triggerId)
     local screen = "dictionary"
-    setState(triggerId, "screen", screen)
-end!!
-
-[main/1234/intro test] function(triggerId)
-    local screen = "intro"
     setState(triggerId, "screen", screen)
 end!!

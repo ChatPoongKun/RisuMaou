@@ -148,8 +148,9 @@ function initialize(triggerId)
     for i, f_code in ipairs(initFuncs) do
         sysFunction(triggerId, f_code)
     end
-    setState(triggerId, "screen", "main")
-    processAndStoreLore(triggerId, "main.lua")
+    setChatVar(triggerId, "category", "user")
+    setState(triggerId, "screen", "intro")
+    processAndStoreLore(triggerId, "intro.lua")
 end
 
 -- 문자열 함수를 실제 함수 객체로 변환
