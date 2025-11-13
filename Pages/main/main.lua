@@ -88,7 +88,7 @@ end!!
 [main/104/상점] function(triggerId)
     local screen = "shop"
     setState(triggerId, "screen", screen)
-    local itemCat = "조교도구"
+    local itemCat = "tools"
     setChatVar(triggerId, "category", itemCat)
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
 end!!

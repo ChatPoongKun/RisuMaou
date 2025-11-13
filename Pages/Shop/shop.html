@@ -262,14 +262,18 @@ box-shadow: 0px 0px 20px -2px #a00606;
 <main>
 
 <div class="tabs-container">
-<label class="btn tabs" risu-btn="shop_tools">조교도구</label>
-<label class="btn tabs" risu-btn="shop_consumables">소모품</label>
-<label class="btn tabs" risu-btn="shop_traps">함정</label>
-<label class="btn tabs" risu-btn="shop_unlock">마계지식</label>
+<input type="radio" name="tabs" id="tools" hidden {{#if {{equal::{{getvar::category}}::tools}}}}checked{{/if}}>
+<label for="tools" class="tabs" risu-btn="tools">조교도구</label>
+<input type="radio" name="tabs" id="consumables" hidden {{#if {{equal::{{getvar::category}}::consumables}}}}checked{{/if}}>
+<label for="consumables"class="tabs" risu-btn="consumables">소모품</label>
+<input type="radio" name="tabs" id="traps" hidden {{#if {{equal::{{getvar::category}}::traps}}}}checked{{/if}}>
+<label for="traps"class="tabs" risu-btn="traps">함정</label>
+<input type="radio" name="tabs" id="unlock" hidden {{#if {{equal::{{getvar::category}}::unlock}}}}checked{{/if}}>
+<label for="unlock"class="tabs" risu-btn="unlock">마계지식</label>
 </div>
 
 <!-- Tab content -->
-<div class="shop-content">
+<div class="tab-content">
 <!-- Training Tools Pane -->
 <div class="shop-pane">
 <div class="shop-item-grid">
@@ -284,7 +288,7 @@ box-shadow: 0px 0px 20px -2px #a00606;
 <div class="selected-item-display">
 <span class="selected-item-name">{{getvar::itemName}}</span>
 </div>
-{{#when::itemCat::vis::조교도구}}{{:else}}
+{{#when::category::vis::조교도구}}{{:else}}
 <div class="item-quantity-selector">
 <button class="quantity-btn" risu-btn="minus">-</button>
 <span class="quantity-display">{{getvar::itemQuantity}}</span>
