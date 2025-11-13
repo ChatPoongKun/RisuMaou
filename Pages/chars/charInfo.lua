@@ -1,3 +1,28 @@
+[charInfo/appearance/hidden] function(triggerId)
+    local charInfoCat = "appearance"
+    setChatVar(triggerId, "category", charInfoCat)
+end!!
+
+[charInfo/abl/hidden] function(triggerId)
+    local charInfoCat = "abl"
+    setChatVar(triggerId, "category", charInfoCat)
+end!!
+
+[charInfo/talents/hidden] function(triggerId)
+    local charInfoCat = "talents"
+    setChatVar(triggerId, "category", charInfoCat)
+end!!
+
+[charInfo/exp/hidden] function(triggerId)
+    local charInfoCat = "exp"
+    setChatVar(triggerId, "category", charInfoCat)
+end!!
+
+[charInfo/narrative/hidden] function(triggerId)
+    local charInfoCat = "narrative"
+    setChatVar(triggerId, "category", charInfoCat)
+end!!
+
 [charInfo/100/능력 레벨업] function(triggerId)
     alertNormal(triggerId, "미구현")
 end!!

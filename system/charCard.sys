@@ -9,6 +9,7 @@ function(triggerId, name)
         stateToVar(triggerId, "target", target)
         local targetTrace = getState(triggerId, "trace")[name]
         stateToVar(triggerId, "targetTrace", targetTrace)
+        setChatVar(triggerId, "category", "appearance")
         setState(triggerId, "screen", "charInfo") --캐릭터 상세 정보 화면으로 이동
 
     elseif screen == "preTrain" then --조교 대상 화면

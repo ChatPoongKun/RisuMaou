@@ -1,24 +1,24 @@
 [shop/tools/hidden] function(triggerId)
-    local itemCat = "조교도구"
-    setChatVar(triggerId, "itemCat", itemCat)
+    local itemCat = "tools"
+    setChatVar(triggerId, "category", itemCat)
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
 end!!
 
 [shop/consumables/hidden] function(triggerId)
-    local itemCat = "소모품"
-    setChatVar(triggerId, "itemCat", itemCat)
+    local itemCat = "consumables"
+    setChatVar(triggerId, "category", itemCat)
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
 end!!
 
 [shop/traps/hidden] function(triggerId)
-    local itemCat = "함정"
-    setChatVar(triggerId, "itemCat", itemCat)
+    local itemCat = "traps"
+    setChatVar(triggerId, "category", itemCat)
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
 end!!
 
 [shop/unlock/hidden] function(triggerId)
-    local itemCat = "마계지식"
-    setChatVar(triggerId, "itemCat", itemCat)
+    local itemCat = "unlock"
+    setChatVar(triggerId, "category", itemCat)
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
 end!!
 
@@ -60,7 +60,7 @@ end!!
     inventory[itemName] = tostring(inventory[itemName]+itemCount)
     setChatVar(triggerId, "gold", int(gold))
     setChatVar(triggerId, "inventory", json.encode(inventory))
-    local itemCat = getChatVar(triggerId, "itemCat")
+    local itemCat = getChatVar(triggerId, "category")
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
     setChatVar(triggerId, "screenEffect", message)
 end!!
@@ -157,5 +157,6 @@ end!!
     setChatVar(triggerId, "itemPrice", 0)
     setChatVar(triggerId, "itemTotalPrice", 0)
     setChatVar(triggerId, "itemDetail", "")
+    setChatVar(triggerId, "category", "")
     setState(triggerId, "screen", "main")
 end!!

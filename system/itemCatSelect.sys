@@ -21,7 +21,7 @@ function (triggerId, itemCat)
         elseif k=="금단의지식" and inventory["음마지식"] == "0" then
             condition = false
             reason = "음마지식 필요"
-        elseif (itemCat == "조교도구" or itemCat == "마계지식") and inventory[k] == "1" then
+        elseif (itemCat == "tools" or itemCat == "unlock") and inventory[k] == "1" then
             condition = false
             reason = "이미 보유중"
         elseif tonumber(inventory[k]) >= 9 then

@@ -57,20 +57,6 @@
         border-radius: 4px;
     }
 
-    #talents-tab:checked ~ .tab-content > #talents-content,
-    #abl-tab:checked ~ .tab-content > #abl-content,
-    #exp-tab:checked ~ .tab-content > #exp-content,
-    #appearance-tab:checked ~ .tab-content > #appearance-content,
-    #narrative-tab:checked ~ .tab-content > #narrative-content {
-        display: block;
-    }
-
-
-    /* Info Grids within Tabs */
-    .info-grid h3:first-child {
-        margin-top: 0;
-    }
-    
     .talent-tag {
         background-color: #2a2a2a;
         padding: 0.3rem;
@@ -278,22 +264,26 @@
 <div class="line single"></div>
 
 <section class="detailed-info">
-<input type="radio" name="tabs" id="abl-tab" hidden>
-<input type="radio" name="tabs" id="exp-tab" hidden>
-<input type="radio" name="tabs" id="talents-tab" hidden>
-<input type="radio" name="tabs" id="appearance-tab" checked hidden>
-<input type="radio" name="tabs" id="narrative-tab" hidden>
 <div class="tabs-container">
-<label for="appearance-tab" class="x-risu-btn tabs">▋외모</label>
-<label for="abl-tab" class="x-risu-btn tabs">▋능력</label>
-<label for="talents-tab" class="x-risu-btn tabs">▋특성</label>
-<label for="exp-tab" class="x-risu-btn tabs">▋경험</label>
-<label for="narrative-tab" class="x-risu-btn tabs">▋서사</label>
+<input type="radio" name="tabs" id="appearance" hidden {{#if {{equal::{{getvar::category}}::appearance}}}}checked{{/if}}>
+<label for="appearance" class="tabs" risu-btn="appearance">▋외모</label>
+
+<input type="radio" name="tabs" id="abl" hidden {{#if {{equal::{{getvar::category}}::abl}}}}checked{{/if}}>
+<label for="abl" class="tabs" risu-btn="abl">▋능력</label>
+
+<input type="radio" name="tabs" id="talents" hidden {{#if {{equal::{{getvar::category}}::talents}}}}checked{{/if}}>
+<label for="talents" class="tabs" risu-btn="talents">▋특성</label>
+
+<input type="radio" name="tabs" id="exp" hidden {{#if {{equal::{{getvar::category}}::exp}}}}checked{{/if}}>
+<label for="exp" class="tabs" risu-btn="exp">▋경험</label>
+
+<input type="radio" name="tabs" id="narrative" hidden {{#if {{equal::{{getvar::category}}::narrative}}}}checked{{/if}}>
+<label for="narrative" class="tabs" risu-btn="narrative">▋서사</label>
 </div>
 <div class="tab-content">
-<div id="talents-content" class="tab-pane">
 <div class="info-grid">
-<h3>성격</h3>
+{{#when::category::vis::talents}}
+    <h3>성격</h3>
 {{settempvar::성격::0}}
 {{#each {{getvar::성격List}} T}}
 {{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
@@ -337,11 +327,9 @@
 {{#if {{? {{gettempvar::체질}}=0}}}}
 <span class="talent-tag">[없음]</span>
 {{/if}}
-</div>
-</div>
+{{/when}}
 
-<div id="abl-content" class="tab-pane">
-<div class="info-grid">
+{{#when::category::vis::abl}}
 {{settempvar::ablCount::0}}
 {{#each {{getvar::ablList}} abil}}
 {{#if {{? {{dict_element::{{getvar::target}}::{{slot::abil}}}}!=0}}}}
@@ -352,10 +340,10 @@
 {{/if}}
 {{/each}}
 {{#if {{? {{gettempvar::ablCount}}=0}}}}<div class="abl-item">[없음]</div>{{/if}}
-</div>
+{{/when}}
 </div>
 
-<div id="exp-content" class="tab-pane">
+{{#when::category::vis::exp}}
 <div class="info-grid">
 {{#each {{getvar::expList}} exp}}
 {{#when::{{dict_element::{{getvar::target}}::{{slot::exp}}}}::isnot::0}}
@@ -368,12 +356,12 @@
 <strong>다음 레벨까지:</strong> {{? {{array_element::{{getvar::Lvtable}}::{{dict_element::{{getvar::target}}::레벨}}}}-{{dict_element::{{getvar::target}}::경험치}}}} EXP<br>
 <strong>총 획득 경험치:</strong> {{dict_element::{{getvar::target}}::경험치}} EXP
 </p>
-</div>
+{{/when}}
 
-<div id="appearance-content" class="tab-pane">
+{{#when::category::vis::appearance}}
 <div class="appearance-content">
 <p><strong>키:</strong> {{dict_element::{{getvar::target}}::키}}cm | <strong>몸무게:</strong> {{dict_element::{{getvar::target}}::몸무게}}kg</p>
-<p><strong>헤어스타일:</strong> {{dict_element::{{getvar::target}}::머리}}</p>
+<p><strong>헤어스타일:</strong> {{dict_element::{{getvar::target}}::헤어스타일}}</p>
 <p><strong>복장:</strong> {{dict_element::{{getvar::target}}::복장}}</p>
 <p><strong>가슴:</strong> {{dict_element::{{getvar::target}}::가슴}} | <strong>유두:</strong> {{dict_element::{{getvar::target}}::유두}}</p>
 <p><strong>음모:</strong> {{dict_element::{{getvar::target}}::음모}}</p>
@@ -383,9 +371,9 @@
 {{#when::{{dict_element::{{getvar::target}}::문신}}::isnot::}}<p><strong>문신:</strong> {{dict_element::{{getvar::target}}::문신}}</p>{{/when}}
 {{#when::{{dict_element::{{getvar::target}}::피어싱}}::isnot::}}<p><strong>피어싱:</strong> {{dict_element::{{getvar::target}}::피어싱}}</p>{{/when}}
 </div>
-</div>
+{{/when}}
 
-<div id="narrative-content" class="tab-pane">
+{{#when::category::vis::narrative}}
 <div class="narrative-block">
 <h3>첫경험</h3>
 <p><strong>첫키스 상대:</strong> {{dict_element::{{getvar::target}}::첫키스 상대}}<br>
@@ -401,7 +389,7 @@
 <div class="narrative-block"><h3>이상경험 기록</h3><ul>
 {{#each {{dict_element::{{getvar::target}}::이상경험 기록}} R}}<li>{{slot::R}}</li>{{/each}}
 </ul></div>{{/when}}    이상경험 출력부 개선안 필요-->
-</div>
+{{/when}}
 </div>
 </section>
 
