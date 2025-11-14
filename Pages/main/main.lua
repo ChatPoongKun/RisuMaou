@@ -146,6 +146,7 @@ end!!
 
 [main/777/설정] function(triggerId)
     local screen = "config"
+    setChatVar(triggerId, "category", "play")
     setState(triggerId, "screen", screen)
 end!!
 
