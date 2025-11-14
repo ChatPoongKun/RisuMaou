@@ -1,3 +1,22 @@
+[main/items/hidden] function(triggerId)
+    local mainCat = "items"
+    setChatVar(triggerId, "category", mainCat)
+    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+end!!
+
+[main/traps/hidden] function(triggerId)
+    local mainCat = "traps"
+    setChatVar(triggerId, "category", mainCat)
+    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+end!!
+
+[main/dungeon/hidden] function(triggerId)
+    local mainCat = "dungeon"
+    setChatVar(triggerId, "category", mainCat)
+    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+end!!
+
+
 [main/100/조교 시작] function(triggerId)
     local screen = "preTrain"
 

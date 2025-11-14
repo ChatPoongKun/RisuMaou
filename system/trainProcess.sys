@@ -150,6 +150,7 @@ function(triggerId, dc, HP, SP, exps, command)
             local lastTrainLog = "<div class='history'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..totalLog.."</p><p>대상은 가혹한 조교를 견디지 못하고 사망했다.</p></div>"
             addChat(triggerId, "user", "{{".."getvar::html".."}}")
             setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
+            setChatVar(triggerId, "category", "items")
             setState(triggerId, "screen", "main")
             processAndStoreLore(triggerId, "main.lua")
             alertNormal(triggerId, "대상이 가혹한 조교를 견디지 못하고 사망했습니다. 조교를 종료합니다.")

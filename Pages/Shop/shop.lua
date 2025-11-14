@@ -158,5 +158,6 @@ end!!
     setChatVar(triggerId, "itemTotalPrice", 0)
     setChatVar(triggerId, "itemDetail", "")
     setChatVar(triggerId, "category", "")
+    setChatVar(triggerId, "category", "items")
     setState(triggerId, "screen", "main")
 end!!
