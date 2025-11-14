@@ -1,48 +1,52 @@
+[config/play/hidden] function(triggerId)
+    local configCat = "play"
+    setChatVar(triggerId, "category", configCat)
+end!!
 
+[config/system/hidden] function(triggerId)
+    local configCat = "system"
+    setChatVar(triggerId, "category", configCat)
+end!!
 
-[config/hr/<h2 style="text-align:left;margin-top:1rem;">▋ 조교</h2>]function end!!
-
-[config/100/난이도 | {{#when::{{getvar::difficulty}}::is::쉬움}}쉬움{{/when}}{{#when::{{getvar::difficulty}}::is::보통}}보통{{/when}}{{#when::{{getvar::difficulty}}::is::어려움}}어려움{{/when}}] function(triggerId)
+[config/difficulty/hidden] function(triggerId)
     local difficulty = getChatVar(triggerId, "difficulty")
 
     if difficulty == "쉬움" then
-        print("쉬움->보통")
         MAXROLL = 30
         setChatVar(triggerId, "difficulty", "보통")
     elseif difficulty == "보통" then
-        print("보통->어려움")
         MAXROLL = 20
         setChatVar(triggerId, "difficulty", "어려움")
     else
-        print("어려움->쉬움")
         MAXROLL = 40
         setChatVar(triggerId, "difficulty", "쉬움")
     end
 end!!
 
-[config/101/사망방지 | {{#when::{{getvar::blockDeath}}::is::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
+[config/blockDeath/hidden] function(triggerId)
     local blockDeath = getChatVar(triggerId, "blockDeath")
 
     blockDeath = math.abs(blockDeath-1)
     setChatVar(triggerId, "blockDeath", blockDeath)
 end!!
 
-[config/901/조교기록 | {{#when::{{getvar::history}}::is::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
+[config/history/hidden] function(triggerId)
     local history = getChatVar(triggerId, "history")
     history = math.abs(history-1)
     setChatVar(triggerId, "history", history)
 end!!
 
-[config/hr/<h2 style="text-align:left;margin-top:1rem;">▋ 디버깅</h2>]function end!!
-
-[config/999/디버깅 | {{#when::{{getvar::debug}}::is::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
-    DEBUG = math.abs(DEBUG-1)
-    setChatVar(triggerId, "debug", DEBUG)
+[config/debug/hidden] function(triggerId)
+    local debug = getChatVar(triggerId, "debug")
+    debug = math.abs(debug-1)
+    setChatVar(triggerId, "debug", debug)
 end!!
 
-[config/hr/ ]function end!!
 
-[config/199/돌아가기] function(triggerId)
+
+[config/199/설정완료] function(triggerId)
+    local screen = "main"
     setChatVar(triggerId, "category", "items")
-    setState(triggerId, "screen", "main")
+    setState(triggerId, "category", "")
+    setState(triggerId, "screen", screen)
 end!!
