@@ -1,95 +1,3 @@
-<style>
-.settings-content {
-background-color: #303030;
-padding: 1.5rem;
-border: 1px solid #555;
-border-bottom-left-radius: 0.5rem;
-border-bottom-right-radius: 0.5rem;
-min-height: 16rem;
-}
-
-.setting-label {
-font-weight: bold;
-color: #ccc;
-}
-
-/* CSS-only Toggle Switch */
-.switch-container {
-display: flex;
-align-items: center;
-gap: 0.75rem;
-}
-.switch {
-position: relative;
-display: inline-block;
-width: 3rem;
-height: 1.5rem;
-flex-shrink: 0;
-}
-.switch input {
-opacity: 0;
-width: 0;
-height: 0;
-}
-.slider {
-position: absolute;
-cursor: pointer;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background-color: #444;
-border: 1px solid #666;
-border-radius: 1rem;
-}
-.slider:before {
-position: absolute;
-content: "";
-height: 1rem;
-width: 1rem;
-left: 0.2rem;
-bottom: 3px;
-background-color: #ccc;
-border-radius: 1rem;
-}
-input:checked + .slider {
-background-color: #60d9f7;
-}
-input:checked + .slider:before {
-transform: translateX(1.5rem);
-background-color: white;
-}
-
-.setting-description {
-font-size: 0.85em;
-color: #aaa;
-margin-top: 0.25rem;
-}
-
-@media screen and (max-width: 600px) {
-    .settings-content {
-    padding: 1rem;
-    }
-    .switch {
-    height: 1.2rem;
-    width: 2.5rem;
-    }
-    .slider:before {
-    position: absolute;
-    content: "";
-    height: 0.8rem;
-    width: 0.8rem;
-    left: 0.2rem;
-    bottom: 3px;
-    background-color: #ccc;
-    border-radius: 1rem;
-    }
-    input:checked + .slider:before {
-    transform: translateX(1.5em);
-    }
-}
-</style>
-
 <div class="container">
 <div class="line double"></div>
 
@@ -110,8 +18,27 @@ margin-top: 0.25rem;
 <div class="tab-content">
 <div class="info-grid">
 {{#when::category::vis::play}}
-<div class='btn command-btn' risu-btn='difficulty'><strong>난이도: </strong>{{getvar::difficulty}}</div>
-<div risu-btn="blockDeath" style="grid-column: 1 / -1;">
+<div class='two-cells' risu-btn='difficulty'>
+<strong>조교 난이도</strong>
+<label class="triple-switch">
+<input type="radio" name="difficulty" id="one" {{#when::difficulty::vis::쉬움}}checked{{/when}}>
+<input type="radio" name="difficulty" id="two" {{#when::difficulty::vis::보통}}checked{{/when}}>
+<input type="radio" name="difficulty" id="three" {{#when::difficulty::vis::어려움}}checked{{/when}}>
+<span class="triple-slider"></span>
+</label>
+
+{{#when::difficulty::vis::쉬움}}
+<p class="setting-description">조교의 성공확률이 상승합니다.</p>
+{{/when}}
+{{#when::difficulty::vis::보통}}
+<p class="setting-description">밸런스 잡힌 난이도입니다.</p>
+{{/when}}
+{{#when::difficulty::vis::어려움}}
+<p class="setting-description">조교 상당히 어려워집니다.</p>
+{{/when}}
+</div>
+
+<div class="two-cells" risu-btn="blockDeath">
 <label class="setting-label">사망 방지</label>
 <label class="switch">
 <input type="checkbox" name="death-prevent" {{#when::blockDeath::vis::1}}checked{{/when}}>
@@ -128,7 +55,7 @@ margin-top: 0.25rem;
 {{/when}}
 
 {{#when::category::vis::system}}
-<div risu-btn="history" style="grid-column: 1 / -1;">
+<div class="two-cells" risu-btn="history">
 <label class="setting-label">로그 표시</label>
 <label class="switch">
 <input type="checkbox" name="history" {{#when::history::vis::1}}checked{{/when}}>
@@ -142,7 +69,8 @@ margin-top: 0.25rem;
 <p class="setting-description">조교 및 전투 로그를 보여줍니다.</p>
 {{/when}}
 </div>
-<div risu-btn="debug" style="grid-column: 1 / -1;">
+
+<div class="two-cells" risu-btn="debug">
 <label class="setting-label">디버그 표시</label>
 <label class="switch">
 <input type="checkbox" name="debug" {{#when::debug::vis::1}}checked{{/when}}>
@@ -156,6 +84,38 @@ margin-top: 0.25rem;
 <p class="setting-description">콘솔에 디버그 메시지를 출력합니다.</p>
 {{/when}}
 </div>
+
+<div style="grid-column: 1 / -1;"><h3>* 모델 선택</h3></div>
+<div class="two-cells" risu-btn="trainResponse">
+<label class="setting-label">조교 반응</label>
+<label class="switch">
+<input type="checkbox" name="trainResponse" {{#when::{{dict_element::{{getvar::models}}::trainResponse}}::is::1}}checked{{/when}}>
+<span class="slider"></span>
+</label>
+
+{{#when::{{dict_element::{{getvar::models}}::trainResponse}}::is::0}}
+<p class="setting-description">조교 반응 계산에 보조모델을 활용합니다.</p>
+{{/when}}
+{{#when::{{dict_element::{{getvar::models}}::trainResponse}}::is::1}}
+<p class="setting-description">조교 반응 계산에 메인모델을 활용합니다.</p>
+{{/when}}
+</div>
+
+<div class="two-cells" risu-btn="trainLog">
+<label class="setting-label">조교 로그</label>
+<label class="switch">
+<input type="checkbox" name="trainLog" {{#when::{{dict_element::{{getvar::models}}::trainLog}}::is::1}}checked{{/when}}>
+<span class="slider"></span>
+</label>
+
+{{#when::{{dict_element::{{getvar::models}}::trainLog}}::is::0}}
+<p class="setting-description">조교 로그 생성에 보조모델을 활용합니다.</p>
+{{/when}}
+{{#when::{{dict_element::{{getvar::models}}::trainLog}}::is::1}}
+<p class="setting-description">조교 로그 생성에 메인모델을 활용합니다.</p>
+{{/when}}
+</div>
+
 {{/when}}
 </div>
 </div>

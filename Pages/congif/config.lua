@@ -42,11 +42,23 @@ end!!
     setChatVar(triggerId, "debug", debug)
 end!!
 
+[config/trainResponse/hidden] function(triggerId)
+    local models = json.decode(getChatVar(triggerId, "models"))
+    local llmSelect = "trainResponse"
+    models[llmSelect] = tostring(math.abs(tonumber(models[llmSelect])-1))
+    setChatVar(triggerId, "models", json.encode(models))
+end!!
+
+[config/trainLog/hidden] function(triggerId)
+    local models = json.decode(getChatVar(triggerId, "models"))
+    local llmSelect = "trainLog"
+    models[llmSelect] = tostring(math.abs(tonumber(models[llmSelect])-1))
+    setChatVar(triggerId, "models", json.encode(models))
+end!!
 
 
 [config/199/설정완료] function(triggerId)
     local screen = "main"
     setChatVar(triggerId, "category", "items")
-    setState(triggerId, "category", "")
     setState(triggerId, "screen", screen)
 end!!
