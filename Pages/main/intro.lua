@@ -321,6 +321,7 @@ end!!
 
 [intro/199/설정완료] function(triggerId)
     local screen = "main"
+    setChatVar(triggerId, "category", "items")
     setState(triggerId, "category", "")
     setState(triggerId, "screen", screen)
 end!!

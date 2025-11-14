@@ -34,49 +34,6 @@
     text-align: center;
 }
 
-/* Management Panel & Tabs */
-.tabs {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    font-size:1rem;
-}
-.tabs > .btn{
-    padding:0.2rem 0.5rem;
-}
-
-.tab-content {
-    margin-top: 0.2rem;
-    padding: 1.5rem;
-    background-color: #303030;
-    border-radius: 4px;
-    min-height: 150px;
-    font-family: 'Gulim', monospace;
-    font-size: 0.95em;
-}
-
-.tab-content > .tab-pane {
-    display: none;
-}
-
-#skills-tab:checked ~ .tab-content > #skills-content,
-#traps-tab:checked ~ .tab-content > #traps-content,
-#dungeon-tab:checked ~ .tab-content > #dungeon-content {
-    display: block;
-}
-
-#skills-tab:checked ~ .tabs label[for="skills-tab"],
-#traps-tab:checked ~ .tabs label[for="traps-tab"],
-#dungeon-tab:checked ~ .tabs label[for="dungeon-tab"] {
-    background-color: #666;
-    border-color: #888;
-    color: #fff;
-}
-
-.tab-pane p {
-    margin: 0 0 0.75rem 0;
-}
-
 .item-grid, .dungeon-floor-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -182,19 +139,16 @@
 
 <section class="management-panel">
 <h2>* 경영 및 운영</h2>
-
-<!-- Hidden radio buttons to control tabs -->
-<input type="radio" name="management-tabs" id="skills-tab" checked hidden>
-<input type="radio" name="management-tabs" id="traps-tab" hidden>
-<input type="radio" name="management-tabs" id="dungeon-tab" hidden>
-
-<div class="tabs">
-<label for="skills-tab" class="btn">▋스킬</label>
-<label for="traps-tab" class="btn">▋함정</label>
-<label for="dungeon-tab" class="btn">▋던전</label>
+<div class="tabs-container">
+<input type="radio" name="tabs" id="items" hidden {{#if {{equal::{{getvar::category}}::items}}}}checked{{/if}}>
+<label for="items" class="tabs" risu-btn="items">▋스킬/아이템</label>
+<input type="radio" name="tabs" id="traps" hidden {{#if {{equal::{{getvar::category}}::traps}}}}checked{{/if}}>
+<label for="traps" class="tabs" risu-btn="traps">▋함정</label>
+<input type="radio" name="tabs" id="dungeon" hidden {{#if {{equal::{{getvar::category}}::dungeon}}}}checked{{/if}}>
+<label for="dungeon" class="tabs" risu-btn="dungeon">▋던전</label>
 </div>
-
 <div class="tab-content">
+{{#when::category::vis::items}}
 <div id="skills-content" class="tab-pane">
 <!--너무 쌩 하드코딩인데 each의 slot이 settempvar 안에서 제대로 안돌아가서 쩔수..-->
 {{#if {{? {{dict_element::{{getvar::inventory}}::조합지식}}==1||{{dict_element::{{getvar::inventory}}::마계지식}}==1||{{dict_element::{{getvar::inventory}}::금단의지식}}==1}}}}
@@ -236,8 +190,9 @@
 {{/if}}
 </div>
 </div>
+{{/when}}
 
-
+{{#when::category::vis::traps}}
 <div id="traps-content" class="tab-pane">
 <p>더미 데이터 입니다.</p>
 <div class="item-grid">
@@ -247,6 +202,9 @@
 <span>망각의 향기(1)</span>
 </div>
 </div>
+{{/when}}
+
+{{#when::category::vis::dungeon}}
 <div id="dungeon-content" class="tab-pane">
 <p>더미 데이터 입니다.</p>
 <p>던전Lv: 5Lv (경험치: 1250) | 함정Lv: 3Lv | 현재의 용사 초기Lv: 10Lv</p>
@@ -257,6 +215,7 @@
 </div>
 <p class="total-info">부하총계: 105마리, 용사총계: 1명, 요격총계: 2명</p>
 </div>
+{{/when}}
 </div>
 </section>
 
