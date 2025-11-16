@@ -19,7 +19,7 @@
 <div class="info-grid">
 {{#when::category::vis::play}}
 <div class='two-cells' risu-btn='difficulty'>
-<strong>조교 난이도</strong>
+<label><b>조교 난이도</b></label>
 <label class="triple-switch">
 <input type="radio" name="difficulty" id="one" {{#when::difficulty::vis::쉬움}}checked{{/when}}>
 <input type="radio" name="difficulty" id="two" {{#when::difficulty::vis::보통}}checked{{/when}}>
@@ -39,7 +39,7 @@
 </div>
 
 <div class="two-cells" risu-btn="blockDeath">
-<label class="setting-label">사망 방지</label>
+<label><b>사망 방지</b></label>
 <label class="switch">
 <input type="checkbox" name="death-prevent" {{#when::blockDeath::vis::1}}checked{{/when}}>
 <span class="slider"></span>
@@ -56,7 +56,7 @@
 
 {{#when::category::vis::system}}
 <div class="two-cells" risu-btn="history">
-<label class="setting-label">로그 표시</label>
+<label><b>로그 표시</b></label>
 <label class="switch">
 <input type="checkbox" name="history" {{#when::history::vis::1}}checked{{/when}}>
 <span class="slider"></span>
@@ -71,7 +71,7 @@
 </div>
 
 <div class="two-cells" risu-btn="debug">
-<label class="setting-label">디버그 표시</label>
+<label><b>디버그 표시</b></label>
 <label class="switch">
 <input type="checkbox" name="debug" {{#when::debug::vis::1}}checked{{/when}}>
 <span class="slider"></span>
@@ -87,7 +87,7 @@
 
 <div style="grid-column: 1 / -1;"><h3>* 모델 선택</h3></div>
 <div class="two-cells" risu-btn="trainResponse">
-<label class="setting-label">조교 반응</label>
+<label><b>조교 반응</b></label>
 <label class="switch">
 <input type="checkbox" name="trainResponse" {{#when::{{dict_element::{{getvar::models}}::trainResponse}}::is::1}}checked{{/when}}>
 <span class="slider"></span>
@@ -102,7 +102,7 @@
 </div>
 
 <div class="two-cells" risu-btn="trainLog">
-<label class="setting-label">조교 로그</label>
+<label><b>조교 로그</b></label>
 <label class="switch">
 <input type="checkbox" name="trainLog" {{#when::{{dict_element::{{getvar::models}}::trainLog}}::is::1}}checked{{/when}}>
 <span class="slider"></span>
