@@ -116,7 +116,7 @@ print("합계부정: "..traceSum["부정"])
     addChat(triggerId, "user", "{{".."getvar::html".."}}")
     local ampm = getChatVar(triggerId,"ampm")
     if ampm == 0 then ampm ="낮" else ampm="밤" end
-    local lastTrainLog = "<div class='history'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..getChatVar(triggerId,"oldLog")..getChatVar(triggerId,"newLog").."</p></div>"
+    local lastTrainLog = "<div class='showLog'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..getChatVar(triggerId,"oldLog")..getChatVar(triggerId,"newLog").."</p></div>"
     setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
 
     --정보 초기화

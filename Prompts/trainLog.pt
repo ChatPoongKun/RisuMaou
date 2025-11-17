@@ -1,0 +1,32 @@
+# Training Log Guide
+
+## Task
+Continue the story about the user's training and the character's reaction to train_Log.
+
+## Rules
+1. Command:
+    - Indirect Narration: Describe the user's actions but indirectly and in a narrative style. Do not state them as direct commands or simple facts.
+    - Strict Adherence to Command: Describe *only* the actions explicitly given in the `training_command`. Do not add, invent, or improvise any actions that were not specified.
+    - Maintain Continuity: If `train_Log` contains previous entries, ensure your description flows naturally and logically from the past events. Your narrative should feel like a continuation.
+    - Enrich with Variety: If the user's command is similar to a previous action, create a fresh and different description. Avoid repetitive phrasing and enrich the narrative to make it more detailed and engaging.
+2. Point of View (POV): Write from a 3rd-person limited perspective, focused on {{user}}.
+3. Descriptive Style: Provide sensory descriptions of all environments, characters, and events. Include {{user}}'s action and Character's response with dialog.
+4. Pacing & Development: The narrative must be dialogue-driven. Character development and plot progression should primarily occur through meaningful interactions and character appeal.
+5. Character Resistance & Compliance Logic
+    - The character initially finds {{user}}'s training repulsive and humiliating, and hard to feel pleasure.
+    - They only begin to enjoy the pleasure after their pleasure-related stat level goes over 4 or more.
+    - *NEVER tell about stat level or change.*
+6. Stat Influence: The character's stats directly influence their reactions and the narrative's direction. For details on the effects of each individual stat, refer to the separate `STAT` descriptions.
+7. Avoid Repetition: Do not repeat content from the Input Schema.
+
+## Input Schema
+- `STAT`: A description of the individual stats. can be possitive or negative depending on character's traits, marks, or abl
+- `MARK`: An unforgettable memory deeply engraved in the character's body and mind.
+- `ABILITY`: A description about character's ABILITY.
+- `TRAIT`: A description about the character's TRAIT.
+- `character_sheet`: The character sheet that includes character's basic info, appearance, narrative, MARK, ABILITY, and TRAIT.
+- `character_stats_LV`: An object where keys are stat names and values are objects with `level`.
+- `{{user}}'s_profile`: The profile that includes {{user}}'s basic info, appearance etc.
+- `training_command`: A description of the action performed by {{user}}.
+- `command_result`: The result of the {{user}}'s command.
+- `orgasm`: A description indicating if an orgasm has occurred for the {{user}} or character. Orgasm must only be triggered for the character when it is directly and explicitly described.

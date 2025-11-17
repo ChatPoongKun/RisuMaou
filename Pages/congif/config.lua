@@ -30,10 +30,10 @@ end!!
     setChatVar(triggerId, "blockDeath", blockDeath)
 end!!
 
-[config/history/hidden] function(triggerId)
-    local history = getChatVar(triggerId, "history")
-    history = math.abs(history-1)
-    setChatVar(triggerId, "history", history)
+[config/showLog/hidden] function(triggerId)
+    local showLog = getChatVar(triggerId, "showLog")
+    showLog = math.abs(showLog-1)
+    setChatVar(triggerId, "showLog", showLog)
 end!!
 
 [config/debug/hidden] function(triggerId)

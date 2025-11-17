@@ -103,17 +103,17 @@ border-color: #888;
 {{/when}}
 
 {{#when::category::vis::system}}
-<div class="two-cells" risu-btn="history">
+<div class="two-cells" risu-btn="showLog">
 <label><b>로그 표시</b></label>
 <label class="switch">
-<input type="checkbox" name="history" {{#when::history::vis::1}}checked{{/when}}>
+<input type="checkbox" name="showLog" {{#when::showLog::vis::1}}checked{{/when}}>
 <span class="slider"></span>
 </label>
 
-{{#when::history::vis::0}}
+{{#when::showLog::vis::0}}
 <p class="setting-description">조교 및 전투 로그를 숨깁니다.</p>
 {{/when}}
-{{#when::history::vis::1}}
+{{#when::showLog::vis::1}}
 <p class="setting-description">조교 및 전투 로그를 보여줍니다.</p>
 {{/when}}
 </div>

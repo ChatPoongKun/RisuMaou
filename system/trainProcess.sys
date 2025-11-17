@@ -6,8 +6,17 @@ function(triggerId, dc, HP, SP, exps, command)
     local screenEffect = ""
     setChatVar(triggerId, "screenEffect", screenEffect) --실패/대성공 표기를 위한 screenEffect 초기화
     
-    --경험치 테이블 호출
+    --[[DB호출]]
     local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
+    local markDB = json.decode(getLoreBookContent(triggerId, "mark.db"))
+    local ablDB = json.decode(getLoreBookContent(triggerId, "abl.db"))
+    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db"))
+    local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
+    local expDB = json.decode(getLoreBookContent(triggerId, "exp.db"))
+    --statdb에서 설명파트만 추출
+    for k,v in pairs(statDB) do
+        statDB[k] = v[1]
+    end
 
     --[[유저와 조교대상의 정보 호출]]
     local user = getLoreBookContent(triggerId, "user") --유저의 정보를 로어북에서 string으로 호출
@@ -28,51 +37,23 @@ function(triggerId, dc, HP, SP, exps, command)
     setChatVar(triggerId, "cmds", loading)
     reloadDisplay(triggerId)
 
-    --[[LLM에 전달할 각종 수치에 대한 설명 호출]]
-    --abl 설명
-    local ablDB = json.decode(getLoreBookContent(triggerId, "abl.db"))
-
-    --stat 설명
-    local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
-    --설명파트만 추출
-    for k,v in pairs(statDB) do
-        statDB[k] = v[1]
-    end
-    --스탯을 n/10으로 작성해 LLM이 현재 수준이 어느정도인지 판단하도록 함
-    local statProm = {}
-    for k,v in pairs(currentStat) do
-        statProm[k] = v.."/10"
-    end
-
-    --local expDB = getLoreBooks(triggerId, "exp.db")[1].content --토큰만 먹을텐데 경험 수치에 대한 db를 알려줄 필요가 있을까? 일시 보류
-    
-    --trait 설명
-    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db")) -- target과 관련있는 trait만 골라서 전달하기 위해 테이블로 받아옴
-    --target가 가진 trait에 대한 설명만 추출해 LLM에 정보제공
-    for k, _ in pairs(traitDB) do
-        if not hasVal(target, k) then
-            traitDB[k] = nil --target한테 없는 trait 설명은 삭제
-        end
-    end
-    traitDB = json.encode(traitDB)
-
     --[[성공굴림]]
     --보너스 요소: 유저 레벨당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
     --패널티 요소: 대상의 2^반발각인, 부정적 stat당 1
     local rollBonus = 0
     rollBonus = rollBonus + json.decode(user)["레벨"] - 1 --유저 레벨당 1, 1레벨부터 시작이므로 1을 차감
-    local marks = json.decode(getLoreBookContent(triggerId, "mark.db"))
-    for _, v in ipairs(marks) do -- 각인 보너스 적용
+    
+    for _, v in ipairs(markDB) do -- 각인 보너스 적용
         if v == "반발각인" then
-            rollBonus = rollBonus - 2^tonumber(target[v])
+            rollBonus = rollBonus - 2^tonumber((target[v] or 0))
         else
-            rollBonus = rollBonus + target[v]*2
+            rollBonus = rollBonus + (target[v] or 0)*2
         end
     end
 
     --최종 주사위굴림
     local roll = math.random()*MAXROLL
-    local rollMsg = ""
+    local rollMsg = "조교 성공"
     if roll > MAXROLL - 1 then
         rollMsg = "조교 대성공!"
         screenEffect = [[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
@@ -84,9 +65,8 @@ function(triggerId, dc, HP, SP, exps, command)
     else
         debug(roll..">="..dc, "성공")
     end
-    
 
-    --HP,SP 비용 계산
+    --[[HP,SP 소모 계산]]
     local costHP, costSP = HP, SP
     if string.find(rollMsg, "실패") then --조교가 실패하는 경우 체력 기력소모 증가
         costHP = costHP + math.max(dc- (roll + rollBonus), 0)
@@ -147,7 +127,7 @@ function(triggerId, dc, HP, SP, exps, command)
             else
                 totalLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
             end
-            local lastTrainLog = "<div class='history'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..totalLog.."</p><p>대상은 가혹한 조교를 견디지 못하고 사망했다.</p></div>"
+            local lastTrainLog = "<div class='showLog'><p>"..getChatVar(triggerId,"day").."일차 "..ampm.." / 조교 대상:"..target["이름"].."</p><p>"..totalLog.."</p><p>대상은 가혹한 조교를 견디지 못하고 사망했다.</p></div>"
             addChat(triggerId, "user", "{{".."getvar::html".."}}")
             setChat(triggerId, getChatLength(triggerId)-2, lastTrainLog)
             setChatVar(triggerId, "category", "items")
@@ -159,50 +139,59 @@ function(triggerId, dc, HP, SP, exps, command)
         return false
     end
 
-    --계산된 체력 기력을 콤마가 포함된 문자열로 변환해 저장
+    --계산된 체력 기력을 포매팅된 문자열로 저장
     target["체력"] = int(currentHP)
     target["기력"] = int(currentSP)
 
+
+
     --[[프롬프트 빌딩]]
-    --기존 로그 불러옴
-    local oldLog
-    if getChatVar(triggerId, "oldLog") == "[조교시작]" then
-        oldLog = getChatVar(triggerId, "newLog")
-    else
-        oldLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
+    local prompt = {}
+
+    --스탯을 n/10으로 작성해 LLM이 현재 수준이 어느정도인지 판단하도록 함
+    local statProm = {}
+    for k,v in pairs(currentStat) do
+        statProm[k] = v.."/10"
     end
-    local prompt = {
-    promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
-    promptBuild("system", getLoreBookContent(triggerId, "train.pt")),
-    promptBuild("system", "abl: "..json.encode(ablDB)),
-    promptBuild("system", "stat: "..json.encode(statDB)),
-    promptBuild("system", traitDB),
-    promptBuild("system", user),
-    promptBuild("system", target_c),
-    promptBuild("system", "current stat: "..json.encode(statProm)),
-    promptBuild("assistant", oldLog),
-    promptBuild("user", command)
+
+    --target가 보유한 trait에 대한 설명만 추출
+    local traitProm = {}
+    for k,_ in pairs(traitDB) do
+        local found, foundVal = hasVal(target, k)
+        if found then
+            traitProm[k] = foundVal --target한테 있는 trait 설명만 입력
+        end
+    end
+    traitProm = json.encode(traitProm)
+
+    --trainResponse (stat 계산) 프롬프트
+    prompt = {
+    promptBuild("system", getLoreBookContent(triggerId, "trainResponse.pt")),
+    promptBuild("system", "- STAT: "..json.encode(statDB)),
+    promptBuild("system", "- MARK: "..json.encode(markDB)),
+    promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
+    promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
+    promptBuild("system", "- EXP_TABLE: "..json.encode(expDB)),
+    promptBuild("system", "- character_sheet: "..target_c),
+    promptBuild("system", "- character_stats_Lv: "..json.encode(statProm)),
+    promptBuild("system", "- training_command: "..command),
+    promptBuild("system", "- command_result: "..rollMsg)
     }
 
-    if rollMsg ~= "" then
-        table.insert(prompt, promptBuild("system", rollMsg))
-    end
-
-    local response = LLM(triggerId, prompt) --LLM에 응답 요청
-    if not response.success then --LLM응답 실패시 함수 종료
-        alertNormal(triggerId, "LLM응답 실패"..response.result)
+    local trainResponse = LLM(triggerId, prompt, "trainResponse")
+    if not trainResponse.success then --LLM응답 실패시 함수 종료
+        alertNormal(triggerId, "trainResponse LLM응답 실패"..trainResponse.result)
         setChatVar(triggerId, "cmds", old_cmds)
         reloadDisplay(triggerId)
         return false
     end
 
-    --응답과 stat경험치 구분처리
-    local content = response.result
+    --trainResponse 응답저장
+    local content = trainResponse.result
     debug("응답: "..content)
+    --statEXP 저장
     local statEXP = content:match("({.*})")
-    local dialog = content:gsub(statEXP, "")
     statEXP = json.decode(statEXP)
-    local newLog = "<br>" .. dialog:gsub("json","")
 
     --dc에 따른 statEXP 획득 제어
     for k,v in pairs(statEXP) do
@@ -273,14 +262,17 @@ function(triggerId, dc, HP, SP, exps, command)
     debug(target["이름"].."절정치: " .. ej_target)
 
     --절정여부 체크
+    local ejMsg = "아무도 절정하지 않음."
     local orgasm_t, orgasm_u, orgasmCount = false, false, 0
     if ej_target > ej_target_max then
+        ejMsg = "조교대상 절정."
         orgasm_t = true
         orgasmCount = getChatVar(triggerId, "ejCount_t")
         setChatVar(triggerId, "ejCount_t", orgasmCount)
     end
     --[[유저 절정처리 미구현
         if ej_user > ej_user_max then
+            ejMsg = ejMsg.."{{user}} 절정."
             orgasm_u = true
             orgasmCount = getChatVar(triggerId, "ejCount_u")
             setChatVar(triggerId, "ejCount_u", orgasmCount)
@@ -334,6 +326,54 @@ function(triggerId, dc, HP, SP, exps, command)
             statResult[k] = lv
         end
     end
+
+    --[[trainLog 프롬프트 빌딩]]
+    --날짜계산
+    local day = getChatVar(triggerId, "day")
+    local ampm = tonumber(getChatVar(triggerId, "ampm"))
+    local date = day.."일째, "
+    if ampm == 0 then
+        date = date.."낮"
+    else
+        date = date.."밤"
+    end
+    --기존 로그 불러옴
+    local oldLog
+    if getChatVar(triggerId, "oldLog") == date then
+        oldLog = getChatVar(triggerId, "newLog")
+    else
+        oldLog = getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog")
+    end
+
+    prompt = {
+    promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
+    promptBuild("system", getLoreBookContent(triggerId, "trainLog.pt")),
+    promptBuild("system", getLoreBookContent(triggerId, "worldBriefing.pt")),
+    promptBuild("system", "- STAT: "..json.encode(statDB)),
+    promptBuild("system", "- MARK: "..json.encode(markDB)),
+    promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
+    promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
+    promptBuild("system", "- character_sheet: "..target_c),
+    promptBuild("system", "- character_stats_Lv: "..json.encode(statResult)),
+    promptBuild("system", "- {{user}}'s_profile: "..user),
+    promptBuild("system", "- training_command: "..command), --조교명령
+    promptBuild("system", "- command_result: "..rollMsg), --성공여부
+    promptBuild("system", "- orgasm: "..ejMsg), --절정여부
+    promptBuild("assistant", "- train_log: "..oldLog) --기존 로그
+    }
+
+    local trainLog = LLM(triggerId, prompt, "trainLog") --LLM에 응답 요청
+    if not trainLog.success then --LLM응답 실패시 함수 종료
+        alertNormal(triggerId, "trainLog LLM응답 실패".. trainLog.result)
+        setChatVar(triggerId, "cmds", old_cmds)
+        reloadDisplay(triggerId)
+        return false
+    end
+
+    --응답처리
+    local dialog = trainLog.result
+    debug("응답: "..dialog)
+    local newLog = "<br>" .. dialog
 
     setChatVar(triggerId, "cmds", old_cmds) --버튼 원복
     setChatVar(triggerId, "statLvUp", lvUpcomment) --stat 변화 설명은 log에 포함되지 않도록 별도 처리
