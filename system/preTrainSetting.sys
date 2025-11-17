@@ -1,4 +1,20 @@
 function (triggerId, name)
+        --target를 로어북에서 불러와 1차원으로 flatten
+        local target = json.decode(getLoreBookContent(triggerId, name))
+        setState(triggerId, "target", target) --대상 캐릭터 로어북 정보를 state에 저장
+        target = flatten(target)
+        local day = getChatVar(triggerId, "day")
+        local ampm = tonumber(getChatVar(triggerId, "ampm"))
+        local date = day.."일째, "
+        if ampm == 0 then
+            date = date.."낮"
+        else
+            date = date.."밤"
+        end
+
+        --조교경험 추가
+        target["조교회수"] = tostring(target["조교회수"]+1)
+
         --조교화면 변수 초기화
         setChatVar(triggerId, "애무계", 1)
         setChatVar(triggerId, "도구계", 0)
@@ -6,8 +22,8 @@ function (triggerId, name)
         setChatVar(triggerId, "A계", 0)
         setChatVar(triggerId, "봉사계", 0)
         setChatVar(triggerId, "하드계", 0)
-        setChatVar(triggerId, "oldLog", "[조교시작]")
-        setChatVar(triggerId, "newLog", "대상이 조교 준비중이다.")
+        setChatVar(triggerId, "oldLog", date)
+        setChatVar(triggerId, "newLog", "["..target["이름"].."의 "..target["조교회수"].."번째 조교]<br>")
         setChatVar(triggerId, "statLvUp", " ")
         setChatVar(triggerId, "ej_target", 0) --조교대상 절정치
         setChatVar(triggerId, "ej_user", 0) --유저 절정치
@@ -18,12 +34,7 @@ function (triggerId, name)
         setChatVar(triggerId, "statFold", "0") --stat 세부 내역이 보이도록 초기화
         setChatVar(triggerId, "screenEffect", "") --전역화면효과 초기화
 
-        --target를 로어북에서 불러와 1차원으로 flatten
-        local target = json.decode(getLoreBookContent(triggerId, name))
-        target = flatten(target)
-
         --스탯 초기화
-        setState(triggerId, "target", target) --대상 캐릭터 로어북 정보를 state에 저장
         local statDB =json.decode(getLoreBookContent(triggerId, "stat.db"))
         local stat = {}
         for k, _ in pairs(statDB) do
@@ -186,7 +197,8 @@ function (triggerId, name)
         for k ,v in pairs(stat) do
            stat[k] = math.min(math.max(math.floor(v),0),10)
         end
-        stateToVar(triggerId, "target", target) --대상 캐릭터 로어북을 챗변수에 저장
+        setState(triggerId, "target", target)
+        stateToVar(triggerId, "target", target) --대상 캐릭터를 챗변수에 저장
         setState(triggerId, "stat", stat) --계산된 stat를 state에 저장
         --챗변수를 위한 사전처리
         local stat_c = "{"

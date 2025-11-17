@@ -22,6 +22,22 @@ tonumber = function(str, base)
   end
 end
 
+--LLM함수 오버라이드
+old_LLM = LLM
+LLM = function(triggerId, prompt, callName)
+    local models = json.decode(getChatVar(triggerId, "models"))
+    local modelSelect = models[callName]
+    local response
+
+    if modelSelect == "1" then
+        response = old_LLM(triggerId, prompt)
+    else
+        response = axLLM(triggerId, prompt)
+    end
+
+    return response
+end
+
 --시간값 출력
 function time()
     if os.clock()<0 then

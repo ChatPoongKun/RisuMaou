@@ -96,8 +96,8 @@ border-color: #555;
 box-shadow: 0px 0px 15px -5px #ffffff;
 }
 
-.history{
-visibility: {{#when::history::vis::1}}visible{{:else}}hidden{{/when}};
+.showLog{
+visibility: {{#when::showLog::vis::1}}visible{{:else}}hidden{{/when}};
 }
 /* --- SHARED COMPONENTS (Progress Bars & Status) --- */
 
