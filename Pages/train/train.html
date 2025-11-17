@@ -434,9 +434,9 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 <span class="v-bar-label">요의</span>
 </div>
 <!-- Vertical Ejaculation Bar -->
-<div class="v-bar-container" title="{{getvar::ej_target}}/{{? 10000*{{? 1.2^{{getvar::ejCount_t}}}}}}">
+<div class="v-bar-container" title="{{getvar::ej_target_ratio}}%">
 <div class="v-bar-track">
-<div class="v-bar-fill x-risu-ej" style="height: {{? {{getvar::ej_target}}/{{? 100*{{? 1.2^{{getvar::ejCount_t}}}}}}}}%;"></div>
+<div class="v-bar-fill x-risu-ej" style="height: {{getvar::ej_target_ratio}}%;"></div>
 </div>
 <span class="v-bar-label">절정</span>
 </div>
@@ -517,9 +517,9 @@ S쾌락은 일단 숨겨두기
 <div class="x-risu-bar-container">
 <span class="bar-label"> 절정:</span>
 <div class="progress-bar x-risu-ej">
-<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%;"></div>
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{getvar::ej_user_ratio}}%;"></div>
 </div>
-<span class="bar-value">{{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%</span>
+<span class="bar-value">{{getvar::ej_user_ratio}}%</span>
 </div>
 </section>
 

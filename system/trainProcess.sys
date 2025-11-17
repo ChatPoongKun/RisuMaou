@@ -26,16 +26,24 @@ function(triggerId, dc, HP, SP, exps, command)
 
     --[[버튼 비활성화 및 응답중 표시]]
     local old_cmds = getChatVar(triggerId, "cmds")
-    local loading = [[<div class="loading-container" aria-live="polite" aria-label="응답 처리중">
-    <div class="loading-text">[응답 처리중]</div>
+    local process_comment = "[stat 계산중]"
+    local loading_prepend = [[<div class="loading-container"><div class="loading-text">]]
+    local loading_append = [[</div>
     <div class="loading-dots">
     <span class="dot-1"></span>
     <span class="dot-2"></span>
     <span class="dot-3"></span>
     </div>
     </div>]]
-    setChatVar(triggerId, "cmds", loading)
+    setChatVar(triggerId, "cmds", loading_prepend .. process_comment .. loading_append)
     reloadDisplay(triggerId)
+
+    --경험 추가
+    if #exps > 0 then
+        for _, k in ipairs(exps) do
+            target[k] = target[k] + 1
+        end
+    end
 
     --[[성공굴림]]
     --보너스 요소: 유저 레벨당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
@@ -143,8 +151,6 @@ function(triggerId, dc, HP, SP, exps, command)
     target["체력"] = int(currentHP)
     target["기력"] = int(currentSP)
 
-
-
     --[[프롬프트 빌딩]]
     local prompt = {}
 
@@ -171,7 +177,7 @@ function(triggerId, dc, HP, SP, exps, command)
     promptBuild("system", "- MARK: "..json.encode(markDB)),
     promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
     promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
-    promptBuild("system", "- EXP_TABLE: "..json.encode(expDB)),
+    promptBuild("system", "- EXP_TABLE: "..json.encode(EXPtbl)),
     promptBuild("system", "- character_sheet: "..target_c),
     promptBuild("system", "- character_stats_Lv: "..json.encode(statProm)),
     promptBuild("system", "- training_command: "..command),
@@ -207,9 +213,20 @@ function(triggerId, dc, HP, SP, exps, command)
     --각인획득 판정. 각인 획득시 screenEffect를 덮어 씀
     target = sysFunction(triggerId, "getMark.sys", statEXP, target)
 
-    --절정치 계산
-    local ej_target = getChatVar(triggerId, "ej_target")
-    ej_target = ej_target*0.95 --매턴마다 절정치는 자연감소
+
+    --[[절정 계산]]
+    local orgasmMax_default = 10000
+    local orgasm_multiplier = 1.2
+    local ej_target_count = tonumber(getChatVar(triggerId, "ej_target_count"))
+    local ej_user_count = tonumber(getChatVar(triggerId, "ej_user_count"))
+    local ej_target_ratio = string.format("%.2f", getChatVar(triggerId, "ej_target_ratio"))
+    ej_target_ratio = math.floor(ej_target_ratio*0.95) --매턴 절정치 자연감소시키면서 숫자로 형변환
+    local ej_user_ratio = string.format("%.2f", getChatVar(triggerId, "ej_user_ratio"))
+    ej_user_ratio = math.floor(ej_user_ratio*0.95) --매턴 절정치 자연감소시키면서 숫자로 형변환
+    local ej_target_max = orgasmMax_default*(orgasm_multiplier^ej_target_count)
+    local ej_target = math.floor(ej_target_ratio * ej_target_max)
+    local ej_user_max = orgasmMax_default*(orgasm_multiplier^ej_user_count)
+    local ej_user = math.floor(ej_user_ratio * ej_user_max)
 
     local ejPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"} --절정치를 증가시키는 stat
     for k, v in ipairs(ejPlus) do
@@ -253,14 +270,15 @@ function(triggerId, dc, HP, SP, exps, command)
     end
 
     --절정치가 최대 최소값을 넘지 않도록 후처리
-    local orgasmMultiplier = 1.2
-    local orgasmDefault = 10000
-    local ej_target_max = orgasmDefault*(orgasmMultiplier^tonumber(getChatVar(triggerId, "ejCount_t"))) --대상의 최대 절정치
-    local ej_user_max = orgasmDefault*(orgasmMultiplier^tonumber(getChatVar(triggerId, "ejCount_u"))) --유저의 최대 절정치
     ej_target = math.min(ej_target_max, math.max(0, math.floor(ej_target)))
-    setChatVar(triggerId, "ej_target", ej_target)
-    debug(target["이름"].."절정치: " .. ej_target)
+    ej_target_ratio = ej_target/ej_target_max*100
+    setChatVar(triggerId, "ej_target_ratio", ej_target_ratio)
+    debug(target["이름"].."절정치: " .. ej_target, ej_target_ratio)
 
+    --[[유저 절정처리 미구현
+
+    ]]
+    
     --절정여부 체크
     local ejMsg = "아무도 절정하지 않음."
     local orgasm_t, orgasm_u, orgasmCount = false, false, 0
@@ -270,21 +288,8 @@ function(triggerId, dc, HP, SP, exps, command)
         orgasmCount = getChatVar(triggerId, "ejCount_t")
         setChatVar(triggerId, "ejCount_t", orgasmCount)
     end
-    --[[유저 절정처리 미구현
-        if ej_user > ej_user_max then
-            ejMsg = ejMsg.."{{user}} 절정."
-            orgasm_u = true
-            orgasmCount = getChatVar(triggerId, "ejCount_u")
-            setChatVar(triggerId, "ejCount_u", orgasmCount)
-        end
-    ]]
 
-    --경험 추가
-    if #exps > 0 then
-        for _, k in ipairs(exps) do
-            target[k] = target[k] + 1
-        end
-    end
+
 
     --절정경험 추가
     if orgasm_t then
@@ -327,6 +332,9 @@ function(triggerId, dc, HP, SP, exps, command)
         end
     end
 
+    local process_comment = "[조교 로그 생성중]"
+    setChatVar(triggerId, "cmds", loading_prepend .. process_comment .. loading_append)
+    reloadDisplay(triggerId)
     --[[trainLog 프롬프트 빌딩]]
     --날짜계산
     local day = getChatVar(triggerId, "day")
