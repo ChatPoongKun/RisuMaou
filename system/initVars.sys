@@ -11,7 +11,8 @@ function (triggerId)
         showLog = 0, --과거 조교기록 보기. 기본값 OFF
         debug = DEBUG,
         king = '{"성별":"남성","페니스":"대물","음모":"무성함", "외형":"중년","헤어스타일":"날렵하게 세워올린 짧은 은발"}',
-        models = '{"trainResponse":"0","trainLog":"1"}' --0:보조모델, 1:메인모델
+        models = '{"trainResponse":"0","trainLog":"1"}',
+        category = 'user'--0:보조모델, 1:메인모델
     }
 
     for key, value in pairs(initVars) do
