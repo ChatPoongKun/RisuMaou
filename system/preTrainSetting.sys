@@ -25,11 +25,11 @@ function (triggerId, name)
         setChatVar(triggerId, "oldLog", date)
         setChatVar(triggerId, "newLog", "["..target["이름"].."의 "..target["조교회수"].."번째 조교]<br>")
         setChatVar(triggerId, "statLvUp", " ")
-        setChatVar(triggerId, "ej_target", 0) --조교대상 절정치
-        setChatVar(triggerId, "ej_user", 0) --유저 절정치
+        setChatVar(triggerId, "ej_target_ratio", 0) --조교대상 절정치
+        setChatVar(triggerId, "ej_user_ratio", 0) --유저 절정치
         setChatVar(triggerId, "요의", 0) --조교대상 요의
-        setChatVar(triggerId, "ejCount_t", 0) --조교대상 절정 회수 초기화
-        setChatVar(triggerId, "ejCount_u", 0) --유저 절정 회수 초기화
+        setChatVar(triggerId, "ej_target_count", 0) --조교대상 절정 회수 초기화
+        setChatVar(triggerId, "ej_user_count", 0) --유저 절정 회수 초기화
         setChatVar(triggerId, "charList", "") --조교대상 리스트 초기화
         setChatVar(triggerId, "statFold", "0") --stat 세부 내역이 보이도록 초기화
         setChatVar(triggerId, "screenEffect", "") --전역화면효과 초기화
