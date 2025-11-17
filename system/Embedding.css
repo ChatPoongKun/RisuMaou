@@ -470,7 +470,7 @@ display: none;
 
 .tabs {
 padding: 0.3rem 0.75rem;
-background-color: #444;
+background-color: #333;
 border: 1px solid #666;
 color: #e0e0e0;
 cursor: pointer;
@@ -481,14 +481,15 @@ bottom: -0.6rem;
 }
 
 .tabs:hover {
-background-color: #333;
-border-color: #333;
+background-color: #454545;
+border-color: #555;
 }
 
 .tab-content {
 background-color: #303030;
 padding: 1.5rem;
 border: 1px solid #555;
+border-top: none;
 border-bottom-left-radius: 0.5rem;
 border-bottom-right-radius: 0.5rem;
 min-height: 16rem;
@@ -499,7 +500,7 @@ grid-column: 1 / -1;
 }
 
 #{{getvar::category}}:checked + label[for="{{getvar::category}}"]{
-background-color: #303030;
+background-color: #666;
 border-color: #555;
 color: #fff;
 }

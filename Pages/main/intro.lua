@@ -138,15 +138,15 @@ end!!
     end
 
     userPenis = tonumber(userPenis)
-    if userPenis < 5 then
+    if userPenis <= 5 then
         user["페니스"] = "실좆"
-    elseif userPenis < 10 then
+    elseif userPenis <= 10 then
         user["페니스"] = "작음"
-    elseif userPenis < 15 then
+    elseif userPenis <= 15 then
         user["페니스"] = "평범"
-    elseif userPenis < 20 then
+    elseif userPenis <= 25 then
         user["페니스"] = "대물"
-    elseif  userPenis >= 20 then
+    elseif  userPenis > 25 then
         user["페니스"] = "말자지"
     end
     user = json.encode(user)
@@ -265,15 +265,15 @@ end!!
     end
 
     kingPenis = tonumber(kingPenis)
-    if kingPenis < 5 then
+    if kingPenis <= 5 then
         king["페니스"] = "실좆"
-    elseif kingPenis < 10 then
+    elseif kingPenis <= 10 then
         king["페니스"] = "작음"
-    elseif kingPenis < 15 then
+    elseif kingPenis <= 15 then
         king["페니스"] = "평범"
-    elseif kingPenis < 20 then
+    elseif kingPenis <= 25 then
         king["페니스"] = "대물"
-    elseif  kingPenis >= 20 then
+    elseif  kingPenis > 25 then
         king["페니스"] = "말자지"
     end
     king = json.encode(king)
