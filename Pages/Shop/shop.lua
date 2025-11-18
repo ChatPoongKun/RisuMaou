@@ -68,85 +68,112 @@ end!!
 [shop/심장석/hidden] function(triggerId)
     local itemName = "심장석"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/꿀단지웜/hidden] function(triggerId)
+end!!
+[shop/꿀단지웜/hidden] function(triggerId)
     local itemName = "꿀단지웜"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/애널웜/hidden] function(triggerId)
+end!!
+[shop/애널웜/hidden] function(triggerId)
     local itemName = "애널웜"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/애널플러그/hidden] function(triggerId)
+end!!
+[shop/애널플러그/hidden] function(triggerId)
     local itemName = "애널플러그"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/애널비즈/hidden] function(triggerId)
+end!!
+[shop/애널비즈/hidden] function(triggerId)
     local itemName = "애널비즈"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/눈가리개/hidden] function(triggerId)
+end!!
+[shop/눈가리개/hidden] function(triggerId)
     local itemName = "눈가리개"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/볼개그/hidden] function(triggerId)
+end!!
+[shop/볼개그/hidden] function(triggerId)
     local itemName = "볼개그"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/O링개그/hidden] function(triggerId)
+end!!
+[shop/O링개그/hidden] function(triggerId)
     local itemName = "O링개그"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/점액달팽이/hidden] function(triggerId)
+end!!
+[shop/점액달팽이/hidden] function(triggerId)
     local itemName = "점액달팽이"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/우유달팽이/hidden] function(triggerId)
+end!!
+[shop/우유달팽이/hidden] function(triggerId)
     local itemName = "우유달팽이"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/채찍/hidden] function(triggerId)
+end!!
+[shop/채찍/hidden] function(triggerId)
     local itemName = "채찍"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/로프/hidden] function(triggerId)
+end!!
+[shop/로프/hidden] function(triggerId)
     local itemName = "로프"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/관장기/hidden] function(triggerId)
+end!!
+[shop/관장기/hidden] function(triggerId)
     local itemName = "관장기"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/착유기/hidden] function(triggerId)
+end!!
+[shop/착유기/hidden] function(triggerId)
     local itemName = "착유기"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/개목걸이/hidden] function(triggerId)
+end!!
+[shop/개목걸이/hidden] function(triggerId)
     local itemName = "개목걸이"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/조합지식/hidden] function(triggerId)
+end!!
+[shop/조합지식/hidden] function(triggerId)
     local itemName = "조합지식"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/음마지식/hidden] function(triggerId)
+end!!
+[shop/음마지식/hidden] function(triggerId)
     local itemName = "음마지식"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/금단의지식/hidden] function(triggerId)
+end!!
+[shop/금단의지식/hidden] function(triggerId)
     local itemName = "금단의지식"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/콘돔/hidden] function(triggerId)
+end!!
+[shop/콘돔/hidden] function(triggerId)
     local itemName = "콘돔"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/로션/hidden] function(triggerId)
+end!!
+[shop/로션/hidden] function(triggerId)
     local itemName = "로션"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/이뇨제/hidden] function(triggerId)
+end!!
+[shop/이뇨제/hidden] function(triggerId)
     local itemName = "이뇨제"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/미약/hidden] function(triggerId)
+end!!
+[shop/미약/hidden] function(triggerId)
     local itemName = "미약"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/수정구/hidden] function(triggerId)
+end!!
+[shop/수정구/hidden] function(triggerId)
     local itemName = "수정구"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/구충제/hidden] function(triggerId)
+end!!
+[shop/구충제/hidden] function(triggerId)
     local itemName = "구충제"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/영양제/hidden] function(triggerId)
+end!!
+[shop/영양제/hidden] function(triggerId)
     local itemName = "영양제"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/향/hidden] function(triggerId)
+end!!
+[shop/향/hidden] function(triggerId)
     local itemName = "향"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/강모제/hidden] function(triggerId)
+end!!
+[shop/강모제/hidden] function(triggerId)
     local itemName = "강모제"
     sysFunction(triggerId, "itemSelect.sys", itemName)
-end!![shop/배란유발제/hidden] function(triggerId)
+end!!
+[shop/배란유발제/hidden] function(triggerId)
     local itemName = "배란유발제"
     sysFunction(triggerId, "itemSelect.sys", itemName)
 end!!
