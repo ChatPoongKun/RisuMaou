@@ -38,13 +38,6 @@ function(triggerId, dc, HP, SP, exps, command)
     setChatVar(triggerId, "cmds", loading_prepend .. process_comment .. loading_append)
     reloadDisplay(triggerId)
 
-    --경험 추가
-    if #exps > 0 then
-        for _, k in ipairs(exps) do
-            target[k] = target[k] + 1
-        end
-    end
-
     --[[성공굴림]]
     --보너스 요소: 유저 레벨당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
     --패널티 요소: 대상의 2^반발각인, 부정적 stat당 1
@@ -72,6 +65,13 @@ function(triggerId, dc, HP, SP, exps, command)
         debug(roll..">="..dc, rollMsg)
     else
         debug(roll..">="..dc, "성공")
+    end
+
+    --성공한 경우에만 경험 추가
+    if roll + rollBonus > dc and #exps > 0 then
+        for _, k in ipairs(exps) do
+            target[k] = target[k] + 1
+        end
     end
 
     --[[HP,SP 소모 계산]]
