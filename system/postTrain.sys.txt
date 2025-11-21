@@ -121,7 +121,6 @@ print("합계부정: "..traceSum["부정"])
 
     --정보 초기화
     setChatVar(triggerId, "selectedAbl", "none")
-    setChatVar(triggerId, "screenEffect", "")
     --조교후 화면으로 이동
     setState(triggerId, "screen", "postTrain")
 end
