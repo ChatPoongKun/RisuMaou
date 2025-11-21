@@ -44,9 +44,9 @@ function (triggerId)
     local deductSum = 0 --실제 차감한 부정 구슬의 합계
     if deduct > 0 then
 
-print("init"..json.encode(traceCurrent))
-print("add"..json.encode(traceAdd))
-print("sum"..json.encode(traceSum))
+    debug("init"..json.encode(traceCurrent))
+    debug("add"..json.encode(traceAdd))
+    debug("sum"..json.encode(traceSum))
         --traceSort에 부정을 제외한 0이상의 흔적 입력
         for k, v in pairs(traceSum) do
             if k ~= "부정" then
@@ -69,14 +69,15 @@ print("sum"..json.encode(traceSum))
                 deductSum = deductSum + sub
                 deductLevel = v
             else --안남으면 for문 중단
-                deductLevel = deductLevel + math.floor(deduct/len)
-                deductSum = deductSum + deductLevel*len
+                local delta = math.floor(deduct/len)
+                deductLevel = deductLevel + delta
+                deductSum = deductSum + delta*len
                 break
             end
         end
-print("최초부정: "..traceCurrent["부정"])
-print("증가부정: "..(traceAdd["부정"] or 0))
-print("합계부정: "..traceSum["부정"])
+    debug("최초부정: "..traceCurrent["부정"])
+    debug("증가부정: "..(traceAdd["부정"] or 0))
+    debug("합계부정: "..traceSum["부정"])
     end
 
     --실제 흔적에 획득/차감 반영
