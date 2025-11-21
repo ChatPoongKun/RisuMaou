@@ -12,6 +12,40 @@ height: 0.3rem !important;
     color:#fff
 }
 
+.controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #333;
+    border: 1px solid #555;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.sort-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.sort-btn {
+    background-color: #5a5a5a;
+    border: 1px solid #777;
+    color: #d0d0d0;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border-radius: 3px;
+}
+
+.sort-btn.active {
+    background-color: #60d9f7;
+    color: #000;
+    border-color: #fff;
+    font-weight: bold;
+}
+
 </style>
 
 <div class="container">
@@ -20,20 +54,15 @@ height: 0.3rem !important;
 <p class="char-subtitle">총 인원: {{? 1+{{array_length::chars}}}} 명 (소지 포인트: {{getvar::gold}} pts.)</p>
 </header>
 
-<!-- 정렬 기능은 추후 구현
 <div class="controls-bar">
 <div class="sort-buttons">
-<button class="sort-btn">번호순</button>
-<button class="sort-btn">소지금순</button>
-<button class="sort-btn">부채순</button>
-</div>
-<div class="pagination">
-<span>PAGE: 1 / 4</span>
-<a href="#">[이전]</a>
-<a href="#">[다음]</a>
+<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::index}}}}active{{/if}}" risu-btn="sort_index">번호순</div>
+<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::name}}}}active{{/if}}" risu-btn="sort_name">이름순</div>
+<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::level}}}}active{{/if}}" risu-btn="sort_level">레벨순</div>
+<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::hp}}}}active{{/if}}" risu-btn="sort_hp">위급순</div>
 </div>
 </div>
--->
+
 <main class="character-list">
 
 {{getvar::charList}}
