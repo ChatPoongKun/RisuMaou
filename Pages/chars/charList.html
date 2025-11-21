@@ -39,7 +39,7 @@ height: 0.3rem !important;
     border-radius: 3px;
 }
 
-.sort-btn.active {
+.sort-btn.x-risu-active {
     background-color: #60d9f7;
     color: #000;
     border-color: #fff;
@@ -59,11 +59,11 @@ height: 0.3rem !important;
 <div class="sort-btn {{#if {{equal::{{getvar::charSort}}::index}}}}active{{/if}}" risu-btn="sort_index">번호순</div>
 <div class="sort-btn {{#if {{equal::{{getvar::charSort}}::name}}}}active{{/if}}" risu-btn="sort_name">이름순</div>
 <div class="sort-btn {{#if {{equal::{{getvar::charSort}}::level}}}}active{{/if}}" risu-btn="sort_level">레벨순</div>
-<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::hp}}}}active{{/if}}" risu-btn="sort_hp">위급순</div>
+<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::hp}}}}active{{/if}}" risu-btn="sort_hp">HP순</div>
 </div>
 </div>
 
-<main class="character-list">
+<main class="info-grid" style="grid-template-columns: 1fr;">
 
 {{getvar::charList}}
 
