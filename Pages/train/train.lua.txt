@@ -1,3 +1,4 @@
+
 [train/1/애무 | {{#when::애무계::vis::1}}ON{{:else}}OFF{{/when}}] function(triggerId)
     local cat = "애무계"
     local s, tgl = pcall(getChatVar, triggerId, cat)
@@ -143,7 +144,6 @@ end!!
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.3
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
     dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
-    dcBonus = dcBonus - target["순응"] * 0.5
 
     local exps = {"자위경험", "C경험"}
     if tonumber(target["성교경험"]) > 0  and tonumber(target["V감각"]) > 4 then
@@ -183,12 +183,9 @@ end!!
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.2
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
-    dcBonus = dcBonus - target["순응"] * 0.5
-    dcBonus = dcBonus - target["봉사기술"] * 0.2
-    dcBonus = dcBonus - target["M민감도"] * 0.5
 
     local exps = {"애정경험"}
-    if tonumber(target["인후성감"]) == 1 then
+    if hasVal(target["신체특성"], "인후성감") then
         table.insert(exps, "M경험")
     end
 
@@ -208,11 +205,8 @@ end!!
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.2
     dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
-    dcBonus = dcBonus - target["순응"] * 0.5
-    dcBonus = dcBonus - target["노출벽"] * 0.5
-    dcBonus = dcBonus - target["마조끼"] * 0.2
 
-    local exps = {"자위경험"}
+    local exps = {"자위경험", "방뇨경험"}
 
     --LLM에 전달할 조교 커맨드
     local command =  "<br>{{user}}는 "..target['이름'] .."가 스스로 보지를 벌려보이도록 명령한다."
@@ -230,9 +224,7 @@ end!!
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
     dcBonus = dcBonus - (getState(triggerId, "stat")["V윤활"] - 5) * 1.0
-    dcBonus = dcBonus - (target["V확장"] - 2) * 1.0
-    dcBonus = dcBonus - target["V민감도"] * 0.4
-    dcBonus = dcBonus - target["성욕"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.3
 
     local exps = {"V경험"}
 
@@ -252,9 +244,7 @@ end!!
     dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.2
     dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.1
     dcBonus = dcBonus - getState(triggerId, "stat")["공포"] * 0.1
-    dcBonus = dcBonus - target["A민감도"] * 0.3
-    dcBonus = dcBonus - target["성욕"] * 0.2
-    dcBonus = dcBonus - target["순응"] * 0.1
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.2
 
     local exps = {"A경험"}
 
@@ -266,175 +256,648 @@ end!!
 [train/hr/{{#when::도구계::vis::1}}🔻도구계{{/when}}]function end!!
 
 [train/21/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::심장석}}==1}}}}심장석 애무{{/when}}{{/when}}] function(triggerId)
-    local train = "심장석 애무"
+    local target = getState(triggerId, "target")
+    local dc = 10
+    local costHP = 10
+    local costSP = 10
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.3
+
+    local exps = {"C경험", "B경험"}
+
+    local command = "<br>{{user}}는 심장석을 사용해 "..target['이름'] .."의 성감대를 자극한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/22/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::꿀단지웜}}==1}}}}꿀단지웜{{/when}}{{/when}}] function(triggerId)
-    local train = "꿀단지웜"
+    local target = getState(triggerId, "target")
+    local dc = 30
+    local costHP = 20
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
+
+    local exps = {"V경험", "촉수경험", "수간경험"}
+
+    local command = "<br>{{user}}는 꿀단지웜을 "..target['이름'] .."의 질 내에 풀어넣는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/23/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널웜}}==1}}}}애널웜{{/when}}{{/when}}] function(triggerId)
-    local train = "애널웜"
+    local target = getState(triggerId, "target")
+    local dc = 40
+    local costHP = 20
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.2
+
+    local exps = {"A경험", "촉수경험", "수간경험"}
+
+    local command = "<br>{{user}}는 애널웜을 "..target['이름'] .."의 항문 내에 풀어넣는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/24/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널플러그}}==1}}}}애널플러그{{/when}}{{/when}}] function(triggerId)
-    local train = "애널플러그"
+    local target = getState(triggerId, "target")
+    local dc = 25
+    local costHP = 15
+    local costSP = 10
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - (getState(triggerId, "stat")["A윤활"] - 5) * 1.0
+
+    local exps = {"A경험", "A확장경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 애널에 플러그를 꽂아넣는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/25/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널비즈}}==1}}}}애널비즈{{/when}}{{/when}}] function(triggerId)
-    local train = "애널비즈"
+    local target = getState(triggerId, "target")
+    local dc = 35
+    local costHP = 20
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - (getState(triggerId, "stat")["A윤활"] - 5) * 1.0
+
+    local exps = {"A경험", "A확장경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 애널에 비즈를 넣고 천천히 잡아당긴다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/26/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::눈가리개}}==1}}}}눈가리개{{/when}}{{/when}}] function(triggerId)
-    local train = "눈가리개"
+    local target = getState(triggerId, "target")
+    local dc = 10
+    local costHP = 5
+    local costSP = 5
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["불안"] * 0.2
+
+    local exps = {"긴박경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 눈을 가리개로 가려 시야를 차단한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/27/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::볼개그}}==1}}}}볼개그{{/when}}{{/when}}] function(triggerId)
-    local train = "볼개그"
+    local target = getState(triggerId, "target")
+    local dc = 15
+    local costHP = 10
+    local costSP = 10
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 0.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.3
+
+    local exps = {"긴박경험", "M경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 입에 볼개그를 물린다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/28/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::O링개그}}==1}}}}O링개그{{/when}}{{/when}}] function(triggerId)
-    local train = "O링개그"
+    local target = getState(triggerId, "target")
+    local dc = 20
+    local costHP = 15
+    local costSP = 15
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 0.8
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
+
+    local exps = {"긴박경험", "M경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 입을 O링 개그로 고정시켜 벌려둔다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/29/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::점액달팽이}}==1}}}}클리캡{{/when}}{{/when}}] function(triggerId)
-    local train = "클리캡"
+    local target = getState(triggerId, "target")
+    local dc = 20
+    local costHP = 15
+    local costSP = 10
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.3
+
+    local exps = {"C경험", "촉수경험"}
+
+    local command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 클리토리스에 붙인다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/210/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::유두달팽이}}==1}}}}유두캡{{/when}}{{/when}}] function(triggerId)
-    local train = "유두캡"
+    local target = getState(triggerId, "target")
+    local dc = 20
+    local costHP = 15
+    local costSP = 10
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.3
+
+    local exps = {"B경험", "촉수경험"}
+
+    local command = "<br>{{user}}는 우유달팽이를 "..target['이름'] .."의 유두에 붙여 캡처럼 씌운다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/211/{{#when::{{getVar::도구계}}::is::1}}{{#when::{{? {{dict_element::{{getvar::inventory}}::착유기}}==1}}}}착유기{{/when}}{{/when}}] function(triggerId)
-    local train = "착유기"
-end!!
+    local target = getState(triggerId, "target")
+    local dc = 25
+    local costHP = 20
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 0.8
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
 
---오나홀 항목을 추가하고 활성화 조건에 자지가 있다는 조건 추가할 것
---관장기, 로프, 채찍은 하드계로
+    local exps = {"B경험", "분유경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 가슴에 착유기를 장착해 착유를 시도한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
+end!!
 
 [train/hr/{{#when::V계::vis::1}}🔻삽입계{{/when}}]function end!!
 
 [train/31/{{#when::{{getVar::V계}}::is::1}}정상위{{/when}}] function(triggerId)
-    local train = "정상위"
+    local target = getState(triggerId, "target")
+    local dc = 20
+    local costHP = 20
+    local costSP = 30
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.5
+    dcBonus = dcBonus - (getState(triggerId, "stat")["V윤활"] - 5) * 1.0
+
+    local exps = {"V경험", "성교경험", "질내사정"} -- 질내사정은 결과에 따라 LLM이 판단하겠지만 경험목록엔 추가
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 다리 사이를 파고들어 정상위로 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/32/{{#when::{{getVar::V계}}::is::1}}후배위{{/when}}] function(triggerId)
-    local train = "후배위"
+    local target = getState(triggerId, "target")
+    local dc = 25
+    local costHP = 20
+    local costSP = 30
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
+    dcBonus = dcBonus - (getState(triggerId, "stat")["V윤활"] - 5) * 1.0
+
+    local exps = {"V경험", "성교경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."을 엎드리게 한 뒤 뒤에서 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/33/{{#when::{{getVar::V계}}::is::1}}대면좌위{{/when}}] function(triggerId)
-    local train = "대면좌위"
+    local target = getState(triggerId, "target")
+    local dc = 25
+    local costHP = 15
+    local costSP = 25
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.5
+
+    local exps = {"V경험", "성교경험", "애정경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."을 마주보고 안아올려 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/34/{{#when::{{getVar::V계}}::is::1}}배면좌위{{/when}}] function(triggerId)
-    local train = "배면좌위"
+    local target = getState(triggerId, "target")
+    local dc = 30
+    local costHP = 15
+    local costSP = 25
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
+
+    local exps = {"V경험", "성교경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."을 뒤에서 안아올려 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/35/{{#when::{{getVar::V계}}::is::1}}기승위{{/when}}] function(triggerId)
-    local train = "기승위"
+    local target = getState(triggerId, "target")
+    local dc = 35
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.8
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.8
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.5
+
+    local exps = {"V경험", "성교경험", "봉사경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 스스로 허리를 흔들라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/hr/{{#when::A계::vis::1}}🔻애널계{{/when}}]function end!!
 
 [train/41/{{#when::{{getVar::A계}}::is::1}}정상위애널{{/when}}] function(triggerId)
-    local train = "정상위애널"
+    local target = getState(triggerId, "target")
+    local dc = 30
+    local costHP = 25
+    local costSP = 35
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.2
+    dcBonus = dcBonus - (getState(triggerId, "stat")["A윤활"] - 5) * 1.0
+
+    local exps = {"A경험", "애널성교경험", "성교경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 다리를 잡아벌려 애널에 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/42/{{#when::{{getVar::A계}}::is::1}}후배위애널{{/when}}] function(triggerId)
-    local train = "후배위애널"
+    local target = getState(triggerId, "target")
+    local dc = 35
+    local costHP = 25
+    local costSP = 35
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.8
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.8
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
+    dcBonus = dcBonus - (getState(triggerId, "stat")["A윤활"] - 5) * 1.0
+
+    local exps = {"A경험", "애널성교경험", "성교경험"}
+
+    local command = "<br>{{user}}는 엎드린 "..target['이름'] .."의 엉덩이를 들어올려 애널에 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/43/{{#when::{{getVar::A계}}::is::1}}대면좌위애널{{/when}}] function(triggerId)
-    local train = "대면좌위애널"
+    local target = getState(triggerId, "target")
+    local dc = 35
+    local costHP = 20
+    local costSP = 30
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.3
+
+    local exps = {"A경험", "애널성교경험", "성교경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."을 마주보고 안아 애널에 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/44/{{#when::{{getVar::A계}}::is::1}}배면좌위애널{{/when}}] function(triggerId)
-    local train = "배면좌위애널"
+    local target = getState(triggerId, "target")
+    local dc = 40
+    local costHP = 20
+    local costSP = 30
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.8
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.8
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
+
+    local exps = {"A경험", "애널성교경험", "성교경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."을 뒤에서 안아올려 애널에 삽입한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/45/{{#when::{{getVar::A계}}::is::1}}기승위애널{{/when}}] function(triggerId)
-    local train = "기승위애널"
+    local target = getState(triggerId, "target")
+    local dc = 45
+    local costHP = 15
+    local costSP = 25
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.5
+
+    local exps = {"A경험", "애널성교경험", "성교경험", "봉사경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 스스로 애널로 조여보라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/hr/{{#when::봉사계::vis::1}}🔻봉사계{{/when}}]function end!!
 
 [train/51/{{#when::{{getVar::봉사계}}::is::1}}수음{{/when}}] function(triggerId)
-    local train = "수음"
+    local target = getState(triggerId, "target")
+    local dc = 15
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
+
+    local exps = {"봉사경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 손으로 봉사하라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/52/{{#when::{{getVar::봉사계}}::is::1}}펠라치오{{/when}}] function(triggerId)
-    local train = "펠라치오"
+    local target = getState(triggerId, "target")
+    local dc = 25
+    local costHP = 15
+    local costSP = 25
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.4
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.4
+
+    local exps = {"봉사경험", "펠라경험", "M경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 펠라치오를 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/53/{{#when::{{getVar::봉사계}}::is::1}}파이즈리{{/when}}] function(triggerId)
-    local train = "파이즈리"
+    local target = getState(triggerId, "target")
+    local dc = 25
+    local costHP = 15
+    local costSP = 25
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.4
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.3
+    dcBonus = dcBonus - getState(triggerId, "stat")["B쾌락"] * 0.2
+
+    local exps = {"봉사경험", "B경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 가슴을 사용해 봉사하라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/54/{{#when::{{getVar::봉사계}}::is::1}}가랑이 비비기{{/when}}] function(triggerId)
-    --본인과 상대 모두 보지가 있을것을 조건에 추가할 것
-    local train = "가랑이비비기"
+    local target = getState(triggerId, "target")
+    local dc = 20
+    local costHP = 15
+    local costSP = 25
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.5
+
+    local exps = {"봉사경험", "C경험", "V경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 가랑이를 비벼 봉사하라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/55/{{#when::{{getVar::봉사계}}::is::1}}풋잡{{/when}}] function(triggerId)
-    local train = "풋잡"
+    local target = getState(triggerId, "target")
+    local dc = 30
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.5
+
+    local exps = {"봉사경험", "가학경험"} 
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 발을 사용해 봉사하라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/56/{{#when::{{getVar::봉사계}}::is::1}}식스나인{{/when}}] function(triggerId)
-    local train = "식스나인"
+    local target = getState(triggerId, "target")
+    local dc = 35
+    local costHP = 20
+    local costSP = 30
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.8
+    dcBonus = dcBonus - getState(triggerId, "stat")["욕정"] * 0.6
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.4
+
+    local exps = {"봉사경험", "펠라경험", "M경험", "C경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."과 서로의 성기를 애무하는 69자세를 취한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/57/{{#when::{{getVar::봉사계}}::is::1}}오일 마사지{{/when}}] function(triggerId)
-    local train = "오일 마사지"
+    local target = getState(triggerId, "target")
+    local dc = 15
+    local costHP = 20
+    local costSP = 15
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 0.8
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.5
+
+    local exps = {"봉사경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 전신을 사용한 오일 마사지를 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/58/{{#when::{{getVar::봉사계}}::is::1}}리밍{{/when}}] function(triggerId)
-    local train = "리밍"
+    local target = getState(triggerId, "target")
+    local dc = 40
+    local costHP = 15
+    local costSP = 35
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.8
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.2
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.5
+
+    local exps = {"봉사경험", "M경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 항문을 핥으라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/hr/{{#when::하드계::vis::1}}🔱하드계{{/when}}]function end!!
 
 [train/91/{{#when::{{getVar::하드계}}::is::1}}스팽킹{{/when}}] function(triggerId)
-    local train = "스팽킹"
+    local target = getState(triggerId, "target")
+    local dc = 20
+    local costHP = 20
+    local costSP = 15
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["고통"] * 0.5 --마조끼가 높으면 고통이 오히려 긍정요소지만 여기선 저항감소로 퉁침
+
+    local exps = {"피학경험", "고통"}
+
+    local command = "<br>{{user}}는 손바닥으로 "..target['이름'] .."의 엉덩이를 세게 내려친다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/92/{{#when::{{getVar::하드계}}::is::1}}채찍{{/when}}] function(triggerId)
-    local train = "채찍"
+    local target = getState(triggerId, "target")
+    local dc = 30
+    local costHP = 30
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.5
+
+    local exps = {"피학경험", "고통"}
+
+    local command = "<br>{{user}}는 채찍을 들어 "..target['이름'] .."의 몸을 내리친다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/93/{{#when::{{getVar::하드계}}::is::1}}유두 바늘{{/when}}] function(triggerId)
-    local train = "유두 바늘"
+    local target = getState(triggerId, "target")
+    local dc = 50
+    local costHP = 25
+    local costSP = 30
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.8
+
+    local exps = {"피학경험", "B경험", "고통"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 유두에 바늘을 꽂는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/94/{{#when::{{getVar::하드계}}::is::1}}귀갑묶기{{/when}}] function(triggerId)
-    local train = "밧줄"
+    local target = getState(triggerId, "target")
+    local dc = 20
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["온순"] * 0.3
+
+    local exps = {"긴박경험", "수치", "B경험"}
+
+    local command = "<br>{{user}}는 밧줄로 "..target['이름'] .."을 귀갑묶기로 결박한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/95/{{#when::{{getVar::하드계}}::is::1}}관장+플러그{{/when}}] function(triggerId)
-    local train = "관장+플러그"
+    local target = getState(triggerId, "target")
+    local dc = 40
+    local costHP = 30
+    local costSP = 40
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 0.5
+
+    local exps = {"A경험", "A확장경험", "불쾌", "고통"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 관장액을 주입하고 플러그로 막아버린다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/96/{{#when::{{getVar::하드계}}::is::1}}방뇨{{/when}}] function(triggerId)
-    local train = "방뇨"
+    local target = getState(triggerId, "target")
+    local dc = 40
+    local costHP = 15
+    local costSP = 40
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["수치"] * 1.0
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.5
+
+    local exps = {"방뇨경험", "노출벽", "요도경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 그 자리에서 오줌을 싸라고 명령한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/97/{{#when::{{getVar::하드계}}::is::1}}음뇨{{/when}}] function(triggerId)
-    local train = "음뇨"
+    local target = getState(triggerId, "target")
+    local dc = 50
+    local costHP = 20
+    local costSP = 40
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.5
+    dcBonus = dcBonus - getState(triggerId, "stat")["굴복"] * 0.5
+
+    local exps = {"불쾌", "마조끼"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 배설된 오줌을 마시게 한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/98/{{#when::{{getVar::하드계}}::is::1}}수간플레이{{/when}}] function(triggerId)
-    local train = "수간플레이"
+    local target = getState(triggerId, "target")
+    local dc = 60
+    local costHP = 40
+    local costSP = 50
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 1.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["불쾌"] * 1.0
+
+    local exps = {"수간경험", "V경험", "공포"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."을 짐승과 교미하게 한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/99/{{#when::{{getVar::하드계}}::is::1}}피스트퍽{{/when}}] function(triggerId)
-    local train = "피스트퍽"
+    local target = getState(triggerId, "target")
+    local dc = 70
+    local costHP = 50
+    local costSP = 50
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.0
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 1.0
+    dcBonus = dcBonus - (getState(triggerId, "stat")["V윤활"] - 5) * 1.0
+
+    local exps = {"V경험", "V확장경험", "고통", "피학경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 질 안으로 주먹을 밀어넣는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/910/{{#when::{{getVar::하드계}}::is::1}}애널피스트{{/when}}] function(triggerId)
-    local train = "애널피스트"
+    local target = getState(triggerId, "target")
+    local dc = 80
+    local costHP = 50
+    local costSP = 50
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 1.2
+    dcBonus = dcBonus - (getState(triggerId, "stat")["A윤활"] - 5) * 1.0
+
+    local exps = {"A경험", "A확장경험", "고통", "피학경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 애널 안으로 주먹을 밀어넣는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/911/{{#when::{{getVar::하드계}}::is::1}}양구멍피스트{{/when}}] function(triggerId)
-    local train = "양구멍피스트"
+    local target = getState(triggerId, "target")
+    local dc = 100
+    local costHP = 70
+    local costSP = 70
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 2.5
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 1.5
+    dcBonus = dcBonus - (getState(triggerId, "stat")["V윤활"] - 5) * 0.5
+    dcBonus = dcBonus - (getState(triggerId, "stat")["A윤활"] - 5) * 0.5
+
+    local exps = {"V경험", "A경험", "V확장경험", "A확장경험", "고통", "피학경험"}
+
+    local command = "<br>{{user}}는 "..target['이름'] .."의 질과 애널 양쪽에 주먹을 쑤셔넣는다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
 [train/hr/ ]function end!!
@@ -465,12 +928,10 @@ end!!
 
 [train/open/hidden] function(triggerId)
     setChatVar(triggerId, "statFold", "0")
-    setChatVar(triggerId, "screenEffect", "")
 end!!
 
 [train/close/hidden] function(triggerId)
     setChatVar(triggerId, "statFold", "1")
-    setChatVar(triggerId, "screenEffect", "")
 end!!
 
 [train/199/조교종료] function(triggerId)
