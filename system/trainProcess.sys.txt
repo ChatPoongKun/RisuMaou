@@ -3,8 +3,8 @@ function(triggerId, dc, HP, SP, exps, command)
     debug("trainProcess 실행")
     --[[초기화]]
     math.randomseed(os.time())
-    local screenEffect = ""
-    setChatVar(triggerId, "screenEffect", screenEffect) --실패/대성공 표기를 위한 screenEffect 초기화
+    local screenEffect = "" --screenEffect 초기화
+    
     
     --[[DB호출]]
     local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))

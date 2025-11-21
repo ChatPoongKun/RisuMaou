@@ -13,5 +13,4 @@ function (triggerId, itemName)
     setChatVar(triggerId, "itemPrice", int(item[1]))
     setChatVar(triggerId, "itemTotalPrice", int(item[1]))
     setChatVar(triggerId, "itemDetail", item[2])
-    setChatVar(triggerId, "screenEffect", "")
 end

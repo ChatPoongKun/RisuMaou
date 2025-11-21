@@ -302,6 +302,7 @@ onStart = async(function(triggerId)
 end)
 
 onButtonClick = async(function(triggerId, data)
+    setChatVar(triggerId, "screenEffect", "") --버튼 누를때마다 screenEffect 초기화
     if data == "gameStart" then
         initialize(triggerId)
         print("게임 시작")
