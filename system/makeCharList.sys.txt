@@ -9,8 +9,8 @@ function (triggerId)
     local charDataList = {}
     for i, name in ipairs(chars) do
         -- preTrain 화면에서는 user 제외
-        if not (screen == "preTrain" and name == "user") then
-            local char = json.decode(getLoreBookContent(triggerId, name))
+        local char = json.decode(getLoreBookContent(triggerId, name))
+        if not (screen == "preTrain" and char["condition"] ~= "조교가능") then
             -- 정렬 및 표시에 필요한 데이터 미리 추출
             local data = {
                 index = i,
@@ -37,7 +37,7 @@ function (triggerId)
     elseif sortMode == "name" then
         table.sort(charDataList, function(a, b) return a.name < b.name end) -- 이름 오름차순
     elseif sortMode == "hp" then
-        table.sort(charDataList, function(a, b) return (a.hp/a.hpMax) < (b.hp/b.hpMax) end) -- 체력 비율 오름차순 (위급한 순)
+        table.sort(charDataList, function(a, b) return a.hp > b.hp end) -- 체력 비율 오름차순 (체력 높은 순)
     elseif sortMode == "condition" then
         table.sort(charDataList, function(a, b) return a.condition < b.condition end) -- 상태 텍스트순
     else
