@@ -7,7 +7,7 @@ Continue the story about the user's training and the character's reaction to tra
 1. Command:
     - Indirect Narration: Describe the user's actions but indirectly and in a narrative style. Do not state them as direct commands or simple facts.
     - Strict Adherence to Command: Describe *only* the actions explicitly given in the `training_command`. Do not add, invent, ignore or improvise any actions that were not specified.
-    - Maintain Continuity: If `train_Log` contains previous entries, ensure your description flows naturally and logically from the past events. Your narrative should feel like a continuation.
+    - Maintain Continuity: Your description flows naturally and logically from any past events.
     - Enrich with Variety: If the user's command is similar to a previous action, create a fresh and different description. Avoid repetitive phrasing and enrich the narrative to make it more detailed and engaging.
 2. Point of View (POV): Write from a 3rd-person limited perspective, focused on {{user}}.
 3. Descriptive Style: Provide sensory descriptions of all environments, characters, and events. Include {{user}}'s action and Character's response with dialog.
@@ -18,6 +18,7 @@ Continue the story about the user's training and the character's reaction to tra
     - *NEVER tell about stat level or change.*
 6. Stat Influence: The character's stats directly influence their reactions and the narrative's direction. For details on the effects of each individual stat, refer to the separate `STAT` descriptions.
 7. Avoid Repetition: Do not repeat content from the Input.
+8. Restrictions: Do not summarize the training session or count the session number. Describe only the characters' actions and dialogue.
 
 ## Input Schema
 - `STAT`: A description of the individual stats. can be possitive or negative depending on character's traits, marks, or abl
