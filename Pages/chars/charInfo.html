@@ -20,7 +20,7 @@
         width: 128px;
         height: 128px;
         background-color: #111;
-        border: 1px solid #444;
+        border: 1px solid #333;
         flex-shrink: 0;
         border-radius: 8px;
         overflow: hidden;
@@ -52,18 +52,19 @@
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
         gap: 0.5rem 1rem;
         margin-top: 1rem;
-        background-color: #3a3a3a;
+        background-color: #1a1a1a; /* Updated to match Main */
+        border: 1px solid #333;    /* Added border to match Main */
         padding: 1rem;
         border-radius: 4px;
     }
 
     .talent-tag {
-        background-color: #2a2a2a;
+        background-color: #222; /* Updated to match Main */
         padding: 0.3rem;
         font-family: monospace;
         font-size: 0.9em;
         margin: 0 0.2rem;
-        border: 1px solid #4f4f4f;
+        border: 1px solid #333;
         border-radius: 4px;
     }
 
@@ -86,7 +87,8 @@
     }
     .marks-grid .mark-item {
         justify-content: space-between;
-        background-color: #3a3a3a;
+        background-color: #1a1a1a; /* Updated to match Main */
+        border: 1px solid #333;
         padding: 0.2rem 0.5rem;
         border-radius: 4px;
     }
@@ -116,9 +118,9 @@
         align-items: center;
         gap: 1rem;
         padding: 0.2rem 0.5rem; 
-        border: 1px solid #4f4f4f; 
+        border: 1px solid #333; 
         border-radius: 4px; 
-        background-color: #2a2a2a;
+        background-color: #222; /* Updated */
         justify-content: space-between;
     }
 
@@ -142,26 +144,17 @@
         gap: 0.5rem;
     }
     .equipment-item {
-        background-color: #3a3a3a;
-        padding: 0.3rem;
+        background-color: #222; /* Updated to match Main Inventory */
+        padding: 0.5rem;
         border-radius: 4px;
+        border: 1px solid #333;
     }
     .equipment-item .item-type {
         font-weight: bold;
-        color: #ffffbf;
+        color: #60d9f7; /* Updated accent color */
         margin-right: 0.5em;
     }
     
-    /* Jewel Section
-    .jewel-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 0.75rem;
-        background-color: #3a3a3a;
-        padding: 1rem;
-        border-radius: 4px;
-    }*/
-
     /* Narrative Tab */
     .narrative-block {
         margin-bottom: 1.5rem;
@@ -170,11 +163,12 @@
         font-size: 1.1em;
         color: #ffffff;
         margin-bottom: 0.75rem;
-        border-bottom: 1px solid #4f4f4f;
+        border-bottom: 1px solid #333;
         padding-bottom: 0.5rem;
     }
     .narrative-block p, .narrative-block ul {
-        background-color: #2a2a2a;
+        background-color: #1a1a1a; /* Updated */
+        border: 1px solid #333;
         padding: 0.75rem;
         border-radius: 4px;
         line-height: 1.6;
