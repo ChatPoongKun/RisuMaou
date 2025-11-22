@@ -27,7 +27,7 @@ h3 { font-size: 0.95rem; color: #aaa; text-transform: uppercase; letter-spacing:
 .x-risu-btn:hover, .btn:hover { background: #252525; color: #fff; border-color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.4); transform: translateY(-1px); }
 .x-risu-btn:active, .btn:active { transform: translateY(0); box-shadow: none; }
 
-.command-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.5rem; justify-content: left; }
+.command-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; justify-content: left; }
 .x-risu-command-btn { width: 100%; text-align: left; position: relative; overflow: hidden; font-weight: bold; border-radius: 4px; }
 .x-risu-command-btn::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: #60d9f7; opacity: 0; transition: opacity 0.2s; }
 .x-risu-command-btn:hover::before { opacity: 1; }
