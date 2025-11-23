@@ -39,7 +39,7 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/104/상점] function(triggerId)
+[main/104/마계 상점] function(triggerId)
     local screen = "shop"
     setState(triggerId, "screen", screen)
     local itemCat = "tools"
