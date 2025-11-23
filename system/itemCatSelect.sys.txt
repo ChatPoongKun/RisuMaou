@@ -1,5 +1,8 @@
 function (triggerId, itemCat)
     local itemList = json.decode(getLoreBookContent(triggerId, "items.db"))[itemCat]
+    -- 순서 보장을 위해 initVars에서 생성한 정렬된 키 리스트를 불러옴
+    local orderedKeys = json.decode(getChatVar(triggerId, itemCat.."List"))
+    
     local contents = ""
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
     local needKnowl = {
@@ -11,7 +14,9 @@ function (triggerId, itemCat)
         ["배란유발제"] = true
     }
 
-    for k,v in pairs(itemList) do
+    -- orderedKeys를 순회하여 itemList에서 정보를 가져옴
+    for _, k in ipairs(orderedKeys) do
+        local v = itemList[k]
         local condition = true
         local reason = ""
 

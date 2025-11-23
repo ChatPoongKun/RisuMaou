@@ -1,16 +1,86 @@
+
 [dictionary/d_abl/hidden] function(triggerId)
     local dictCat = "d_abl"
     setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "능력 (Ability)")
+    setChatVar(triggerId, "dictDesc", "대상이 조교를 통해 습득한 능력.")
 end!!
 
 [dictionary/d_trait/hidden] function(triggerId)
     local dictCat = "d_trait"
     setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "특성 (Trait)")
+    setChatVar(triggerId, "dictDesc", "캐릭터가 가진 특징. 대부분 후천적으로 획득할 수 없다.")
 end!!
 
+[dictionary/d_mark/hidden] function(triggerId)
+    local dictCat = "d_mark"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "각인 (Mark)")
+    setChatVar(triggerId, "dictDesc", "잊을 수 없이 강렬한 경험을 통해 캐릭터의 본능 깊숙히 새겨진 마음")
+end!!
+
+[dictionary/d_trace/hidden] function(triggerId)
+    local dictCat = "d_trace"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "흔적 (Trace)")
+    setChatVar(triggerId, "dictDesc", "캐릭터에게 쌓인 조교의 흔적. 능력의 레벨업에 필요하다.")
+end!!
+
+[dictionary/d_stat/hidden] function(triggerId)
+    local dictCat = "d_stat"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "상태 (Stat)")
+    setChatVar(triggerId, "dictDesc", "조교중 캐릭터의 상태를 나타내는 수치. 능력 또는 각인수치에 따라 조교 시작시 상태의 레벨이 증가한다.")
+end!!
+
+[dictionary/d_item/hidden] function(triggerId)
+    local dictCat = "d_item"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "아이템 (Item)")
+    setChatVar(triggerId, "dictDesc", "상점에서 구매할 수 있는 다양한 아이템")
+end!!
+
+
+[dictionary/d_sub_personality/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "성격")
+end!!
+[dictionary/d_sub_body/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "신체특성")
+end!!
+[dictionary/d_sub_sexual/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "성적취향")
+end!!
+[dictionary/d_sub_constitution/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "체질")
+end!!
+[dictionary/d_sub_title/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "칭호")
+end!!
+
+[dictionary/d_sub_tools/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "tools")
+end!!
+[dictionary/d_sub_consumables/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "consumables")
+end!!
+[dictionary/d_sub_traps/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "traps")
+end!!
+[dictionary/d_sub_unlock/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "unlock")
+end!!
+
+[dictionary/d_back/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "")
+    setChatVar(triggerId, "dictDesc", "카테고리를 선택하세요.")
+end!!
 
 
 [dictionary/199/돌아가기] function(triggerId)
     setChatVar(triggerId, "category", "items")
     setState(triggerId, "screen", "main")
-end!!   
+end!!

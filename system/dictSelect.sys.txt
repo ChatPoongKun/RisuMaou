@@ -1,0 +1,66 @@
+
+function (triggerId, category, name)
+    -- 카테고리에 맞는 DB 파일 매핑
+    local dbMap = {
+        ["abl"] = "abl.db",
+        ["mark"] = "mark.db",
+        ["trace"] = "trace.db",
+        ["exp"] = "exp.db",
+        ["stat"] = "stat.db",
+        ["trait"] = "trait.db",
+        ["item"] = "items.db"
+    }
+    
+    local dbName = dbMap[category] or category..".db"
+    local rawContent = getLoreBookContent(triggerId, dbName)
+    local db = json.decode(rawContent)
+    
+    local desc = ""
+    local title = name
+
+    -- DB 구조에 따라 데이터 추출
+    if category == "stat" then
+        -- stat은 배열: [설명, 별칭1, 별칭2...]
+        if db[name] then
+            desc = db[name][1]
+        end
+    elseif category == "item" then
+        -- items는 중첩 구조: tools -> item -> [설명, 가격]
+        -- 전체 검색 필요
+        local found = false
+        for catName, catItems in pairs(db) do
+            if catItems[name] then
+                desc = catItems[name][1]
+                found = true
+                break
+            end
+        end
+        if not found then desc = "아이템 정보를 찾을 수 없습니다." end
+
+    elseif category == "trait" then
+        -- trait는 중첩 구조: 성격 -> [{키:값}, {키:값}]
+        local found = false
+        for catName, list in pairs(db) do
+            if catName == "칭호" then
+                if list[name] then desc = list[name]; found = true; break end
+            else
+                for _, item in ipairs(list) do
+                    if item[name] then desc = item[name]; found = true; break end
+                end
+            end
+            if found then break end
+        end
+        if not found then desc = "특성 정보를 찾을 수 없습니다." end
+        
+    else
+        -- abl, mark, trace, exp 등 단순 키-값 구조
+        desc = db[name] or "정보를 찾을 수 없습니다."
+    end
+    
+    if desc == nil or desc == "" then
+        desc = "상세 설명이 없습니다."
+    end
+
+    setChatVar(triggerId, "dictTitle", title)
+    setChatVar(triggerId, "dictDesc", desc)
+end
