@@ -56,7 +56,7 @@ h3 { font-size: 0.95rem; color: #aaa; text-transform: uppercase; letter-spacing:
 .tabs:hover { background: transparent; color: #ccc; border-color: transparent; }
 input[type="radio"]:checked + .tabs { color: #60d9f7; border-bottom-color: #60d9f7; background-color: transparent; }
 
-.tab-content { background: #181818; padding: 1rem; border: 1px solid #282828; border-top: none; min-height: 150px; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+.tab-content { background: #181818; padding: 1rem; border: 1px solid #282828; border-top: none; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
 
 /* Grids */
 .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; }
