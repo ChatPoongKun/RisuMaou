@@ -10,7 +10,7 @@ function (triggerId, itemName)
             break
         end
     end
-    setChatVar(triggerId, "itemPrice", int(item[1]))
-    setChatVar(triggerId, "itemTotalPrice", int(item[1]))
-    setChatVar(triggerId, "itemDetail", item[2])
+    setChatVar(triggerId, "itemPrice", int(item[2]))
+    setChatVar(triggerId, "itemTotalPrice", int(item[2]))
+    setChatVar(triggerId, "itemDetail", item[1])
 end
