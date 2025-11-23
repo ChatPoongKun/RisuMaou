@@ -160,10 +160,7 @@ end
 --초기세팅 함수
 function initialize(triggerId)
     debug("초기 세팅 개시...")
-    local initFuncs ={"initVars.sys", "debugCmds.sys"} --향후 초기 설정 함수를 더 추가할 수 있도록 테이블 선언
-    for i, f_code in ipairs(initFuncs) do
-        sysFunction(triggerId, f_code)
-    end
+    sysFunction(triggerId, "initVars.sys")
     setChatVar(triggerId, "category", "user")
     setState(triggerId, "screen", "intro")
     processAndStoreLore(triggerId, "intro.lua")
@@ -188,14 +185,15 @@ end
 
 --- 로어 텍스트를 처리하여 funcs 테이블에 저장
 function processAndStoreLore(triggerId, loreBookId)
-    -- 1. loreBookId를 이용해 실제 로어 내용들을 가져옴
+    sysFunction(triggerId, "debugCmds.sys") --디버그 함수 저장
     --debug(loreBookId .. "로어북에서 함수 호출")
     local loreEntries = getLoreBookContent(triggerId, loreBookId)
 
     local pattern = "%[(%S+)/(%S+)/([^%]]+)%]%s*(function.-end)!!"
     local count = 0
     local cmds = ""
-    local funcs = getState(triggerId, "funcs") or {}
+    local funcs = getState(triggerId, "funcs")
+    
 
     for page, number, description, functionBody in loreEntries:gmatch(pattern) do
         local key = page.."_"..number
