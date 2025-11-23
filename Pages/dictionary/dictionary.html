@@ -1,19 +1,71 @@
 <style>
-summary{
-font-size: 1.1em;
-color: #ffffff;
-grid-column: 1 / -1;
-margin-top: 0.5rem;
-margin-bottom: 0.3rem;
-border-bottom: 1px solid #4f4f4f;
-font-weight: 600;
-cursor:pointer;
+/* Dictionary Container */
+.dict-container {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+height: 100%;
 }
-summary::marker{
-content:"";
-}
-</style>
 
+/* Detail Panel (Fixed at top or bottom) */
+.dict-detail-panel {
+background-color: #1a1a1a;
+border: 1px solid #60d9f7;
+border-radius: 4px;
+padding: 1rem;
+margin-bottom: 1rem;
+box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+min-height: 80px;
+}
+
+.dict-title {
+color: #60d9f7;
+font-size: 1.2rem;
+font-weight: bold;
+margin-bottom: 0.5rem;
+border-bottom: 1px solid #333;
+padding-bottom: 0.25rem;
+}
+
+.dict-desc {
+color: #ccc;
+font-size: 0.95rem;
+line-height: 1.5;
+}
+
+/* Item List Grid */
+.dict-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+gap: 0.5rem;
+max-height: 500px;
+overflow-y: auto;
+padding-right: 0.5rem;
+}
+
+/* Sub-category Header */
+.dict-sub-header {
+grid-column: 1 / -1;
+color: #fff;
+font-weight: bold;
+margin-top: 1rem;
+margin-bottom: 0.5rem;
+border-bottom: 1px solid #444;
+padding-bottom: 0.25rem;
+}
+.dict-sub-header:first-child {
+margin-top: 0;
+}
+
+.back-btn {
+grid-column: 1 / -1;
+background-color: #333;
+border: 1px solid #555;
+margin-bottom: 1rem;
+text-align: center;
+}
+
+</style>
 
 <div class="container">
 <div class="line double"></div>
@@ -23,7 +75,13 @@ content:"";
 </header>
 
 <main>
+<!-- 상세 설명 패널 -->
+<section class="dict-detail-panel">
+<div class="dict-title">{{getvar::dictTitle}}</div>
+<div class="dict-desc">{{getvar::dictDesc}}</div>
+</section>
 
+<!-- 탭 네비게이션 -->
 <div class="tabs-container">
 <input type="radio" name="tabs" id="d_abl" hidden {{#if {{equal::{{getvar::category}}::d_abl}}}}checked{{/if}}>
 <label for="d_abl" class="tabs" risu-btn="d_abl">▋능력</label>
@@ -45,46 +103,112 @@ content:"";
 </div>
 
 <div class="tab-content">
-<div class="info-grid">
+<div class="command-container">
 {{#when::category::vis::d_abl}}
-{{#each {{getvar::ablList}} abil}}
-<div class="abl-item"><span>{{slot::abil}}</span></div>
+{{#each {{getvar::ablList}} item}}
+<div class="btn command-btn" risu-btn="dict_abl_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::category::vis::d_trait}}
-<details style="grid-column: 1 / -1;">
-<summary>성격</summary>
-<div class="info-grid">
-{{#each {{getvar::성격List}} T}}
-<span class="talent-tag">[{{slot::T}}]</span>
+{{#when::dictSub::vis::}}
+<div class="btn command-btn" risu-btn="d_sub_personality">성격</div>
+<div class="btn command-btn" risu-btn="d_sub_body">신체특성</div>
+<div class="btn command-btn" risu-btn="d_sub_sexual">성적취향</div>
+<div class="btn command-btn" risu-btn="d_sub_constitution">체질</div>
+<div class="btn command-btn" risu-btn="d_sub_title">칭호</div>
+{{/when}}
+
+{{#when::dictSub::vis::성격}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::성격List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
-</div>
-</details>
-<details style="grid-column: 1 / -1;">
-<summary>신체특성</summary>
-{{#each {{getvar::신체특성List}} T}}
-<span class="talent-tag">[{{slot::T}}]</span>
+{{/when}}
+
+{{#when::dictSub::vis::신체특성}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::신체특성List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
-</details>
-<details style="grid-column: 1 / -1;">
-<summary>성적취향</summary>
-{{#each {{getvar::성적취향List}} T}}
-<span class="talent-tag">[{{slot::T}}]</span>
+{{/when}}
+
+{{#when::dictSub::vis::성적취향}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::성적취향List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
-</details>
-<details style="grid-column: 1 / -1;">
-<summary>체질</summary>
-{{#each {{getvar::체질List}} T}}
-<span class="talent-tag">[{{slot::T}}]</span>
+{{/when}}
+
+{{#when::dictSub::vis::체질}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::체질List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
-</details>
-<details style="grid-column: 1 / -1;">
-<summary>칭호</summary>
-{{#each {{getvar::칭호List}} T}}
-<span class="talent-tag">[{{slot::T}}]</span>
+{{/when}}
+
+{{#when::dictSub::vis::칭호}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::칭호List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
-</details>
+{{/when}}
+{{/when}}
+
+{{#when::category::vis::d_mark}}
+{{#each {{getvar::markList}} item}}
+<div class="btn command-btn" risu-btn="dict_mark_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+
+{{#when::category::vis::d_trace}}
+{{#each {{getvar::traceList}} item}}
+<div class="btn command-btn" risu-btn="dict_trace_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+
+{{#when::category::vis::d_stat}}
+{{#each {{getvar::statList}} item}}
+<div class="btn command-btn" risu-btn="dict_stat_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+
+{{#when::category::vis::d_item}}
+{{#when::dictSub::vis::}}
+<div class="btn command-btn" risu-btn="d_sub_tools">조교도구</div>
+<div class="btn command-btn" risu-btn="d_sub_consumables">소모품</div>
+<div class="btn command-btn" risu-btn="d_sub_traps">함정</div>
+<div class="btn command-btn" risu-btn="d_sub_unlock">마계지식</div>
+{{/when}}
+
+{{#when::dictSub::vis::tools}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::toolsList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+
+{{#when::dictSub::vis::consumables}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::consumablesList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+
+{{#when::dictSub::vis::traps}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::trapsList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+
+{{#when::dictSub::vis::unlock}}
+<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+{{#each {{getvar::unlockList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+
 {{/when}}
 </div>
 </div>

@@ -321,6 +321,18 @@ onButtonClick = async(function(triggerId, data)
             local name = string.match(data, "charInfo_(.*)")
             local f_code = "charCard.sys"
             sysFunction(triggerId, f_code, name)
+        
+        -- 사전 버튼 클릭 (동적 라우팅)
+        elseif string.find(data, "dict_") then
+            -- dict_카테고리_항목이름 형태 파싱
+            -- 항목이름에 _가 포함될 수 있으므로 정규식 주의
+            local category, name = string.match(data, "dict_([^_]+)_(.*)")
+            if category and name then
+                sysFunction(triggerId, "dictSelect.sys", category, name)
+            else
+                debug("잘못된 사전 키 형식: " .. data)
+            end
+
         else
             executeFunction(triggerId, screen, data)
         end

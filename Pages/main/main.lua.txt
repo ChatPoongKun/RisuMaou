@@ -88,4 +88,8 @@ end!!
 [main/999/마계사전] function(triggerId)
     local screen = "dictionary"
     setState(triggerId, "screen", screen)
+    local dictCat = "d_abl"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "능력 (Ability)")
+    setChatVar(triggerId, "dictDesc", "대상이 조교를 통해 습득한 능력.")
 end!!
