@@ -67,12 +67,9 @@
 <!-- Management Panel -->
 <section class="management-panel">
 <div class="tabs-container">
-<input type="radio" name="tabs" id="items" hidden {{#if {{equal::{{getvar::category}}::items}}}}checked{{/if}}>
-<label for="items" class="tabs" risu-btn="items">보유품</label>
-<input type="radio" name="tabs" id="traps" hidden {{#if {{equal::{{getvar::category}}::traps}}}}checked{{/if}}>
-<label for="traps" class="tabs" risu-btn="traps">함정</label>
-<input type="radio" name="tabs" id="dungeon" hidden {{#if {{equal::{{getvar::category}}::dungeon}}}}checked{{/if}}>
-<label for="dungeon" class="tabs" risu-btn="dungeon">던전</label>
+<div class="tabs {{#if {{equal::{{getvar::category}}::items}}}}active{{/if}}" risu-btn="items">보유품</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">함정</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::dungeon}}}}active{{/if}}" risu-btn="dungeon">던전</div>
 </div>
 
 <div class="tab-content">
@@ -86,7 +83,7 @@
 </div>
 {{/if}}
 
-<span class="section-label">도구</span>
+<span class="section-label">조교 도구</span>
 <div class="info-grid">
 {{settempvar::tools::0}}
 {{#each {{getvar::toolsList}} tool}}

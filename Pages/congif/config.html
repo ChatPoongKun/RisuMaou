@@ -8,11 +8,8 @@
 <main>
 
 <div class="tabs-container">
-<input type="radio" name="tabs" id="play" hidden {{#if {{equal::{{getvar::category}}::play}}}}checked{{/if}}>
-<label for="play" class="tabs" risu-btn="play">▋플레이</label>
-
-<input type="radio" name="tabs" id="system" hidden {{#if {{equal::{{getvar::category}}::system}}}}checked{{/if}}>
-<label for="system" class="tabs" risu-btn="system">▋시스템</label>
+<div class="tabs {{#if {{equal::{{getvar::category}}::play}}}}active{{/if}}" risu-btn="play">▋플레이</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::system}}}}active{{/if}}" risu-btn="system">▋시스템</div>
 </div>
 
 <div class="tab-content">
