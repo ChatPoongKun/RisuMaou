@@ -3,6 +3,11 @@
 height: 0.6rem;
 }
 
+.x-risu-bar-label {
+font-size: 1rem;
+color: #ccc;
+}
+
 .target-profile {
     display: flex;
     flex-wrap: wrap;
@@ -520,7 +525,7 @@ S쾌락은 일단 숨겨두기
 <h3>* {{user}}</h3>
 <div class="x-risu-bar-container">
 <span class="bar-label"> 절정:</span>
-<div class="progress-bar x-risu-ej">
+<div class="progress-bar">
 <div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{getvar::ej_user_ratio}}%;"></div>
 </div>
 <span class="bar-value">{{getvar::ej_user_ratio}}%</span>
@@ -551,14 +556,34 @@ S쾌락은 일단 숨겨두기
 
 <div class="line single"></div>
 
-<section class="command-panel">
-<h3>▋Commands</h3>
+<div class="tabs-container">
+<input type="radio" name="tabs" id="애무계" hidden {{#if {{equal::{{getvar::category}}::애무계}}}}checked{{/if}}>
+<label for="애무계" class="tabs" risu-btn="1">[1] 애무계</label>
+<input type="radio" name="tabs" id="도구계" hidden {{#if {{equal::{{getvar::category}}::도구계}}}}checked{{/if}}>
+<label for="도구계"class="tabs" risu-btn="2">[2] 도구계</label>
+<input type="radio" name="tabs" id="V계" hidden {{#if {{equal::{{getvar::category}}::V계}}}}checked{{/if}}>
+<label for="V계"class="tabs" risu-btn="3">[3] V계</label>
+<input type="radio" name="tabs" id="A계" hidden {{#if {{equal::{{getvar::category}}::A계}}}}checked{{/if}}>
+<label for="A계"class="tabs" risu-btn="4">[4] A계</label>
+<input type="radio" name="tabs" id="봉사계" hidden {{#if {{equal::{{getvar::category}}::봉사계}}}}checked{{/if}}>
+<label for="봉사계"class="tabs" risu-btn="5">[5] 봉사계</label>
+<input type="radio" name="tabs" id="소모품" hidden {{#if {{equal::{{getvar::category}}::소모품}}}}checked{{/if}}>
+<label for="소모품"class="tabs" risu-btn="6">[6] 소모품</label>
+{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::레벨}}}}>3}}}}
+<input type="radio" name="tabs" id="하드계" hidden {{#if {{equal::{{getvar::category}}::하드계}}}}checked{{/if}}>
+<label for="하드계"class="tabs" risu-btn="9">[9] 하드계</label>
+{{/when}}
+</div>
+<div class="tab-content">
 <div class="command-container">
 {{getVar::cmds}}
+{{#when::cmds::vis::}}가능한 조교 없음{{/when}}
 </div>
 {{getvar::screenEffect}}
-</section>
+</div>
+
 </main>
 
 <div class="line double"></div>
+<div class="btn command-btn" risu-btn="199">조교종료</div>
 </div>
