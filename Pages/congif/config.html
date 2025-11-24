@@ -26,7 +26,6 @@
 <input type="radio" name="difficulty" id="three" {{#when::difficulty::vis::어려움}}checked{{/when}}>
 <span class="triple-slider"></span>
 </label>
-
 {{#when::difficulty::vis::쉬움}}
 <p class="setting-description">조교의 성공확률이 상승합니다.</p>
 {{/when}}
@@ -44,7 +43,6 @@
 <input type="checkbox" name="death-prevent" {{#when::blockDeath::vis::1}}checked{{/when}}>
 <span class="slider"></span>
 </label>
-
 {{#when::blockDeath::vis::0}}
 <p class="setting-description">체력이 0이 되면 캐릭터가 영구적으로 사망합니다.</p>
 {{/when}}
@@ -53,6 +51,7 @@
 {{/when}}
 </div>
 {{/when}}
+
 
 {{#when::category::vis::system}}
 <div class="two-cells" risu-btn="showLog">
@@ -122,13 +121,4 @@
 </main>
 
 <div class="line double"></div>
-
-<section class="command-panel">
-<h3>▋Commands</h3>
-<div class="command-container">
-{{getVar::cmds}}
-</div>
-</section>
-
-<div class="line double"></div>
-</div>
+{{getvar::cmds}}
