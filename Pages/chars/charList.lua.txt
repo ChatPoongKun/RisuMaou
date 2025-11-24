@@ -1,20 +1,25 @@
 [charList/sort_index/hidden] function(triggerId)
-    setChatVar(triggerId, "charSort", "index")
+    setChatVar(triggerId, "category", "index")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 
 [charList/sort_name/hidden] function(triggerId)
-    setChatVar(triggerId, "charSort", "name")
+    setChatVar(triggerId, "category", "name")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 
 [charList/sort_level/hidden] function(triggerId)
-    setChatVar(triggerId, "charSort", "level")
+    setChatVar(triggerId, "category", "level")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 
 [charList/sort_hp/hidden] function(triggerId)
-    setChatVar(triggerId, "charSort", "hp")
+    setChatVar(triggerId, "category", "hp")
+    sysFunction(triggerId, "makeCharList.sys")
+end!!
+
+[charList/sort_rating/hidden] function(triggerId)
+    setChatVar(triggerId, "category", "rating")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 

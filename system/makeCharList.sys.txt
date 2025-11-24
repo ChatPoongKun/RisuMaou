@@ -3,7 +3,7 @@ function (triggerId)
     local chars = json.decode(getChatVar(triggerId, "chars"))
     local html = ""
     local screen = getState(triggerId, "screen")
-    local sortMode = getChatVar(triggerId, "charSort") or "index" -- 기본값 index
+    local sortMode = getChatVar(triggerId, "category") or "index" -- 기본값 index
 
     -- 1. 데이터 수집 및 전처리
     local charDataList = {}
@@ -38,13 +38,12 @@ function (triggerId)
         table.sort(charDataList, function(a, b) return a.name < b.name end) -- 이름 오름차순
     elseif sortMode == "hp" then
         table.sort(charDataList, function(a, b) return a.hp > b.hp end) -- 체력 비율 오름차순 (체력 높은 순)
-    elseif sortMode == "condition" then
+    elseif sortMode == "rating" then
         table.sort(charDataList, function(a, b) return a.condition < b.condition end) -- 상태 텍스트순
     else
         -- index 정렬 (기본)
         table.sort(charDataList, function(a, b) return a.index < b.index end)
     end
-
 
     -- 3. HTML 생성
     for _, data in ipairs(charDataList) do
@@ -87,7 +86,7 @@ function (triggerId)
 ]] .. tagHtml .. [[
 </p>
 <span class="char-tags">
-공격 ]] .. data.atk .. [[ / 방어 ]] .. data.def .. [[ / 레이팅 ]] .. data.rating .. [[
+AT ]] .. data.atk .. [[ / ]] .. data.def .. [[ / RT ]] .. data.rating .. [[
 </span>
 </div>
 <div class="char-status-bars">

@@ -31,7 +31,12 @@ end!!
     alertNormal(triggerId, "미구현")
 end!!
 
+[charInfo/103/소모품 사용] function(triggerId)
+    alertNormal(triggerId, "미구현")
+end!!
+
 [charInfo/199/hidden] function(triggerId)
     setChatVar(triggerId, "target", "") --조회대상 초기화
     setState(triggerId, "screen", "charList")
+    setChatVar(triggerId, "category", "array")
 end!!
