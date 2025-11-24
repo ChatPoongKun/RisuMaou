@@ -39,7 +39,7 @@ function (triggerId)
     elseif sortMode == "hp" then
         table.sort(charDataList, function(a, b) return a.hp > b.hp end) -- 체력 비율 오름차순 (체력 높은 순)
     elseif sortMode == "rating" then
-        table.sort(charDataList, function(a, b) return a.condition < b.condition end) -- 상태 텍스트순
+        table.sort(charDataList, function(a, b) return a.rating > b.rating end) -- 레이팅 내림차순
     else
         -- index 정렬 (기본)
         table.sort(charDataList, function(a, b) return a.index < b.index end)
