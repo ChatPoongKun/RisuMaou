@@ -75,12 +75,6 @@ text-align: center;
 </header>
 
 <main>
-<!-- 상세 설명 패널 -->
-<section class="dict-detail-panel">
-<div class="dict-title">{{getvar::dictTitle}}</div>
-<div class="dict-desc">{{getvar::dictDesc}}</div>
-</section>
-
 <!-- 탭 네비게이션 -->
 <div class="tabs-container">
 <input type="radio" name="tabs" id="d_abl" hidden {{#if {{equal::{{getvar::category}}::d_abl}}}}checked{{/if}}>
@@ -120,35 +114,35 @@ text-align: center;
 {{/when}}
 
 {{#when::dictSub::vis::성격}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::성격List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::신체특성}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::신체특성List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::성적취향}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::성적취향List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::체질}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::체질List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::칭호}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::칭호List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
@@ -182,28 +176,28 @@ text-align: center;
 {{/when}}
 
 {{#when::dictSub::vis::tools}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::toolsList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::consumables}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::consumablesList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::traps}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::trapsList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::unlock}}
-<div class="btn command-btn back-btn" risu-btn="d_back">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
 {{#each {{getvar::unlockList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
@@ -213,11 +207,15 @@ text-align: center;
 </div>
 </div>
 </main>
+<!-- 상세 설명 패널 -->
+<section class="dict-detail-panel">
+<div class="dict-title">{{getvar::dictTitle}}</div>
+<div class="dict-desc">{{getvar::dictDesc}}</div>
+</section>
 
 <div class="line double"></div>
 
 <section class="command-panel">
-<h3>▋Commands</h3>
 <div class="command-container">
 {{getVar::cmds}}
 </div>

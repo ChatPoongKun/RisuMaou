@@ -18,7 +18,7 @@ end!!
     local dictCat = "d_mark"
     setChatVar(triggerId, "category", dictCat)
     setChatVar(triggerId, "dictTitle", "각인 (Mark)")
-    setChatVar(triggerId, "dictDesc", "잊을 수 없이 강렬한 경험을 통해 캐릭터의 본능 깊숙히 새겨진 마음")
+    setChatVar(triggerId, "dictDesc", "잊을 수 없이 강렬한 경험을 통해 캐릭터의 마음 깊숙히 새겨진 본능.")
 end!!
 
 [dictionary/d_trace/hidden] function(triggerId)
@@ -46,41 +46,62 @@ end!!
 
 [dictionary/d_sub_personality/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "성격")
+    setChatVar(triggerId, "dictTitle", "성격")
+    setChatVar(triggerId, "dictDesc", "캐릭터의 타고난 기질과 성격.")
 end!!
 [dictionary/d_sub_body/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "신체특성")
+    setChatVar(triggerId, "dictTitle", "신체특성")
+    setChatVar(triggerId, "dictDesc", "캐릭터의 성감대 및 특별한 신체특징.")
 end!!
 [dictionary/d_sub_sexual/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "성적취향")
-end!!
-[dictionary/d_sub_constitution/hidden] function(triggerId)
-    setChatVar(triggerId, "dictSub", "체질")
+    setChatVar(triggerId, "dictTitle", "성적취향")
+    setChatVar(triggerId, "dictDesc", "캐릭터가 선호 또는 비선호하는 취향과 관련한 특성")
 end!!
 [dictionary/d_sub_title/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "칭호")
+    setChatVar(triggerId, "dictTitle", "칭호")
+    setChatVar(triggerId, "dictDesc", "대상 캐릭터가 획득한 아주 특별한 칭호. 단 하나만 얻을 수 있다.")
 end!!
 
 [dictionary/d_sub_tools/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "tools")
+    setChatVar(triggerId, "dictTitle", "tools")
+    setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
 end!!
 [dictionary/d_sub_consumables/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "consumables")
+    setChatVar(triggerId, "dictTitle", "consumables")
+    setChatVar(triggerId, "dictDesc", "다양한 효과를 지닌 일회성 소모품")
 end!!
 [dictionary/d_sub_traps/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "traps")
+    setChatVar(triggerId, "dictTitle", "traps")
+    setChatVar(triggerId, "dictDesc", "던전에 설치할 수 있는 함정들")
 end!!
 [dictionary/d_sub_unlock/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "unlock")
+    setChatVar(triggerId, "dictTitle", "unlock")
+    setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
 end!!
 
-[dictionary/d_back/hidden] function(triggerId)
+[dictionary/d_back_trait/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "")
-    setChatVar(triggerId, "dictTitle", "")
-    setChatVar(triggerId, "dictDesc", "카테고리를 선택하세요.")
+    setChatVar(triggerId, "dictTitle", "특성 (Trait)")
+    setChatVar(triggerId, "dictDesc", "캐릭터가 가진 특징. 대부분 후천적으로 획득할 수 없다.")
+end!!
+
+[dictionary/d_back_item/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "아이템 (Item)")
+    setChatVar(triggerId, "dictDesc", "상점에서 구매할 수 있는 다양한 아이템")
 end!!
 
 
 [dictionary/199/돌아가기] function(triggerId)
     setChatVar(triggerId, "category", "items")
     setState(triggerId, "screen", "main")
+    setChatVar(triggerId, "dictTitle", "")
+    setChatVar(triggerId, "dictDesc", "")
 end!!

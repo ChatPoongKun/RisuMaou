@@ -88,8 +88,7 @@ end!!
 [main/999/마계사전] function(triggerId)
     local screen = "dictionary"
     setState(triggerId, "screen", screen)
-    local dictCat = "d_abl"
-    setChatVar(triggerId, "category", dictCat)
-    setChatVar(triggerId, "dictTitle", "능력 (Ability)")
-    setChatVar(triggerId, "dictDesc", "대상이 조교를 통해 습득한 능력.")
+    setChatVar(triggerId, "category", "")
+    setChatVar(triggerId, "dictTitle", "마계사전")
+    setChatVar(triggerId, "dictDesc", "카테고리를 선택해 마계사전을 펼쳐보세요.")
 end!!
