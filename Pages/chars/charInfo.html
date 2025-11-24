@@ -60,10 +60,10 @@
 
     .talent-tag {
         background-color: #222; /* Updated to match Main */
-        padding: 0.3rem;
+        padding: 0.1rem 0.25rem;
         font-family: monospace;
-        font-size: 0.9em;
-        margin: 0 0.2rem;
+        font-size: 0.85em;
+        margin: 0.2rem;
         border: 1px solid #333;
         border-radius: 4px;
     }
@@ -206,8 +206,7 @@
 
         .talent-tag {
         font-size: 0.65rem;
-        margin: 0 0.2rem;
-        padding: 0.2rem;
+        padding: 0.1rem 0.2rem;
         }
 }
 </style>
@@ -259,26 +258,17 @@
 
 <section class="detailed-info">
 <div class="tabs-container">
-<input type="radio" name="tabs" id="appearance" hidden {{#if {{equal::{{getvar::category}}::appearance}}}}checked{{/if}}>
-<label for="appearance" class="tabs" risu-btn="appearance">▋외모</label>
-
-<input type="radio" name="tabs" id="abl" hidden {{#if {{equal::{{getvar::category}}::abl}}}}checked{{/if}}>
-<label for="abl" class="tabs" risu-btn="abl">▋능력</label>
-
-<input type="radio" name="tabs" id="talents" hidden {{#if {{equal::{{getvar::category}}::talents}}}}checked{{/if}}>
-<label for="talents" class="tabs" risu-btn="talents">▋특성</label>
-
-<input type="radio" name="tabs" id="exp" hidden {{#if {{equal::{{getvar::category}}::exp}}}}checked{{/if}}>
-<label for="exp" class="tabs" risu-btn="exp">▋경험</label>
-
-<input type="radio" name="tabs" id="narrative" hidden {{#if {{equal::{{getvar::category}}::narrative}}}}checked{{/if}}>
-<label for="narrative" class="tabs" risu-btn="narrative">▋서사</label>
+<div class="tabs {{#if {{equal::{{getvar::category}}::appearance}}}}active{{/if}}" risu-btn="appearance">▋외모</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::abl}}}}active{{/if}}" risu-btn="abl">▋능력</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::talents}}}}active{{/if}}" risu-btn="talents">▋특성</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::exp}}}}active{{/if}}" risu-btn="exp">▋경험</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::narrative}}}}active{{/if}}" risu-btn="narrative">▋서사</div>
 </div>
 <div class="tab-content">
 <div class="info-grid">
 {{#when::category::vis::talents}}
-    <h3>성격</h3>
-{{settempvar::성격::0}}
+<h3 style="margin:0">성격</h3>
+<div>{{settempvar::성격::0}}
 {{#each {{getvar::성격List}} T}}
 {{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
 {{settempvar::성격::1}}
@@ -288,8 +278,9 @@
 {{#if {{? {{gettempvar::성격}}=0}}}}
 <span class="talent-tag">[없음]</span>
 {{/if}}
-<h3>신체특성</h3>
-{{settempvar::신체::0}}
+</div>
+<h3 style="margin:0">신체특성</h3>
+<div>{{settempvar::신체::0}}
 {{#each {{getvar::신체특성List}} T}}
 {{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
 {{settempvar::신체::1}}
@@ -299,8 +290,9 @@
 {{#if {{? {{gettempvar::신체}}=0}}}}
 <span class="talent-tag">[없음]</span>
 {{/if}}
-<h3>성적취향</h3>
-{{settempvar::취향::0}}
+</div>
+<h3 style="margin:0">성적취향</h3>
+<div>{{settempvar::취향::0}}
 {{#each {{getvar::성적취향List}} T}}
 {{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
 {{settempvar::취향::1}}
@@ -310,17 +302,7 @@
 {{#if {{? {{gettempvar::취향}}=0}}}}
 <span class="talent-tag">[없음]</span>
 {{/if}}
-<h3>체질</h3>
-{{settempvar::체질::0}}
-{{#each {{getvar::체질List}} T}}
-{{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
-{{settempvar::체질::1}}
-<span class="talent-tag">[{{slot::T}}]</span>
-{{/if}}
-{{/each}}
-{{#if {{? {{gettempvar::체질}}=0}}}}
-<span class="talent-tag">[없음]</span>
-{{/if}}
+</div>
 {{/when}}
 
 {{#when::category::vis::abl}}
