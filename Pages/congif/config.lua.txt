@@ -30,6 +30,19 @@ end!!
     setChatVar(triggerId, "blockDeath", blockDeath)
 end!!
 
+
+[config/ageLimit/hidden] function(triggerId)
+    local ageLimit = getChatVar(triggerId, "ageLimit")
+
+    if ageLimit == "모두허용" then
+        setChatVar(triggerId, "ageLimit", "페도금지")
+    elseif ageLimit == "페도금지" then
+        setChatVar(triggerId, "ageLimit", "미성년금지")
+    else
+        setChatVar(triggerId, "ageLimit", "모두허용")
+    end
+end!!
+
 [config/showLog/hidden] function(triggerId)
     local showLog = getChatVar(triggerId, "showLog")
     showLog = math.abs(showLog-1)
