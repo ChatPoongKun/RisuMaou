@@ -34,12 +34,12 @@ end!!
 [config/ageLimit/hidden] function(triggerId)
     local ageLimit = getChatVar(triggerId, "ageLimit")
 
-    if ageLimit == "모두허용" then
-        setChatVar(triggerId, "ageLimit", "페도금지")
-    elseif ageLimit == "페도금지" then
-        setChatVar(triggerId, "ageLimit", "미성년금지")
+    if ageLimit == "0" then
+        setChatVar(triggerId, "ageLimit", "12")
+    elseif ageLimit == "12" then
+        setChatVar(triggerId, "ageLimit", "18")
     else
-        setChatVar(triggerId, "ageLimit", "모두허용")
+        setChatVar(triggerId, "ageLimit", "0")
     end
 end!!
 

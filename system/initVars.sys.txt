@@ -8,7 +8,7 @@ function (triggerId)
         chars = '["user","마오"]', --리수배열 스타일에 맞게 저장
         difficulty = "보통", --조교난이도
         blockDeath = 1, --사망방지. 기본값 ON
-        ageLimit = "페도금지", --등장 용사 나이제한
+        ageLimit = "12", --등장 용사 나이제한
         showLog = 0, --과거 조교기록 보기. 기본값 OFF
         debug = DEBUG,
         king = '{"성별":"남성","페니스":"대물","음모":"무성함", "외형":"중년","헤어스타일":"날렵하게 세워올린 짧은 은발"}',
