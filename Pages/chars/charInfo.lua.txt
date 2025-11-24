@@ -23,7 +23,11 @@ end!!
     setChatVar(triggerId, "category", charInfoCat)
 end!!
 
-[charInfo/100/능력 레벨업] function(triggerId)
+[charInfo/101/능력 레벨업] function(triggerId)
+    alertNormal(triggerId, "미구현")
+end!!
+
+[charInfo/102/장비 관리] function(triggerId)
     alertNormal(triggerId, "미구현")
 end!!
 
