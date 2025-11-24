@@ -47,6 +47,27 @@
 <p class="setting-description">체력이 0이 되어도 캐릭터가 사망하지 않습니다.</p>
 {{/when}}
 </div>
+
+
+<div class='two-cells' risu-btn='ageLimit'>
+<label><b>용사 나이 제한</b></label>
+<label class="triple-switch">
+<input type="radio" name="ageLimit" id="one" {{#when::ageLimit::vis::모두허용}}checked{{/when}}>
+<input type="radio" name="ageLimit" id="two" {{#when::ageLimit::vis::페도금지}}checked{{/when}}>
+<input type="radio" name="ageLimit" id="three" {{#when::ageLimit::vis::미성년금지}}checked{{/when}}>
+<span class="triple-slider"></span>
+</label>
+{{#when::ageLimit::vis::모두허용}}
+<p class="setting-description">용사가 되는데 나이제한이 없습니다.</p>
+{{/when}}
+{{#when::ageLimit::vis::페도금지}}
+<p class="setting-description">12세 미만의 용사가 나타나지 않습니다.</p>
+{{/when}}
+{{#when::ageLimit::vis::미성년금지}}
+<p class="setting-description">18세 미만의 용사가 나타나지 않습니다.</p>
+{{/when}}
+</div>
+
 {{/when}}
 
 
