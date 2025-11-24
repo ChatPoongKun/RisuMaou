@@ -20,12 +20,14 @@ end!!
 [main/100/조교 시작] function(triggerId)
     local screen = "preTrain"
     setState(triggerId, "screen", screen)
+    setChatVar(triggerId, "category", "index")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 
 [main/101/캐릭터 정보] function(triggerId)
     local screen = "charList"
     setState(triggerId, "screen", screen)
+    setChatVar(triggerId, "category", "index")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 
@@ -88,7 +90,7 @@ end!!
 [main/999/마계사전] function(triggerId)
     local screen = "dictionary"
     setState(triggerId, "screen", screen)
-    setChatVar(triggerId, "category", "")
+    setChatVar(triggerId, "category", "d_abl")
     setChatVar(triggerId, "dictTitle", "마계사전")
     setChatVar(triggerId, "dictDesc", "카테고리를 선택해 마계사전을 펼쳐보세요.")
 end!!

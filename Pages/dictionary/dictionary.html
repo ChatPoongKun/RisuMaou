@@ -77,23 +77,12 @@ text-align: center;
 <main>
 <!-- 탭 네비게이션 -->
 <div class="tabs-container">
-<input type="radio" name="tabs" id="d_abl" hidden {{#if {{equal::{{getvar::category}}::d_abl}}}}checked{{/if}}>
-<label for="d_abl" class="tabs" risu-btn="d_abl">▋능력</label>
-
-<input type="radio" name="tabs" id="d_trait" hidden {{#if {{equal::{{getvar::category}}::d_trait}}}}checked{{/if}}>
-<label for="d_trait" class="tabs" risu-btn="d_trait">▋특성</label>
-
-<input type="radio" name="tabs" id="d_mark" hidden {{#if {{equal::{{getvar::category}}::d_mark}}}}checked{{/if}}>
-<label for="d_mark" class="tabs" risu-btn="d_mark">▋각인</label>
-
-<input type="radio" name="tabs" id="d_trace" hidden {{#if {{equal::{{getvar::category}}::d_trace}}}}checked{{/if}}>
-<label for="d_trace" class="tabs" risu-btn="d_trace">▋흔적</label>
-
-<input type="radio" name="tabs" id="d_stat" hidden {{#if {{equal::{{getvar::category}}::d_stat}}}}checked{{/if}}>
-<label for="d_stat" class="tabs" risu-btn="d_stat">▋stat</label>
-
-<input type="radio" name="tabs" id="d_item" hidden {{#if {{equal::{{getvar::category}}::d_item}}}}checked{{/if}}>
-<label for="d_item" class="tabs" risu-btn="d_item">▋아이템</label>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_abl}}}}active{{/if}}" risu-btn="d_abl">▋능력</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_trait}}}}active{{/if}}" risu-btn="d_trait">▋특성</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_mark}}}}active{{/if}}" risu-btn="d_mark">▋각인</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_trace}}}}active{{/if}}" risu-btn="d_trace">▋흔적</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_stat}}}}active{{/if}}" risu-btn="d_stat">▋상태</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_item}}}}active{{/if}}" risu-btn="d_item">▋아이템</div>
 </div>
 
 <div class="tab-content">
@@ -114,35 +103,35 @@ text-align: center;
 {{/when}}
 
 {{#when::dictSub::vis::성격}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
 {{#each {{getvar::성격List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::신체특성}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
 {{#each {{getvar::신체특성List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::성적취향}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
 {{#each {{getvar::성적취향List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::체질}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
 {{#each {{getvar::체질List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::칭호}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
 {{#each {{getvar::칭호List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
@@ -176,28 +165,28 @@ text-align: center;
 {{/when}}
 
 {{#when::dictSub::vis::tools}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
 {{#each {{getvar::toolsList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::consumables}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
 {{#each {{getvar::consumablesList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::traps}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
 {{#each {{getvar::trapsList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
 
 {{#when::dictSub::vis::unlock}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 카테고리 목록으로</div>
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
 {{#each {{getvar::unlockList}} item}}
 <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
 {{/each}}

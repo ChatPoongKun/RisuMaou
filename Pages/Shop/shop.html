@@ -267,14 +267,10 @@ box-shadow: 0px 0px 20px -2px #a00606;
 <main>
 
 <div class="tabs-container">
-<input type="radio" name="tabs" id="tools" hidden {{#if {{equal::{{getvar::category}}::tools}}}}checked{{/if}}>
-<label for="tools" class="tabs" risu-btn="tools">조교도구</label>
-<input type="radio" name="tabs" id="consumables" hidden {{#if {{equal::{{getvar::category}}::consumables}}}}checked{{/if}}>
-<label for="consumables"class="tabs" risu-btn="consumables">소모품</label>
-<input type="radio" name="tabs" id="traps" hidden {{#if {{equal::{{getvar::category}}::traps}}}}checked{{/if}}>
-<label for="traps"class="tabs" risu-btn="traps">함정</label>
-<input type="radio" name="tabs" id="unlock" hidden {{#if {{equal::{{getvar::category}}::unlock}}}}checked{{/if}}>
-<label for="unlock"class="tabs" risu-btn="unlock">마계지식</label>
+<div class="tabs {{#if {{equal::{{getvar::category}}::tools}}}}active{{/if}}" risu-btn="tools">조교도구</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::consumables}}}}active{{/if}}" risu-btn="consumables">소모품</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">함정</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::unlock}}}}active{{/if}}" risu-btn="unlock">마계지식</div>
 </div>
 
 <!-- Tab content -->

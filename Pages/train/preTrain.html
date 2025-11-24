@@ -9,13 +9,12 @@ height: 0.3rem !important;
 <h1>▋ 조교 대상</h1>
 </header>
 
-<div class="controls-bar">
-<div class="sort-buttons">
-<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::index}}}}active{{/if}}" risu-btn="sort_index">번호순</div>
-<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::name}}}}active{{/if}}" risu-btn="sort_name">이름순</div>
-<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::level}}}}active{{/if}}" risu-btn="sort_level">레벨순</div>
-<div class="sort-btn {{#if {{equal::{{getvar::charSort}}::hp}}}}active{{/if}}" risu-btn="sort_hp">HP순</div>
-</div>
+<div class="tabs-container">
+<div class="tabs {{#if {{equal::{{getvar::category}}::index}}}}active{{/if}}" risu-btn="sort_index">획득순</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::name}}}}active{{/if}}" risu-btn="sort_name">이름</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::level}}}}active{{/if}}" risu-btn="sort_level">레벨</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::hp}}}}active{{/if}}" risu-btn="sort_hp">HP</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::rating}}}}active{{/if}}" risu-btn="sort_rating">레이팅</div>
 </div>
 
 <main class="info-grid" style="grid-template-columns: 1fr;">

@@ -26,17 +26,10 @@ border-color: #888;
 <main>
 
 <div class="tabs-container">
-<input type="radio" name="tabs" id="user" hidden {{#if {{equal::{{getvar::category}}::user}}}}checked{{/if}}>
-<label for="user" class="tabs" risu-btn="user">▋마왕</label>
-
-<input type="radio" name="tabs" id="king" hidden {{#if {{equal::{{getvar::category}}::king}}}}checked{{/if}}>
-<label for="king" class="tabs" risu-btn="king">▋광왕</label>
-
-<input type="radio" name="tabs" id="play" hidden {{#if {{equal::{{getvar::category}}::play}}}}checked{{/if}}>
-<label for="play" class="tabs" risu-btn="play">▋플레이</label>
-
-<input type="radio" name="tabs" id="system" hidden {{#if {{equal::{{getvar::category}}::system}}}}checked{{/if}}>
-<label for="system" class="tabs" risu-btn="system">▋시스템</label>
+<div class="tabs {{#if {{equal::{{getvar::category}}::user}}}}active{{/if}}" risu-btn="user">▋마왕</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::king}}}}active{{/if}}" risu-btn="king">▋광왕</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::play}}}}active{{/if}}" risu-btn="play">▋플레이</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::system}}}}active{{/if}}" risu-btn="system">▋시스템</div>
 </div>
 
 <div class="tab-content">
@@ -50,7 +43,7 @@ border-color: #888;
 {{#if {{notequal::{{dict_element::{{getvar::user}}::성별}}::남성}}}}<div class='btn command-btn' risu-btn='userTit'><strong>유두: </strong>{{dict_element::{{getvar::user}}::유두}}</div>{{/if}}
 <div class='btn command-btn' risu-btn='userPubes'><strong>음모: </strong>{{dict_element::{{getvar::user}}::음모}}</div>
 {{#if {{notequal::{{dict_element::{{getvar::user}}::성별}}::여성}}}}<div class='btn command-btn' risu-btn='userPenis'><strong>페니스: </strong>{{dict_element::{{getvar::user}}::페니스}}</div>{{/if}}
-<div class='btn command-btn' risu-btn='userHair' {{#if {{? {{screenwidth}}>600}}}}style="grid-column: span 2"{{/if}}><strong>헤어스타일: </strong>{{dict_element::{{getvar::user}}::헤어스타일}}</div>
+<div class='btn command-btn two-cells' risu-btn='userHair'><strong>헤어스타일: </strong>{{dict_element::{{getvar::user}}::헤어스타일}}</div>
 {{/when}}
 
 {{#when::category::vis::king}}
@@ -62,7 +55,7 @@ border-color: #888;
 {{#if {{notequal::{{dict_element::{{getvar::king}}::성별}}::남성}}}}<div class='btn command-btn' risu-btn='kingTit'><strong>유두: </strong>{{dict_element::{{getvar::king}}::유두}}</div>{{/if}}
 <div class='btn command-btn' risu-btn='kingPubes'><strong>음모: </strong>{{dict_element::{{getvar::king}}::음모}}</div>
 {{#if {{notequal::{{dict_element::{{getvar::king}}::성별}}::여성}}}}<div class='btn command-btn' risu-btn='kingPenis'><strong>페니스: </strong>{{dict_element::{{getvar::king}}::페니스}}</div>{{/if}}
-<div class='btn command-btn' risu-btn='kingHair' {{#if {{? {{screenwidth}}>600}}}}style="grid-column: span 2"{{/if}}><strong>헤어스타일: </strong>{{dict_element::{{getvar::king}}::헤어스타일}}</div>
+<div class='btn command-btn two-cells' risu-btn='kingHair'><strong>헤어스타일: </strong>{{dict_element::{{getvar::king}}::헤어스타일}}</div>
 {{/when}}
 
 {{#when::category::vis::play}}
@@ -170,12 +163,5 @@ border-color: #888;
 </main>
 
 <div class="line double"></div>
-
-<section class="command-panel">
-<div class="command-container">
 {{getVar::cmds}}
-</div>
-</section>
-
-<div class="line double"></div>
 </div>
