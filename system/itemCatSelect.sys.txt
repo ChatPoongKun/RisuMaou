@@ -6,10 +6,10 @@ function (triggerId, itemCat)
     local contents = ""
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
     local needKnowl = {
+        ["영양제"] = true,
         ["이뇨제"] = true,
         ["미약"] = true,
         ["구충제"] = true,
-        ["영양제"] = true,
         ["강모제"] = true,
         ["배란유발제"] = true
     }

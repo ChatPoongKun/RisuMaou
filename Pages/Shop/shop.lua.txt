@@ -141,8 +141,8 @@ end!!
     local itemName = "콘돔"
     sysFunction(triggerId, "itemSelect.sys", itemName)
 end!!
-[shop/로션/hidden] function(triggerId)
-    local itemName = "로션"
+[shop/오일/hidden] function(triggerId)
+    local itemName = "오일"
     sysFunction(triggerId, "itemSelect.sys", itemName)
 end!!
 [shop/이뇨제/hidden] function(triggerId)
