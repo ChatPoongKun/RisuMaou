@@ -154,14 +154,10 @@ function (triggerId)
             -- 현재 카테고리 내에 존재하는 키인지 확인 (JSON 객체 참조)
             -- traitObj[currentCat]은 배열([{키:값}, {키:값}]) 형태임
             local exists = false
-            if currentCat == "칭호" then -- 칭호는 단순 객체
-                if traitObj["칭호"][key] then exists = true end
-            else -- 나머지는 배열 내 객체
-                for _, item in ipairs(traitObj[currentCat]) do
+            for _, item in ipairs(traitObj[currentCat]) do
                     if item[key] then exists = true; break end
                 end
-            end
-            
+                
             if exists then
                 table.insert(traitCategories[currentCat], key)
             end
