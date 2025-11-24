@@ -4,6 +4,7 @@ function (triggerId)
     local funcs = {}
     local screen = getState(triggerId, "screen")
     if screen == "gameStart" or screen == "intro" then
+        setState(triggerId, "funcs", funcs)
         return --메인화면 진입 전까지는 실행하지 않음
     end
     --0000: 메인화면으로 복귀
