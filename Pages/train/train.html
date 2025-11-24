@@ -408,7 +408,7 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 <header class="header">
 <h1>▋조교 메뉴</h1>
 <div class="game-info">
-<span>({{getvar::day}}일째) {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}《만월》 {{/when}}{{#when::ampm::vis::0}}낮{{:else}}밤{{/when}}</span>
+<span>Day {{getvar::day}} {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}<span style="color:#fbc02d">《만월》</span>{{/when}} {{#when::ampm::vis::0}}☀️ 낮{{:else}}🌙 밤{{/when}}</span>
 </div>
 </header>
 <main>
@@ -470,7 +470,7 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 </div>
 <div class="detail-item">
 <span class="detail-label">절정</span>
-<span class="detail-value">{{getvar::ejCount_t}}회</span>
+<span class="detail-value">{{getvar::ej_target_count}}회</span>
 </div>
 </div>
 </div>
