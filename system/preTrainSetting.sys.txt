@@ -16,12 +16,7 @@ function (triggerId, name)
         target["조교회수"] = tostring(target["조교회수"]+1)
 
         --조교화면 변수 초기화
-        setChatVar(triggerId, "애무계", 1)
-        setChatVar(triggerId, "도구계", 0)
-        setChatVar(triggerId, "V계", 0)
-        setChatVar(triggerId, "A계", 0)
-        setChatVar(triggerId, "봉사계", 0)
-        setChatVar(triggerId, "하드계", 0)
+        setChatVar(triggerId, "category", "애무계")
         setChatVar(triggerId, "oldLog", date)
         setChatVar(triggerId, "newLog", "["..target["이름"].."의 "..target["조교회수"].."번째 조교]<br>")
         setChatVar(triggerId, "statLvUp", " ")
