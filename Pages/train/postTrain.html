@@ -59,7 +59,6 @@ box-shadow: 0px 0px 20px -2px #a00606;
 <h1>▋조교 결과</h1>
 </header>
 
-<div class="line single"></div>
 
 <section class="jewel-section">
 <h2>* 조교의 흔적</h2>
@@ -81,6 +80,7 @@ box-shadow: 0px 0px 20px -2px #a00606;
 {{/if}}
 {{/each}}
 {{#if {{? {{gettempvar::exps}}!=blank}}}}
+<div class="line single"></div>
 <section class="exp-section">
 <h2>* 경험</h2>
 <div class="stats-grid">
@@ -88,8 +88,7 @@ box-shadow: 0px 0px 20px -2px #a00606;
 </div>
 </section>
 {{/if}}
-
-
+<div class="line single"></div>
 <section class="ability-section">
 <h2>* 능력 업그레이드</h2>
 <div class="stats-grid">
@@ -122,12 +121,12 @@ box-shadow: 0px 0px 20px -2px #a00606;
 {{/when}}
 </div>
 </section>
-
+<div class="line single"></div>
 <section class="log-panel">
 <h2>* 흔적 변화</h2>
-
 <div class="log-content">
 {{getvar::traceText}}
+{{#when::traceText::vis::}}변화없음{{/when}}
 </div>
 </section>
 <div class="line single"></div>
