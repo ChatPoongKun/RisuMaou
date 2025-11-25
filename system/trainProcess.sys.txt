@@ -1,11 +1,21 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, exps, command)
     debug("trainProcess 실행")
+
     --[[초기화]]
     math.randomseed(os.time())
     local screenEffect = "" --screenEffect 초기화
-    
-    
+
+    --[[날짜계산]]
+    local day = getChatVar(triggerId, "day")
+    local ampm = tonumber(getChatVar(triggerId, "ampm"))
+    local date = "day"..day
+    if ampm == 0 then
+        date = date.." ☀️ 낮"
+    else
+        date = date.." 🌙 밤"
+    end
+
     --[[DB호출]]
     local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
     local markDB = json.decode(getLoreBookContent(triggerId, "mark.db"))
@@ -335,16 +345,8 @@ function(triggerId, dc, HP, SP, exps, command)
     local process_comment = "[조교 로그 생성중]"
     setChatVar(triggerId, "cmds", loading_prepend .. process_comment .. loading_append)
     reloadDisplay(triggerId)
+    
     --[[trainLog 프롬프트 빌딩]]
-    --날짜계산
-    local day = getChatVar(triggerId, "day")
-    local ampm = tonumber(getChatVar(triggerId, "ampm"))
-    local date = day.."일째, "
-    if ampm == 0 then
-        date = date.."낮"
-    else
-        date = date.."밤"
-    end
     --기존 로그 불러옴
     local oldLog
     if getChatVar(triggerId, "oldLog") == date then
@@ -378,11 +380,22 @@ function(triggerId, dc, HP, SP, exps, command)
         return false
     end
 
-    --응답처리
+    --[[응답처리]]
+    --신규로그 저장
     local dialog = trainLog.result
     debug("응답: "..dialog)
     local newLog = "<br>" .. dialog
 
+    --수정구 녹화로그 저장
+    if TRAIN_REC > 0 then
+        debug("수정구영상 녹화중. 잔여회수: "..TRAIN_REC)
+        if TRAIN_REC == 1 then
+            newLog = newLog .. "<br>※ 수정구 영상의 녹화가 종료되었습니다."
+        end
+        executeFunction(triggerId, "train", "200", date, target["이름"], newLog)
+    end
+
+    --[[마무리 처리]]
     setChatVar(triggerId, "cmds", old_cmds) --버튼 원복
     setChatVar(triggerId, "statLvUp", lvUpcomment) --stat 변화 설명은 log에 포함되지 않도록 별도 처리
     setState(triggerId, "stat", statResult) --변경된 stat을 state에 반영
@@ -393,7 +406,7 @@ function(triggerId, dc, HP, SP, exps, command)
     stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
     setChatVar(triggerId, "stat", stat_c) --변경된 stat을 chatVar에 반영
 
-    --로그표시
+    --로그 처리
     setChatVar(triggerId, "oldLog", oldLog)
     setChatVar(triggerId, "newLog", newLog)
 
