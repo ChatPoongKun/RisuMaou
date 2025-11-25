@@ -26,6 +26,10 @@ function (triggerId, name)
         setChatVar(triggerId, "ej_target_count", 0) --조교대상 절정 회수 초기화
         setChatVar(triggerId, "ej_user_count", 0) --유저 절정 회수 초기화
         setChatVar(triggerId, "statFold", "0") --stat 세부 내역이 보이도록 초기화
+        
+        --수정구 영상 초기화
+        TRAIN_REC = 0 
+        setState(triggerId, "recLog", "")
 
         --스탯 초기화
         local statDB =json.decode(getLoreBookContent(triggerId, "stat.db"))

@@ -1,8 +1,9 @@
 --기본 변수
 TIME = -1
 SPAMING = 0.2
-DEBUG = 0
-MAXROLL = 30
+DEBUG = 0 --디버그 활성화 여부
+MAXROLL = 30 --조교성공굴림
+TRAIN_REC = 0 --수정구 녹화 남은회수
 
 --디버깅용
 function debug(...)
@@ -223,7 +224,7 @@ function executeFunction(triggerId, screen, code, ...)
     if not funcBody then
         funcBody = funcs[code]
         if not funcBody then
-            alertNormal(triggerId, "커맨드 오류: " .. ("존재하지 않는 커맨드"))
+            alertNormal(triggerId, "커맨드 오류: " .. f_code..("존재하지 않는 커맨드"))
             return
         end
     end

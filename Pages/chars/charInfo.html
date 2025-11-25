@@ -370,7 +370,7 @@
 </section>
 
 <div class="line single"></div>
-
+{{#when::{{dict_element::{{getvar::target}}::이름}}::isnot::{{user}}}}
 <section class="marks-section">
 <h2>* 각인</h2>
 <div class="marks-grid">
@@ -397,6 +397,7 @@
 </section>
 
 <div class="line single"></div>
+{{/when}}
 
 <section class="equipment-section">
 <h2>* 장비</h2>

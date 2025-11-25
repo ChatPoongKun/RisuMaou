@@ -1,6 +1,7 @@
 function (triggerId)
     --초기 변수 설정
     print("initVars 실행")
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false} --로어북 저장용 옵션
     local initVars = {
         gold = "10,000",
         day = 1,
@@ -34,6 +35,9 @@ function (triggerId)
     end
     stateToVar(triggerId, "inventory", inventory)
 
+    --수정구 기록 초기화
+    upsertLocalLoreBook(triggerId, "crystalRec", "{}", option)
+
     --user 및 고유캐릭터 정보를 로컬 로어북에 저장
     local trace = {}
     for _, v in ipairs(json.decode(initVars.chars)) do --리수배열 스타일에 맞게 저장
@@ -56,7 +60,6 @@ function (triggerId)
         debug(v.."의 캐릭터 테이블에 ".. added.."필드 추가")
 
         --캐릭터 정보를 로컬로어북에 저장
-        local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
         upsertLocalLoreBook(triggerId, v, json.encode(content), option)
 
         --흔적은 별도의 state로 저장

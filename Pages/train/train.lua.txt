@@ -34,7 +34,7 @@ end!!
     setChatVar(triggerId, "category", "하드계")
 end!!
 
-[train/11/{{#when::category::is::1}}가만 지켜본다{{/when}}] function(triggerId)
+[train/11/{{#when::category::vis::애무계}}가만 지켜본다{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 0 --조교의 난이도. 높을수록 성공확률 낮음
     local costHP = 5
@@ -49,7 +49,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/12/{{#when::category::is::1}}대화한다{{/when}}] function(triggerId)
+[train/12/{{#when::category::vis::애무계}}대화한다{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 0 --조교의 난이도. 높을수록 성공확률 낮음
     local costHP = 5
@@ -64,7 +64,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/13/{{#when::category::is::1}}애무{{/when}}] function(triggerId)
+[train/13/{{#when::category::vis::애무계}}애무{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 5 --조교의 난이도. 높을수록 성공확률 낮음
     local costHP = 10
@@ -79,7 +79,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/14/{{#when::category::is::1}}커널링구스{{/when}}] function(triggerId)
+[train/14/{{#when::category::vis::애무계}}커널링구스{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 20 --조교의 난이도. 높을수록 성공확률 낮음
     local costHP = 15
@@ -95,7 +95,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/15/{{#when::category::is::1}}애널애무{{/when}}] function(triggerId)
+[train/15/{{#when::category::vis::애무계}}애널애무{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 30 --조교의 난이도. 높을수록 성공확률 낮음
     local costHP = 15
@@ -111,7 +111,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/16/{{#when::category::is::1}}자위{{/when}}] function(triggerId)
+[train/16/{{#when::category::vis::애무계}}자위{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 25 --조교의 난이도. 높을수록 성공확률 낮음
     local costHP = 15
@@ -393,6 +393,21 @@ end!!
     local exps = {"B경험", "분유경험"}
 
     local command = "<br>{{user}}는 "..target['이름'] .."의 가슴에 착유기를 장착해 착유를 시도한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
+end!!
+
+[train/212/{{#when::category::vis::도구계}}{{#when::{{? {{dict_element::{{getvar::inventory}}::채찍}}==1}}}}채찍{{/when}}{{/when}}] function(triggerId)
+    local target = getState(triggerId, "target")
+    local dc = 30
+    local costHP = 30
+    local costSP = 20
+    local dcBonus = 0 
+    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
+    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.5
+
+    local exps = {"피학경험"}
+
+    local command = "<br>{{user}}는 채찍을 들어 "..target['이름'] .."의 등을 내리친다."
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
@@ -722,22 +737,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/93/{{#when::category::vis::하드계}}{{#when::{{? {{dict_element::{{getvar::inventory}}::채찍}}==1}}}}채찍{{/when}}{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local dc = 30
-    local costHP = 30
-    local costSP = 20
-    local dcBonus = 0 
-    dcBonus = dcBonus + getState(triggerId, "stat")["저항"] * 1.2
-    dcBonus = dcBonus + getState(triggerId, "stat")["공포"] * 0.5
-
-    local exps = {"피학경험"}
-
-    local command = "<br>{{user}}는 채찍을 들어 "..target['이름'] .."의 등을 내리친다."
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
-end!!
-
-[train/94/hidden] function(triggerId) --딱히 필요한 조교인지 의문
+[train/93/hidden] function(triggerId) --유두 바늘 딱히 필요한 조교인지 의문
     local target = getState(triggerId, "target")
     local dc = 50
     local costHP = 25
@@ -752,7 +752,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/95/{{#when::category::vis::하드계}}{{#when::{{? {{dict_element::{{getvar::inventory}}::로프}}==1}}}}귀갑묶기{{/when}}{{/when}}] function(triggerId)
+[train/94/{{#when::category::vis::하드계}}{{#when::{{? {{dict_element::{{getvar::inventory}}::로프}}==1}}}}귀갑묶기{{/when}}{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 20
     local costHP = 10
@@ -767,7 +767,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/96/{{#when::category::vis::하드계}}{{#when::{{? {{dict_element::{{getvar::inventory}}::관장기}}==1}}}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널플러그}}==1}}}}관장+플러그{{/when}}{{/when}}{{/when}}] function(triggerId)
+[train/95/{{#when::category::vis::하드계}}{{#when::{{? {{dict_element::{{getvar::inventory}}::관장기}}==1}}}}{{#when::{{? {{dict_element::{{getvar::inventory}}::애널플러그}}==1}}}}관장+플러그{{/when}}{{/when}}{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 40
     local costHP = 30
@@ -783,7 +783,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/97/{{#when::category::vis::하드계}}방뇨{{/when}}] function(triggerId)
+[train/96/{{#when::category::vis::하드계}}방뇨{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 40
     local costHP = 15
@@ -799,7 +799,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/98/{{#when::category::vis::하드계}}음뇨{{/when}}] function(triggerId)
+[train/97/{{#when::category::vis::하드계}}음뇨{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 50
     local costHP = 20
@@ -815,7 +815,8 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/99/hidden] function(triggerId)--추후 동물 구매를 구현한 뒤 추가
+[train/98/hidden] function(triggerId)--추후 동물 구매를 구현한 뒤 추가
+    --수간
     local target = getState(triggerId, "target")
     local dc = 60
     local costHP = 40
@@ -831,7 +832,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/910/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>3}}}}{{#when::category::vis::하드계}}피스트퍽{{/when}}{{/when}}] function(triggerId)
+[train/99/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>3}}}}{{#when::category::vis::하드계}}피스트퍽{{/when}}{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 70
     local costHP = 50
@@ -847,7 +848,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/911/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::A확장}}}}>3}}}}{{#when::category::vis::하드계}}애널피스트{{/when}}{{/when}}] function(triggerId)
+[train/910/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::A확장}}}}>3}}}}{{#when::category::vis::하드계}}애널피스트{{/when}}{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 80
     local costHP = 50
@@ -863,7 +864,7 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
 end!!
 
-[train/912/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>3}}}}{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::A확장}}}}>3}}}}{{#when::category::vis::하드계}}양구멍피스트{{/when}}{{/when}}{{/when}}] function(triggerId)
+[train/911/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>3}}}}{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::A확장}}}}>3}}}}{{#when::category::vis::하드계}}양구멍피스트{{/when}}{{/when}}{{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
     local dc = 100
     local costHP = 70
@@ -921,21 +922,120 @@ end!!
 end!!
 
 [train/62/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::미약}}}}>0}}}}{{#when::category::vis::소모품}}미약{{/when}}{{/when}}] function(triggerId)
-    local train = "미약"
+    local target = getState(triggerId, "target")
+    local dc = 0
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0
+
+    --소모품 사용처리
+    local inventory = json.decode(getChatVar(triggerId, "inventory"))
+    if tonumber(inventory['미약']) < 1 then
+        alertNormal(triggerId, "미약이 부족합니다.")
+        reloadDisplay(triggerId)
+        return
+    end
+    inventory['미약'] = tostring(inventory['미약'] - 1)
+    setChatVar(triggerId, "inventory", json.encode(inventory))
+
+    --욕정 최대 4까지 증가
+    local stat = json.decode(getChatVar(triggerId, "stat"))
+    stat['욕정'] = tostring(math.min(4, stat['욕정'] +1))
+
+    local exps = {"약물경험"}
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는"..target['이름'] .."에게 강제로 미약을 먹인다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
+
+    --stat변화가 있더라도 다른 stat은 안건드리게 강제함
+    setChatVar(triggerId, "stat", json.encode(stat))
+    --stat변화 멘트 강제처리
+    local lvUpcomment = ""
+    if tonumber(stat['욕정']) <=4 then
+        lvUpcomment = lvUpcomment.."<br>※ 욕정이 " .. stat['욕정']-1 .. "에서 " .. stat['욕정'] .. "로 증가했습니다!"
+    end
+    setChatVar(triggerId, "statLvUp", lvUpcomment)
 end!!
 
-[train/63/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::이뇨제}}}}>0}}}}{{#when::category::vis::소모품}}이뇨제{{/when}}{{/when}}] function(triggerId)
-    local train = "이뇨제"
+[train/63/hidden] function(triggerId)
+    --이뇨제
 end!!
 
 [train/64/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::수정구}}}}>0}}}}{{#when::category::vis::소모품}}수정구{{/when}}{{/when}}] function(triggerId)
-    local train = "수정구"
+    local target = getState(triggerId, "target")
+    local dc = 0
+    local costHP = 10
+    local costSP = 20
+    local dcBonus = 0
+
+    --소모품 사용처리
+    local inventory = json.decode(getChatVar(triggerId, "inventory"))
+    if tonumber(inventory['수정구']) < 1 then
+        alertNormal(triggerId, "수정구가 부족합니다.")
+        reloadDisplay(triggerId)
+        return
+    end
+    inventory['수정구'] = tostring(inventory['수정구'] - 1)
+    setChatVar(triggerId, "inventory", json.encode(inventory))
+
+    --녹화여부 판단
+    if TRAIN_REC > 0 then
+        alertNormal(triggerId, "이미 활성화된 수정구가 있습니다.")
+        reloadDisplay(triggerId)
+        return
+    else
+        TRAIN_REC = 5 --수정구 녹화 회수
+    end
+
+    --수치 최대 4까지 증가
+    local stat = json.decode(getChatVar(triggerId, "stat"))
+    stat['수치'] = tostring(math.min(4, stat['수치'] +1))
+
+    local exps = {"피사경험"}
+    --LLM에 전달할 조교 커맨드
+    local command =  "<br>{{user}}는 수정구를 꺼내 "..target['이름'] .."의 모습을 기록하기 시작한다."
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, command)
+
+    --stat변화가 있더라도 다른 stat은 안건드리게 강제함
+    setChatVar(triggerId, "stat", json.encode(stat))
+    --stat변화 멘트 강제처리
+    local lvUpcomment = ""
+    if tonumber(stat['수치']) <=4 then
+        lvUpcomment = lvUpcomment.."<br>※ 수치가 " .. stat['수치']-1 .. "에서 " .. stat['수치'] .. "로 증가했습니다!"
+    end
+    setChatVar(triggerId, "statLvUp", lvUpcomment)
 end!!
 
 [train/65/hidden] function(triggerId)--임신시스템 구현 후 추가
-    local train = "콘돔"
+    --콘돔
 end!!
 
 [train/199/hidden] function(triggerId)
     sysFunction(triggerId, "postTrain.sys")
+end!!
+
+[train/200/hidden] function (triggerId, date, name, log)
+    local recLog = getState(triggerId, "recLog")
+    if recLog == "" then
+        recLog = date..name.."의 조교 영상" .. log
+        TRAIN_REC = math.max(0, TRAIN_REC - 1)
+        setState(triggerId, "recLog", recLog)
+    elseif TRAIN_REC == 1 then
+        recLog = recLog .. log
+        TRAIN_REC = 0
+
+        local content = json.decode(getLoreBookContent(triggerId, "crystalRec"))
+        if not content[name] then
+            content[name] = {}
+        end
+        table.insert(content[name], recLog)
+        local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+        upsertLocalLoreBook(triggerId, "crystalRec", json.encode(content), option)
+        setState(triggerId, "recLog", "")
+    else
+        recLog = recLog .. log
+        TRAIN_REC = math.max(0, TRAIN_REC - 1)
+        setState(triggerId, "recLog", recLog)
+    end
+    
 end!!
