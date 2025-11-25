@@ -1,5 +1,5 @@
 function (triggerId)
-    print("debugCmds 실행")
+    debug("debugCmds 실행")
     local key, functionBody
     local funcs = {}
     local screen = getState(triggerId, "screen")
