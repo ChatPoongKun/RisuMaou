@@ -97,7 +97,7 @@ input#two:checked ~ .triple-slider:before { background: #60d9f7; transform: tran
 input#three:checked ~ .triple-slider:before { background: #60d9f7; transform: translate3d(3.8rem,0,0); }
 
 /* Rating System */
-.rating { --rating: 0; --percent: calc(var(--rating) / 10 * 100%); display: inline-block; font-size: 0.75rem; font-family: 'Times New Roman', Times, serif; line-height: 1; }
+.rating { --rating: 0; --percent: calc(var(--rating) / 10 * 100%); display: inline-block; font-size: 0.7rem; font-family: 'Times New Roman', Times, serif; line-height: 1; }
 .heart::before { content: '♥️♥️♥️♥️♥️'; background: linear-gradient(90deg, #d32f2f var(--percent), #444 var(--percent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .skull::before { content: '☠️☠️☠️☠️☠️'; background: linear-gradient(90deg, #e0e0e0 var(--percent), #444 var(--percent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .mark::before { font-size: 1.1rem; --percent: calc(var(--rating) / 3 * 100%); content: '⚜️⚜️⚜️'; background: linear-gradient(90deg, #fbc02d var(--percent), #444 var(--percent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -131,7 +131,7 @@ input#three:checked ~ .triple-slider:before { background: #60d9f7; transform: tr
 .equipment-item { background-color: #1a1a1a; padding: 0.3rem; border-radius: 2px; border: 1px solid #333; }
 .equipment-item .item-type { font-weight: bold; color: #60d9f7; margin-right: 0.5em; }
 
-.abl-item { display: flex; align-items: center; gap: 1rem; padding: 0.2rem 0.5rem; border: 1px solid #333; border-radius: 2px; background-color: #1a1a1a; justify-content: space-between; }
+.abl-item { display: flex; align-items: center; font-size:0.9rem; gap: 1rem; padding: 0.2rem 0.5rem; border: 1px solid #333; border-radius: 2px; background-color: #1a1a1a; justify-content: space-between; }
 .marks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; }
 .mark-item { display: flex; justify-content: space-between; background-color: #1a1a1a; padding: 0.2rem 0.5rem; border-radius: 2px; align-items: center; }
 
