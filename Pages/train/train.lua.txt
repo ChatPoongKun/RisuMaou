@@ -1574,7 +1574,19 @@ end!!
 
 [train/91/{{#when::{{? {{dict_element::{{getvar::inventory}}::개목걸이}}==1}}}}야외플레이
 {{/when}}] function(triggerId)
-    local train = "야외플레이"
+    local target = getState(triggerId, "target")
+    local stat = getState(triggerId, "stat")
+    local dc = DC_PENALTY * 0
+    local costHP = 10
+    local costSP = 30
+
+    local exps = {"수치경험"}
+
+    DC_PENALTY = DC_PENALTY * 1.1
+    local command = "<br>{{user}}는 "..target['이름'] .."에게 개목걸이를 채워 몬스터들이 돌아다니는 야외로 끌고나간다."
+    local feeling = 0
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+
 end!!
 
 [train/92/{{#when::category::vis::하드계}}
@@ -1585,7 +1597,7 @@ end!!
     local dc = DC_PENALTY * 20
     local costHP = 20
     local costSP = 15
-    dc = dc - stat["고통"] * 0.5 --마조끼가 높으면 고통이 오히려 긍정요소지만 여기선 저항감소로 퉁침
+    dc = dc + stat["고통"] * 0.5 - target["마조끼"]
 
     local exps = {"피학경험"}
 
@@ -1608,10 +1620,11 @@ end!!
 
     local exps = {"긴박경험"}
 
+    DC_PENALTY = DC_PENALTY * 0.9
     local command = "<br>{{user}}는 밧줄로 "..target['이름'] .."을 귀갑묶기로 결박한다."
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
-    DC_PENALTY = DC_PENALTY * 0.9
+    
 end!!
 
 [train/95/{{#when::category::vis::하드계}}
@@ -1838,7 +1851,6 @@ end!!
     local dc = DC_PENALTY * 0
     local costHP = 10
     local costSP = 20
-    local dcBonus = 0
 
     --소모품 사용처리
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
@@ -1884,7 +1896,6 @@ end!!
     local dc = DC_PENALTY * 0
     local costHP = 10
     local costSP = 20
-    local dcBonus = 0
 
     --소모품 사용처리
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
@@ -1930,7 +1941,6 @@ end!!
     local dc = DC_PENALTY * 0
     local costHP = 10
     local costSP = 20
-    local dcBonus = 0
 
     --소모품 사용처리
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
