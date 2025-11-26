@@ -25,6 +25,7 @@ Continue the story about the user's training and the character's reaction to tra
 - `MARK`: An unforgettable memory deeply engraved in the character's body and mind.
 - `ABILITY`: A description about character's ABILITY.
 - `TRAIT`: A description about the character's TRAIT.
+- `ITEMS`: A description about the ITEMS in this game.
 - `character_sheet`: The character sheet that includes character's basic info, appearance, narrative, MARK, ABILITY, and TRAIT.
 - `character_stats_LV`: An object where keys are stat names and values are objects with `level`.
 - `{{user}}'s_profile`: The profile that includes {{user}}'s basic info, appearance etc.

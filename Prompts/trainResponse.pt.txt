@@ -32,6 +32,7 @@ Review the provided DBcharacter data, EXP table, and command result. Then, gener
 - `MARK`: An unforgettable memory deeply engraved in the character's body and mind.
 - `ABILITY`: A description about character's ABILITY.
 - `TRAIT`: A description about the character's TRAIT.
+- `ITEMS`: A description about the ITEMS in this game.
 - `EXP_TABLE`: An object mapping level (as a string) to the maximum EXP gain for that level.
 - `character_sheet`: The character sheet that includes character's basic info, appearance, narrative, MARK, ABILITY, and TRAIT.
 - `character_stats_LV`: An object where keys are stat names and values are objects with `level`.

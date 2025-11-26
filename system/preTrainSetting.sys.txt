@@ -70,7 +70,7 @@ function (triggerId, name)
                 stat["A쾌락"] = stat["A쾌락"] - v*(ablBase + ablRatio*math.random())*0.5
                 stat["A윤활"] = stat["A윤활"] + v*(ablBase + ablRatio*math.random())*1.5
             end,
-            ["U확장"] = function(v)--확장이 높아지면 쾌감이 감소. 요도의 경우에는 확장되지 않으면 할 수 있는게 적으므로 패널티 감소
+            ["U확장"] = function(v)--확장이 높아지면 쾌감이 감소. 요도의 경우에는 확장되지 않으면 할 수 있는게 적으므로 페널티 감소
                 stat["U쾌락"] = stat["U쾌락"] - v*(ablBase + ablRatio*math.random())*0.2
                 stat["V윤활"] = stat["V윤활"] + v*(ablBase + ablRatio*math.random())*1.2 --V윤활이라도 올려줘야..
             end,
