@@ -4,6 +4,7 @@ SPAMING = 0.2
 DEBUG = 0 --디버그 활성화 여부
 MAXROLL = 30 --조교성공굴림
 TRAIN_REC = 0 --수정구 녹화 남은회수
+DC_PENALTY = 1 --조교 난이도굴림 전역 페널티. 1보다 작으면 보너스
 
 --디버깅용
 function debug(...)

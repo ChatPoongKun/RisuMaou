@@ -559,8 +559,14 @@ S쾌락은 일단 숨겨두기
 <div class="tabs-container">
 <div class="tabs {{#if {{equal::{{getvar::category}}::애무계}}}}active{{/if}}" risu-btn="1">[1] 애무계</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::도구계}}}}active{{/if}}" risu-btn="2">[2] 도구계</div>
+{{#when::{{dict_element::{{getvar::target}}::성별}}::isnot::남성}}
+{{#when::{{dict_element::{{getvar::user}}::성별}}::isnot::여성}}
 <div class="tabs {{#if {{equal::{{getvar::category}}::V계}}}}active{{/if}}" risu-btn="3">[3] V계</div>
+{{/when}}
+{{/when}}
+{{#when::{{dict_element::{{getvar::user}}::성별}}::isnot::여성}}
 <div class="tabs {{#if {{equal::{{getvar::category}}::A계}}}}active{{/if}}" risu-btn="4">[4] A계</div>
+{{/when}}
 <div class="tabs {{#if {{equal::{{getvar::category}}::봉사계}}}}active{{/if}}" risu-btn="5">[5] 봉사계</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::소모품}}}}active{{/if}}" risu-btn="6">[6] 소모품</div>
 {{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::레벨}}}}>3}}}}

@@ -1,5 +1,5 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
-function(triggerId, dc, HP, SP, exps, command)
+function(triggerId, dc, HP, SP, exps, feeling, command)
     debug("trainProcess 실행")
 
     --[[초기화]]
@@ -23,6 +23,7 @@ function(triggerId, dc, HP, SP, exps, command)
     local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db"))
     local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
     local expDB = json.decode(getLoreBookContent(triggerId, "exp.db"))
+    local itemDB = json.decode(getLoreBookContent(triggerId, "items.db"))
     --statdb에서 설명파트만 추출
     for k,v in pairs(statDB) do
         statDB[k] = v[1]
@@ -50,10 +51,10 @@ function(triggerId, dc, HP, SP, exps, command)
 
     --[[성공굴림]]
     --보너스 요소: 유저 레벨당 1, 대상의 반발 외 각인당 2, 긍정적 Stat레벨당 1
-    --패널티 요소: 대상의 2^반발각인, 부정적 stat당 1
+    --페널티 요소: 대상의 2^반발각인, 저항 stat당 1
     local rollBonus = 0
     rollBonus = rollBonus + json.decode(user)["레벨"] - 1 --유저 레벨당 1, 1레벨부터 시작이므로 1을 차감
-    
+    rollBonus = rollBonus - currentStat["저항"] --저항 stat 1레벨당 1만큼 페널티
     for _, v in ipairs(markDB) do -- 각인 보너스 적용
         if v == "반발각인" then
             rollBonus = rollBonus - 2^tonumber((target[v] or 0))
@@ -87,8 +88,8 @@ function(triggerId, dc, HP, SP, exps, command)
     --[[HP,SP 소모 계산]]
     local costHP, costSP = HP, SP
     if string.find(rollMsg, "실패") then --조교가 실패하는 경우 체력 기력소모 증가
-        costHP = costHP + math.max(dc- (roll + rollBonus), 0)
-        costSP = costSP + math.max(dc- (roll + rollBonus), 0)
+        costHP = costHP + dc - math.abs(roll + rollBonus)
+        costSP = costSP + dc - math.abs(roll + rollBonus)
     elseif string.find(rollMsg, "대성공") then --조교가 대성공 하면 체력 기력 소모 감소
         costHP = costHP *0.8
         costSP = costSP *0.8
@@ -187,6 +188,7 @@ function(triggerId, dc, HP, SP, exps, command)
     promptBuild("system", "- MARK: "..json.encode(markDB)),
     promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
     promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
+    promptBuild("system", "- ITEMS: "..json.encode(itemDB)),
     promptBuild("system", "- EXP_TABLE: "..json.encode(EXPtbl)),
     promptBuild("system", "- character_sheet: "..target_c),
     promptBuild("system", "- character_stats_Lv: "..json.encode(statProm)),
@@ -204,7 +206,7 @@ function(triggerId, dc, HP, SP, exps, command)
 
     --trainResponse 응답저장
     local content = trainResponse.result
-    debug("응답: "..content)
+    debug("stat계산: "..content)
     --statEXP 저장
     local statEXP = content:match("({.*})")
     statEXP = json.decode(statEXP)
@@ -363,6 +365,7 @@ function(triggerId, dc, HP, SP, exps, command)
     promptBuild("system", "- MARK: "..json.encode(markDB)),
     promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
     promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
+    promptBuild("system", "- ITEMS: "..json.encode(itemDB)),
     promptBuild("system", "- character_sheet: "..target_c),
     promptBuild("system", "- character_stats_Lv: "..json.encode(statResult)),
     promptBuild("system", "- {{user}}'s_profile: "..user),
@@ -383,7 +386,7 @@ function(triggerId, dc, HP, SP, exps, command)
     --[[응답처리]]
     --신규로그 저장
     local dialog = trainLog.result
-    debug("응답: "..dialog)
+    debug("조교로그: "..dialog)
     local newLog = "<br>" .. dialog
 
     --수정구 녹화로그 저장
