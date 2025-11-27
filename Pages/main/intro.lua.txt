@@ -281,8 +281,6 @@ end!!
 end!!
 
 
-
-
 [intro/trainDifficulty/hidden] function(triggerId)
     local trainDifficulty = getChatVar(triggerId, "trainDifficulty")
 
@@ -444,6 +442,19 @@ end!!
 
 [intro/199/설정완료] function(triggerId)
     local screen = "main"
+
+    --미성년 금지시 마오 나이 18세로 변경하고 몸매도 변경
+    if tonumber(getChatVar(triggerId, "ageLimit")) == 18 then
+        local mao = json.decode(getLoreBookContent(triggerId, "마오"))
+        mao["나이"] = "18"
+        mao["키"] = "155"
+        mao["몸무게"] = "47"
+        mao["가슴"] = "평범"
+        mao["음모"] = "보통"
+        local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false} --로어북 저장용 옵션
+        upsertLocalLoreBook(triggerId, "마오", json.encode(mao), option)
+    end
+
     setChatVar(triggerId, "category", "items")
     setState(triggerId, "screen", screen)
 end!!
