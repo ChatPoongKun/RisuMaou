@@ -1,5 +1,5 @@
 function (triggerId)
-    debug("turnEnd 실행")
+    debug("dayEnd 실행")
     --시간 흐름 처리
     local day = getChatVar(triggerId, "day")
     local ampm = getChatVar(triggerId, "ampm")
