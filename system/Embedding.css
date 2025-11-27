@@ -130,13 +130,13 @@ input:checked + .slider { background-color: #1a3a4a; border-color: #60d9f7; }
 input:checked + .slider:before { transform: translateX(1.25rem); background-color: #60d9f7; }
 
 /* Triple Switch */
-.triple-switch { position: relative; display: inline-block; width: 5rem; height: 1.25rem; margin-left: 0.5rem; vertical-align: middle; }
+.triple-switch { position: relative; display: inline-block; width: 4rem; height: 1.25rem; margin-left: 0.5rem; vertical-align: middle; }
 .triple-switch input { opacity: 0; width: 0; height: 0; }
 .triple-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; border: 1px solid #60d9f7; border-radius: 1rem; background: #333; }
 .triple-slider:before { position: absolute; content: ""; height: 0.85rem; width: 0.85rem; top: 0.15rem; background-color: #888; border-radius: 50%; transition: transform 0.2s, background-color 0.2s; }
 input#one:checked ~ .triple-slider:before { background: #60d9f7; transform: translate3d(0.2rem,0,0); }
-input#two:checked ~ .triple-slider:before { background: #60d9f7; transform: translate3d(2rem,0,0); }
-input#three:checked ~ .triple-slider:before { background: #60d9f7; transform: translate3d(3.8rem,0,0); }
+input#two:checked ~ .triple-slider:before { background: #60d9f7; transform: translate3d(1.5rem,0,0); }
+input#three:checked ~ .triple-slider:before { background: #60d9f7; transform: translate3d(2.9rem,0,0); }
 
 /* Rating System */
 .rating { --rating: 0; --percent: calc(var(--rating) / 10 * 100%); display: inline-block; font-size: 0.7rem; font-family: 'Times New Roman', Times, serif; line-height: 1; }

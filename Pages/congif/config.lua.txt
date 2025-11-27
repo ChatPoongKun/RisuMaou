@@ -8,18 +8,18 @@ end!!
     setChatVar(triggerId, "category", configCat)
 end!!
 
-[config/difficulty/hidden] function(triggerId)
-    local difficulty = getChatVar(triggerId, "difficulty")
+[config/trainDifficulty/hidden] function(triggerId)
+    local trainDifficulty = getChatVar(triggerId, "trainDifficulty")
 
-    if difficulty == "쉬움" then
+    if trainDifficulty == "쉬움" then
         MAXROLL = 30
-        setChatVar(triggerId, "difficulty", "보통")
-    elseif difficulty == "보통" then
+        setChatVar(triggerId, "trainDifficulty", "보통")
+    elseif trainDifficulty == "보통" then
         MAXROLL = 20
-        setChatVar(triggerId, "difficulty", "어려움")
+        setChatVar(triggerId, "trainDifficulty", "어려움")
     else
         MAXROLL = 40
-        setChatVar(triggerId, "difficulty", "쉬움")
+        setChatVar(triggerId, "trainDifficulty", "쉬움")
     end
 end!!
 
@@ -40,6 +40,105 @@ end!!
         setChatVar(triggerId, "ageLimit", "18")
     else
         setChatVar(triggerId, "ageLimit", "0")
+    end
+end!!
+
+[config/ntrLimit/hidden] function(triggerId)
+    local ntrLimit = getChatVar(triggerId, "ntrLimit")
+
+    if ntrLimit == "0" then
+        setChatVar(triggerId, "ntrLimit", "1")
+    elseif ntrLimit == "1" then
+        setChatVar(triggerId, "ntrLimit", "2")
+    else
+        setChatVar(triggerId, "ntrLimit", "0")
+    end
+end!!
+
+[config/futaLimit/hidden] function(triggerId)
+    local futaLimit = getChatVar(triggerId, "futaLimit")
+
+    if futaLimit == "0" then
+        setChatVar(triggerId, "futaLimit", "1")
+    else
+        setChatVar(triggerId, "futaLimit", "0")
+    end
+end!!
+
+[config/maleLimit/hidden] function(triggerId)
+    local maleLimit = getChatVar(triggerId, "maleLimit")
+
+    if maleLimit == "0" then
+        setChatVar(triggerId, "maleLimit", "1")
+    else
+        setChatVar(triggerId, "maleLimit", "0")
+    end
+end!!
+
+[config/trainTargetPanel/hidden] function(triggerId)
+    local trainTargetPanel = getChatVar(triggerId, "trainTargetPanel")
+
+    if trainTargetPanel == "0" then
+        setChatVar(triggerId, "trainTargetPanel", "1")
+    else
+        setChatVar(triggerId, "trainTargetPanel", "0")
+    end
+end!!
+
+[config/trainUserPanel/hidden] function(triggerId)
+    local trainUserPanel = getChatVar(triggerId, "trainUserPanel")
+
+    if trainUserPanel == "0" then
+        setChatVar(triggerId, "trainUserPanel", "1")
+    else
+        setChatVar(triggerId, "trainUserPanel", "0")
+    end
+end!!
+
+[config/futaLimit/hidden] function(triggerId)
+    local futaLimit = getChatVar(triggerId, "futaLimit")
+
+    if futaLimit == "0" then
+        setChatVar(triggerId, "futaLimit", "1")
+    else
+        setChatVar(triggerId, "futaLimit", "0")
+    end
+end!!
+
+[config/maleLimit/hidden] function(triggerId)
+    local maleLimit = getChatVar(triggerId, "maleLimit")
+
+    if maleLimit == "0" then
+        setChatVar(triggerId, "maleLimit", "1")
+    else
+        setChatVar(triggerId, "maleLimit", "0")
+    end
+end!!
+
+[config/combatDifficulty/hidden] function(triggerId)
+    local combatDifficulty = getChatVar(triggerId, "combatDifficulty")
+
+    if combatDifficulty == "쉬움" then
+        MAXROLL = 30
+        setChatVar(triggerId, "combatDifficulty", "보통")
+    elseif combatDifficulty == "보통" then
+        MAXROLL = 20
+        setChatVar(triggerId, "combatDifficulty", "어려움")
+    else
+        MAXROLL = 40
+        setChatVar(triggerId, "combatDifficulty", "쉬움")
+    end
+end!!
+
+[config/heroLvLimit/hidden] function(triggerId)
+    local heroLvLimit = getChatVar(triggerId, "heroLvLimit")
+
+    if heroLvLimit == "0" then
+        setChatVar(triggerId, "heroLvLimit", "5")
+    elseif heroLvLimit == "5" then
+        setChatVar(triggerId, "heroLvLimit", "10")
+    else
+        setChatVar(triggerId, "heroLvLimit", "0")
     end
 end!!
 
