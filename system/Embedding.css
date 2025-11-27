@@ -60,8 +60,8 @@ h3 { font-size: 0.95rem; color: #aaa; text-transform: uppercase; letter-spacing:
     position: sticky;
     top: 0;
     bottom: 0;
-    /*width: 30px;
-    min-width: 30px;*/
+    width: 30px;
+    min-width: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
