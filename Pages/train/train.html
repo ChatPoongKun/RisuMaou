@@ -1,4 +1,6 @@
 <style>
+h3{margin-top: 0;}
+
 .x-risu-progress-bar.x-risu-ej{
 height: 0.6rem;
 }
@@ -6,6 +8,13 @@ height: 0.6rem;
 .x-risu-bar-label {
 font-size: 1rem;
 color: #ccc;
+}
+
+.status-panel{
+    position: sticky;
+    top:10px;
+    box-shadow: 0 0 20px 10px #121212;
+    height:160px
 }
 
 .target-profile {
@@ -17,6 +26,7 @@ color: #ccc;
     padding: 1rem;
     border-radius: 4px;
     border: 1px solid #333;
+    height: 160px;
 }
 
 .target-visuals {
@@ -41,7 +51,7 @@ color: #ccc;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    min-width: 280px;
+    /*min-width: 280px;*/
 }
 
 .target-header {
@@ -147,18 +157,7 @@ color: #ccc;
 #stats-collapsed:checked ~ .stats-header .collapse-btn {
     display: none;
 }
-/*#stats-collapsed:checked ~ .info-grid {
-    display: none;
-}*/
 
-/*.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-    gap: 0.5rem;
-    background-color: #1a1a1a;
-    padding: 1rem;
-    border-radius: 4px;
-}*/
 .stat-item {
     display: flex;
     justify-content: space-between;
@@ -172,11 +171,18 @@ color: #ccc;
     font-weight: bold;
 }
 
-.ejaculation-section h3 {
-    margin-bottom: 0.75rem;
+.ejaculation-section {
+    /*margin-bottom: 0.75rem;*/
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    box-shadow: 0 0 20px 10px #121212;
     font-size: 1.1em;
-    border-bottom: 1px solid #333;
     padding-bottom: 0.5rem;
+    height: 80px;
+    position: sticky;
+    top:170px;
+    padding: 0 5px;
 }
 
 .log-panel h2 {
@@ -394,7 +400,6 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
     /*text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;*/
 }
 
-
 @media screen and (max-width: 600px) {
     .stat-label {
         font-size: 0.8rem;
@@ -415,6 +420,7 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 <section class="status-panel">
 <div class="target-profile">
 <div class="target-visuals">
+<h3>* {{dict_element::{{getvar::target}}::이름}}</h3>
 <div class="character-portrait">
 <!-- Placeholder for target image variable -->
 <img src="{{raw::{{dict_element::{{getvar::target}}::이름}}.png}}" style="margin:0px;border-radius:1em">
@@ -434,14 +440,14 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 </div>
 <span class="v-bar-label">기력</span>
 </div>
-<!-- Vertical Pee Bar -->
+<!-- Vertical Pee Bar  요의시스템 구현 후 추가
 <div class="v-bar-container">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-pe" style="height: {{getvar::요의}}%;"></div>
 </div>
 <span class="v-bar-label">요의</span>
-</div>
-<!-- Vertical Ejaculation Bar -->
+</div>-->
+<!-- Vertical Ejaculation Bar-->
 <div class="v-bar-container" title="{{getvar::ej_target_ratio}}%">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-ej" style="height: {{getvar::ej_target_ratio}}%;"></div>
@@ -452,13 +458,14 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 </div>
 <div class="target-info">
 <div class="target-header">
-<h2>{{dict_element::{{getvar::target}}::이름}}</h2>
+
 {{#when {{? {{dict_element::{{getvar::target}}::칭호}}!=}}}}
 <div class="char-tags">
 <span class="tag tag-{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::음란}}lewd{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::연모}}love{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::암캐}}puppy{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::붕괴}}destroyed{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::광기}}mad{{/when}}"> 〈{{dict_element::{{getvar::target}}::칭호}}〉</span>
 </div>
 {{/when}}
 </div>
+<!--꼭 필요한 정보인가? sticky에 넣을 정보는 아니므로 어디에 넣을지 추후에 고민
 <div class="target-details-grid">
 <div class="detail-item">
 <span class="detail-label">질내정액</span>
@@ -473,6 +480,7 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 <span class="detail-value">{{getvar::ej_target_count}}회</span>
 </div>
 </div>
+-->
 </div>
 </div>
 </section>
@@ -522,7 +530,7 @@ S쾌락은 일단 숨겨두기
 <div class="line single"></div>
 
 <section class="ejaculation-section">
-<h3>* {{user}}</h3>
+<h3 style="margin-top: 0.5rem;">* {{user}}</h3>
 <div class="x-risu-bar-container">
 <span class="bar-label"> 절정:</span>
 <div class="progress-bar">
