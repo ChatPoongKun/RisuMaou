@@ -11,10 +11,10 @@ color: #ccc;
 }
 
 .status-panel{
-    position: sticky;
+    {{#when::trainTargetPanel::vis::1}}position: sticky;{{/when}}
     top:10px;
     box-shadow: 0 0 20px 10px #121212;
-    height:160px
+    height:160px;
 }
 
 .target-profile {
@@ -106,7 +106,7 @@ color: #ccc;
 .v-bar-fill.x-risu-ej { background-image: linear-gradient(to top, #e06884, #ce025b); } /*사정게이지*/
 
 .bar-value{
-    flex-basis: 3rem;
+    flex-basis: 3.5rem;
 }
 
 .target-details-grid {
@@ -180,9 +180,9 @@ color: #ccc;
     font-size: 1.1em;
     padding-bottom: 0.5rem;
     height: 80px;
-    position: sticky;
-    top:170px;
-    padding: 0 5px;
+    {{#when::trainUserPanel::vis::1}}position: sticky;{{/when}}
+    {{#when::trainTargetPanel::vis::1}}top:170px;{{:else}}top:10px;{{/when}}
+    padding: 0 10px;
 }
 
 .log-panel h2 {
@@ -262,7 +262,7 @@ color: #ccc;
 
 /*조교실패&대성공 전역화면효과*/
 .success-animation {
-position: absolute;
+position: fixed;
 inset: 0; /* a modern way for top/right/bottom/left: 0 */
 z-index: 10;
 overflow: hidden; /* Hide panels as they move out */
@@ -276,7 +276,7 @@ content: '';
 position: absolute;
 top: 0;
 width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
-height: 100%;
+height: 100vh;
 background-color: #111; /* Match log background */
 animation: open-panels 0.4s ease-in-out 0.6s forwards;
 }
@@ -349,7 +349,7 @@ visibility: hidden;
 
 /*각인획득 전역화면효과*/
 .getMark {
-position: absolute;
+position: fixed;
 inset: 0; /* a modern way for top/right/bottom/left: 0 */
 z-index: 10;
 overflow: hidden; /* Hide panels as they move out */
@@ -363,7 +363,7 @@ content: '';
 position: absolute;
 top: 0;
 width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
-height: 100%;
+height: 100vh;
 background-color: #111; /* Match log background */
 animation: open-panels 0.8s ease-in-out 1.2s forwards;
 }
@@ -417,10 +417,10 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 </div>
 </header>
 <main>
+<h3>* {{dict_element::{{getvar::target}}::이름}}</h3>
 <section class="status-panel">
 <div class="target-profile">
 <div class="target-visuals">
-<h3>* {{dict_element::{{getvar::target}}::이름}}</h3>
 <div class="character-portrait">
 <!-- Placeholder for target image variable -->
 <img src="{{raw::{{dict_element::{{getvar::target}}::이름}}.png}}" style="margin:0px;border-radius:1em">
