@@ -29,7 +29,7 @@ function (triggerId, itemCat)
         elseif (itemCat == "tools" or itemCat == "unlock") and inventory[k] == "1" then
             condition = false
             reason = "이미 보유중"
-        elseif tonumber(inventory[k]) >= 9 then
+        elseif tonumber(inventory[k]) >= 99 then
             condition = false
             reason = "이미 최대로 보유중"
         elseif needKnowl[k] and inventory["조합지식"] == "0" then

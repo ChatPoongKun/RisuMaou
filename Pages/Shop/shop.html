@@ -291,7 +291,7 @@ box-shadow: 0px 0px 20px -2px #a00606;
 {{#when::{{and::{{notequal::{{getvar::category}}::tools}}::{{notequal::{{getvar::category}}::unlock}}}}}}
 <div class="item-quantity-selector">
 <button class="quantity-btn" risu-btn="minus">-</button>
-<span class="quantity-display">{{getvar::itemQuantity}}</span>
+<span class="quantity-display" risu-btn="quantity">{{getvar::itemQuantity}}</span>
 <button class="quantity-btn" risu-btn="plus">+</button>
 </div>
 {{/when}}

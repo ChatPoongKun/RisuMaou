@@ -28,7 +28,13 @@ end!!
     local itemPrice = tonumber(getChatVar(triggerId, "itemPrice"))
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
     local gold = tonumber(getChatVar(triggerId, "gold"))
-    local maxCount = math.min(9 - (inventory[itemName] or 0), math.floor(gold/itemPrice))
+    local maxCount = math.min(99 - (inventory[itemName] or 0), math.floor(gold/itemPrice))
+
+    local total_q = tonumber(inventory[itemName] or 0)
+    if total_q >= 98 then
+        alertNormal(triggerId, "구매가능한 수량을 초과했습니다.")
+        return
+    end
 
     itemCount = math.min(itemCount + 1, maxCount)
     setChatVar(triggerId, "itemQuantity", itemCount)
@@ -43,6 +49,31 @@ end!!
     setChatVar(triggerId, "itemTotalPrice", int(itemCount*itemPrice))
 end!!
 
+[shop/quantity/hidden] function(triggerId)
+    local itemName = getChatVar(triggerId, "itemName")
+    local itemCount = getChatVar(triggerId, "itemQuantity")
+    local itemPrice = tonumber(getChatVar(triggerId, "itemPrice"))
+    local inventory = json.decode(getChatVar(triggerId, "inventory"))
+    local gold = tonumber(getChatVar(triggerId, "gold"))
+    local maxCount = math.min(99 - (inventory[itemName] or 0), math.floor(gold/itemPrice))
+    local quantity = alertInput(triggerId, "수량을 입력하세요.(1~"..maxCount..")"):await()
+    quantity = tonumber(quantity)
+    if tonumber(quantity) then
+        itemCount = math.max(1, math.min(maxCount, quantity))
+    else
+        itemCount = 1
+    end
+
+    local total_q = tonumber(inventory[itemName] or 0)
+    if itemCount+total_q >= 99 then
+        alertNormal(triggerId, "구매가능한 수량을 초과했습니다.")
+        return
+    end
+
+    setChatVar(triggerId, "itemQuantity", itemCount)
+    setChatVar(triggerId, "itemTotalPrice", int(itemCount*itemPrice))
+end!!
+
 [shop/purchase/hidden] function(triggerId)
     local itemName = getChatVar(triggerId, "itemName")
     local itemCount = getChatVar(triggerId, "itemQuantity")
@@ -53,6 +84,12 @@ end!!
 
     if itemTotalPrice > gold then
         alertNormal(triggerId, "골드가 부족합니다.")
+        return
+    end
+
+    local total_q = tonumber(inventory[itemName] or 0)
+    if total_q >= 99 then
+        alertNormal(triggerId, "구매가능한 수량을 초과했습니다.")
         return
     end
 
