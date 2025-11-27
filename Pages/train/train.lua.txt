@@ -1356,7 +1356,6 @@ end!!
         feeling = feeling - 2
         command = command .. "{{user}}의 거대한 자지를 모두 입에 담기는 어렵다."
         dc = dc + 2
-        end
     elseif penis == "말자지" then
         feeling = feeling - 4
         command = command .. "{{user}}의 자지는 너무 커서 귀두 정도만 입에 담을 수 있다."
@@ -1396,7 +1395,6 @@ end!!
     local bast = target["가슴"]
     if bast == "거유" then
         feeling = feeling + 2
-        end
     elseif bast == "폭유" then
         feeling = feeling + 4
     end
@@ -1541,7 +1539,6 @@ end!!
     local bast = target["가슴"]
     if bast == "거유" then
         feeling = feeling + 1
-        end
     elseif bast == "폭유" then
         feeling = feeling + 2
     end
