@@ -459,11 +459,6 @@ animation: text-appear-and-fade 2.0s ease-in-out forwards;
 <div class="target-info">
 <div class="target-header">
 
-{{#when {{? {{dict_element::{{getvar::target}}::칭호}}!=}}}}
-<div class="char-tags">
-<span class="tag tag-{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::음란}}lewd{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::연모}}love{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::암캐}}puppy{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::붕괴}}destroyed{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::광기}}mad{{/when}}"> 〈{{dict_element::{{getvar::target}}::칭호}}〉</span>
-</div>
-{{/when}}
 </div>
 <!--꼭 필요한 정보인가? sticky에 넣을 정보는 아니므로 어디에 넣을지 추후에 고민
 <div class="target-details-grid">

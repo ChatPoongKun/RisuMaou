@@ -67,9 +67,9 @@
 <!-- Management Panel -->
 <section class="management-panel">
 <div class="tabs-container">
-<div class="tabs {{#if {{equal::{{getvar::category}}::items}}}}active{{/if}}" risu-btn="items">보유품</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">함정</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::dungeon}}}}active{{/if}}" risu-btn="dungeon">던전</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::items}}}}active{{/if}}" risu-btn="items">아이템</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">보유 전력</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::dungeon}}}}active{{/if}}" risu-btn="dungeon">던전 현황</div>
 </div>
 
 <div class="tab-content">
@@ -109,14 +109,16 @@
 {{/when}}
 
 {{#when::category::vis::traps}}
-<div style="text-align:center; padding:2rem; color:#555;">
-<p>설치된 함정이 없습니다.</p>
-</div>
+<span class="section-label">몬스터</span>
+<div style="font-size:0.8rem; color:#555;">보유 몬스터 없음</div>
+
+<span class="section-label" style="margin-top:1rem;">함정</span>
+<div style="font-size:0.8rem; color:#555;">보유 함정 없음</div>
 {{/when}}
 
 {{#when::category::vis::dungeon}}
 <div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-size:0.85rem; color:#888;">
-<span>던전 Lv.5</span> <span>함정 Lv.3</span>
+<span>던전 Lv.{{getvar::dungeonLv}}</span>
 </div>
 <div class="dungeon-floor-grid">
 <div class="dungeon-floor"><strong>1F</strong> 부하 50체</div>
