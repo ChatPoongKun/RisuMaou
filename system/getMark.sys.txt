@@ -34,8 +34,7 @@ function (triggerId, stats, target)
             screenEffect = "<div class='getMark'><div class='getMarkText neggative'>💢 반발각인 Lv."..target["반발각인"].." 획득!!</div></div>"
         end
         if maxP > markBase * EXPtbl[tostring(markSum)] then
-            setChatVar(triggerId, "screenEffect", screenEffect)
-            return target --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
+            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
         end
     end
 
@@ -53,8 +52,7 @@ function (triggerId, stats, target)
             screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🪱 고통각인 Lv."..target["고통각인"].." 획득!!</div></div>"
         end
         if maxP > markBase * EXPtbl[tostring(markSum)] then
-            setChatVar(triggerId, "screenEffect", screenEffect)
-            return target --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
+            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
         end
     end
 
@@ -72,8 +70,7 @@ function (triggerId, stats, target)
             screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🩻 공포각인 Lv."..target["공포각인"].." 획득!!</div></div>"
         end
         if maxP > markBase * EXPtbl[tostring(markSum)] then
-            setChatVar(triggerId, "screenEffect", screenEffect)
-            return target --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
+            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
         end
     end
 
@@ -91,8 +88,7 @@ function (triggerId, stats, target)
             screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🙏 복종각인 Lv."..target["복종각인"].." 획득!!</div></div>"
         end
         if maxP > markBase * EXPtbl[tostring(markSum)] then
-            setChatVar(triggerId, "screenEffect", screenEffect)
-            return target --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
+            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
         end
     end
 
@@ -110,8 +106,7 @@ function (triggerId, stats, target)
             screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⛓️‍💥 치욕각인 Lv."..target["치욕각인"].." 획득!!</div></div>"
         end
         if maxP > markBase * EXPtbl[tostring(markSum)] then
-            setChatVar(triggerId, "screenEffect", screenEffect)
-            return target --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
+            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
         end
     end
 
@@ -129,10 +124,9 @@ function (triggerId, stats, target)
             screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⭐ 쾌락각인 Lv."..target["쾌락각인"].." 획득!!</div></div>"
         end
         if maxP > markBase * EXPtbl[tostring(markSum)] then
-            setChatVar(triggerId, "screenEffect", screenEffect)
-            return target --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
+            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
         end
     end
 
-    return target
+    return target, screenEffect
 end
