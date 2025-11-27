@@ -128,35 +128,7 @@ h2 {
 <p class="setting-description">체력이 0이 되면 캐릭터가 영구적으로 사망합니다.</p>
 {{/when}}
 {{#when::blockDeath::vis::1}}
-<p class="setting-description">체력이 0이 되어도 캐릭터가 사망하지 않습니다.</p>
-{{/when}}
-</div>
-
-<div class="two-cells" risu-btn="trainTargetPanel">
-<label><b>대상 정보패널 상단고정</b></label>
-<label class="switch">
-<input type="checkbox" name="death-prevent" {{#when::trainTargetPanel::vis::1}}checked{{/when}}>
-<span class="slider"></span>
-</label>
-{{#when::trainTargetPanel::vis::0}}
-<p class="setting-description">화면 스크롤 시 조교대상의 체력/기력바가 화면 밖으로 사라집니다.</p>
-{{/when}}
-{{#when::trainTargetPanel::vis::1}}
-<p class="setting-description">스크롤을 해도 조교 대상의 체력/기력바가 화면 상단에 고정됩니다.</p>
-{{/when}}
-</div>
-
-<div class="two-cells" risu-btn="trainUserPanel">
-<label><b>유저 사정게이지 상단고정</b></label>
-<label class="switch">
-<input type="checkbox" name="death-prevent" {{#when::trainUserPanel::vis::1}}checked{{/when}}>
-<span class="slider"></span>
-</label>
-{{#when::trainUserPanel::vis::0}}
-<p class="setting-description">화면 스크롤 시 {{user}}의 사정 게이지가 화면 밖으로 사라집니다.</p>
-{{/when}}
-{{#when::trainUserPanel::vis::1}}
-<p class="setting-description">스크롤을 해도 {{user}}의 사정 게이지가 화면 상단에 고정됩니다.</p>
+<p class="setting-description">체력이 0이 되면 캐릭터가 사망하는 대신 실신합니다..</p>
 {{/when}}
 </div>
 
@@ -236,6 +208,37 @@ h2 {
 </div>
 
 <div class="line double" style="grid-column: 1 / -1;"></div>
+<div style="grid-column: 1 / -1;"><h2>▷ 편의성 세팅</h2></div>
+
+<div class="two-cells" risu-btn="trainTargetPanel">
+<label><b>대상 정보패널 상단고정</b></label>
+<label class="switch">
+<input type="checkbox" name="death-prevent" {{#when::trainTargetPanel::vis::1}}checked{{/when}}>
+<span class="slider"></span>
+</label>
+{{#when::trainTargetPanel::vis::0}}
+<p class="setting-description">화면 스크롤 시 조교대상의 체력/기력바가 화면 밖으로 사라집니다.</p>
+{{/when}}
+{{#when::trainTargetPanel::vis::1}}
+<p class="setting-description">스크롤을 해도 조교 대상의 체력/기력바가 화면 상단에 고정됩니다.</p>
+{{/when}}
+</div>
+
+<div class="two-cells" risu-btn="trainUserPanel">
+<label><b>유저 사정게이지 상단고정</b></label>
+<label class="switch">
+<input type="checkbox" name="death-prevent" {{#when::trainUserPanel::vis::1}}checked{{/when}}>
+<span class="slider"></span>
+</label>
+{{#when::trainUserPanel::vis::0}}
+<p class="setting-description">화면 스크롤 시 유저의 사정 게이지가 화면 밖으로 사라집니다.</p>
+{{/when}}
+{{#when::trainUserPanel::vis::1}}
+<p class="setting-description">스크롤을 해도 유저의 사정 게이지가 화면 상단에 고정됩니다.</p>
+{{/when}}
+</div>
+
+<div class="line double" style="grid-column: 1 / -1;"></div>
 <div style="grid-column: 1 / -1;"><h2>▷ 모델 선택</h2></div>
 
 <div class="two-cells" risu-btn="trainResponse">
@@ -269,6 +272,7 @@ h2 {
 </div>
 
 {{/when}}
+
 </div>
 </div>
 </main>

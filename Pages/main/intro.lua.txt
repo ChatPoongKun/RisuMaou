@@ -442,8 +442,6 @@ end!!
     setChatVar(triggerId, "models", json.encode(models))
 end!!
 
-
-
 [intro/199/설정완료] function(triggerId)
     local screen = "main"
     setChatVar(triggerId, "category", "items")

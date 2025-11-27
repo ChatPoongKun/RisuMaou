@@ -113,7 +113,7 @@ h3 { font-size: 0.95rem; color: #aaa; text-transform: uppercase; letter-spacing:
 .profile-stats { flex-grow: 2; display: flex; flex-direction: column; gap: 0.25rem; }
 
 /* Tags */
-.tag, .talent-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 2px; border: 1px solid #444; background: #1a1a1a; color: #aaa; display: inline-block; margin: 2px; }
+.tag, .talent-tag { font-size: 0.75rem; padding: 2px 6px; color: #aaa; display: inline-block; margin: 2px; }
 .tag-lewd { color: #ff80ab; border-color: #880e4f; background: #3c061f; }
 .tag-love { color: #f48fb1; border-color: #880e4f; background: #3c061f; }
 .tag-puppy { color: #ffcc80; border-color: #e65100; background: #3e2723; }
