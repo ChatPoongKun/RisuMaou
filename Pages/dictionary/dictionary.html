@@ -65,6 +65,10 @@ margin-bottom: 1rem;
 text-align: center;
 }
 
+details{
+    grid-column: 1 / -1;
+}
+
 </style>
 
 <div class="container">
@@ -83,6 +87,7 @@ text-align: center;
 <div class="tabs {{#if {{equal::{{getvar::category}}::d_trace}}}}active{{/if}}" risu-btn="d_trace">▋흔적</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::d_stat}}}}active{{/if}}" risu-btn="d_stat">▋상태</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::d_item}}}}active{{/if}}" risu-btn="d_item">▋아이템</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_patch}}}}active{{/if}}" risu-btn="d_patch">▋패치노트</div>
 </div>
 
 <div class="tab-content">
@@ -193,6 +198,20 @@ text-align: center;
 {{/when}}
 
 {{/when}}
+
+
+{{#when::category::vis::d_patch}}
+<details><summary>alpha v_0.1 (25.00.00)</summary>
+<p>리수마왕이 렐름에 최초공개된 버전입니다.</p>
+<p>현재 고유 캐릭터인 <s>갈피빈유</s> 마오에 대한 조교를 체험해볼 수 있도록 구현되어 있습니다.</p>
+<p>큼직한 컨텐츠만 따져도 임신시스템, 요의 시스템, 신규 캐릭터 생성, 함정 및 몬스터관리, 용사의 침입과 격퇴, 마을 침공, 광왕과의 상호작용 등 구현해 나가야 할 것이 산더미 처럼 많습니다.</p>
+<p>LLM을 활용한 진짜 텍스트 게임을 만들고자 열심히 개발했지만 어디서 어떤 버그가 터질지도 모릅니다.</p>
+<p>버그 제보나 개발 아이디어를 주고자 하는 분은 아카라이브 챗챈에서 리수마왕을 키워드로 글을 작성해주시거나</p>
+<p><a href="https://github.com/ChatPoongKun/RisuMaou/tree/dev">깃헙</a> 의 데브브런치에 지속적으로 작업된 코드의 최신버전이 공유되고 있으니 PR을 넣어주시면 검토하여 컨텐츠에 반영해보겠습니다.</p>
+</details>
+<div class="line double" style="grid-column: 1/-1;"></div>
+{{/when}}
+
 </div>
 </div>
 </main>

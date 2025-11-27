@@ -43,6 +43,13 @@ end!!
     setChatVar(triggerId, "dictDesc", "상점에서 구매할 수 있는 다양한 아이템")
 end!!
 
+[dictionary/d_patch/hidden] function(triggerId)
+    local dictCat = "d_patch"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "패치노트")
+    setChatVar(triggerId, "dictDesc", "버전별 주요 수정사항에 대한 안내")
+end!!
 
 [dictionary/d_sub_personality/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "성격")
