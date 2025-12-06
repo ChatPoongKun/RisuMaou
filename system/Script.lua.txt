@@ -164,8 +164,15 @@ function initialize(triggerId)
     debug("초기 세팅 개시...")
     sysFunction(triggerId, "initVars.sys")
     setChatVar(triggerId, "category", "user")
-    setState(triggerId, "screen", "intro")
-    processAndStoreLore(triggerId, "intro.lua")
+    screenChange(triggerId, "config")
+    processAndStoreLore(triggerId, "config.lua")
+end
+
+--screen 전환
+function screenChange(triggerId, newScreen)
+    setState(triggerId, "oldScreen", getState(triggerId, "screen"))
+    setState(triggerId, "screen", newScreen)
+    debug("화면 전환: " .. newScreen)
 end
 
 -- 문자열 함수를 실제 함수 객체로 변환
@@ -256,7 +263,7 @@ end
 listenEdit("editDisplay", function(triggerId, data)
     local screen = getState(triggerId, "screen")
     if not screen then
-        setState(triggerId, "screen", "gameStart")
+       screenChange(triggerId, "gameStart")
         screen = getState(triggerId, "screen")
     end
 
