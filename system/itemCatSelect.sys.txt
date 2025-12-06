@@ -38,7 +38,7 @@ function (triggerId, itemCat)
         end
         if condition then
             local price = int(v[2])
-            contents = contents .. "<div class='shop-item btn' risu-btn='"..k.."'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." Gold</span></div></div>"
+            contents = contents .. "<div class='shop-item btn' risu-btn='"..k.."'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..k.."</span><span class='item-price'>"..price.." spirit</span></div></div>"
         end
         debug(k, reason)
     end

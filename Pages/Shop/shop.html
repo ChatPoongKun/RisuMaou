@@ -260,7 +260,7 @@ box-shadow: 0px 0px 20px -2px #a00606;
 <header class="header">
 <h1>마계 상점</h1>
 <div class="game-info">
-<span>(소지금: {{getvar::gold}} Gold)</span>
+<span>(소지한 영혼: {{getvar::spirit}} spirit)</span>
 </div>
 </header>
 
@@ -297,10 +297,10 @@ box-shadow: 0px 0px 20px -2px #a00606;
 {{/when}}
 </div>
 <div class="total-price">
-<span>총 금액:</span>
-<span class="price-value {{#if {{? {{tonumber::{{getvar::itemTotalPrice}}}}>{{tonumber::{{getvar::gold}}}}}}}}exceed{{/if}}">{{getvar::itemTotalPrice}} Gold</span>
+<span>총 영혼:</span>
+<span class="price-value {{#if {{? {{tonumber::{{getvar::itemTotalPrice}}}}>{{tonumber::{{getvar::spirit}}}}}}}}exceed{{/if}}">{{getvar::itemTotalPrice}} Spirit</span>
 </div>
-<button class="btn purchase-btn {{#if {{? {{tonumber::{{getvar::itemTotalPrice}}}}>{{tonumber::{{getvar::gold}}}}}}}}exceed{{/if}}" risu-btn="purchase">구매하기</button>
+<button class="btn purchase-btn {{#if {{? {{tonumber::{{getvar::itemTotalPrice}}}}>{{tonumber::{{getvar::spirit}}}}}}}}exceed{{/if}}" risu-btn="purchase">구매하기</button>
 <div class="item-detail">{{getvar::itemDetail}}</div>
 </div>
 </main>
