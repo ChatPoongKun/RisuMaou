@@ -123,5 +123,5 @@ function (triggerId)
     --정보 초기화
     setChatVar(triggerId, "selectedAbl", "none")
     --조교후 화면으로 이동
-    setState(triggerId, "screen", "postTrain")
+   screenChange(triggerId, "postTrain")
 end

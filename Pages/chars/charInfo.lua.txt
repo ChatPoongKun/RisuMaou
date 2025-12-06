@@ -41,6 +41,7 @@ end!!
 
 [charInfo/199/hidden] function(triggerId)
     setChatVar(triggerId, "target", "") --조회대상 초기화
-    setState(triggerId, "screen", "charList")
+    screenChange(triggerId, getState(triggerId, "oldScreen"))
     setChatVar(triggerId, "category", "index")
+    setChatVar(triggerId, "charSubCat", "")
 end!!
