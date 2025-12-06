@@ -3,7 +3,7 @@
 
 /* Global Reset & Base */
 body { margin: 0; padding: 0; background-color: #050505; color: #c0c0c0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; font-size: 14px; }
-.container { max-width: 1024px; margin: 0 auto; background-color: #121212; box-shadow: 0 0 20px rgba(0,0,0,0.8); border-left: 1px solid #222; border-right: 1px solid #222; padding: 1rem; box-sizing: border-box; }
+.container { max-width: 1024px; margin: 0 auto; background-color: #121212; box-shadow: 0 0 20px rgba(0,0,0,0.8); border: 1px solid #222; padding: 1rem; box-sizing: border-box; }
 
 /* Typography */
 h1, h2, h3 { color: #fff; margin: 0 0 0.75rem 0; font-weight: 600; letter-spacing: -0.02em; }
@@ -51,7 +51,7 @@ h3 { font-size: 0.95rem; color: #aaa; text-transform: uppercase; letter-spacing:
 .showLog { visibility: {{#when::showLog::vis::1}}visible{{:else}}hidden{{/when}}; font-family: Consolas, monospace; font-size: 0.85rem; background: #080808; padding: 0.5rem; border: 1px solid #222; margin-top: 0.5rem; color: #aaa; }
 
 /* Tabs */
-.tabs-container { display: flex; border-bottom: 1px solid #333; margin-bottom: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; white-space: nowrap; height: auto; position: relative; align-items: stretch; }
+.tabs-container { display: flex; border-bottom: 1px solid #333; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; white-space: nowrap; height: auto; position: relative; align-items: stretch; }
 .tabs-container::-webkit-scrollbar { display: none; }
 
 /* Scroll Arrows via CSS Pseudo-elements */
