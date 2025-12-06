@@ -305,5 +305,5 @@ end!!
 
     sysFunction(triggerId, "dayEnd.sys")
     setChatVar(triggerId, "category", "items")
-    setState(triggerId, "screen", "main")
+    screenChange(triggerId, "main")
 end!!

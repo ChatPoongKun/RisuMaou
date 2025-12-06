@@ -1,3 +1,13 @@
+[config/user/hidden] function(triggerId)
+    local configCat = "user"
+    setChatVar(triggerId, "category", configCat)
+end!!
+
+[config/king/hidden] function(triggerId)
+    local configCat = "king"
+    setChatVar(triggerId, "category", configCat)
+end!!
+
 [config/play/hidden] function(triggerId)
     local configCat = "play"
     setChatVar(triggerId, "category", configCat)
@@ -7,6 +17,269 @@ end!!
     local configCat = "system"
     setChatVar(triggerId, "category", configCat)
 end!!
+
+
+
+[config/userGender/hidden] function(triggerId)
+    local user = json.decode(getChatVar(triggerId, "user"))
+    local userGender = alertSelect(triggerId, {"남성", "여성", "후타나리"}):await()
+    if userGender == "0" then
+        user["성별"] = "남성"
+        user["가슴"] = nil
+        user["유두"] = nil
+        user["페니스"] = user["페니스"] or "평범"
+    elseif userGender == "1" then
+        user["성별"] = "여성"
+        user["가슴"] = user["가슴"] or "평범"
+        user["유두"] = user["유두"] or "갈색"
+        user["페니스"] = nil
+    elseif userGender == "2" then
+        user["성별"] = "후타나리"
+        user["가슴"] = user["가슴"] or "평범"
+        user["유두"] = user["유두"] or "갈색"
+        user["페니스"] = user["페니스"] or "평범"
+    end
+    user = json.encode(user)
+    setChatVar(triggerId, "user", user)
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, "user", user, option)
+end!!
+
+[config/userAge/hidden] function(triggerId)
+    local user = json.decode(getChatVar(triggerId, "user"))
+    local userAge = alertSelect(triggerId, {"어림", "청년", "중년", "노년"}):await()
+    if userAge == "0" then
+        user["외형"] = "어림"
+    elseif userAge == "1" then
+        user["외형"] = "청년"
+    elseif userAge == "2" then
+        user["외형"] = "중년"
+    elseif userAge == "3" then
+        user["외형"] = "노년"
+    end
+    user = json.encode(user)
+    setChatVar(triggerId, "user", user)
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, "user", user, option)
+end!!
+
+[config/userHair/hidden] function(triggerId)
+    local user = json.decode(getChatVar(triggerId, "user"))
+    local userHair = alertInput(triggerId, "헤어스타일을 묘사하세요."):await()
+    if userHair ~= "" then
+        user["헤어스타일"] = userHair
+    end
+    user = json.encode(user)
+    setChatVar(triggerId, "user", user)
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, "user", user, option)
+end!!
+
+[config/userBreast/hidden] function(triggerId)
+    local user = json.decode(getChatVar(triggerId, "user"))
+    local userBreast = alertSelect(triggerId, {"절벽", "빈유", "평범", "거유", "폭유"}):await()
+    if userBreast == "0" then
+        user["가슴"] = "절벽"
+    elseif userBreast == "1" then
+        user["가슴"] = "빈유"
+    elseif userBreast == "2" then
+        user["가슴"] = "평범"
+    elseif userBreast == "3" then
+        user["가슴"] = "거유"
+    elseif userBreast == "4" then
+        user["가슴"] = "폭유"
+    end
+    user = json.encode(user)
+    setChatVar(triggerId, "user", user)
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, "user", user, option)
+end!!
+
+[config/userTit/hidden] function(triggerId)
+    local user = json.decode(getChatVar(triggerId, "user"))
+    local userTit = alertSelect(triggerId, {"갈색", "핑크", "함몰"}):await()
+    if userTit == "0" then
+        user["유두"] = "갈색"
+    elseif userTit == "1" then
+        user["유두"] = "핑크"
+    elseif userTit == "2" then
+        user["유두"] = "함몰"
+    end
+    user = json.encode(user)
+    setChatVar(triggerId, "user", user)
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, "user", user, option)
+end!!
+
+[config/userPubes/hidden] function(triggerId)
+    local user = json.decode(getChatVar(triggerId, "user"))
+    local userPubes = alertSelect(triggerId, {"없음", "짧음", "보통", "무성함"}):await()
+    if userPubes == "0" then
+        user["음모"] = "없음"
+    elseif userPubes == "1" then
+        user["음모"] = "짧음"
+    elseif userPubes == "2" then
+        user["음모"] = "보통"
+    elseif userPubes == "3" then
+        user["음모"] = "무성함"
+    end
+    user = json.encode(user)
+    setChatVar(triggerId, "user", user)
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, "user", user, option)
+end!!
+
+[config/userPenis/hidden] function(triggerId)
+    local user = json.decode(getChatVar(triggerId, "user"))
+    local userPenis = alertInput(triggerId, "당신의 페니스 크기는?(cm)"):await()
+    
+    if not tonumber(userPenis) then
+        return
+    end
+
+    userPenis = tonumber(userPenis)
+    if userPenis <= 5 then
+        user["페니스"] = "실좆"
+    elseif userPenis <= 10 then
+        user["페니스"] = "작음"
+    elseif userPenis <= 15 then
+        user["페니스"] = "평범"
+    elseif userPenis <= 25 then
+        user["페니스"] = "대물"
+    elseif  userPenis > 25 then
+        user["페니스"] = "말자지"
+    end
+    user = json.encode(user)
+    setChatVar(triggerId, "user", user)
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, "user", user, option)
+end!!
+
+
+
+
+[config/kingGender/hidden] function(triggerId)
+    local king = json.decode(getChatVar(triggerId, "king"))
+    local kingGender = alertSelect(triggerId, {"남성", "여성", "후타나리"}):await()
+    print(kingGender)
+    if kingGender == "0" then
+        king["성별"] = "남성"
+        king["가슴"] = nil
+        king["유두"] = nil
+        king["페니스"] = king["페니스"] or "대물"
+    elseif kingGender == "1" then
+        king["성별"] = "여성"
+        king["가슴"] = king["가슴"] or "거유"
+        king["유두"] = king["유두"] or "핑크"
+        king["페니스"] = nil
+    elseif kingGender == "2" then
+        king["성별"] = "후타나리"
+        king["가슴"] = king["가슴"] or "거유"
+        king["유두"] = king["유두"] or "핑크"
+        king["페니스"] = king["페니스"] or "대물"
+    end
+    king = json.encode(king)
+    setChatVar(triggerId, "king", king)
+end!!
+
+[config/kingAge/hidden] function(triggerId)
+    local king = json.decode(getChatVar(triggerId, "king"))
+    local kingAge = alertSelect(triggerId, {"어림", "청년", "중년", "노년"}):await()
+    if kingAge == "0" then
+        king["외형"] = "어림"
+    elseif kingAge == "1" then
+        king["외형"] = "청년"
+    elseif kingAge == "2" then
+        king["외형"] = "중년"
+    elseif kingAge == "3" then
+        king["외형"] = "노년"
+    end
+    king = json.encode(king)
+    setChatVar(triggerId, "king", king)
+end!!
+
+[config/kingHair/hidden] function(triggerId)
+    local king = json.decode(getChatVar(triggerId, "king"))
+    local kingHair = alertInput(triggerId, "헤어스타일을 묘사하세요."):await()
+    if kingHair ~= "" then
+        king["헤어스타일"] = kingHair
+    end
+    king = json.encode(king)
+    setChatVar(triggerId, "king", king)
+end!!
+
+[config/kingBreast/hidden] function(triggerId)
+    local king = json.decode(getChatVar(triggerId, "king"))
+    local kingBreast = alertSelect(triggerId, {"절벽", "빈유", "평범", "거유", "폭유"}):await()
+    if kingBreast == "0" then
+        king["가슴"] = "절벽"
+    elseif kingBreast == "1" then
+        king["가슴"] = "빈유"
+    elseif kingBreast == "2" then
+        king["가슴"] = "평범"
+    elseif kingBreast == "3" then
+        king["가슴"] = "거유"
+    elseif kingBreast == "4" then
+        king["가슴"] = "폭유"
+    end
+    king = json.encode(king)
+    setChatVar(triggerId, "king", king)
+end!!
+
+[config/kingTit/hidden] function(triggerId)
+    local king = json.decode(getChatVar(triggerId, "king"))
+    local kingTit = alertSelect(triggerId, {"갈색", "핑크", "함몰"}):await()
+    if kingTit == "0" then
+        king["유두"] = "갈색"
+    elseif kingTit == "1" then
+        king["유두"] = "핑크"
+    elseif kingTit == "2" then
+        king["유두"] = "함몰"
+    end
+    king = json.encode(king)
+    setChatVar(triggerId, "king", king)
+end!!
+
+[config/kingPubes/hidden] function(triggerId)
+    local king = json.decode(getChatVar(triggerId, "king"))
+    local kingPubes = alertSelect(triggerId, {"없음", "짧음", "보통", "무성함"}):await()
+    if kingPubes == "0" then
+        king["음모"] = "없음"
+    elseif kingPubes == "1" then
+        king["음모"] = "짧음"
+    elseif kingPubes == "2" then
+        king["음모"] = "보통"
+    elseif kingPubes == "3" then
+        king["음모"] = "무성함"
+    end
+    king = json.encode(king)
+    setChatVar(triggerId, "king", king)
+end!!
+
+[config/kingPenis/hidden] function(triggerId)
+    local king = json.decode(getChatVar(triggerId, "king"))
+    local kingPenis = alertInput(triggerId, "광왕의 페니스 크기는?(cm)"):await()
+    
+    if not tonumber(kingPenis) then
+        return
+    end
+
+    kingPenis = tonumber(kingPenis)
+    if kingPenis <= 5 then
+        king["페니스"] = "실좆"
+    elseif kingPenis <= 10 then
+        king["페니스"] = "작음"
+    elseif kingPenis <= 15 then
+        king["페니스"] = "평범"
+    elseif kingPenis <= 25 then
+        king["페니스"] = "대물"
+    elseif  kingPenis > 25 then
+        king["페니스"] = "말자지"
+    end
+    king = json.encode(king)
+    setChatVar(triggerId, "king", king)
+end!!
+
 
 [config/trainDifficulty/hidden] function(triggerId)
     local trainDifficulty = getChatVar(triggerId, "trainDifficulty")
@@ -29,7 +302,6 @@ end!!
     blockDeath = math.abs(blockDeath-1)
     setChatVar(triggerId, "blockDeath", blockDeath)
 end!!
-
 
 [config/ageLimit/hidden] function(triggerId)
     local ageLimit = getChatVar(triggerId, "ageLimit")
@@ -168,9 +440,21 @@ end!!
     setChatVar(triggerId, "models", json.encode(models))
 end!!
 
-
 [config/199/설정완료] function(triggerId)
     local screen = "main"
+
+    --미성년 금지시 마오 나이 18세로 변경하고 몸매도 변경
+    if tonumber(getChatVar(triggerId, "ageLimit")) == 18 and getState(triggerId, "oldScreen") == "gameStart" then
+        local mao = json.decode(getLoreBookContent(triggerId, "마오"))
+        mao["나이"] = "18"
+        mao["키"] = "155"
+        mao["몸무게"] = "47"
+        mao["가슴"] = "평범"
+        mao["음모"] = "보통"
+        local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false} --로어북 저장용 옵션
+        upsertLocalLoreBook(triggerId, "마오", json.encode(mao), option)
+    end
+
     setChatVar(triggerId, "category", "items")
-    setState(triggerId, "screen", screen)
+    screenChange(triggerId, screen)
 end!!

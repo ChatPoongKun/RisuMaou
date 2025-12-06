@@ -19,14 +19,14 @@ end!!
 
 [main/100/조교 시작] function(triggerId)
     local screen = "preTrain"
-    setState(triggerId, "screen", screen)
+   screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 
 [main/101/캐릭터 정보] function(triggerId)
     local screen = "charList"
-    setState(triggerId, "screen", screen)
+   screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
@@ -43,7 +43,7 @@ end!!
 
 [main/104/마계 상점] function(triggerId)
     local screen = "shop"
-    setState(triggerId, "screen", screen)
+   screenChange(triggerId, screen)
     local itemCat = "tools"
     setChatVar(triggerId, "category", itemCat)
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
@@ -84,12 +84,12 @@ end!!
 [main/777/설정] function(triggerId)
     local screen = "config"
     setChatVar(triggerId, "category", "play")
-    setState(triggerId, "screen", screen)
+    screenChange(triggerId, screen)
 end!!
 
 [main/999/마계사전] function(triggerId)
     local screen = "dictionary"
-    setState(triggerId, "screen", screen)
+    screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "d_abl")
     setChatVar(triggerId, "dictTitle", "마계사전")
     setChatVar(triggerId, "dictDesc", "카테고리를 선택해 마계사전을 펼쳐보세요.")

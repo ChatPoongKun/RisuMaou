@@ -223,5 +223,5 @@ end!!
     setChatVar(triggerId, "itemDetail", "")
     setChatVar(triggerId, "category", "")
     setChatVar(triggerId, "category", "items")
-    setState(triggerId, "screen", "main")
+    screenChange(triggerId, getState(triggerId, "oldScreen"))
 end!!

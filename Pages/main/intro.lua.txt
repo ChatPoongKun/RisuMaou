@@ -456,5 +456,5 @@ end!!
     end
 
     setChatVar(triggerId, "category", "items")
-    setState(triggerId, "screen", screen)
+    screenChange(triggerId, screen)
 end!!
