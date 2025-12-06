@@ -27,8 +27,8 @@ end!!
     local itemCount = getChatVar(triggerId, "itemQuantity")
     local itemPrice = tonumber(getChatVar(triggerId, "itemPrice"))
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
-    local gold = tonumber(getChatVar(triggerId, "gold"))
-    local maxCount = math.min(99 - (inventory[itemName] or 0), math.floor(gold/itemPrice))
+    local spirit = tonumber(getChatVar(triggerId, "spirit"))
+    local maxCount = math.min(99 - (inventory[itemName] or 0), math.floor(spirit/itemPrice))
 
     local total_q = tonumber(inventory[itemName] or 0)
     if total_q >= 98 then
@@ -54,8 +54,8 @@ end!!
     local itemCount = getChatVar(triggerId, "itemQuantity")
     local itemPrice = tonumber(getChatVar(triggerId, "itemPrice"))
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
-    local gold = tonumber(getChatVar(triggerId, "gold"))
-    local maxCount = math.min(99 - (inventory[itemName] or 0), math.floor(gold/itemPrice))
+    local spirit = tonumber(getChatVar(triggerId, "spirit"))
+    local maxCount = math.min(99 - (inventory[itemName] or 0), math.floor(spirit/itemPrice))
     local quantity = alertInput(triggerId, "수량을 입력하세요.(1~"..maxCount..")"):await()
     quantity = tonumber(quantity)
     if tonumber(quantity) then
@@ -79,11 +79,11 @@ end!!
     local itemCount = getChatVar(triggerId, "itemQuantity")
     local itemTotalPrice = tonumber(getChatVar(triggerId, "itemTotalPrice"))
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
-    local gold = tonumber(getChatVar(triggerId, "gold"))
+    local spirit = tonumber(getChatVar(triggerId, "spirit"))
     local message = '<div class="purchased">'..itemName..' 구매완료!</div>'
 
-    if itemTotalPrice > gold then
-        alertNormal(triggerId, "골드가 부족합니다.")
+    if itemTotalPrice > spirit then
+        alertNormal(triggerId, "혼이 부족합니다.")
         return
     end
 
@@ -93,9 +93,9 @@ end!!
         return
     end
 
-    gold = gold - itemTotalPrice
+    spirit = spirit - itemTotalPrice
     inventory[itemName] = tostring(inventory[itemName]+itemCount)
-    setChatVar(triggerId, "gold", int(gold))
+    setChatVar(triggerId, "spirit", int(spirit))
     setChatVar(triggerId, "inventory", json.encode(inventory))
     local itemCat = getChatVar(triggerId, "category")
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
