@@ -24,7 +24,7 @@ end!!
 end!!
 
 [charInfo/101/능력 레벨업] function(triggerId)
-    alertNormal(triggerId, "미구현")
+    screenChange(triggerId, "ablUp")
 end!!
 
 [charInfo/102/장비 관리] function(triggerId)
@@ -150,8 +150,9 @@ end!!
 end!!
 
 [charInfo/199/hidden] function(triggerId)
+    setState(triggerId, "target", "") --조회대상 초기화
     setChatVar(triggerId, "target", "") --조회대상 초기화
-    screenChange(triggerId, getState(triggerId, "oldScreen"))
+    screenChange(triggerId, "charList")
     setChatVar(triggerId, "category", "index")
     setChatVar(triggerId, "charSubCat", "")
 end!!
