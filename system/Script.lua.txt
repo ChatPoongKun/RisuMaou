@@ -50,7 +50,7 @@ function time()
 end
 
 --정수 포맷팅
-function int(str)
+function intForm(str)
     if tonumber(str) ~= nil and tonumber(str)>=1000 then --숫자변환이 불가하면 바이패스하고 입력값을 다시 반환
         str = string.reverse(string.reverse(string.format("%.0f", str)):gsub("(%d%d%d)", "%1,"))
         if string.sub(str, 1, 1) == "," then

@@ -28,8 +28,8 @@ function (triggerId)
                 hpGen = hpGen * 0.5
             end
 
-            char["체력"] = int(math.min(tonumber(char["체력"]) + math.floor(tonumber(char["최대체력"])*hpGen), tonumber(char["최대체력"])))
-            char["기력"] = int(math.min(tonumber(char["기력"]) + math.floor(tonumber(char["최대기력"])*spGen), tonumber(char["최대기력"])))
+            char["체력"] = intForm(math.min(tonumber(char["체력"]) + math.floor(tonumber(char["최대체력"])*hpGen), tonumber(char["최대체력"])))
+            char["기력"] = intForm(math.min(tonumber(char["기력"]) + math.floor(tonumber(char["최대기력"])*spGen), tonumber(char["최대기력"])))
 
             --sp가 거의 다 회복된 경우 실신에서 조교가능으로 condition변경
             if tonumber(char["기력"]) > tonumber(char["최대기력"]) * 0.9 and char["condition"] == "실신" then
@@ -52,8 +52,8 @@ function (triggerId)
                 hpGen = 0
             end
 
-            char["체력"] = int(math.min(tonumber(char["체력"]) + math.floor(tonumber(char["최대체력"])*hpGen), tonumber(char["최대체력"])))
-            char["기력"] = int(math.min(tonumber(char["기력"]) + math.floor(tonumber(char["최대기력"])*spGen), tonumber(char["최대기력"])))
+            char["체력"] = intForm(math.min(tonumber(char["체력"]) + math.floor(tonumber(char["최대체력"])*hpGen), tonumber(char["최대체력"])))
+            char["기력"] = intForm(math.min(tonumber(char["기력"]) + math.floor(tonumber(char["최대기력"])*spGen), tonumber(char["최대기력"])))
 
             --sp가 거의 다 회복된 경우 실신에서 조교가능으로 condition변경
             if tonumber(char["기력"]) > tonumber(char["최대기력"]) * 0.9 and char["condition"] == "실신" then

@@ -38,7 +38,7 @@ end!!
 
     itemCount = math.min(itemCount + 1, maxCount)
     setChatVar(triggerId, "itemQuantity", itemCount)
-    setChatVar(triggerId, "itemTotalPrice", int(itemCount*itemPrice))
+    setChatVar(triggerId, "itemTotalPrice", intForm(itemCount*itemPrice))
 end!!
 
 [shop/minus/hidden] function(triggerId)
@@ -46,7 +46,7 @@ end!!
     local itemPrice = tonumber(getChatVar(triggerId, "itemPrice"))
     itemCount = math.max(itemCount - 1, 1)
     setChatVar(triggerId, "itemQuantity", itemCount)
-    setChatVar(triggerId, "itemTotalPrice", int(itemCount*itemPrice))
+    setChatVar(triggerId, "itemTotalPrice", intForm(itemCount*itemPrice))
 end!!
 
 [shop/quantity/hidden] function(triggerId)
@@ -71,7 +71,7 @@ end!!
     end
 
     setChatVar(triggerId, "itemQuantity", itemCount)
-    setChatVar(triggerId, "itemTotalPrice", int(itemCount*itemPrice))
+    setChatVar(triggerId, "itemTotalPrice", intForm(itemCount*itemPrice))
 end!!
 
 [shop/purchase/hidden] function(triggerId)
@@ -95,7 +95,7 @@ end!!
 
     spirit = spirit - itemTotalPrice
     inventory[itemName] = tostring(inventory[itemName]+itemCount)
-    setChatVar(triggerId, "spirit", int(spirit))
+    setChatVar(triggerId, "spirit", intForm(spirit))
     setChatVar(triggerId, "inventory", json.encode(inventory))
     local itemCat = getChatVar(triggerId, "category")
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
