@@ -62,7 +62,7 @@ end!!
     end
 
     -- 회복 효과 적용
-    target["체력"] = int(math.min(max, tonumber(target["체력"]) + recover))
+    target["체력"] = intForm(math.min(max, tonumber(target["체력"]) + recover))
 
     -- 인벤토리 차감 및 저장
     inventory[itemName] = tostring(tonumber(inventory[itemName]) - 1)
@@ -94,7 +94,7 @@ end!!
     end
 
     -- 회복 효과 적용
-    target["기력"] = int(math.min(max, tonumber(target["기력"]) + recover))
+    target["기력"] = intForm(math.min(max, tonumber(target["기력"]) + recover))
 
     -- 인벤토리 차감 및 저장
     inventory[itemName] = tostring(tonumber(inventory[itemName]) - 1)

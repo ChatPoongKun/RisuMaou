@@ -159,8 +159,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     end
 
     --계산된 체력 기력을 포매팅된 문자열로 저장
-    target["체력"] = int(currentHP)
-    target["기력"] = int(currentSP)
+    target["체력"] = intForm(currentHP)
+    target["기력"] = intForm(currentSP)
 
     --[[프롬프트 빌딩]]
     local prompt = {}
