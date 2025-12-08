@@ -19,14 +19,14 @@ end!!
 
 [main/100/조교 시작] function(triggerId)
     local screen = "preTrain"
-   screenChange(triggerId, screen)
+    screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
 
 [main/101/캐릭터 정보] function(triggerId)
     local screen = "charList"
-   screenChange(triggerId, screen)
+    screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
     sysFunction(triggerId, "makeCharList.sys")
 end!!
