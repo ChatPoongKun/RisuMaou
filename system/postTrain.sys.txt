@@ -4,6 +4,7 @@ function (triggerId)
     local allTraces = getState(triggerId, "trace") --모든 대상의 trace을 호출
     local traceCurrent = allTraces[target["이름"]]
     local traceDB = json.decode(getLoreBookContent(triggerId, "trace.db")) --흔적 리스트를 trace.db에서 호출
+    local totalTrace = 0 --spirit으로 전환할 trace 합계
 
     --조교 종료시의 stat레벨에 따라 traceEXP를 저장
     local stat = getState(triggerId, "stat")
@@ -13,7 +14,11 @@ function (triggerId)
         if tonumber(v) > 0 then
             local lvMin = tostring(v-1)
             traceEXP[k] = math.random(exp[lvMin], exp[tostring(v)]) --stat 경험치를 랜덤하게 얻되 범위는 stat레벨-1에서 현재 레벨까지로 설정
-            if traceEXP[k] == 0 then traceEXP[k] = nil end --traceEXP를 1이상 얻지못하면 테이블에서 제거
+            if traceEXP[k] == 0 then
+                traceEXP[k] = nil --traceEXP를 1이상 얻지못하면 테이블에서 제거
+            else
+                totalTrace = totalTrace + traceEXP[k] --traceEXP를 획득하면 totalTrace에 합산
+            end
         end
     end
     debug("traceEXP: "..json.encode(traceEXP))
@@ -81,7 +86,7 @@ function (triggerId)
     end
 
     --실제 흔적에 획득/차감 반영
-    local traceText = ""
+    local traceText = "조교로부터 "..int(totalTrace).." Spirit을 획득했습니다.<br>"
     for k, v in pairs(traceSum) do
         local pp = traceAdd[k] or 0
         local mm = math.min(deductLevel, v)
@@ -102,6 +107,11 @@ function (triggerId)
         end
     end
 
+    --조교로 얻은 spirit 합산
+    local spirit = tonumber(getChatVar(triggerId, "spirit"))
+    spirit = int(spirit + totalTrace)
+    setChatVar(triggerId, "spirit", spirit)
+
     --조교로 변경된 target값을 로어북에 업데이트
     local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
     upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
@@ -113,7 +123,7 @@ function (triggerId)
     setState(triggerId, "trace", allTraces)
     setChatVar(triggerId, "traceText", traceText)
 
-    --조교 로그를 저장후 게임 화면 생성챗을 추가
+    --조교 로그를 저장후 신규 챗 인덱스에 게임 화면 생성
     addChat(triggerId, "user", "{{".."getvar::html".."}}")
     local ampm = getChatVar(triggerId,"ampm")
     if ampm == 0 then ampm ="낮" else ampm="밤" end
