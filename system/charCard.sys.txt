@@ -6,6 +6,7 @@ function(triggerId, name)
             name = "user"
         end
         local target = json.decode(getLoreBookContent(triggerId, name))
+        setState(triggerId, "target", target)
         stateToVar(triggerId, "target", target)
         local targetTrace = getState(triggerId, "trace")[name]
         stateToVar(triggerId, "targetTrace", targetTrace)
