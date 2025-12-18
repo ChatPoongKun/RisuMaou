@@ -318,7 +318,17 @@ end!!
 
     local exps = {"V경험", "촉수경험", "수간경험"}
 
-    local command = "<br>{{user}}는 꿀단지웜을 "..target['이름'] .."의 질에 밀어넣는다."
+    local command
+    local equipment = "꿀단지웜"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 꿀단지웜을 "..target['이름'] .."의 질에서 뽑아낸다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 꿀단지웜을 "..target['이름'] .."의 질에 밀어넣는다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -338,7 +348,17 @@ end!!
 
     local exps = {"A경험", "촉수경험", "수간경험"}
 
-    local command = "<br>{{user}}는 애널웜을 "..target['이름'] .."의 항문에 밀어넣는다."
+    local command
+    local equipment = "애널웜"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 애널웜을 "..target['이름'] .."의 애널에서 뽑아낸다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 애널웜을 "..target['이름'] .."의 항문에 밀어넣는다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -357,7 +377,17 @@ end!!
 
     local exps = {"A경험", "A확장경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 항문에 애널플러그를 꽂아넣는다."
+    local command
+    local equipment = "애널플러그"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 "..target['이름'] .."의 항문에서 애널플러그를 뽑아낸다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 "..target['이름'] .."의 항문에 애널플러그를 꽂아넣는다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -376,7 +406,17 @@ end!!
 
     local exps = {"A경험", "A확장경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 애널에 비즈를 하나씩 밀어넣고 잡아당긴다."
+    local command
+    local equipment = "애널비즈"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 "..target['이름'] .."의 애널에 비즈를 하나씩 뽑아낸다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 "..target['이름'] .."의 애널에 비즈를 하나씩 밀어넣는다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -396,7 +436,17 @@ end!!
 
     local exps = {"긴박경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 눈을 가리개로 가려 시야를 차단한다."
+    local command
+    local equipment = "눈가리개"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 "..target['이름'] .."에게서 눈 가리개를 떼어낸다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 "..target['이름'] .."의 눈을 가리개로 가려 시야를 차단한다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -415,7 +465,16 @@ end!!
 
     local exps = {"수치경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 입에 볼개그를 물린다."
+    local equipment = "볼개그"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        local command = "<br>{{user}}는 "..target['이름'] .."의 입에서 볼개그를 뺀다."
+        equipped[equipment] = "미착용"
+    else
+        local command = "<br>{{user}}는 "..target['이름'] .."의 입에 볼개그를 물린다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))    
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -434,7 +493,17 @@ O링개그
 
     local exps = {"수치경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 입을 O링 개그로 고정시켜 벌려둔다."
+    local command
+    local equipment = "볼개그"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 "..target['이름'] .."의 입에서 O링 개그를 뺀다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 "..target['이름'] .."의 입을 O링 개그로 고정시켜 벌려둔다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))  
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -453,7 +522,26 @@ end!!
 
     local exps = {"C경험", "촉수경험"}
 
-    local command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 클리토리스에 붙인다."
+    local command
+    local gender = json.decode(getChatVar(triggerId, "target"))["성별"]
+    local equipment = "볼개그"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        if gender == 여성 then
+            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 클리토리스에서 떼어낸다."
+        else
+            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 귀두에서 떼어낸다."
+        end
+        equipped[equipment] = "미착용"
+    else
+        if gender == 여성 then
+            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 클리토리스에 붙인다."
+        else
+            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 귀두에 붙인다."
+        end
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -472,14 +560,26 @@ end!!
 
     local exps = {"B경험", "촉수경험"}
 
-    local command = "<br>{{user}}는 우유달팽이를 "..target['이름'] .."의 유두에 붙인다."
+    local command
+    local equipment = "우유달팽이"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 우유달팽이를 "..target['이름'] .."의 유두에서 떼어낸다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 우유달팽이를 "..target['이름'] .."의 유두에 붙인다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))  
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
 
 [train/211/{{#when::category::vis::도구계}}
 {{#when::{{? {{dict_element::{{getvar::inventory}}::착유기}}==1}}}}
+{{#when::{{dict_element::{{getvar::target}}::성별}}::isnot::남성}}
 착유기
+{{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
     local target = getState(triggerId, "target")
@@ -491,7 +591,17 @@ end!!
 
     local exps = {"B경험", "분유경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 가슴에 착유기를 장착해 착유를 시도한다."
+    local command
+    local equipment = "착유기"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 "..target['이름'] .."의 가슴에 착유기를 떼어내 우유를 확인한다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 "..target['이름'] .."의 가슴에 착유기를 장착해 착유를 시도한다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
@@ -1580,7 +1690,18 @@ end!!
     local exps = {"수치경험"}
 
     DC_PENALTY = DC_PENALTY * 1.1
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 개목걸이를 채워 몬스터들이 돌아다니는 야외로 끌고나간다."
+
+    local command
+    local equipment = "개목걸이"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 "..target['이름'] .."를 조교실로 데려와 개목걸이를 풀어준다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 "..target['이름'] .."에게 개목걸이를 채워 몬스터들이 돌아다니는 야외로 끌고나간다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 
@@ -1618,7 +1739,20 @@ end!!
     local exps = {"긴박경험"}
 
     DC_PENALTY = DC_PENALTY * 0.9
-    local command = "<br>{{user}}는 밧줄로 "..target['이름'] .."을 귀갑묶기로 결박한다."
+
+    local command
+    local equipment = "로프"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 밧줄로 "..target['이름'] .."를 결박했ㄷ던 로프를 풀어준다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 밧줄로 "..target['이름'] .."을 귀갑묶기로 결박한다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
+
+    
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
     
@@ -1643,7 +1777,17 @@ end!!
 
     local exps = {"A경험", "A확장경험", "오물경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 관장액을 주입하고 플러그로 막아버린다."
+    local command
+    local equipment = "애널플러그"
+    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
+    if equipped[equipment] == "착용" then
+        command = "<br>{{user}}는 "..target['이름'] .."에게서 애널플러그를 빼낸다."
+        equipped[equipment] = "미착용"
+    else
+        command = "<br>{{user}}는 "..target['이름'] .."에게 관장액을 주입하고 플러그로 막아버린다."
+        equipped[equipment] = "착용"
+    end
+    setChatVar(triggerId, "equipped", json.encode(equipped))
     local feeling = 0
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
