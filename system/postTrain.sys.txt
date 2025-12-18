@@ -86,7 +86,7 @@ function (triggerId)
     end
 
     --실제 흔적에 획득/차감 반영
-    local traceText = "조교로부터 "..int(totalTrace).." Spirit을 획득했습니다.<br>"
+    local traceText = "조교로부터 "..intForm(totalTrace).." Spirit을 획득했습니다.<br>"
     for k, v in pairs(traceSum) do
         local pp = traceAdd[k] or 0
         local mm = math.min(deductLevel, v)
@@ -109,14 +109,14 @@ function (triggerId)
 
     --조교로 얻은 spirit 합산
     local spirit = tonumber(getChatVar(triggerId, "spirit"))
-    spirit = int(spirit + totalTrace)
+    spirit = intForm(spirit + totalTrace)
     setChatVar(triggerId, "spirit", spirit)
 
     --조교로 변경된 target값을 로어북에 업데이트
     local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
     upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
     stateToVar(triggerId, "target", target)
-    
+
     --갱신된 trace 정보를 변수에 업데이트
     stateToVar(triggerId, "targetTrace", traceCurrent)
     allTraces[target["이름"]] = traceCurrent
