@@ -34,6 +34,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     local target_c = getChatVar(triggerId, "target") --대상정보를 chatvar에서 string으로 호출
     local target = getState(triggerId, "target") --대상정보를 state에서 테이블로 호출
     local currentStat = getState(triggerId, "stat") --현재 stat을 호출
+    local equipments = getChatVar(triggerId, "equipments") --현재 각종 장비의 착용 여부를 호출
 
     --[[버튼 비활성화 및 응답중 표시]]
     local old_cmds = getChatVar(triggerId, "cmds")
@@ -195,7 +196,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     promptBuild("system", "- training_command: "..command),
     promptBuild("system", "- command_result: "..rollMsg)
     }
-
     local trainResponse = LLM(triggerId, prompt, "trainResponse")
     if not trainResponse.success then --LLM응답 실패시 함수 종료
         alertNormal(triggerId, "trainResponse LLM응답 실패"..trainResponse.result)
@@ -379,11 +379,12 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     promptBuild("system", "- ITEMS: "..json.encode(itemDB)),
     promptBuild("system", "- character_sheet: "..target_c),
     promptBuild("system", "- character_stats_Lv: "..json.encode(statResult)),
+    promptBuild("system", "- character_stats_Lv: "..equipments),
     promptBuild("system", "- {{user}}'s_profile: "..user),
     promptBuild("system", "- training_command: "..command), --조교명령
     promptBuild("system", "- command_result: "..rollMsg), --성공여부
     promptBuild("system", "- orgasm: "..ejMsg), --절정여부
-    promptBuild("assistant", "- train_log: "..oldLog) --기존 로그
+    promptBuild("assistant", oldLog) --기존 로그
     }
 
     local trainLog = LLM(triggerId, prompt, "trainLog") --LLM에 응답 요청
