@@ -252,10 +252,10 @@ function sysFunction(triggerId, f_code, ...)
     return func(triggerId, ...)
 end
 
-function promptBuild(role, content)
+function promptBuild(_role, _content)
     local prompt = {
-        role = role,
-        content = content
+        role = _role,
+        content = _content
     }
     return prompt
 end
