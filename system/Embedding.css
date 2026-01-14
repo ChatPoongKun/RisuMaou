@@ -3,7 +3,7 @@
 
 /* Global Reset & Base */
 body { margin: 0; padding: 0; background-color: #050505; color: #c0c0c0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; font-size: 14px; }
-.container { max-width: 1024px; margin: 0 auto; background-color: #121212; box-shadow: 0 0 20px rgba(0,0,0,0.8); border: 1px solid #222; padding: 1rem; box-sizing: border-box; }
+.container { max-width: 720px; margin: 0 auto; background-color: #121212; box-shadow: 0 0 20px rgba(0,0,0,0.8); border: 1px solid #222; padding: 1rem; box-sizing: border-box; }
 
 /* Typography */
 h1, h2, h3 { color: #fff; margin: 0 0 0.75rem 0; font-weight: 600; letter-spacing: -0.02em; }
@@ -200,7 +200,7 @@ input#three:checked ~ .triple-slider:before { background: #60d9f7; transform: tr
 @keyframes hide-container { to { visibility: hidden; } }
 
 /* Media Queries */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 400px) {
   .container { padding: 0.5rem; border: none; }
   .command-container { grid-template-columns: repeat(2, 1fr); }
   .x-risu-command-btn { font-size: 0.8rem; }
