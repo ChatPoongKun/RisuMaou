@@ -399,7 +399,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     --[[응답처리]]
     --신규로그 저장
     local dialog = trainLog.result
-print(json.encode(dialog))    
     --생각의 사슬 제거
     dialog = dialog:gsub("<Thoughts>.-</Thoughts>", "")
     debug("조교로그: "..dialog)

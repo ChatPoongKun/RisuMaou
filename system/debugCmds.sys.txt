@@ -13,7 +13,7 @@ function (triggerId)
     function(triggerId)
     alertNormal(triggerId, "강제커맨드 발생. 메인화면으로 돌아갑니다.")
     setChatVar(triggerId, "category", "items")
-   screenChange(triggerId, "main")
+    screenChange(triggerId, "main")
     setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
     end]]
     funcs[key] = functionBody
@@ -24,6 +24,15 @@ function (triggerId)
     function(triggerId)
     alertNormal(triggerId, "강제커맨드 발생. 화면을 다시 로딩합니다.")
     setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
+    end]]
+    funcs[key] = functionBody
+
+    --6974: 빈 챗 추가
+    key = "6974"
+    functionBody = [[
+    function(triggerId)
+    alertNormal(triggerId, "강제커맨드 발생. 빈 챗을 추가합니다.")
+    addChat(triggerId, "user", "")
     end]]
     funcs[key] = functionBody
 
