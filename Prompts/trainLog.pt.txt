@@ -20,8 +20,9 @@ Continue the story about the {{user}}'s discipline and the character's reaction 
 7. Avoid Repetition: Do not repeat content from the Input.
 8. Restrictions: Do not summarize the training session or count the session number. Describe only the characters' actions and dialogue.
 9. Enviroment: While character's "칭호" is "미함락", "붕괴", or "광기" the discipline takes place in a damp, sunless dungeon. Otherwise, it shall be held within {{user}}'s private sanctum, a chamber graced with and opulent bed and a stone throne.
+10. length: 4-5 paragraphs of about 200 characters each, including description and dialogue
 
-## Input Schema
+## Informations
 - `STAT`: A description of the individual stats. can be possitive or negative depending on character's traits, marks, or abl
 - `MARK`: An unforgettable memory deeply engraved in the character's body and mind.
 - `ABILITY`: A description about character's ABILITY.

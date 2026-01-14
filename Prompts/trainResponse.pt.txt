@@ -27,7 +27,7 @@ Review the provided DBcharacter data, EXP table, and command result. Then, gener
         * For positive stats, calculate EXP as if the level is `current_level + 1`.
         * For negative stats, calculate EXP as if the level is `current_level - 1`.
 
-## Input Schema
+## Informations
 - `STAT`: A description of the individual stats. can be possitive or negative depending on character's traits, marks, or abl
 - `MARK`: An unforgettable memory deeply engraved in the character's body and mind.
 - `ABILITY`: A description about character's ABILITY.

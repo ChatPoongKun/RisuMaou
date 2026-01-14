@@ -384,6 +384,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     promptBuild("system", "- training_command: "..command), --조교명령
     promptBuild("system", "- command_result: "..rollMsg), --성공여부
     promptBuild("system", "- orgasm: "..ejMsg), --절정여부
+    promptBuild("system", "## Train Log"), --로그 시작
     promptBuild("assistant", oldLog) --기존 로그
     }
 
@@ -398,6 +399,9 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     --[[응답처리]]
     --신규로그 저장
     local dialog = trainLog.result
+print(json.encode(dialog))    
+    --생각의 사슬 제거
+    dialog = dialog:gsub("<Thoughts>.-</Thoughts>", "")
     debug("조교로그: "..dialog)
     local newLog = "<br>" .. dialog
 
