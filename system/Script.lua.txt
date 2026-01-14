@@ -279,6 +279,7 @@ end)
 
 --기본 입력창을 통해 리퀘가 가는걸 방지 + 입력한 번호 캐치해서 함수수행
 onStart = async(function(triggerId)
+    stopChat(triggerId)
     if time()-TIME < SPAMING then
         print(time, TIME)
         alertError(triggerId, "메시지가 단 시간에 너무 많이 입력되었습니다.")
@@ -294,7 +295,7 @@ onStart = async(function(triggerId)
     removeChat(triggerId, getChatLength(triggerId)-1)
     local screen = getState(triggerId, "screen")
     debug("현재 " .. screen.." 화면에 있습니다.")
-    executeFunction(triggerId, screen, command)
+    executeFunction(triggerId, "debug", command)
     debug("리퀘 차단")
 
     --현재 페이지에 맞는 html호출
