@@ -48,7 +48,7 @@ h3 { font-size: 0.95rem; color: #aaa; text-transform: uppercase; letter-spacing:
 .bar-value { flex-basis: 4.5rem; flex-shrink: 0; text-align: right; color: #ccc; }
 
 /* Utilities */
-.showLog { visibility: {{#when::showLog::vis::1}}visible{{:else}}hidden{{/when}}; font-family: Consolas, monospace; font-size: 0.85rem; background: #080808; padding: 0.5rem; border: 1px solid #222; margin-top: 0.5rem; color: #aaa; }
+.showLog {font-family: Consolas, monospace; font-size: 0.85rem; background: #080808; padding: 0.5rem; border: 1px solid #222; margin-top: 0.5rem; color: #aaa; }
 
 /* Tabs */
 .tabs-container { display: flex; border-bottom: 1px solid #333; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; white-space: nowrap; height: auto; position: relative; align-items: stretch; }
