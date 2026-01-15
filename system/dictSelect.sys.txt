@@ -8,7 +8,8 @@ function (triggerId, category, name)
         ["exp"] = "exp.db",
         ["stat"] = "stat.db",
         ["trait"] = "trait.db",
-        ["item"] = "items.db"
+        ["item"] = "items.db",
+        ["monster"] = "monsters.db"
     }
     
     local dbName = dbMap[category] or category..".db"
@@ -51,7 +52,19 @@ function (triggerId, category, name)
             if found then break end
         end
         if not found then desc = "특성 정보를 찾을 수 없습니다." end
-        
+    
+    elseif category == "monster" then
+        -- monsters.db 구조: "slime": ["슬라임", "설명", 레이팅, 체력, 공격력, 방어력]
+        local data = db[name]
+        if data then
+            title = data[1] -- 한글 이름
+            desc = data[2] .. "<br><br>" ..
+                   "Rating: " .. data[3] .. " | HP: " .. data[4] .. "<br>" ..
+                   "ATK: " .. data[5] .. " | DEF: " .. data[6]
+        else
+            desc = "몬스터 정보를 찾을 수 없습니다."
+        end
+
     else
         -- abl, mark, trace, exp 등 단순 키-값 구조
         desc = db[name] or "정보를 찾을 수 없습니다."

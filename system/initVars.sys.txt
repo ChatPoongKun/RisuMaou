@@ -93,8 +93,8 @@ function (triggerId)
         return keys
     end
 
-    -- 1. 단순 구조 DB (abl, exp, trace, mark, stat)
-    local simpleDBs = {"abl", "exp", "trace", "mark", "stat"}
+    -- 1. 단순 구조 DB (monsters, abl, exp, trace, mark, stat)
+    local simpleDBs = {"monsters", "abl", "exp", "trace", "mark", "stat"}
     for _, name in ipairs(simpleDBs) do
         local raw = getLoreBookContent(triggerId, name..".db")
         local keys = getOrderedKeys(raw)
