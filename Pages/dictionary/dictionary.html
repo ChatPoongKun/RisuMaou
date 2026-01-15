@@ -1,3 +1,4 @@
+
 <style>
 /* Dictionary Container */
 .dict-container {
@@ -65,6 +66,37 @@ margin-bottom: 1rem;
 text-align: center;
 }
 
+.monster-item {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+background-color: #222;
+padding: 0.2rem;
+border-radius: 4px;
+border: 1px solid #333;
+text-align: left;
+cursor: pointer;
+}
+.monster-thumb {
+width: 64px;
+height: 64px;
+background-color: #000;
+border-radius: 2px;
+flex-shrink: 0;
+overflow: hidden;
+}
+.monster-thumb img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+margin:0;
+}
+.monster-info {
+font-weight: bold;
+color: #ccc;
+font-size: 0.9rem;
+}
+
 details{
     grid-column: 1 / -1;
 }
@@ -87,6 +119,7 @@ details{
 <div class="tabs {{#if {{equal::{{getvar::category}}::d_trace}}}}active{{/if}}" risu-btn="d_trace">▋흔적</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::d_stat}}}}active{{/if}}" risu-btn="d_stat">▋상태</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::d_item}}}}active{{/if}}" risu-btn="d_item">▋아이템</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_monster}}}}active{{/if}}" risu-btn="d_monster">▋몬스터</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::d_patch}}}}active{{/if}}" risu-btn="d_patch">▋패치노트</div>
 </div>
 
@@ -197,6 +230,29 @@ details{
 {{/each}}
 {{/when}}
 
+{{/when}}
+
+{{#when::category::vis::d_monster}}
+{{#when::dictSub::vis::}}
+<div class="btn command-btn" risu-btn="d_sub_low_monster">하급 몬스터</div>
+<div class="btn command-btn" risu-btn="d_sub_mid_monster">중급 몬스터</div>
+<div class="btn command-btn" risu-btn="d_sub_high_monster">상급 몬스터</div>
+{{/when}}
+
+{{#when::dictSub::vis::low_monster}}
+<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+{{getvar::dict_monsters}}
+{{/when}}
+
+{{#when::dictSub::vis::mid_monster}}
+<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+{{getvar::dict_monsters}}
+{{/when}}
+
+{{#when::dictSub::vis::high_monster}}
+<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+{{getvar::dict_monsters}}
+{{/when}}
 {{/when}}
 
 
