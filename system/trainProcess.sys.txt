@@ -35,6 +35,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     local target = getState(triggerId, "target") --대상정보를 state에서 테이블로 호출
     local currentStat = getState(triggerId, "stat") --현재 stat을 호출
     local equipments = getChatVar(triggerId, "equipments") --현재 각종 장비의 착용 여부를 호출
+    local king = getChatVar(triggerId, "king") --광왕의 정보 호출
 
     --[[버튼 비활성화 및 응답중 표시]]
     local old_cmds = getChatVar(triggerId, "cmds")
@@ -381,6 +382,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     promptBuild("system", "- character_stats_Lv: "..json.encode(statResult)),
     promptBuild("system", "- character_stats_Lv: "..equipments),
     promptBuild("system", "- {{user}}'s_profile: "..user),
+    promptBuild("system", "- King's_profile: "..king),
     promptBuild("system", "- training_command: "..command), --조교명령
     promptBuild("system", "- command_result: "..rollMsg), --성공여부
     promptBuild("system", "- orgasm: "..ejMsg), --절정여부

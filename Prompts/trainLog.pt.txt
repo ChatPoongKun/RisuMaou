@@ -31,6 +31,7 @@ Continue the story about the {{user}}'s discipline and the character's reaction 
 - `character_sheet`: The character sheet that includes character's basic info, appearance, narrative, MARK, ABILITY, and TRAIT.
 - `character_stats_LV`: An object where keys are stat names and values are objects with `level`.
 - `{{user}}'s_profile`: The profile that includes {{user}}'s basic info, appearance etc.
+- `king's_profile`: The profile of Radient king.
 - `training_command`: A description of the action performed by {{user}}.
 - `command_result`: The result of the {{user}}'s command.
 - `orgasm`: A description indicating if an orgasm has occurred for the {{user}} or character. Orgasm must only be triggered for the character when it is directly and explicitly described.
