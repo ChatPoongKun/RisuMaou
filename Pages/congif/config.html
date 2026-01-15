@@ -317,6 +317,21 @@ border-color: #888;
 {{/when}}
 </div>
 
+<div class="two-cells" risu-btn="newChar">
+<label><b>용사 생성</b></label>
+<label class="switch">
+<input type="checkbox" name="newChar" {{#when::{{dict_element::{{getvar::models}}::newChar}}::is::1}}checked{{/when}}>
+<span class="slider"></span>
+</label>
+
+{{#when::{{dict_element::{{getvar::models}}::newChar}}::is::0}}
+<p class="setting-description">신규 용사 생성에 보조모델을 활용합니다.</p>
+{{/when}}
+{{#when::{{dict_element::{{getvar::models}}::newChar}}::is::1}}
+<p class="setting-description">신규 용사 생성에 메인모델을 활용합니다.</p>
+{{/when}}
+</div>
+
 {{/when}}
 
 
