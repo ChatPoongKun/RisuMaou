@@ -94,7 +94,7 @@ box-shadow: 0px 0px 20px -2px #a00606;
 <div class="stats-grid">
 {{#when::{{? {{getvar::selectedAbl}}==none}}}}
 {{#each {{getvar::ablList}} abil}}
-{{#when {{and::{{notequal::{{slot::abil}}::M민감도}}::{{notequal::{{slot::abil}}::U민감도}}}}}}
+{{#when {{and::{{notequal::{{slot::abil}}::M민감도}}::{{notequal::{{slot::abil}}::U민감도}}::{{notequal::{{slot::abil}}::V확장}}::{{notequal::{{slot::abil}}::A확장}}::{{notequal::{{slot::abil}}::U확장}}}}}}
 <div class="stat-item btn" risu-btn="{{slot::abil}}">
 <span class="stat-label">{{slot::abil}}</span>
 <div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
@@ -107,6 +107,24 @@ box-shadow: 0px 0px 20px -2px #a00606;
 </div>
 {{/when}}
 {{#when {{and::{{equal::{{slot::abil}}::U민감도}}::{{equal::{{dict_element::{{getvar::target}}::요도성감}}::1}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
+{{#when {{and::{{equal::{{slot::abil}}::V확장}}::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장경험}}}}>=10}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
+{{#when {{and::{{equal::{{slot::abil}}::A확장}}::{{? {{tonumber::{{dict_element::{{getvar::target}}::A확장경험}}}}>=10}}}}}}
+<div class="stat-item btn" risu-btn="{{slot::abil}}">
+<span class="stat-label">{{slot::abil}}</span>
+<div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
+</div>
+{{/when}}
+{{#when {{and::{{equal::{{slot::abil}}::U확장}}::{{? {{tonumber::{{dict_element::{{getvar::target}}::요도경험}}}}>=10}}}}}}
 <div class="stat-item btn" risu-btn="{{slot::abil}}">
 <span class="stat-label">{{slot::abil}}</span>
 <div class="rating heart {{#when::{{dict_element::{{getvar::target}}::{{slot::abil}}}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::target}}::{{slot::abil}}}}"></div>
