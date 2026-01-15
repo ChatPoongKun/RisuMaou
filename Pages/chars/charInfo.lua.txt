@@ -24,6 +24,7 @@ end!!
 end!!
 
 [charInfo/101/능력 레벨업] function(triggerId)
+    setChatVar(triggerId, "selectedAbl", "none")
     screenChange(triggerId, "ablUp")
 end!!
 
