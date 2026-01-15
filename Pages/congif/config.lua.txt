@@ -347,6 +347,16 @@ end!!
     end
 end!!
 
+[config/raceLimit/hidden] function(triggerId)
+    local raceLimit = getChatVar(triggerId, "raceLimit")
+
+    if raceLimit == "0" then
+        setChatVar(triggerId, "raceLimit", "1")
+    else
+        setChatVar(triggerId, "raceLimit", "0")
+    end
+end!!
+
 [config/trainTargetPanel/hidden] function(triggerId)
     local trainTargetPanel = getChatVar(triggerId, "trainTargetPanel")
 
@@ -364,26 +374,6 @@ end!!
         setChatVar(triggerId, "trainUserPanel", "1")
     else
         setChatVar(triggerId, "trainUserPanel", "0")
-    end
-end!!
-
-[config/futaLimit/hidden] function(triggerId)
-    local futaLimit = getChatVar(triggerId, "futaLimit")
-
-    if futaLimit == "0" then
-        setChatVar(triggerId, "futaLimit", "1")
-    else
-        setChatVar(triggerId, "futaLimit", "0")
-    end
-end!!
-
-[config/maleLimit/hidden] function(triggerId)
-    local maleLimit = getChatVar(triggerId, "maleLimit")
-
-    if maleLimit == "0" then
-        setChatVar(triggerId, "maleLimit", "1")
-    else
-        setChatVar(triggerId, "maleLimit", "0")
     end
 end!!
 

@@ -142,6 +142,20 @@ border-color: #888;
 {{/when}}
 </div>
 
+<div class="two-cells" risu-btn="raceLimit">
+<label><b>인외 용사 등장</b></label>
+<label class="switch">
+<input type="checkbox" name="death-prevent" {{#when::raceLimit::vis::1}}checked{{/when}}>
+<span class="slider"></span>
+</label>
+{{#when::raceLimit::vis::0}}
+<p class="setting-description">용사는 모두 인간입니다.</p>
+{{/when}}
+{{#when::raceLimit::vis::1}}
+<p class="setting-description">인간이 아닌 종족의 용사가 등장 할 수 있습니다.</p>
+{{/when}}
+</div>
+
 <div class="line double" style="grid-column: 1 / -1;"></div>
 <div style="grid-column: 1 / -1;"><h2>▷ 조교 관련 설정</h2></div>
 
