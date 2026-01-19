@@ -12,12 +12,13 @@ function (triggerId, reason)
     local raceLimit = getChatVar(triggerId, "raceLimit") or "0" -- 0: All, 1: Human Only
     local maleLimit = getChatVar(triggerId, "maleLimit") or "0"
     local futaLimit = getChatVar(triggerId, "futaLimit") or "0"
+    local heroLvLimit = tonumber(getChatVar(triggerId, "heroLvLimit") or 5)
     
     -- 2. 기본 골격 생성 (RNG)
     math.randomseed(os.time())
     
     -- 레벨 결정 (던전 레벨 기반 ±2, 최소 1)
-    local level = math.max(1, dungeonLv + math.random(-2, 2))
+    local level = math.max(1, dungeonLv + math.random(-2, heroLvLimit))
     local exp = 0 
     
     -- 종족 결정
@@ -43,7 +44,7 @@ function (triggerId, reason)
     local gender = genderPool[math.random(#genderPool)]
     
     -- 나이 결정 (종족 수명 고려)
-    local ageBase = math.max(ageLimit, 15) -- 기본 성인 기준
+    local ageBase = math.max(ageLimit, 8)
     local lifeSpanMult = raceData[6] or 1.0
     local age = math.floor((ageBase + math.random(0, 10)) * lifeSpanMult)
     if age < ageLimit then age = ageLimit end
@@ -60,10 +61,9 @@ function (triggerId, reason)
     
     local maxHP = math.floor((baseHP + (level * 15)) * hpMult * (math.random(90, 110)*0.01))
     local maxSP = math.floor((baseSP + (level * 10)) * spMult * (math.random(90, 110)*0.01))
-    
-    -- 공격력/방어력 (단순 수치화 후 문자열 변환은 나중에 고민, 일단 대략적 수치)
-    -- D&D식 1d4 표현은 복잡하므로, 내부적으로는 '전투력' 점수를 계산하고 겉으로는 장비에 따라 표기
-    local combatRating = math.floor((level * 10 + maxHP/10 + maxSP/10) * ((atkMult + defMult)/2))
+    local atk = 1 --임시값
+    local def = 1 --임시값
+    local combatRating = 1 --임시값
     
     -- 신체 사이즈
     local heightBase = raceData[5] or 160
@@ -114,36 +114,46 @@ function (triggerId, reason)
     -- 5. 스켈레톤 데이터 구성
     local skeleton = {
         ["종족"] = race,
-        ["클래스"] = class,
         ["성별"] = gender,
         ["나이"] = tostring(age),
+        ["클래스"] = class,
         ["레벨"] = tostring(level),
-        ["최대체력"] = tostring(maxHP),
+        ["경험치"] = "0",
+        
         ["체력"] = tostring(maxHP),
-        ["최대기력"] = tostring(maxSP),
+        ["최대체력"] = tostring(maxHP),
         ["기력"] = tostring(maxSP),
-        ["공격력"] = "평범", -- 추후 장비에 따라 결정
-        ["방어력"] = "평범",
-        ["레이팅"] = tostring(combatRating),
+        ["최대기력"] = tostring(maxSP),
+        ["공격력"] = atk,
+        ["방어력"] = def,
+        ["레이팅"] = combatRating,
+        
+        ["자궁정액"]="0",
+        ["애널정액"]="0",
+        ["condition"] = "조교가능",
+
         ["키"] = tostring(height),
         ["몸무게"] = tostring(weight),
         ["가슴"] = bust,
         ["유두"] = nipple,
-        ["페니스"] = penis,
         ["음모"] = pubes,
+        ["페니스"] = penis,
+        ["문신"]="",
+        ["피어싱"]="",
+
         ["무기"] = classData[6],
         ["방어구"] = classData[7],
+        ["장신구"]="없음",
+
         ["성격"] = assignedTraits, -- 임시 저장, 나중에 분리
         ["신체특성"] = {},
         ["성적취향"] = {},
         ["칭호"] = "미함락",
-        ["경험치"] = "0",
-        ["condition"] = "조교가능",
+        
         -- 필수 빈 필드 초기화
-        ["자궁정액"]="0", ["애널정액"]="0", ["문신"]="", ["피어싱"]="", ["장신구"]="없음",
-        ["첫키스 상대"]="미경험", ["첫경험 상대"]="미경험", ["이상경험 기록"]=[]
+        ["첫키스 상대"]="미경험", ["첫경험 상대"]="미경험", ["이상경험 기록"]={}
     }
-    
+
     -- 성격/신체특성 분리 재정리
     local p_list = {}
     local b_list = {}
@@ -161,10 +171,12 @@ function (triggerId, reason)
     end
     skeleton["성격"] = p_list
     skeleton["신체특성"] = b_list
-
+    debug("기초데이터", json.encode(skeleton))
+    
     -- 6. LLM 요청 (서사 부여)
     local prompt = {
         promptBuild("system", getLoreBookContent(triggerId, "newChar.pt")),
+        promptBuild("system", "existing names: "..getChatVar(triggerId, "chars")),
         promptBuild("user", json.encode(skeleton))
     }
     
@@ -175,14 +187,16 @@ function (triggerId, reason)
         alertError(triggerId, "용사 생성 실패 (LLM Error)")
         return
     end
-    
-    local narrative = json.decode(response.result)
-    
+    debug("생성완료", response.result)
+    local content = response.result
+    content = content:gsub("<Thoughts>.-</Thoughts>", "") --혹시모를 사고과정 제거
+
+    local narrative = json.decode(content:match("({.*})"))
     -- 7. 데이터 병합 및 저장
     for k, v in pairs(narrative) do
         skeleton[k] = v
     end
-    
+
     -- DB에 없는 필드(abl, mark 등) 0으로 초기화
     local extraDBs = {"mark.db", "abl.db", "exp.db"}
     for _, dbName in ipairs(extraDBs) do
@@ -191,7 +205,7 @@ function (triggerId, reason)
             if not skeleton[key] then skeleton[key] = "0" end
         end
     end
-    
+
     -- Trace 초기화
     local allTrace = getState(triggerId, "trace") or {}
     local traceDB = json.decode(getLoreBookContent(triggerId, "trace.db"))
