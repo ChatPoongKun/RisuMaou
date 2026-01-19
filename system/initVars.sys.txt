@@ -1,0 +1,180 @@
+function (triggerId)
+    --초기 변수 설정
+    print("initVars 실행")
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false} --로어북 저장용 옵션
+    local initVars = {
+        spirit = "10,000",
+        day = "1",
+        ampm = "0", --0은 낮 1은 밤
+        dungeonLv = "1", --던전레벨 1로 시작
+        chars = '["user","마오"]', --리수배열 스타일에 맞게 저장
+        trainDifficulty = "보통", --조교난이도 보통
+        blockDeath = 1, --사망방지 O
+        ageLimit = "12", --등장 용사 나이제한 12세
+        ntrLimit = "1", --등장 용사 나이제한 12세
+        futaLimit = "0", --후타용사 등장 X
+        maleLimit = "0", --남성용사 등장 X
+        raceLimit = "1", --인외종족 등장 0:모두, 1:인간만
+        trainTargetPanel = "1", --조교화면 대상정보 상단고정 O
+        trainUserPanel = "0", --조교화면 유저정보 상단고정 X
+        combatDifficulty = "보통", --전투난이도 보통
+        heroLvLimit = "5", --용사의 레벨 제한
+        showLog = "0", --과거 조교기록 보기. 기본값 OFF
+        debug = DEBUG, --콘솔 디버그 표시
+        king = '{"성별":"남성","페니스":"대물","음모":"무성함", "외형":"중년","헤어스타일":"날렵하게 세워올린 짧은 은발"}', --광왕 디폴트 설정
+        models = '{"trainResponse":"0","trainLog":"1", "newChar":"0"}', --상황별 사용 모델 설정. 0:보조모델, 1:메인모델
+    }
+
+    for key, value in pairs(initVars) do
+        setChatVar(triggerId, key, value)
+    end
+
+    --인벤토리 초기화
+    local inventory = {}
+    local items = json.decode((getLoreBookContent(triggerId, "items.db")))
+    for _, tbl in pairs(items) do
+        for k,_ in pairs(tbl) do
+            inventory[k] = 0
+        end
+    end
+    stateToVar(triggerId, "inventory", inventory)
+
+    --수정구 기록 초기화
+    upsertLocalLoreBook(triggerId, "crystalRec", "{}", option)
+
+    --user 및 고유캐릭터 정보를 로컬 로어북에 저장
+    local trace = {}
+    for _, v in ipairs(json.decode(initVars.chars)) do --리수배열 스타일에 맞게 저장
+        local content = json.decode(getLoreBookContent(triggerId, v..".init")) -- 대상 캐릭터의 로어북을 불러와 테이블로 저장
+        --[[
+        현재 로직을 별도의 캐릭터 생성로직에 포함하고 해당 함수를 가져와서 쓰는 방식을 고려할것.
+        ]]
+
+        --캐릭터에는 정의가 필요한 부분만 들어있음. 캐릭터 시트에 없는 trait, trace등의 필드를 db에서 읽어와서 추가
+        local db = {"mark.db", "abl.db", "exp.db"}
+        local added = ""
+        for _, tbl in pairs(db) do
+            for key,_ in pairs(json.decode(getLoreBookContent(triggerId, tbl))) do
+                if not content[key] then
+                    content[key] = "0"
+                    added = added .. ", ".. key
+                end
+            end
+        end
+        debug(v.."의 캐릭터 테이블에 ".. added.."필드 추가")
+
+        --캐릭터 정보를 로컬로어북에 저장
+        upsertLocalLoreBook(triggerId, v, json.encode(content), option)
+
+        --흔적은 별도의 state로 저장
+        local tracedb = json.decode(getLoreBookContent(triggerId, "trace.db"))
+        trace[v] = {}
+        for j, _ in pairs(tracedb) do
+            trace[v][j] = 0
+        end
+    end
+    setState(triggerId, "trace", trace)
+
+    --유저 정보를 user변수에 테이블로 할당
+    local user = json.decode(getLoreBookContent(triggerId, "user"))
+    stateToVar(triggerId, "user", user)
+
+
+    --[[ 
+    순서 보존을 위한 키 추출 함수
+    JSON Decode를 거치면 순서가 뒤섞이므로, Raw String에서 Regex로 키를 추출함
+    ]]
+    local function getOrderedKeys(raw_json)
+        local keys = {}
+        -- "key" : 패턴을 찾음 (공백 포함)
+        for k in raw_json:gmatch('"([^"]-)"%s*:') do
+            table.insert(keys, k)
+        end
+        return keys
+    end
+
+    -- 1. 단순 구조 DB (monsters, abl, exp, trace, mark, stat)
+    local simpleDBs = {"monsters", "abl", "exp", "trace", "mark", "stat"}
+    for _, name in ipairs(simpleDBs) do
+        local raw = getLoreBookContent(triggerId, name..".db")
+        local keys = getOrderedKeys(raw)
+        
+        -- JSON 배열 문자열로 변환하여 저장
+        local listStr = json.encode(keys)
+        setChatVar(triggerId, name.."List", listStr)
+    end
+
+    -- 2. 중첩 구조 DB (items)
+    -- items는 tools, consumables 등으로 나뉘어 있음
+    local itemsRaw = getLoreBookContent(triggerId, "items.db")
+    local itemsObj = json.decode(itemsRaw)
+    local allItemKeys = getOrderedKeys(itemsRaw)
+
+    local toolsList = {}
+    local consumablesList = {}
+    local trapsList = {}
+    local unlockList = {}
+
+    for _, key in ipairs(allItemKeys) do
+        if itemsObj["tools"][key] then table.insert(toolsList, key)
+        elseif itemsObj["consumables"][key] then table.insert(consumablesList, key)
+        elseif itemsObj["traps"][key] then table.insert(trapsList, key)
+        elseif itemsObj["unlock"][key] then table.insert(unlockList, key)
+        end
+    end
+    
+    setChatVar(triggerId, "toolsList", json.encode(toolsList))
+    setChatVar(triggerId, "consumablesList", json.encode(consumablesList))
+    setChatVar(triggerId, "trapsList", json.encode(trapsList))
+    setChatVar(triggerId, "unlockList", json.encode(unlockList))
+
+
+    -- 3. 중첩 구조 DB (trait)
+    -- trait는 성격:[], 신체특성:[] 형태의 배열 내 객체 구조임
+    local traitRaw = getLoreBookContent(triggerId, "trait.db")
+    local traitObj = json.decode(traitRaw)
+    local allTraitKeys = getOrderedKeys(traitRaw)
+    
+    -- traitObj를 평탄화해서 키 존재 여부 확인용으로 사용
+    local flatTrait = flatten(traitObj)
+    
+    -- 각 카테고리별 리스트 초기화
+    local traitCategories = {
+        ["성격"] = {},
+        ["신체특성"] = {},
+        ["성적취향"] = {},
+        ["칭호"] = {}
+    }
+
+    -- 전체 키를 순회하며 어느 카테고리에 속하는지 확인 (순서 보존)
+    -- 주의: traitObj["성격"]은 배열이므로 flatten된 값을 참조하거나, 
+    -- traitObj 구조를 직접 순회해야 함. 여기선 flatten된 값을 활용.
+    
+    -- 그런데 trait.db 구조상 "성격" 키 다음에 "호기심", "신중함" 키가 순서대로 나옴.
+    -- 단순하게 가기 위해, 로어북의 카테고리 키("성격" 등)를 만나면 현재 카테고리를 스위칭하는 방식 사용
+    
+    local currentCat = ""
+    for _, key in ipairs(allTraitKeys) do
+        if traitCategories[key] then
+            currentCat = key -- 카테고리 키를 만나면 스위칭
+        elseif currentCat ~= "" then
+            -- 현재 카테고리 내에 존재하는 키인지 확인 (JSON 객체 참조)
+            -- traitObj[currentCat]은 배열([{키:값}, {키:값}]) 형태임
+            local exists = false
+            for _, item in ipairs(traitObj[currentCat]) do
+                    if item[key] then exists = true; break end
+                end
+                
+            if exists then
+                table.insert(traitCategories[currentCat], key)
+            end
+        end
+    end
+
+    -- 결과 저장
+    for cat, list in pairs(traitCategories) do
+        setChatVar(triggerId, cat.."List", json.encode(list))
+    end
+
+    addChat(triggerId, "user", "{{".."getvar::html".."}}")
+end

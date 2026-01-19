@@ -1,0 +1,40 @@
+function (triggerId)
+    debug("debugCmds 실행")
+    local key, functionBody
+    local funcs = {}
+    local screen = getState(triggerId, "screen")
+    if screen == "gameStart" or screen == "intro" then
+        setState(triggerId, "funcs", funcs)
+        return --메인화면 진입 전까지는 실행하지 않음
+    end
+    --0000: 메인화면으로 복귀
+    key = "0000"
+    functionBody = [[
+    function(triggerId)
+    alertNormal(triggerId, "강제커맨드 발생. 메인화면으로 돌아갑니다.")
+    setChatVar(triggerId, "category", "items")
+    screenChange(triggerId, "main")
+    setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
+    end]]
+    funcs[key] = functionBody
+
+    --911: 화면 리프레시
+    key = "911"
+    functionBody = [[
+    function(triggerId)
+    alertNormal(triggerId, "강제커맨드 발생. 화면을 다시 로딩합니다.")
+    setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
+    end]]
+    funcs[key] = functionBody
+
+    --6974: 빈 챗 추가
+    key = "6974"
+    functionBody = [[
+    function(triggerId)
+    alertNormal(triggerId, "강제커맨드 발생. 빈 챗을 추가합니다.")
+    addChat(triggerId, "user", "")
+    end]]
+    funcs[key] = functionBody
+
+    setState(triggerId, "funcs", funcs)
+end

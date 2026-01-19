@@ -2,8 +2,6 @@
 .x-risu-progress-bar{
 height: 0.3rem !important;
 }
-
-
 </style>
 
 <div class="container">
@@ -11,25 +9,20 @@ height: 0.3rem !important;
 <h1>▋ 조교 대상</h1>
 </header>
 
-<!-- 정렬 기능은 추후 구현
-<div class="controls-bar">
-<div class="sort-buttons">
-<button class="sort-btn">번호순</button>
-<button class="sort-btn">소지금순</button>
-<button class="sort-btn">부채순</button>
+<div class="tabs-container">
+<div class="tabs {{#if {{equal::{{getvar::category}}::index}}}}active{{/if}}" risu-btn="sort_index">획득순</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::name}}}}active{{/if}}" risu-btn="sort_name">이름</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::level}}}}active{{/if}}" risu-btn="sort_level">레벨</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::hp}}}}active{{/if}}" risu-btn="sort_hp">HP</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::rating}}}}active{{/if}}" risu-btn="sort_rating">레이팅</div>
 </div>
-<div class="pagination">
-<span>PAGE: 1 / 4</span>
-<a href="#">[이전]</a>
-<a href="#">[다음]</a>
-</div>
-</div>
--->
-<main class="character-list">
+
+<main class="info-grid" style="grid-template-columns: 1fr;">
 
 {{getvar::charList}}
 
 </main>
+<div class="line double"></div>
+{{getvar::cmds}}
 </div>
 
-{{getvar::cmds}}

@@ -1,0 +1,78 @@
+function (triggerId)
+    debug("dayEnd 실행")
+    --시간 흐름 처리
+    local day = getChatVar(triggerId, "day")
+    local ampm = getChatVar(triggerId, "ampm")
+    local chars = json.decode(getChatVar(triggerId, "chars"))
+    if ampm == "1" then
+        alertNormal(triggerId, "하루가 지나갑니다...")
+    else
+        alertNormal(triggerId, "밤이 깊어옵니다...")
+    end
+
+    if ampm == "1" then
+        --체력/기력 회복처리
+        for i, value in ipairs(chars) do
+            local hpGen = 0.1 --HP회복비율
+            local spGen = 0.15 --SP회복비율
+            local char = json.decode(getLoreBookContent(triggerId, value))
+
+            --느린 회복 적용
+            if char["빠른회복"] == 0 or char["condition"] == "실신" then
+                hpGen = hpGen - 0.05
+                spGen = spGen - 0.05
+            end
+
+            --실신한 경우 HP회복 느리게
+            if char["condition"] == "실신" then
+                hpGen = hpGen * 0.5
+            end
+
+            char["체력"] = intForm(math.min(tonumber(char["체력"]) + math.floor(tonumber(char["최대체력"])*hpGen), tonumber(char["최대체력"])))
+            char["기력"] = intForm(math.min(tonumber(char["기력"]) + math.floor(tonumber(char["최대기력"])*spGen), tonumber(char["최대기력"])))
+
+            --sp가 거의 다 회복된 경우 실신에서 조교가능으로 condition변경
+            if tonumber(char["기력"]) > tonumber(char["최대기력"]) * 0.9 and char["condition"] == "실신" then
+                char["condition"] = "조교가능"
+            end
+
+            --수정한 정보를 다시 캐릭터 로어북으로 저장
+            local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+            upsertLocalLoreBook(triggerId, value, json.encode(char), option)
+        end
+    else
+        --체력/기력 회복처리
+        for i, value in ipairs(chars) do
+            local hpGen = 0.05 --HP회복비율(낮에는 조금 적게 회복)
+            local spGen = 0.1 --SP회복비율(낮에는 조금 적게 회복)
+            local char = json.decode(getLoreBookContent(triggerId, value))
+
+            --실신한 경우에는 빠른회복 미적용
+            if char["빠른회복"] == 0 or char["condition"] == "실신" then
+                hpGen = 0
+            end
+
+            char["체력"] = intForm(math.min(tonumber(char["체력"]) + math.floor(tonumber(char["최대체력"])*hpGen), tonumber(char["최대체력"])))
+            char["기력"] = intForm(math.min(tonumber(char["기력"]) + math.floor(tonumber(char["최대기력"])*spGen), tonumber(char["최대기력"])))
+
+            --sp가 거의 다 회복된 경우 실신에서 조교가능으로 condition변경
+            if tonumber(char["기력"]) > tonumber(char["최대기력"]) * 0.9 and char["condition"] == "실신" then
+                char["condition"] = "조교가능"
+            end
+
+            --수정한 정보를 다시 캐릭터 로어북으로 저장
+            local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+            upsertLocalLoreBook(triggerId, value, json.encode(char), option)
+        end
+    end
+
+    --시간흐름 처리
+    day = day + ampm
+    ampm = math.abs(ampm - 1)
+    debug(day.."일 "..ampm)
+    setChatVar(triggerId, "day", day)
+    setChatVar(triggerId, "ampm", ampm)
+
+    local user = json.decode(getLoreBookContent(triggerId, "user"))
+    stateToVar(triggerId, "user", user) --갱신된 유저정보 변수저장
+end

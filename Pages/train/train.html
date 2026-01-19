@@ -1,6 +1,20 @@
 <style>
+h3{margin-top: 0;}
+
 .x-risu-progress-bar.x-risu-ej{
 height: 0.6rem;
+}
+
+.x-risu-bar-label {
+font-size: 1rem;
+color: #ccc;
+}
+
+.status-panel{
+    {{#when::trainTargetPanel::vis::1}}position: sticky;{{/when}}
+    top:10px;
+    box-shadow: 0 0 20px 10px #121212;
+    height:160px;
 }
 
 .target-profile {
@@ -8,9 +22,11 @@ height: 0.6rem;
     flex-wrap: wrap;
     gap: 1rem;
     align-items: flex-start;
-    background-color: #303030;
+    background-color: #1a1a1a;
     padding: 1rem;
     border-radius: 4px;
+    border: 1px solid #333;
+    height: 160px;
 }
 
 .target-visuals {
@@ -24,7 +40,7 @@ height: 0.6rem;
     width: 128px;
     height: 128px;
     background-color: #111;
-    border: 1px solid #444;
+    border: 1px solid #333;
     flex-shrink: 0;
     border-radius: 8px;
     overflow: hidden;
@@ -35,7 +51,7 @@ height: 0.6rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    min-width: 280px;
+    /*min-width: 280px;*/
 }
 
 .target-header {
@@ -68,7 +84,7 @@ height: 0.6rem;
     width: 70%;
     height: 100%;
     background-color: #111;
-    border: 1px solid #444;
+    border: 1px solid #333;
     border-radius: 4px;
     padding: 2px;
     display: flex;
@@ -90,7 +106,7 @@ height: 0.6rem;
 .v-bar-fill.x-risu-ej { background-image: linear-gradient(to top, #e06884, #ce025b); } /*사정게이지*/
 
 .bar-value{
-    flex-basis: 3rem;
+    flex-basis: 3.5rem;
 }
 
 .target-details-grid {
@@ -99,13 +115,14 @@ height: 0.6rem;
     gap: 0.5rem;
 }
 .detail-item {
-    background-color: #2a2a2a;
+    background-color: #222;
     padding: 0.4rem 0.6rem;
     border-radius: 4px;
     font-size: 0.9em;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 1px solid #333;
 }
 .detail-label {
     font-weight: bold;
@@ -124,7 +141,7 @@ height: 0.6rem;
     display: flex;
     /*justify-content: space-between;*/
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     gap: 1rem;
 }
 .stats-header h2 {
@@ -140,35 +157,32 @@ height: 0.6rem;
 #stats-collapsed:checked ~ .stats-header .collapse-btn {
     display: none;
 }
-#stats-collapsed:checked ~ .info-grid {
-    display: none;
-}
 
-/*.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-    gap: 0.5rem;
-    background-color: #303030;
-    padding: 1rem;
-    border-radius: 4px;
-}*/
 .stat-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #2a2a2a;
+    background-color: #222;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
+    border: 1px solid #333;
 }
 .stat-label {
     font-weight: bold;
 }
 
-.ejaculation-section h3 {
-    margin-bottom: 0.75rem;
+.ejaculation-section {
+    /*margin-bottom: 0.75rem;*/
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    box-shadow: 0 0 20px 10px #121212;
     font-size: 1.1em;
-    border-bottom: 1px solid #444;
     padding-bottom: 0.5rem;
+    height: 80px;
+    {{#when::trainUserPanel::vis::1}}position: sticky;{{/when}}
+    {{#when::trainTargetPanel::vis::1}}top:170px;{{:else}}top:10px;{{/when}}
+    padding: 0 10px;
 }
 
 .log-panel h2 {
@@ -177,7 +191,7 @@ height: 0.6rem;
 
 .log-content {
     background-color: #111;
-    border: 1px solid #444;
+    border: 1px solid #333;
     padding: 1rem;
     min-height: 100px;
     max-height: 400px;
@@ -245,13 +259,10 @@ height: 0.6rem;
     }
 }
 
-/*성공여부표시 애니메이션*/
-.log-wrapper {
-position: relative; /* Container for the absolute positioned overlay */
-}
 
+/*조교실패&대성공 전역화면효과*/
 .success-animation {
-position: absolute;
+position: fixed;
 inset: 0; /* a modern way for top/right/bottom/left: 0 */
 z-index: 10;
 overflow: hidden; /* Hide panels as they move out */
@@ -265,7 +276,7 @@ content: '';
 position: absolute;
 top: 0;
 width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
-height: 100%;
+height: 100vh;
 background-color: #111; /* Match log background */
 animation: open-panels 0.4s ease-in-out 0.6s forwards;
 }
@@ -334,10 +345,62 @@ to {
 visibility: hidden;
 }
 }
-/*성공여부표시 애니메이션*/
 
 
-@media screen and (max-width: 600px) {
+/*각인획득 전역화면효과*/
+.getMark {
+position: fixed;
+inset: 0; /* a modern way for top/right/bottom/left: 0 */
+z-index: 10;
+overflow: hidden; /* Hide panels as they move out */
+animation: hide-container 0.4s 1.6s forwards;
+}
+
+/* The two black panels covering the content */
+.getMark::before,
+.getMark::after {
+content: '';
+position: absolute;
+top: 0;
+width: 50.5%; /* Overlap slightly to prevent a 1px gap during animation */
+height: 100vh;
+background-color: #111; /* Match log background */
+animation: open-panels 0.8s ease-in-out 1.2s forwards;
+}
+
+.getMark::before {
+left: 0;
+transform-origin: left;
+}
+
+.getMark::after {
+right: 0;
+transform-origin: right;
+}
+
+.getMarkText {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+
+font-size: 3em;
+font-weight: bold;
+font-family: 'Arial Black', sans-serif;
+color: #f8c65c;
+/*text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;*/
+
+z-index: 1; /* Above panels */
+white-space: nowrap; /* Prevent text wrapping */
+animation: text-appear-and-fade 2.0s ease-in-out forwards;
+}
+
+.neggative{
+    color: #dc4747;
+    /*text-shadow: 0 0 10px #f8c65c, 0 0 20px #d1843c;*/
+}
+
+@media screen and (max-width: 400px) {
     .stat-label {
         font-size: 0.8rem;
     }
@@ -350,10 +413,11 @@ visibility: hidden;
 <header class="header">
 <h1>▋조교 메뉴</h1>
 <div class="game-info">
-<span>({{getvar::day}}일째) {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}《만월》 {{/when}}{{#when::ampm::vis::0}}낮{{:else}}밤{{/when}}</span>
+<span>Day {{getvar::day}} {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}<span style="color:#fbc02d">《만월》</span>{{/when}} {{#when::ampm::vis::0}}☀️ 낮{{:else}}🌙 밤{{/when}}</span>
 </div>
 </header>
 <main>
+<h3>* {{dict_element::{{getvar::target}}::이름}}</h3>
 <section class="status-panel">
 <div class="target-profile">
 <div class="target-visuals">
@@ -376,17 +440,17 @@ visibility: hidden;
 </div>
 <span class="v-bar-label">기력</span>
 </div>
-<!-- Vertical Pee Bar -->
+<!-- Vertical Pee Bar  요의시스템 구현 후 추가
 <div class="v-bar-container">
 <div class="v-bar-track">
 <div class="v-bar-fill x-risu-pe" style="height: {{getvar::요의}}%;"></div>
 </div>
 <span class="v-bar-label">요의</span>
-</div>
-<!-- Vertical Ejaculation Bar -->
-<div class="v-bar-container" title="{{getvar::ej_target}}/{{? 10000*{{? 1.2^{{getvar::ejCount_t}}}}}}">
+</div>-->
+<!-- Vertical Ejaculation Bar-->
+<div class="v-bar-container" title="{{getvar::ej_target_ratio}}%">
 <div class="v-bar-track">
-<div class="v-bar-fill x-risu-ej" style="height: {{? {{getvar::ej_target}}/{{? 100*{{? 1.2^{{getvar::ejCount_t}}}}}}}}%;"></div>
+<div class="v-bar-fill x-risu-ej" style="height: {{getvar::ej_target_ratio}}%;"></div>
 </div>
 <span class="v-bar-label">절정</span>
 </div>
@@ -394,13 +458,9 @@ visibility: hidden;
 </div>
 <div class="target-info">
 <div class="target-header">
-<h2>{{dict_element::{{getvar::target}}::이름}}</h2>
-{{#when {{? {{dict_element::{{getvar::target}}::칭호}}!=}}}}
-<div class="char-tags">
-<span class="tag tag-{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::음란}}lewd{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::연모}}love{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::암캐}}puppy{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::붕괴}}destroyed{{/when}}{{#when::{{dict_element::{{getvar::target}}::칭호}}::is::광기}}mad{{/when}}"> 〈{{dict_element::{{getvar::target}}::칭호}}〉</span>
+
 </div>
-{{/when}}
-</div>
+<!--꼭 필요한 정보인가? sticky에 넣을 정보는 아니므로 어디에 넣을지 추후에 고민
 <div class="target-details-grid">
 <div class="detail-item">
 <span class="detail-label">질내정액</span>
@@ -412,9 +472,10 @@ visibility: hidden;
 </div>
 <div class="detail-item">
 <span class="detail-label">절정</span>
-<span class="detail-value">{{getvar::ejCount_t}}회</span>
+<span class="detail-value">{{getvar::ej_target_count}}회</span>
 </div>
 </div>
+-->
 </div>
 </div>
 </section>
@@ -423,16 +484,17 @@ visibility: hidden;
 <div class="line single"></div>
 
 <section class="stats-section">
-<input type="radio" name="stats-toggle" id="stats-expanded" checked hidden>
-<input type="radio" name="stats-toggle" id="stats-collapsed" hidden>
+<input type="radio" name="stats-toggle" id="stats-expanded" {{#if {{? {{getvar::statFold}}=0}}}}checked{{/if}} hidden>
+<input type="radio" name="stats-toggle" id="stats-collapsed" {{#if {{? {{getvar::statFold}}=1}}}}checked{{/if}} hidden>
 <div class="stats-header">
-<h2>* Stats</h2>
-<div class="toggle-buttons">
-<label for="stats-collapsed" class="toggle-btn collapse-btn x-risu-btn">접기</label>
-<label for="stats-expanded" class="toggle-btn expand-btn x-risu-btn">펼치기</label>
+<h2 style="border: none;">* Stats</h2>
+<div class="toggle-buttons" style="display:inline-block">
+<label for="stats-collapsed" class="toggle-btn collapse-btn x-risu-btn" risu-btn="close">접기</label>
+<label for="stats-expanded" class="toggle-btn expand-btn x-risu-btn" risu-btn="open">펼치기</label>
 </div>
 </div>
-<div class="info-grid">
+{{#when::statFold::vis::0}}
+<div class="info-grid" style="border-top: 1px solid #333; padding-top:0.5rem">
 <div class="stat-item"><span class="stat-label">C쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::C쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::C쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">V쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::V쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::V쾌락}}"></div></div>
 <div class="stat-item"><span class="stat-label">A쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::A쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::A쾌락}}"></div></div>
@@ -443,7 +505,10 @@ visibility: hidden;
 {{#when::{{dict_element::{{getvar::target}}::인후성감}}::vis::1}}
 <div class="stat-item"><span class="stat-label">M쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::M쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::M쾌락}}"></div></div>
 {{/when}}
+<!--
+S쾌락은 일단 숨겨두기
 <div class="stat-item"><span class="stat-label">S쾌락</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::S쾌락}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::S쾌락}}"></div></div>
+-->
 <div class="stat-item"><span class="stat-label">V윤활</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::V윤활}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::V윤활}}"></div></div>
 <div class="stat-item"><span class="stat-label">A윤활</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::A윤활}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::A윤활}}"></div></div>
 <div class="stat-item"><span class="stat-label">욕정</span> <div class="rating heart {{#when::{{dict_element::{{getvar::stat}}::욕정}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::욕정}}"></div></div>
@@ -455,18 +520,18 @@ visibility: hidden;
 <div class="stat-item"><span class="stat-label">불쾌</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::불쾌}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::불쾌}}"></div></div>
 <div class="stat-item"><span class="stat-label">저항</span> <div class="rating skull {{#when::{{dict_element::{{getvar::stat}}::저항}}::is::10}}is-full{{/when}}" style="--rating: {{dict_element::{{getvar::stat}}::저항}}"></div></div>
 </div>
+{{/when}}
 </section>
-
 <div class="line single"></div>
 
 <section class="ejaculation-section">
-<h3>* {{user}}</h3>
+<h3 style="margin-top: 0.5rem;">* {{user}}</h3>
 <div class="x-risu-bar-container">
 <span class="bar-label"> 절정:</span>
-<div class="progress-bar x-risu-ej">
-<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%;"></div>
+<div class="progress-bar">
+<div class="x-risu-progress-bar-fill x-risu-ej" style="width: {{getvar::ej_user_ratio}}%;"></div>
 </div>
-<span class="bar-value">{{? {{tonumber::{{getvar::ej_user}}}}/{{? 10000*{{? 1.2^{{tonumber::{{getvar::ejCount_t}}}}}}}}}}%</span>
+<span class="bar-value">{{getvar::ej_user_ratio}}%</span>
 </div>
 </section>
 
@@ -484,7 +549,7 @@ visibility: hidden;
 {{getvar::newLog}}
 {{getvar::statLvUp}}
 </div>
-{{getvar::sucEffect}}
+
 <!-- 성공실패 예시
 <div class="success-animation"><div class="animation-text fail">실패</div></div>
 <div class="success-animation"><div class="animation-text success">대성공</div></div>
@@ -494,13 +559,33 @@ visibility: hidden;
 
 <div class="line single"></div>
 
-<section class="command-panel">
-<h3>▋Commands</h3>
+<div class="tabs-container">
+<div class="tabs {{#if {{equal::{{getvar::category}}::애무계}}}}active{{/if}}" risu-btn="1">[1] 애무계</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::도구계}}}}active{{/if}}" risu-btn="2">[2] 도구계</div>
+{{#when::{{dict_element::{{getvar::target}}::성별}}::isnot::남성}}
+{{#when::{{dict_element::{{getvar::user}}::성별}}::isnot::여성}}
+<div class="tabs {{#if {{equal::{{getvar::category}}::V계}}}}active{{/if}}" risu-btn="3">[3] V계</div>
+{{/when}}
+{{/when}}
+{{#when::{{dict_element::{{getvar::user}}::성별}}::isnot::여성}}
+<div class="tabs {{#if {{equal::{{getvar::category}}::A계}}}}active{{/if}}" risu-btn="4">[4] A계</div>
+{{/when}}
+<div class="tabs {{#if {{equal::{{getvar::category}}::봉사계}}}}active{{/if}}" risu-btn="5">[5] 봉사계</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::소모품}}}}active{{/if}}" risu-btn="6">[6] 소모품</div>
+{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::레벨}}}}>3}}}}
+<div class="tabs {{#if {{equal::{{getvar::category}}::하드계}}}}active{{/if}}" risu-btn="9">[9] 하드계</div>
+{{/when}}
+</div>
+<div class="tab-content">
 <div class="command-container">
 {{getVar::cmds}}
+{{#when::cmds::vis::}}가능한 조교 없음{{/when}}
 </div>
-</section>
+{{getvar::screenEffect}}
+</div>
+
 </main>
 
 <div class="line double"></div>
+<div class="btn command-btn" risu-btn="199">[199] 조교종료</div>
 </div>

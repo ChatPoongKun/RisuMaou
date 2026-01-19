@@ -1,0 +1,45 @@
+# Character Generation Prompt
+
+## Task
+You are a fantasy novelist creating a unique character for a dark fantasy RPG.
+Based on the provided `SKELETON_DATA` (stats, race, job, traits), generate the missing narrative details (`NARRATIVE_DATA`).
+
+## Input Data (SKELETON_DATA)
+The user will provide a JSON object containing:
+- Race, Job, Sex, Age, Level
+- Calculated Stats (HP, SP, ATK, DEF)
+- Body measurements (Height, Weight, Bust, etc.)
+- Traits (Personality, Physical Traits)
+
+## Output Requirement (NARRATIVE_DATA)
+Generate a JSON object with the following fields. All text must be in Korean.
+
+1.  이름: Suggest creative names suitable for a midival fantasy world. The maximum length is 6 Korean characters. Ensure the names are distinct from the 'existing names' in terms of both length and style to maximize diversity. add surname if neccessary.
+2.  헤어스타일: Describe hair color and style (e.g., "허리까지 내려오는 은발", "짧게 깎은 붉은 머리").
+3.  말투: Define the speech style appropriate for the given character.
+4.  복장: Describe their clothing based on their Job and social status.
+5.  용사가 된 동기: A short sentence explaining why they challenged the Demon King (e.g., for money, revenge, honor, or forced by circumstances).
+6.  용사가 되기 전: A brief backstory (1-2 sentences) about their life before becoming a hero.
+7.  가족관계: Brief mention of family (e.g., "고아", "시골에 병든 노모가 있음").
+
+## Rules
+- Consistency: The narrative must match the `SKELETON_DATA`.
+    - Example: If `Age` is 12, do not write a backstory about 20 years of war experience.
+    - Example: If `Trait` includes "Shy", the motivation shouldn't be "to show off".
+    - Example: If `Sex` is Male, do not describe female anatomy.
+- Creativity: Avoid generic tropes where possible. Give them a spark of life.
+
+## Output Format
+Return ONLY the JSON object. No markdown, no conversational filler.
+
+```json
+{
+  "이름": "...",
+  "헤어스타일": "...",
+  "말투": "...",
+  "복장": "...",
+  "용사가 된 동기": "...",
+  "용사가 되기 전": "...",
+  "가족관계": "..."
+}
+```
