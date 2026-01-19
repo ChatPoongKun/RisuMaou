@@ -8,68 +8,45 @@ margin-bottom: 0.3rem;
 }
 
 .shop-content {
-background-color: #303030;
+background-color: #1a1a1a;
 padding: 0.5rem;
 border-radius: 4px;
+border: 1px solid #333;
 }
 
 .shop-pane {
 display: block;
-animation: fadeIn 0.3s ease-in-out;
+/*animation: fadeIn 0.3s ease-in-out;*/
 }
-
-/* Tab switching logic 
-#tab-tools:checked ~ .shop-content > #tools-pane,
-#tab-consumables:checked ~ .shop-content > #consumables-pane,
-#tab-traps:checked ~ .shop-content > #traps-pane {
-display: block;
-}
-
-input[name="shop-tabs"]:checked + label {
-background-color: #666;
-border-color: #888;
-color: #fff;
-}*/
 
 /* Item grid and card styles */
 .shop-item-grid {
 display: grid;
 grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-gap: 1rem;
+gap: 0.5rem 1rem;
 }
 
 .shop-item {
 display: flex;
 align-items: center;
 gap: 1rem;
-background-color: #444;
-padding: 0.15rem;
-border-radius: 4px;
-border: 2px solid #555;
+background-color: #222;
+padding: 0.2rem;
+border-radius: 0.5rem;
+border: 1px solid #333;
 transition: background-color 0.2s, border-color 0.2s;
 cursor: pointer;
-}
-.shop-item:hover {
-background-color: #4f4f4f;
-}
-.shop-item.selected {
-border-color: #ffffbf;
-background-color: #4a4a4a;
 }
 
 .item-image {
 width: 64px;
 height: 64px;
-background-color: #2a2a2a;
-border: 1px solid #666;
-border-radius: 4px;
+border-radius: 0.5rem;
 flex-shrink: 0;
-/* Basic icon for placeholder */
 display: flex;
 align-items: center;
 justify-content: center;
-color: #777;
-font-size: 2rem;
+overflow: hidden;
 }
 
 .item-info {
@@ -94,8 +71,9 @@ font-size: 0.9em;
 .purchase-footer {
 margin-top: 0.5rem;
 padding: 0.5rem;
-border-top: 1px solid #555;
-background-color: #383838;
+border-top: 1px solid #333;
+background-color: #1a1a1a;
+border: 1px solid #333;
 border-radius: 4px;
 display: flex;
 justify-content: space-between;
@@ -112,11 +90,12 @@ flex-grow: 1;
 }
 
 .selected-item-display {
-background-color: #2a2a2a;
+background-color: #222;
 padding: 0.5rem 1rem;
 border-radius: 4px;
 text-align: center;
 flex-grow: 1;
+border: 1px solid #333;
 }
 
 .selected-item-name {
@@ -128,18 +107,18 @@ color: #e0e0e0;
 display: flex;
 align-items: center;
 gap: 0.5rem;
-background-color: #2a2a2a;
+background-color: #222;
 padding: 0.25rem;
 border-radius: 25px; /* Rounded pill shape */
-border: 1px solid #555;
+border: 1px solid #444;
 flex-shrink: 0;
 }
 
 .quantity-btn {
 width: 28px;
 height: 28px;
-border: 1px solid #666;
-background-color: #555;
+border: 1px solid #555;
+background-color: #333;
 color: #fff;
 cursor: pointer;
 border-radius: 50%; /* Circular buttons */
@@ -149,12 +128,7 @@ line-height: 1;
 transition: background-color 0.2s;
 }
 .quantity-btn:hover {
-background-color: #6a6a6a;
-}
-.quantity-btn:disabled {
-background-color: #333;
-color: #777;
-cursor: not-allowed;
+background-color: #444;
 }
 
 .quantity-display {
@@ -169,8 +143,8 @@ color: #e0e0e0;
 .total-price {
 font-size: 1.2em;
 white-space: nowrap;
-min-width: 10em; /* Set a minimum width to prevent layout shifts */
-text-align: right; /* Align text to the right for a stable appearance */
+min-width: 10em;
+text-align: right;
 }
 
 .price-value {
@@ -179,11 +153,69 @@ color: #ffffbf;
 margin-left: 0.5rem;
 }
 
+.price-value.x-risu-exceed{
+color: red;
+}
+
 .purchase-btn {
 padding: 0.5rem 1.5rem;
 font-size: 1em;
 font-weight: bold;
-background-color: #5a5a5a;
+background-color: #333;
+border: 1px solid #444;
+color: #ccc;
+}
+
+.purchase-btn.x-risu-exceed:hover{
+box-shadow: 0px 0px 20px -2px #a00606;
+}
+
+.item-detail{
+width:100%
+}
+
+.purchased {
+position: fixed;
+top: 50%;
+left: 0;
+width: 100%;
+transform: translateY(-50%);
+background-color: rgba(0, 0, 0);
+color: #fff;
+font-size: 3em;
+font-weight: bold;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100px;
+opacity: 0;
+visibility: hidden;
+animation: purchase-animation 1.1s forwards;
+z-index: 100;
+}
+
+/* 구매 애니메이션 키프레임 */
+@keyframes purchase-animation {
+0% {
+opacity: 0;
+visibility: hidden;
+}
+1% {
+opacity: 0;
+visibility: visible;
+}
+10% {
+opacity: 1;
+visibility: visible;
+}
+60% {
+opacity: 1;
+visibility: visible;
+}
+100% {
+opacity: 0;
+visibility: hidden;
+}
 }
 
 @keyframes fadeIn {
@@ -192,7 +224,7 @@ to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive layout for smaller screens */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 400px) {
 .purchase-footer {
 flex-direction: column;
 align-items: stretch; /* Make children full width */
@@ -216,6 +248,9 @@ order: 3; /* Appears last */
 .purchase-footer {
 gap: 0.1rem;
 }
+.purchase-btn.x-risu-exceed{
+box-shadow: 0px 0px 20px -2px #a00606;
+}
 }
 </style>
 
@@ -223,23 +258,23 @@ gap: 0.1rem;
 <div class="line double"></div>
 
 <header class="header">
-<h1>▋ 상점</h1>
+<h1>마계 상점</h1>
 <div class="game-info">
-<span>(소지금: {{getvar::gold}} Gold)</span>
+<span>(소지한 영혼: {{getvar::spirit}} Spirit)</span>
 </div>
 </header>
 
 <main>
 
-<div class="shop-tabs">
-<label class="x-risu-btn" risu-btn="shop_tools">조교도구</label>
-<label class="x-risu-btn" risu-btn="shop_consumables">소모품</label>
-<label class="x-risu-btn" risu-btn="shop_traps">함정</label>
+<div class="tabs-container">
+<div class="tabs {{#if {{equal::{{getvar::category}}::tools}}}}active{{/if}}" risu-btn="tools">조교도구</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::consumables}}}}active{{/if}}" risu-btn="consumables">소모품</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">함정</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::unlock}}}}active{{/if}}" risu-btn="unlock">마계지식</div>
 </div>
 
 <!-- Tab content -->
-<div class="shop-content">
-<!-- Training Tools Pane -->
+<div class="tab-content">
 <div class="shop-pane">
 <div class="shop-item-grid">
 {{getvar::tools}}
@@ -251,115 +286,30 @@ gap: 0.1rem;
 <div class="purchase-footer">
 <div class="purchase-controls">
 <div class="selected-item-display">
-<span class="selected-item-name">아이템을 선택하세요</span>
+<span class="selected-item-name">{{getvar::itemName}}</span>
 </div>
+{{#when::{{and::{{notequal::{{getvar::category}}::tools}}::{{notequal::{{getvar::category}}::unlock}}}}}}
 <div class="item-quantity-selector">
-<button class="quantity-btn minus" aria-label="수량 감소">-</button>
-<span class="quantity-display">0</span>
-<button class="quantity-btn plus" aria-label="수량 증가">+</button>
+<button class="quantity-btn" risu-btn="minus">-</button>
+<span class="quantity-display" risu-btn="quantity">{{getvar::itemQuantity}}</span>
+<button class="quantity-btn" risu-btn="plus">+</button>
 </div>
+{{/when}}
 </div>
 <div class="total-price">
-<span>총 금액:</span>
-<span class="price-value">0 Gold</span>
+<span>총 영혼:</span>
+<span class="price-value {{#if {{? {{tonumber::{{getvar::itemTotalPrice}}}}>{{tonumber::{{getvar::spirit}}}}}}}}exceed{{/if}}">{{getvar::itemTotalPrice}} Spirit</span>
 </div>
-<button class="x-risu-btn purchase-btn">구매하기</button>
+<button class="btn purchase-btn {{#if {{? {{tonumber::{{getvar::itemTotalPrice}}}}>{{tonumber::{{getvar::spirit}}}}}}}}exceed{{/if}}" risu-btn="purchase">구매하기</button>
+<div class="item-detail">{{getvar::itemDetail}}</div>
 </div>
 </main>
 
 <div class="line single"></div>
 <section class="command-panel">
-<h3>▋Commands</h3>
-<div class="command-container">
+
 {{getVar::cmds}}
-</div>
+
+{{getvar::screenEffect}}
 </section>
-<div class="line double"></div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-const shopItems = document.querySelectorAll('.shop-item');
-const selectedItemNameEl = document.querySelector('.selected-item-name');
-const quantityDisplayEl = document.querySelector('.quantity-display');
-const plusBtn = document.querySelector('.quantity-btn.plus');
-const minusBtn = document.querySelector('.quantity-btn.minus');
-const totalPriceValueEl = document.querySelector('.price-value');
-
-let cart = {};
-let selectedItem = null;
-
-// Initialize cart and event listeners for all items
-shopItems.forEach(item => {
-const name = item.dataset.name;
-cart[name] = {
-quantity: 0,
-price: parseInt(item.dataset.price, 10),
-element: item
-};
-
-item.addEventListener('click', () => {
-selectItem(name);
-});
-});
-
-function selectItem(itemName) {
-// Update selected state
-selectedItem = itemName;
-
-// Update UI for all items
-shopItems.forEach(item => {
-if (item.dataset.name === itemName) {
-item.classList.add('selected');
-} else {
-item.classList.remove('selected');
-}
-});
-
-// Update control panel
-selectedItemNameEl.textContent = selectedItem;
-updateControlsUI();
-}
-
-function changeQuantity(amount) {
-if (!selectedItem) return;
-
-const item = cart[selectedItem];
-const newQuantity = item.quantity + amount;
-
-if (newQuantity >= 0) {
-item.quantity = newQuantity;
-updateControlsUI();
-updateTotalPrice();
-}
-}
-
-function updateControlsUI() {
-if (!selectedItem) {
-quantityDisplayEl.textContent = '0';
-plusBtn.disabled = true;
-minusBtn.disabled = true;
-return;
-}
-
-const item = cart[selectedItem];
-quantityDisplayEl.textContent = item.quantity;
-plusBtn.disabled = false;
-minusBtn.disabled = item.quantity <= 0;
-}
-
-function updateTotalPrice() {
-let total = 0;
-for (const itemName in cart) {
-total += cart[itemName].quantity * cart[itemName].price;
-}
-totalPriceValueEl.textContent = `${total} Gold`;
-}
-
-plusBtn.addEventListener('click', () => changeQuantity(1));
-minusBtn.addEventListener('click', () => changeQuantity(-1));
-
-// Initial state of controls
-updateControlsUI();
-});
-</script>

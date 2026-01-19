@@ -1,0 +1,213 @@
+
+[dictionary/d_abl/hidden] function(triggerId)
+    local dictCat = "d_abl"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "능력 (Ability)")
+    setChatVar(triggerId, "dictDesc", "대상이 조교를 통해 습득한 능력.")
+end!!
+
+[dictionary/d_trait/hidden] function(triggerId)
+    local dictCat = "d_trait"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "특성 (Trait)")
+    setChatVar(triggerId, "dictDesc", "캐릭터가 가진 특징. 대부분 후천적으로 획득할 수 없다.")
+end!!
+
+[dictionary/d_mark/hidden] function(triggerId)
+    local dictCat = "d_mark"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "각인 (Mark)")
+    setChatVar(triggerId, "dictDesc", "잊을 수 없이 강렬한 경험을 통해 캐릭터의 마음 깊숙히 새겨진 본능.")
+end!!
+
+[dictionary/d_trace/hidden] function(triggerId)
+    local dictCat = "d_trace"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "흔적 (Trace)")
+    setChatVar(triggerId, "dictDesc", "캐릭터의 능력 레벨업에 필요한 조교의 흔적. 플레이어는 조교로 흔적을 새김에 따라 혼을 얻을 수 있다.")
+end!!
+
+[dictionary/d_stat/hidden] function(triggerId)
+    local dictCat = "d_stat"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictTitle", "상태 (Stat)")
+    setChatVar(triggerId, "dictDesc", "조교중 캐릭터의 상태를 나타내는 수치. 능력 또는 각인수치에 따라 조교 시작시 상태의 레벨이 증가한다.")
+end!!
+
+[dictionary/d_item/hidden] function(triggerId)
+    local dictCat = "d_item"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "아이템 (Item)")
+    setChatVar(triggerId, "dictDesc", "상점에서 구매할 수 있는 다양한 아이템")
+end!!
+
+[dictionary/d_monster/hidden] function(triggerId)
+    local dictCat = "d_monster"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "몬스터 (Monster)")
+    setChatVar(triggerId, "dictDesc", "던전에 서식하거나 침입해오는 몬스터들의 정보.")
+end!!
+
+[dictionary/d_patch/hidden] function(triggerId)
+    local dictCat = "d_patch"
+    setChatVar(triggerId, "category", dictCat)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "패치노트")
+    setChatVar(triggerId, "dictDesc", "버전별 주요 수정사항에 대한 안내")
+end!!
+
+[dictionary/d_sub_personality/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "성격")
+    setChatVar(triggerId, "dictTitle", "성격")
+    setChatVar(triggerId, "dictDesc", "캐릭터의 타고난 기질과 성격.")
+end!!
+[dictionary/d_sub_body/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "신체특성")
+    setChatVar(triggerId, "dictTitle", "신체특성")
+    setChatVar(triggerId, "dictDesc", "캐릭터의 성감대 및 특별한 신체특징.")
+end!!
+[dictionary/d_sub_sexual/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "성적취향")
+    setChatVar(triggerId, "dictTitle", "성적취향")
+    setChatVar(triggerId, "dictDesc", "캐릭터가 선호 또는 비선호하는 취향과 관련한 특성")
+end!!
+[dictionary/d_sub_constitution/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "체질")
+    setChatVar(triggerId, "dictTitle", "체질")
+    setChatVar(triggerId, "dictDesc", "후천적으로 획득한 체질적 특성")
+end!!
+[dictionary/d_sub_title/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "칭호")
+    setChatVar(triggerId, "dictTitle", "칭호")
+    setChatVar(triggerId, "dictDesc", "대상 캐릭터의 상태를 표현하는 대표적인 타이틀. 단 하나만 가질 수 있다.")
+end!!
+
+[dictionary/d_sub_tools/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "tools")
+    setChatVar(triggerId, "dictTitle", "tools")
+    setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+end!!
+[dictionary/d_sub_consumables/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "consumables")
+    setChatVar(triggerId, "dictTitle", "consumables")
+    setChatVar(triggerId, "dictDesc", "다양한 효과를 지닌 일회성 소모품")
+end!!
+[dictionary/d_sub_traps/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "traps")
+    setChatVar(triggerId, "dictTitle", "traps")
+    setChatVar(triggerId, "dictDesc", "던전에 설치할 수 있는 함정들")
+end!!
+[dictionary/d_sub_unlock/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "unlock")
+    setChatVar(triggerId, "dictTitle", "unlock")
+    setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+end!!
+
+[dictionary/d_sub_low_monster/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "low_monster")
+    setChatVar(triggerId, "dictTitle", "하급 몬스터")
+    setChatVar(triggerId, "dictDesc", "레이팅 300 이하의 하급 몬스터들.")
+
+    -- 몬스터 리스트 생성
+    local monsters = json.decode(getLoreBookContent(triggerId, "monsters.db"))
+    local monstersList = json.decode(getChatVar(triggerId, "monstersList"))
+    local contents = "" --화면에서 보여줄 html 조립 텍스트
+    local ratingMin = 0 --출력할 몬스터 레이팅 하한
+    local ratingMax = 300 --출력할 몬스터 레이팅 상항
+
+    for _, m in ipairs(monstersList) do
+        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+            local add = [[
+            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            </div>
+            ]]
+            contents = contents .. add
+        end
+    end
+
+    setChatVar(triggerId, "dict_monsters", contents)
+end!!
+
+[dictionary/d_sub_mid_monster/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "mid_monster")
+    setChatVar(triggerId, "dictTitle", "중급 몬스터")
+    setChatVar(triggerId, "dictDesc", "레이팅 1000 이하의 중급 몬스터들.")
+
+    -- 몬스터 리스트 생성
+    local monsters = json.decode(getLoreBookContent(triggerId, "monsters.db"))
+    local monstersList = json.decode(getChatVar(triggerId, "monstersList"))
+    local contents = "" --화면에서 보여줄 html 조립 텍스트
+    local ratingMin = 300 --출력할 몬스터 레이팅 하한
+    local ratingMax = 1000 --출력할 몬스터 레이팅 상항
+
+    for _, m in ipairs(monstersList) do
+        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+            local add = [[
+            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            </div>
+            ]]
+            contents = contents .. add
+        end
+    end
+
+    setChatVar(triggerId, "dict_monsters", contents)
+end!!
+
+[dictionary/d_sub_high_monster/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "high_monster")
+    setChatVar(triggerId, "dictTitle", "상급 몬스터")
+    setChatVar(triggerId, "dictDesc", "레이팅 1000 초과의 상급 몬스터들.")
+    -- 몬스터 리스트 생성
+    local monsters = json.decode(getLoreBookContent(triggerId, "monsters.db"))
+    local monstersList = json.decode(getChatVar(triggerId, "monstersList"))
+    local contents = "" --화면에서 보여줄 html 조립 텍스트
+    local ratingMin = 1000 --출력할 몬스터 레이팅 하한
+    local ratingMax = 9999 --출력할 몬스터 레이팅 상항
+
+    for _, m in ipairs(monstersList) do
+        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+            local add = [[
+            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            </div>
+            ]]
+            contents = contents .. add
+        end
+    end
+
+    setChatVar(triggerId, "dict_monsters", contents)
+end!!
+
+[dictionary/d_back_trait/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "특성 (Trait)")
+    setChatVar(triggerId, "dictDesc", "캐릭터가 가진 특징. 대부분 후천적으로 획득할 수 없다.")
+end!!
+
+[dictionary/d_back_item/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "아이템 (Item)")
+    setChatVar(triggerId, "dictDesc", "상점에서 구매할 수 있는 다양한 아이템")
+end!!
+
+[dictionary/d_back_monster/hidden] function(triggerId)
+    setChatVar(triggerId, "dictSub", "")
+    setChatVar(triggerId, "dictTitle", "몬스터 (Monster)")
+    setChatVar(triggerId, "dictDesc", "던전에 서식하거나 침입해오는 몬스터들의 정보.")
+end!!
+
+
+[dictionary/199/돌아가기] function(triggerId)
+    setChatVar(triggerId, "category", "items")
+    setChatVar(triggerId, "dictTitle", "")
+    setChatVar(triggerId, "dictDesc", "")
+    screenChange(triggerId, getState(triggerId, "oldScreen"))
+end!!

@@ -1,244 +1,143 @@
 <style>
-/* Character Panel */
-.character-display {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
+/* Character Dashboard */
+.character-panel { margin-bottom: 1.5rem; }
+.character-display { display: flex; gap: 1rem; background: #181818; padding: 1rem; border: 1px solid #282828; border-left: 3px solid #60d9f7; align-items: flex-start; }
+.character-portrait { width: 80px; height: 80px; background: #000; border: 1px solid #333; flex-shrink: 0; overflow: hidden; }
+.character-portrait img { width: 100%; height: 100%; object-fit: cover; }
+.character-info-wrapper { flex-grow: 1; min-width: 0; } /* min-width 0 prevents flex child overflow */
 
-.character-portrait {
-    width: 10rem;
-    height: 10rem;
-    background-color: #111;
-    border: 1px solid #444;
-    flex-shrink: 0;
-    border-radius: 1em;
-    overflow:hidden;
-}
+.panel-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; flex-wrap: wrap; }
+.panel-header h2 { font-size: 1.1rem; border: none; padding: 0; margin: 0; color: #fff; }
+.panel-sub { font-size: 0.8rem; color: #666; }
 
-.character-info-wrapper {
-    flex-grow: 1;
-}
+/* Status Bars in Main */
+.player-status { display: flex; flex-direction: column; gap: 0.25rem; }
 
-.character-details {
-    margin: 0 0 0.75rem 0;
-}
+/* Management Panel */
+.management-panel { margin-bottom: 1.5rem; }
+.inventory-item { background: #222; padding: 0.2rem 0.5rem; border-radius: 2px; font-size: 0.85rem; color: #ccc; border: 1px solid #333; display: flex; justify-content: space-between; }
 
-.player-status p {
-    margin: 0;
-    background-color: #303030;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    font-family: monospace;
-    text-align: center;
-}
+.dungeon-floor-grid { display: flex; flex-direction: column; gap: 0.5rem; }
+.dungeon-floor { background: #1a1a1a; padding: 0.75rem; border-left: 2px solid #444; font-size: 0.9rem; }
+.dungeon-floor strong { color: #60d9f7; margin-right: 0.5rem; }
 
-/* Management Panel & Tabs */
-.tabs {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    font-size:1rem;
-}
-.tabs > .btn{
-    padding:0.2rem 0.5rem;
-}
+.section-label { font-weight: 600; color: #ddd; text-transform: uppercase; margin-bottom: 0.5rem; display: block; border-bottom: 1px solid #222; }
 
-.tab-content {
-    margin-top: 0.2rem;
-    padding: 1.5rem;
-    background-color: #303030;
-    border-radius: 4px;
-    min-height: 150px;
-    font-family: 'Gulim', monospace;
-    font-size: 0.95em;
+/* Mobile Optimization */
+@media screen and (max-width: 400px) {
+.character-display { padding: 0.75rem; gap: 0.75rem; }
+.character-portrait { width: 60px; height: 60px; }
+.panel-header h2 { font-size: 1rem; width: 100%; }
 }
-
-.tab-content > .tab-pane {
-    display: none;
-}
-
-#skills-tab:checked ~ .tab-content > #skills-content,
-#traps-tab:checked ~ .tab-content > #traps-content,
-#dungeon-tab:checked ~ .tab-content > #dungeon-content {
-    display: block;
-}
-
-#skills-tab:checked ~ .tabs label[for="skills-tab"],
-#traps-tab:checked ~ .tabs label[for="traps-tab"],
-#dungeon-tab:checked ~ .tabs label[for="dungeon-tab"] {
-    background-color: #666;
-    border-color: #888;
-    color: #fff;
-}
-
-.tab-pane p {
-    margin: 0 0 0.75rem 0;
-}
-
-.item-grid, .dungeon-floor-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-    margin-top: 1rem;
-}
-
-.dungeon-floor-grid {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-}
-.dungeon-floor-grid div {
-    background-color: #2a2a2a;
-    padding: 0.5rem;
-    border-radius: 3px;
-}
-
-.total-info {
-    margin-top: 1.25rem !important;
-    font-weight: bold;
-    border-top: 1px solid #444;
-    padding-top: 1rem;
-}
-
-/* Command Panel */
-.command-header p {
-    font-size: 0.9em;
-    color: #aaaaaa;
-    margin-top: -0.5rem;
-}
-
-.status-message {
-    background-color: #333;
-    border-left: 3px solid #ffffbf;
-    padding: 0.75rem 1rem;
-    margin: 1rem 0;
-}
-.status-message p {
-    margin: 0;
-}
-
-@media screen and (max-width: 600px) {
-    .character-portrait {
-        width: 5rem;
-        height: 5rem;
-    }
-    .tabs {
-    font-size:0.8rem;
-    }
-    .tabs > .btn{
-    padding:0 0.3rem;
-    }
-}
-
 </style>
 
 <div class="container">
-<div class="line double"></div>
-
 <header class="header">
-<h1>▋메인 메뉴</h1>
+<h1>메인 메뉴</h1>
 <div class="game-info">
-<span>({{getvar::day}}일째) {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}《만월》 {{/when}}{{#when::ampm::vis::0}}낮{{:else}}밤{{/when}}</span>
-<span>(소지금: {{getvar::gold}} Gold)</span>
+<span>Day {{getvar::day}} {{#when::{{? {{? {{floor{{getvar::day}}%29.5}}}} == 15}}}}<span style="color:#fbc02d">《만월》</span>{{/when}} {{#when::ampm::vis::0}}☀️ 낮{{:else}}🌙 밤{{/when}}</span>
+<span>{{getvar::spirit}} Spirit</span>
 </div>
 </header>
 
-<div class="line single"></div>
-
 <main>
+<!-- Character Dashboard -->
 <section class="character-panel">
 <div class="character-display">
-<div class="character-portrait"><img src="{{source::user}}" style="margin:0px;border-radius:1em" ></div>
+<div class="character-portrait"><img src="{{source::user}}"></div>
 <div class="character-info-wrapper">
-<div class="character-details">
 <div class="panel-header">
-<h2>* 마왕 {{user}}</h2>
-</div>
+<h2>{{user}}</h2>
+<span class="panel-sub">Lv. {{dict_element::{{getvar::user}}::레벨}} 마왕</span>
 </div>
 <div class="player-status">
 <div class="x-risu-bar-container">
-<span class="bar-label">체력:</span>
-<div class="progress-bar">
-<div class="x-risu-progress-bar-fill x-risu-hp" style="width: {{calc::{{tonumber::{{dict_element::{{getvar::user}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::user}}::최대체력}}}} * 100}}%;"></div>
-</div>
-<span class="bar-value">{{dict_element::{{getvar::user}}::체력}}/{{dict_element::{{getvar::user}}::최대체력}}</span>
+<div class="progress-bar"><div class="x-risu-progress-bar-fill x-risu-hp" style="width: {{calc::{{tonumber::{{dict_element::{{getvar::user}}::체력}}}} / {{tonumber::{{dict_element::{{getvar::user}}::최대체력}}}} * 100}}%;"></div></div>
+<span class="bar-value">{{dict_element::{{getvar::user}}::체력}}</span>
 </div>
 <div class="x-risu-bar-container">
-<span class="bar-label">기력:</span>
-<div class="progress-bar">
-<div class="x-risu-progress-bar-fill x-risu-st" style="width: {{calc::{{tonumber::{{dict_element::{{getvar::user}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::user}}::최대기력}}}} * 100}}%;"></div>
+<div class="progress-bar"><div class="x-risu-progress-bar-fill x-risu-st" style="width: {{calc::{{tonumber::{{dict_element::{{getvar::user}}::기력}}}} / {{tonumber::{{dict_element::{{getvar::user}}::최대기력}}}} * 100}}%;"></div></div>
+<span class="bar-value">{{dict_element::{{getvar::user}}::기력}}</span>
 </div>
-<span class="bar-value">{{dict_element::{{getvar::user}}::기력}}/{{dict_element::{{getvar::user}}::최대기력}}</span>
-</div>
-
 </div>
 </div>
 </div>
 </section>
 
-<div class="line single"></div>
-
+<!-- Management Panel -->
 <section class="management-panel">
-<h2>* 경영 및 운영</h2>
-
-<!-- Hidden radio buttons to control tabs -->
-<input type="radio" name="management-tabs" id="skills-tab" checked hidden>
-<input type="radio" name="management-tabs" id="traps-tab" hidden>
-<input type="radio" name="management-tabs" id="dungeon-tab" hidden>
-
-<div class="tabs">
-<label for="skills-tab" class="btn">▋스킬</label>
-<label for="traps-tab" class="btn">▋함정</label>
-<label for="dungeon-tab" class="btn">▋던전</label>
+<div class="tabs-container">
+<div class="tabs {{#if {{equal::{{getvar::category}}::items}}}}active{{/if}}" risu-btn="items">아이템</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">보유 전력</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::dungeon}}}}active{{/if}}" risu-btn="dungeon">던전 현황</div>
 </div>
 
 <div class="tab-content">
-<div id="skills-content" class="tab-pane">
-<p>기교Lv: 15Lv</p>
-<p>소지 지식: 【조합지식】【마계지식】【음마지식】</p>
-<div class="item-grid">
-<span>슬라임젤리(10)</span>
-<span>마수의 가죽(5)</span>
-<span>회복약(3)</span>
-<span>마력결정(22)</span>
+{{#when::category::vis::items}}
+{{#if {{? {{dict_element::{{getvar::inventory}}::조합지식}}==1||{{dict_element::{{getvar::inventory}}::마계지식}}==1||{{dict_element::{{getvar::inventory}}::금단의지식}}==1}}}}
+<span class="section-label">지식</span>
+<div class="item-grid" style="margin-bottom:1rem;">
+{{#if {{? {{dict_element::{{getvar::inventory}}::조합지식}}==1}}}}<div class="inventory-item"><strong>조합지식</strong></div>{{/if}}
+{{#if {{? {{dict_element::{{getvar::inventory}}::마계지식}}==1}}}}<div class="inventory-item"><strong>마계지식</strong></div>{{/if}}
+{{#if {{? {{dict_element::{{getvar::inventory}}::금단의지식}}==1}}}}<div class="inventory-item" style="border-color:#880e4f"><strong>금단의지식</strong></div>{{/if}}
 </div>
+{{/if}}
+
+<span class="section-label">조교 도구</span>
+<div class="info-grid">
+{{settempvar::tools::0}}
+{{#each {{getvar::toolsList}} tool}}
+{{#if {{? {{dict_element::{{getvar::inventory}}::{{slot::tool}}}}==1}}}}
+<div class="inventory-item"><span>{{slot::tool}}</span></div>
+{{settempvar::tools::1}}
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::tools}}==0}}}}<div style="font-size:0.8rem; color:#555;">보유 도구 없음</div>{{/if}}
 </div>
-<div id="traps-content" class="tab-pane">
-<div class="item-grid">
-<span>끈끈이 함정(5)</span>
-<span>독화살 함정(2)</span>
-<span>마력흡수 함정(3)</span>
-<span>망각의 향기(1)</span>
+
+<span class="section-label" style="margin-top:1rem;">소모품</span>
+<div class="info-grid">
+{{settempvar::consumables::0}}
+{{#each {{getvar::consumablesList}} consumable}}
+{{#if {{? {{tonumber::{{dict_element::{{getvar::inventory}}::{{slot::consumable}}}}}}>0}}}}
+<div class="inventory-item"><span>{{slot::consumable}}</span> <span>x{{dict_element::{{getvar::inventory}}::{{slot::consumable}}}}</span></div>
+{{settempvar::consumables::1}}
+{{/if}}
+{{/each}}
+{{#if {{? {{gettempvar::consumables}}==0}}}}<div style="font-size:0.8rem; color:#555;">보유 소모품 없음</div>{{/if}}
 </div>
+{{/when}}
+
+{{#when::category::vis::traps}}
+<span class="section-label">몬스터</span>
+<div style="font-size:0.8rem; color:#555;">보유 몬스터 없음</div>
+
+<span class="section-label" style="margin-top:1rem;">함정</span>
+<div style="font-size:0.8rem; color:#555;">보유 함정 없음</div>
+{{/when}}
+
+{{#when::category::vis::dungeon}}
+<div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-size:0.85rem; color:#888;">
+<span>던전 Lv.{{getvar::dungeonLv}}</span>
 </div>
-<div id="dungeon-content" class="tab-pane">
-<p>던전Lv: 5Lv (경험치: 1250) | 함정Lv: 3Lv | 현재의 용사 초기Lv: 10Lv</p>
 <div class="dungeon-floor-grid">
-<div><strong>제1계층:</strong> 부하 50체, 용사: 0인, 영격: 0인, 시설: 없음</div>
-<div><strong>제2계층:</strong> 부하 35체, 용사: 1인, 영격: 0인, 시설: 인간목장</div>
-<div><strong>제3계층:</strong> 부하 20체, 용사: 0인, 영격: 2인, 시설: 미궁</div>
+<div class="dungeon-floor"><strong>1F</strong> 부하 50체</div>
+<div class="dungeon-floor"><strong>2F</strong> 부하 35체 / <span style="color:#aaa">인간목장</span></div>
+<div class="dungeon-floor"><strong>3F</strong> 부하 20체 / <span style="color:#aaa">미궁</span></div>
 </div>
-<p class="total-info">부하총계: 105마리, 용사총계: 1명, 요격총계: 2명</p>
+<div style="margin-top:1rem; border-top:1px solid #333; padding-top:0.5rem; font-size:0.8rem; color:#666; text-align:right;">
+종합 전력: 105
 </div>
+{{/when}}
 </div>
 </section>
 
-<div class="line single"></div>
-
+<!-- Command Panel -->
 <section class="command-panel">
-<!--
-<div class="command-header">
-<h2>* {{#when::ampm::vis::0}}오전{{:else}}오후{{/when}}의 일정</h2>
-<p>※ 휴식을 하는경우 경우 남은시간동안 업무를 처리합니다.</p>
-</div>
-<div class="status-message">
-<p>[새로운 시작] 당신은 막 봉인에서 깨어났습니다.</p>
-</div>
--->
-<h3>▋Commands</h3>
+<span class="section-label">행동 선택</span>
 <div class="command-container">
 {{getvar::cmds}}
 </div>
 </section>
 </main>
+</div>

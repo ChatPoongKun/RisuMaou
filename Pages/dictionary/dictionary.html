@@ -1,147 +1,106 @@
+
 <style>
-/* Main category buttons/tabs container */
-.category-tabs {
+/* Dictionary Container */
+.dict-container {
 display: flex;
-flex-wrap: wrap;
-gap: 0.5rem;
-border-bottom: 1px solid #555;
-padding-bottom: 0.75rem;
-margin-bottom: 0.75rem;
+flex-direction: column;
+gap: 1rem;
+height: 100%;
 }
 
-/* Styling for the tab labels */
-.category-tabs label {
-padding: 0.5rem 1.25rem;
-background-color: #444;
-border: 1px solid #666;
-color: #e0e0e0;
-cursor: pointer;
+/* Detail Panel (Fixed at top or bottom) */
+.dict-detail-panel {
+background-color: #1a1a1a;
+border: 1px solid #60d9f7;
 border-radius: 4px;
-transition: all 0.2s ease;
-}
-
-/* The content area for all categories */
-.category-content {
 padding: 1rem;
-background-color: #303030;
-border-radius: 4px;
-min-height: 300px;
-position: relative;
+margin-bottom: 1rem;
+box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+min-height: 80px;
 }
 
-/* Individual category pane, hidden by default */
-.category-pane {
-display: none;
+.dict-title {
+color: #60d9f7;
+font-size: 1.2rem;
+font-weight: bold;
+margin-bottom: 0.5rem;
+border-bottom: 1px solid #333;
+padding-bottom: 0.25rem;
 }
 
-/* Show the pane when its radio is checked */
-#cat-abl:checked ~ .category-content > #abl-pane,
-#cat-trait:checked ~ .category-content > #trait-pane,
-#cat-mark:checked ~ .category-content > #mark-pane,
-#cat-stat:checked ~ .category-content > #stat-pane,
-#cat-trace:checked ~ .category-content > #trace-pane {
-display: block;
+.dict-desc {
+color: #ccc;
+font-size: 0.95rem;
+line-height: 1.5;
 }
 
-/* Style the active tab */
-input[name="category-tabs"]:checked + label {
-background-color: #666;
-border-color: #888;
-color: #fff;
-}
-
-/* --- New Hierarchical View Styles --- */
-
-.sub-category-grid {
+/* Item List Grid */
+.dict-grid {
 display: grid;
 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-gap: 0.75rem;
-animation: fadeIn 0.3s ease-in-out;
+gap: 0.5rem;
+max-height: 500px;
+overflow-y: auto;
+padding-right: 0.5rem;
 }
 
-.sub-cat-btn {
-background-color: #3f3f3f;
-border: 1px solid #555;
-padding: 0.75rem;
-text-align: center;
-border-radius: 4px;
-cursor: pointer;
-transition: all 0.2s ease;
-}
-.sub-cat-btn:hover {
-background-color: #4f4f4f;
-border-color: #777;
+/* Sub-category Header */
+.dict-sub-header {
+grid-column: 1 / -1;
 color: #fff;
+font-weight: bold;
+margin-top: 1rem;
+margin-bottom: 0.5rem;
+border-bottom: 1px solid #444;
+padding-bottom: 0.25rem;
 }
-
-.x-risu-description-wrapper {
-display: none; /* Hidden by default */
-animation: fadeIn 0.3s ease-in-out;
+.dict-sub-header:first-child {
+margin-top: 0;
 }
 
 .back-btn {
-display: inline-block;
-margin-bottom: 1.5rem;
-background-color: #4a4a4a;
-padding: 0.4rem 1rem;
+grid-column: 1 / -1;
+background-color: #333;
+border: 1px solid #555;
+margin-bottom: 1rem;
+text-align: center;
+}
+
+.monster-item {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+background-color: #222;
+padding: 0.2rem;
 border-radius: 4px;
+border: 1px solid #333;
+text-align: left;
 cursor: pointer;
+}
+.monster-thumb {
+width: 64px;
+height: 64px;
+background-color: #000;
+border-radius: 2px;
+flex-shrink: 0;
+overflow: hidden;
+}
+.monster-thumb img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+margin:0;
+}
+.monster-info {
 font-weight: bold;
-transition: background-color 0.2s ease;
-}
-.back-btn:hover {
-background-color: #5a5a5a;
+color: #ccc;
+font-size: 0.9rem;
 }
 
-.entry-block {
-display: none; /* Hidden by default, shown by toggle */
+details{
+    grid-column: 1 / -1;
 }
 
-.entry-block h3 {
-font-size: 1.2em;
-color: #ffffbf; /* Highlight color */
-margin-bottom: 0.75rem;
-border-bottom: 1px solid #4f4f4f;
-padding-bottom: 0.5rem;
-}
-
-.entry-block p {
-background-color: #2a2a2a;
-padding: 1rem;
-border-radius: 4px;
-line-height: 1.7;
-margin: 0;
-}
-
-/* --- CSS Logic for View Toggling --- */
-/* Hide sub-category grid when a detail view is active */
-.view-controller input.sub-cat-toggle:checked ~ .sub-category-grid {
-display: none;
-}
-/* Show the description wrapper when a detail view is active */
-.view-controller input.sub-cat-toggle:checked ~ .x-risu-description-wrapper {
-display: block;
-}
-
-/* Show the specific entry-block for the checked radio */
-#abl-tech:checked ~ .x-risu-description-wrapper #abl-tech-desc,
-#abl-sens:checked ~ .x-risu-description-wrapper #abl-sens-desc,
-#trait-pers:checked ~ .x-risu-description-wrapper #trait-pers-desc,
-#trait-phys:checked ~ .x-risu-description-wrapper #trait-phys-desc,
-#mark-pleasure:checked ~ .x-risu-description-wrapper #mark-pleasure-desc,
-#mark-obey:checked ~ .x-risu-description-wrapper #mark-obey-desc,
-#mark-rebel:checked ~ .x-risu-description-wrapper #mark-rebel-desc,
-#stat-pleasure:checked ~ .x-risu-description-wrapper #stat-pleasure-desc,
-#stat-lust:checked ~ .x-risu-description-wrapper #stat-lust-desc,
-#stat-resist:checked ~ .x-risu-description-wrapper #stat-resist-desc,
-#trace-main:checked ~ .x-risu-description-wrapper #trace-main-desc {
-display: block;
-}
-
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(10px); }
-to { opacity: 1; transform: translateY(0); }
-}
 </style>
 
 <div class="container">
@@ -152,170 +111,172 @@ to { opacity: 1; transform: translateY(0); }
 </header>
 
 <main>
-<!-- Top-level category tabs -->
-<input type="radio" name="category-tabs" id="cat-abl" hidden checked>
-<input type="radio" name="category-tabs" id="cat-trait" hidden>
-<input type="radio" name="category-tabs" id="cat-mark" hidden>
-<input type="radio" name="category-tabs" id="cat-stat" hidden>
-<input type="radio" name="category-tabs" id="cat-trace" hidden>
-
-<div class="category-tabs">
-<label for="cat-abl" class="x-risu-btn">능력</label>
-<label for="cat-trait" class="x-risu-btn">특성</label>
-<label for="cat-mark" class="x-risu-btn">각인</label>
-<label for="cat-stat" class="x-risu-btn">스테이터스</label>
-<label for="cat-trace" class="x-risu-btn">흔적</label>
+<!-- 탭 네비게이션 -->
+<div class="tabs-container">
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_abl}}}}active{{/if}}" risu-btn="d_abl">▋능력</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_trait}}}}active{{/if}}" risu-btn="d_trait">▋특성</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_mark}}}}active{{/if}}" risu-btn="d_mark">▋각인</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_trace}}}}active{{/if}}" risu-btn="d_trace">▋흔적</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_stat}}}}active{{/if}}" risu-btn="d_stat">▋상태</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_item}}}}active{{/if}}" risu-btn="d_item">▋아이템</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_monster}}}}active{{/if}}" risu-btn="d_monster">▋몬스터</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::d_patch}}}}active{{/if}}" risu-btn="d_patch">▋패치노트</div>
 </div>
 
-<!-- Content Area -->
-<div class="category-content">
+<div class="tab-content">
+<div class="command-container">
+{{#when::category::vis::d_abl}}
+{{#each {{getvar::ablList}} item}}
+<div class="btn command-btn" risu-btn="dict_abl_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<!-- ABL (능력) Pane -->
-<div id="abl-pane" class="category-pane">
-<div class="view-controller">
-<input type="radio" name="abl-view" id="abl-list" class="list-toggle" checked hidden>
-<input type="radio" name="abl-view" id="abl-tech" class="sub-cat-toggle" hidden>
-<input type="radio" name="abl-view" id="abl-sens" class="sub-cat-toggle" hidden>
+{{#when::category::vis::d_trait}}
+{{#when::dictSub::vis::}}
+<div class="btn command-btn" risu-btn="d_sub_personality">성격</div>
+<div class="btn command-btn" risu-btn="d_sub_body">신체특성</div>
+<div class="btn command-btn" risu-btn="d_sub_sexual">성적취향</div>
+<div class="btn command-btn" risu-btn="d_sub_constitution">체질</div>
+<div class="btn command-btn" risu-btn="d_sub_title">칭호</div>
+{{/when}}
 
-<div class="sub-category-grid">
-<label for="abl-tech" class="sub-cat-btn">봉사기술</label>
-<label for="abl-sens" class="sub-cat-btn">성감</label>
-</div>
+{{#when::dictSub::vis::성격}}
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+{{#each {{getvar::성격List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="x-risu-description-wrapper">
-<label for="abl-list" class="back-btn">« 뒤로가기</label>
-<div class="entry-block" id="abl-tech-desc">
-<h3>능력 &gt; 봉사기술</h3>
-<p>대상을 기쁘게 하는 기술에 대한 숙련도입니다. 수치가 높을수록 상대에게 더 큰 쾌락을 줄 수 있으며, 조교 커맨드의 효율이 증가합니다.</p>
-</div>
-<div class="entry-block" id="abl-sens-desc">
-<h3>능력 &gt; 성감</h3>
-<p>신체 각 부위가 느끼는 쾌감의 정도를 나타냅니다. 개발될수록 더 민감해지고 쉽게 절정에 도달할 수 있습니다. 특정 부위의 성감이 높으면 관련된 조교 효과가 증폭됩니다.</p>
-</div>
-</div>
-</div>
-</div>
+{{#when::dictSub::vis::신체특성}}
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+{{#each {{getvar::신체특성List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<!-- TRAIT (특성) Pane -->
-<div id="trait-pane" class="category-pane">
-<div class="view-controller">
-<input type="radio" name="trait-view" id="trait-list" class="list-toggle" checked hidden>
-<input type="radio" name="trait-view" id="trait-pers" class="sub-cat-toggle" hidden>
-<input type="radio" name="trait-view" id="trait-phys" class="sub-cat-toggle" hidden>
+{{#when::dictSub::vis::성적취향}}
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+{{#each {{getvar::성적취향List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="sub-category-grid">
-<label for="trait-pers" class="sub-cat-btn">성격</label>
-<label for="trait-phys" class="sub-cat-btn">체질</label>
-</div>
+{{#when::dictSub::vis::체질}}
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+{{#each {{getvar::체질List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="x-risu-description-wrapper">
-<label for="trait-list" class="back-btn">« 뒤로가기</label>
-<div class="entry-block" id="trait-pers-desc">
-<h3>특성 &gt; 성격</h3>
-<p>캐릭터의 기본적인 기질을 나타냅니다. 조교나 특정 이벤트를 통해 변화할 수 있으며, 행동 양식에 영향을 줍니다. (예: 완고함, 음란함, 순종적)</p>
-</div>
-<div class="entry-block" id="trait-phys-desc">
-<h3>특성 &gt; 체질</h3>
-<p>선천적으로 타고난 신체적 특성입니다. 쉽게 바뀌지 않으며, 특정 상황에서 이점이나 불이익으로 작용할 수 있습니다. (예: 민감체질, 마력친화)</p>
-</div>
-</div>
-</div>
-</div>
+{{#when::dictSub::vis::칭호}}
+<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+{{#each {{getvar::칭호List}} item}}
+<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
+{{/when}}
 
-<!-- MARK (각인) Pane -->
-<div id="mark-pane" class="category-pane">
-<div class="view-controller">
-<input type="radio" name="mark-view" id="mark-list" class="list-toggle" checked hidden>
-<input type="radio" name="mark-view" id="mark-pleasure" class="sub-cat-toggle" hidden>
-<input type="radio" name="mark-view" id="mark-obey" class="sub-cat-toggle" hidden>
-<input type="radio" name="mark-view" id="mark-rebel" class="sub-cat-toggle" hidden>
+{{#when::category::vis::d_mark}}
+{{#each {{getvar::markList}} item}}
+<div class="btn command-btn" risu-btn="dict_mark_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="sub-category-grid">
-<label for="mark-pleasure" class="sub-cat-btn">쾌락각인</label>
-<label for="mark-obey" class="sub-cat-btn">복종각인</label>
-<label for="mark-rebel" class="sub-cat-btn">반발각인</label>
-</div>
+{{#when::category::vis::d_trace}}
+{{#each {{getvar::traceList}} item}}
+<div class="btn command-btn" risu-btn="dict_trace_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="x-risu-description-wrapper">
-<label for="mark-list" class="back-btn">« 뒤로가기</label>
-<div class="entry-block" id="mark-pleasure-desc">
-<h3>각인 &gt; 쾌락각인</h3>
-<p>쾌락에 대한 역치를 낮추고 감도를 증폭시키는 각인. 쾌락에 중독되기 쉬워지며, 성적인 행위에 대한 저항감을 약화시킵니다.</p>
-</div>
-<div class="entry-block" id="mark-obey-desc">
-<h3>각인 &gt; 복종각인</h3>
-<p>정신에 직접 작용하여 복종심을 심는 각인. 각인 주체의 명령에 거역하기 힘들어지며, 자발적인 복종 행동을 유도합니다.</p>
-</div>
-<div class="entry-block" id="mark-rebel-desc">
-<h3>각인 &gt; 반발각인</h3>
-<p>지배에 대한 저항 정신을 상징하는 각인. 굴복이나 복종과 관련된 상태 변화에 강한 저항력을 부여하며, 정신력을 쉽게 잃지 않게 합니다.</p>
-</div>
-</div>
-</div>
-</div>
+{{#when::category::vis::d_stat}}
+{{#each {{getvar::statList}} item}}
+<div class="btn command-btn" risu-btn="dict_stat_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<!-- STAT (스테이터스) Pane -->
-<div id="stat-pane" class="category-pane">
-<div class="view-controller">
-<input type="radio" name="stat-view" id="stat-list" class="list-toggle" checked hidden>
-<input type="radio" name="stat-view" id="stat-pleasure" class="sub-cat-toggle" hidden>
-<input type="radio" name="stat-view" id="stat-lust" class="sub-cat-toggle" hidden>
-<input type="radio" name="stat-view" id="stat-resist" class="sub-cat-toggle" hidden>
+{{#when::category::vis::d_item}}
+{{#when::dictSub::vis::}}
+<div class="btn command-btn" risu-btn="d_sub_tools">조교도구</div>
+<div class="btn command-btn" risu-btn="d_sub_consumables">소모품</div>
+<div class="btn command-btn" risu-btn="d_sub_traps">함정</div>
+<div class="btn command-btn" risu-btn="d_sub_unlock">마계지식</div>
+{{/when}}
 
-<div class="sub-category-grid">
-<label for="stat-pleasure" class="sub-cat-btn">쾌락</label>
-<label for="stat-lust" class="sub-cat-btn">욕정</label>
-<label for="stat-resist" class="sub-cat-btn">부정</label>
-</div>
+{{#when::dictSub::vis::tools}}
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+{{#each {{getvar::toolsList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="x-risu-description-wrapper">
-<label for="stat-list" class="back-btn">« 뒤로가기</label>
-<div class="entry-block" id="stat-pleasure-desc">
-<h3>스테이터스 &gt; 쾌락</h3>
-<p>조교를 통해 느끼는 긍정적인 감응입니다. 이 수치가 높을수록 조교에 순응적으로 변하며, 쾌락에 약해집니다. 조교 중 획득하는 흔적 양에 영향을 줍니다.</p>
-</div>
-<div class="entry-block" id="stat-lust-desc">
-<h3>스테이터스 &gt; 욕정</h3>
-<p>성적인 욕구의 정도를 나타냅니다. 수치가 높아지면 이성적인 판단력이 흐려지고 본능에 충실한 행동을 보이기 쉽습니다. 특정 커맨드의 성공률을 높입니다.</p>
-</div>
-<div class="entry-block" id="stat-resist-desc">
-<h3>스테이터스 &gt; 부정</h3>
-<p>조교 행위에 대한 저항감이나 불쾌감을 나타냅니다. 이 수치가 높을수록 조교에 저항하고 반발하기 쉽습니다. 조교 효율을 떨어트리는 주요 원인입니다.</p>
-</div>
-</div>
-</div>
-</div>
+{{#when::dictSub::vis::consumables}}
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+{{#each {{getvar::consumablesList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<!-- trace (흔적) Pane -->
-<div id="trace-pane" class="category-pane">
-<div class="view-controller">
-<input type="radio" name="trace-view" id="trace-list" class="list-toggle" checked hidden>
-<input type="radio" name="trace-view" id="trace-main" class="sub-cat-toggle" hidden>
+{{#when::dictSub::vis::traps}}
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+{{#each {{getvar::trapsList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="sub-category-grid">
-<label for="trace-main" class="sub-cat-btn">흔적이란?</label>
-</div>
+{{#when::dictSub::vis::unlock}}
+<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+{{#each {{getvar::unlockList}} item}}
+<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+{{/each}}
+{{/when}}
 
-<div class="x-risu-description-wrapper">
-<label for="trace-list" class="back-btn">« 뒤로가기</label>
-<div class="entry-block" id="trace-main-desc">
-<h3>흔적 &gt; 흔적이란?</h3>
-<p>조교를 통해 얻을 수 있는 특수한 성과물로, 대상의 정기가 결정화된 것입니다. 대상의 특정 성향이나 능력을 강화시키는 데 사용됩니다. 조교의 방향성에 따라 다양한 종류의 흔적을 획득할 수 있습니다.</p>
-</div>
-</div>
-</div>
+{{/when}}
+
+{{#when::category::vis::d_monster}}
+{{#when::dictSub::vis::}}
+<div class="btn command-btn" risu-btn="d_sub_low_monster">하급 몬스터</div>
+<div class="btn command-btn" risu-btn="d_sub_mid_monster">중급 몬스터</div>
+<div class="btn command-btn" risu-btn="d_sub_high_monster">상급 몬스터</div>
+{{/when}}
+
+{{#when::dictSub::vis::low_monster}}
+<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+{{getvar::dict_monsters}}
+{{/when}}
+
+{{#when::dictSub::vis::mid_monster}}
+<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+{{getvar::dict_monsters}}
+{{/when}}
+
+{{#when::dictSub::vis::high_monster}}
+<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+{{getvar::dict_monsters}}
+{{/when}}
+{{/when}}
+
+
+{{#when::category::vis::d_patch}}
+<details><summary>alpha v_0.1 (25.00.00)</summary>
+<p>리수마왕이 렐름에 최초공개된 버전입니다.</p>
+<p>현재 고유 캐릭터인 <s>갈피빈유</s> 마오에 대한 조교를 체험해볼 수 있도록 구현되어 있습니다.</p>
+<p>큼직한 컨텐츠만 따져도 임신시스템, 요의 시스템, 신규 캐릭터 생성, 함정 및 몬스터관리, 용사의 침입과 격퇴, 마을 침공, 광왕과의 상호작용 등 구현해 나가야 할 것이 산더미 처럼 많습니다.</p>
+<p>LLM을 활용한 진짜 텍스트 게임을 만들고자 열심히 개발했지만 어디서 어떤 버그가 터질지도 모릅니다.</p>
+<p>버그 제보나 개발 아이디어를 주고자 하는 분은 아카라이브 챗챈에서 리수마왕을 키워드로 글을 작성해주시거나</p>
+<p><a href="https://github.com/ChatPoongKun/RisuMaou/tree/dev">깃헙</a> 의 데브브런치에 지속적으로 작업된 코드의 최신버전이 공유되고 있으니 PR을 넣어주시면 검토하여 컨텐츠에 반영해보겠습니다.</p>
+</details>
+<div class="line double" style="grid-column: 1/-1;"></div>
+{{/when}}
+
 </div>
 </div>
 </main>
-
-<div class="line single"></div>
-
-<section class="command-panel">
-<h3>▋Commands</h3>
-<div class="command-container">
-{{getVar::cmds}}
-</div>
+<!-- 상세 설명 패널 -->
+<section class="dict-detail-panel">
+<div class="dict-title">{{getvar::dictTitle}}</div>
+<div class="dict-desc">{{getvar::dictDesc}}</div>
 </section>
 
 <div class="line double"></div>
+{{getVar::cmds}}
 </div>

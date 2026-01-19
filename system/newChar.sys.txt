@@ -1,0 +1,233 @@
+function (triggerId, reason)
+    debug("newChar system initiated. Reason: " .. (reason or "unknown"))
+    
+    -- 1. 설정 및 데이터 로드
+    local raceDB = json.decode(getLoreBookContent(triggerId, "race.db"))
+    local classDB = json.decode(getLoreBookContent(triggerId, "class.db"))
+    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db"))
+    local expTable = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
+    
+    local dungeonLv = tonumber(getChatVar(triggerId, "dungeonLv") or 1)
+    local ageLimit = tonumber(getChatVar(triggerId, "ageLimit") or 12)
+    local raceLimit = getChatVar(triggerId, "raceLimit") or "0" -- 0: All, 1: Human Only
+    local maleLimit = getChatVar(triggerId, "maleLimit") or "0"
+    local futaLimit = getChatVar(triggerId, "futaLimit") or "0"
+    local heroLvLimit = tonumber(getChatVar(triggerId, "heroLvLimit") or 5)
+    
+    -- 2. 기본 골격 생성 (RNG)
+    math.randomseed(os.time())
+    
+    -- 레벨 결정 (던전 레벨 기반 ±2, 최소 1)
+    local level = math.max(1, dungeonLv + math.random(-2, heroLvLimit))
+    local exp = 0 
+    
+    -- 종족 결정
+    local raceList = {}
+    if raceLimit == "1" then
+        table.insert(raceList, "인간")
+    else
+        for k, _ in pairs(raceDB) do table.insert(raceList, k) end
+    end
+    local race = raceList[math.random(#raceList)]
+    local raceData = raceDB[race] -- [Desc, HP, SP, ATK/DEF, Ht, Life, Traits]
+    
+    -- 클래스(직업) 결정
+    local classList = {}
+    for k, _ in pairs(classDB) do table.insert(classList, k) end
+    local class = classList[math.random(#classList)]
+    local classData = classDB[class] -- [Desc, HP, SP, ATK, DEF, Weapon, Armor]
+    
+    -- 성별 결정
+    local genderPool = {"여성", "여성", "여성"} -- 기본적으로 여성이 많음
+    if maleLimit == "1" then table.insert(genderPool, "남성") end
+    if futaLimit == "1" then table.insert(genderPool, "후타나리") end
+    local gender = genderPool[math.random(#genderPool)]
+    
+    -- 나이 결정 (종족 수명 고려)
+    local ageBase = math.max(ageLimit, 8)
+    local lifeSpanMult = raceData[6] or 1.0
+    local age = math.floor((ageBase + math.random(0, 10)) * lifeSpanMult)
+    if age < ageLimit then age = ageLimit end
+    
+    -- 3. 스탯 계산 (Logic)
+    local baseHP = 100
+    local baseSP = 100
+    
+    -- 공식: (기초 + 레벨*성장치) * 종족보정 * 직업보정 * (0.9~1.1 랜덤)
+    local hpMult = (raceData[2] or 1.0) * (classData[2] or 1.0)
+    local spMult = (raceData[3] or 1.0) * (classData[3] or 1.0)
+    local atkMult = (raceData[4] or 1.0) * (classData[4] or 1.0) 
+    local defMult = (raceData[4] or 1.0) * (classData[5] or 1.0) -- 종족DB 인덱스 4는 공방 통합계수로 적용
+    
+    local maxHP = math.floor((baseHP + (level * 15)) * hpMult * (math.random(90, 110)*0.01))
+    local maxSP = math.floor((baseSP + (level * 10)) * spMult * (math.random(90, 110)*0.01))
+    local atk = 1 --임시값
+    local def = 1 --임시값
+    local combatRating = 1 --임시값
+    
+    -- 신체 사이즈
+    local heightBase = raceData[5] or 160
+    local height = math.floor(heightBase + math.random(-10, 10))
+    local weight = math.floor((height - 100) * 0.9 * (math.random(90, 110)/100))
+    
+    local bust = "평범"
+    local nipple = "갈색"
+    local penis = ""
+    local pubes = "보통"
+    
+    if gender ~= "남성" then
+        local bustSizes = {"절벽", "빈유", "평범", "거유", "폭유"}
+        -- 종족별 가슴 보정 로직이 있다면 여기서 추가 (raceData[7] 특성 가중치 활용 가능)
+        bust = bustSizes[math.random(#bustSizes)]
+    end
+    
+    if gender ~= "여성" then
+        local penisSizes = {"실좆", "작음", "평범", "대물", "말자지"}
+        penis = penisSizes[math.random(#penisSizes)]
+    end
+    
+    -- 4. 특성(Trait) 부여
+    local personalityList = {}
+    for _, p in ipairs(traitDB["성격"]) do
+        for k, _ in pairs(p) do table.insert(personalityList, k) end
+    end
+    
+    local assignedTraits = {}
+    -- 성격 1~2개
+    table.insert(assignedTraits, personalityList[math.random(#personalityList)])
+    if math.random() > 0.5 then
+        local second = personalityList[math.random(#personalityList)]
+        if second ~= assignedTraits[1] then table.insert(assignedTraits, second) end
+    end
+    
+    -- 신체특성 (종족 보너스 반영)
+    -- raceData[7]에 {"빈유":3} 처럼 가중치가 있다고 가정
+    -- 현재는 단순 랜덤 구현
+    local bodyTraitList = {}
+    for _, p in ipairs(traitDB["신체특성"]) do
+        for k, _ in pairs(p) do table.insert(bodyTraitList, k) end
+    end
+    if math.random() > 0.7 then
+        table.insert(assignedTraits, bodyTraitList[math.random(#bodyTraitList)])
+    end
+    
+    -- 5. 스켈레톤 데이터 구성
+    local skeleton = {
+        ["종족"] = race,
+        ["성별"] = gender,
+        ["나이"] = tostring(age),
+        ["클래스"] = class,
+        ["레벨"] = tostring(level),
+        ["경험치"] = "0",
+        
+        ["체력"] = tostring(maxHP),
+        ["최대체력"] = tostring(maxHP),
+        ["기력"] = tostring(maxSP),
+        ["최대기력"] = tostring(maxSP),
+        ["공격력"] = atk,
+        ["방어력"] = def,
+        ["레이팅"] = combatRating,
+        
+        ["자궁정액"]="0",
+        ["애널정액"]="0",
+        ["condition"] = "조교가능",
+
+        ["키"] = tostring(height),
+        ["몸무게"] = tostring(weight),
+        ["가슴"] = bust,
+        ["유두"] = nipple,
+        ["음모"] = pubes,
+        ["페니스"] = penis,
+        ["문신"]="",
+        ["피어싱"]="",
+
+        ["무기"] = classData[6],
+        ["방어구"] = classData[7],
+        ["장신구"]="없음",
+
+        ["성격"] = assignedTraits, -- 임시 저장, 나중에 분리
+        ["신체특성"] = {},
+        ["성적취향"] = {},
+        ["칭호"] = "미함락",
+        
+        -- 필수 빈 필드 초기화
+        ["첫키스 상대"]="미경험", ["첫경험 상대"]="미경험", ["이상경험 기록"]={}
+    }
+
+    -- 성격/신체특성 분리 재정리
+    local p_list = {}
+    local b_list = {}
+    for _, t in ipairs(assignedTraits) do
+        -- trait.db를 뒤져서 어디 속하는지 확인해야 함.
+        -- 단순화를 위해 여기서는 traitDB 구조를 순회하지 않고 일단 성격 필드에 다 넣었다가 나중에 처리하거나
+        -- 혹은 display logic에서 처리.
+        -- 일단 skeleton["성격"]에 다 넣어두고 display logic에 의존.
+        -- *개선*: trait.db 구조를 순회하여 분류
+        local isBody = false
+        for _, bt in ipairs(traitDB["신체특성"]) do
+            if bt[t] then isBody = true; break end
+        end
+        if isBody then table.insert(b_list, t) else table.insert(p_list, t) end
+    end
+    skeleton["성격"] = p_list
+    skeleton["신체특성"] = b_list
+    debug("기초데이터", json.encode(skeleton))
+    
+    -- 6. LLM 요청 (서사 부여)
+    local prompt = {
+        promptBuild("system", getLoreBookContent(triggerId, "newChar.pt")),
+        promptBuild("system", "existing names: "..getChatVar(triggerId, "chars")),
+        promptBuild("user", json.encode(skeleton))
+    }
+    
+    debug("신규 용사 생성... ("..race.." "..class..")")
+    
+    local response = LLM(triggerId, prompt, "newChar") -- 보조 모델 사용 권장
+    if not response.success then
+        alertError(triggerId, "용사 생성 실패 (LLM Error)")
+        return
+    end
+    debug("생성완료", response.result)
+    local content = response.result
+    content = content:gsub("<Thoughts>.-</Thoughts>", "") --혹시모를 사고과정 제거
+
+    local narrative = json.decode(content:match("({.*})"))
+    -- 7. 데이터 병합 및 저장
+    for k, v in pairs(narrative) do
+        skeleton[k] = v
+    end
+
+    -- DB에 없는 필드(abl, mark 등) 0으로 초기화
+    local extraDBs = {"mark.db", "abl.db", "exp.db"}
+    for _, dbName in ipairs(extraDBs) do
+        local dbContent = json.decode(getLoreBookContent(triggerId, dbName))
+        for key, _ in pairs(dbContent) do
+            if not skeleton[key] then skeleton[key] = "0" end
+        end
+    end
+
+    -- Trace 초기화
+    local allTrace = getState(triggerId, "trace") or {}
+    local traceDB = json.decode(getLoreBookContent(triggerId, "trace.db"))
+    allTrace[skeleton["이름"]] = {}
+    for k, _ in pairs(traceDB) do
+        allTrace[skeleton["이름"]][k] = 0
+    end
+    setState(triggerId, "trace", allTrace)
+    
+    -- 캐릭터 리스트 업데이트
+    local chars = json.decode(getChatVar(triggerId, "chars"))
+    table.insert(chars, skeleton["이름"])
+    setChatVar(triggerId, "chars", json.encode(chars))
+    
+    -- 로어북 저장
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, skeleton["이름"], json.encode(skeleton), option)
+    
+    debug("신규 용사 생성", json.encode(skeleton))
+    
+    -- 리스트 갱신을 위해 현재 화면이 charList라면 리프레시
+    if getState(triggerId, "screen") == "charList" then
+        sysFunction(triggerId, "makeCharList.sys")
+    end
+end

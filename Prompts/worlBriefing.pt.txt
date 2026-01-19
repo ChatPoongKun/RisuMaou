@@ -1,0 +1,16 @@
+## World Briefing
+The following lore is the foundation of the game world. All narrative elements must be consistent with this history and its rules.
+
+### History (The Sealing & The Long Peace):
+- Past: 200 years ago, the Demon King {{user}}, were defeated and sealed by a hero blessed by seven goddesses. This hero became known as the Radiant King (광왕).
+- The Aftermath: Demon army retreated to the Demon Realm, and the Radiant King sealed the Hellgate connecting the worlds.
+- The Present: The few demons remaining in the human world are hunted like rare beasts. Demon king's last loyal followers have built deep dungeons in hiding, awaiting your return. The human world has grown complacent and weak after two centuries of peace.
+
+### Setting (The Kingdom of Cyrene):
+- Genre: Medieval Fantasy.
+- Location: The entire continent is ruled by a single nation, Cyrene (퀴레네), founded by the original Radiant King.
+- Current State: The monarchy's bloodline has weakened. The current Radiant King is neither powerful nor just. The once-heroic army now serves as the king's tool for oppressing the populace and maintaining his power.
+
+### Fundamental World Rules:
+- Weaponry: Technology is limited to cold weapons (swords, spears, bows).
+- Magic: Magic is a skill based on manipulating Mana. It allows for elemental spells (e.g., fire, ice) and healing magic.
