@@ -76,6 +76,8 @@ end!!
 
 [shop/purchase/hidden] function(triggerId)
     local itemName = getChatVar(triggerId, "itemName")
+    local itemKey = getChatVar(triggerId, "itemKey") or itemName -- 함정은 영문 키 사용
+    if itemKey == "" then itemKey = itemName end
     local itemCount = getChatVar(triggerId, "itemQuantity")
     local itemTotalPrice = tonumber(getChatVar(triggerId, "itemTotalPrice"))
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
@@ -87,136 +89,144 @@ end!!
         return
     end
 
-    local total_q = tonumber(inventory[itemName] or 0)
+    local total_q = tonumber(inventory[itemKey] or 0)
     if total_q >= 99 then
         alertNormal(triggerId, "구매가능한 수량을 초과했습니다.")
         return
     end
 
     spirit = spirit - itemTotalPrice
-    inventory[itemName] = tostring(inventory[itemName]+itemCount)
+    inventory[itemKey] = tostring((inventory[itemKey] or 0)+itemCount)
     setChatVar(triggerId, "spirit", intForm(spirit))
     setChatVar(triggerId, "inventory", json.encode(inventory))
     local itemCat = getChatVar(triggerId, "category")
     sysFunction(triggerId, "itemCatSelect.sys", itemCat)
     setChatVar(triggerId, "screenEffect", message)
+    setChatVar(triggerId, "itemKey", "") -- 초기화
 end!!
 
-[shop/심장석/hidden] function(triggerId)
-    local itemName = "심장석"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+/// tools 아이템 선택 핸들러
+[shop/heart_stone/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "heart_stone")
 end!!
-[shop/꿀단지웜/hidden] function(triggerId)
-    local itemName = "꿀단지웜"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/honey_worm/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "honey_worm")
 end!!
-[shop/애널웜/hidden] function(triggerId)
-    local itemName = "애널웜"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/anal_worm/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "anal_worm")
 end!!
-[shop/애널플러그/hidden] function(triggerId)
-    local itemName = "애널플러그"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/anal_plug/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "anal_plug")
 end!!
-[shop/애널비즈/hidden] function(triggerId)
-    local itemName = "애널비즈"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/anal_beads/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "anal_beads")
 end!!
-[shop/눈가리개/hidden] function(triggerId)
-    local itemName = "눈가리개"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/blindfold/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "blindfold")
 end!!
-[shop/볼개그/hidden] function(triggerId)
-    local itemName = "볼개그"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/ball_gag/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "ball_gag")
 end!!
-[shop/O링개그/hidden] function(triggerId)
-    local itemName = "O링개그"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/ring_gag/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "ring_gag")
 end!!
-[shop/점액달팽이/hidden] function(triggerId)
-    local itemName = "점액달팽이"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/slime_snail/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "slime_snail")
 end!!
-[shop/우유달팽이/hidden] function(triggerId)
-    local itemName = "우유달팽이"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/milk_snail/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "milk_snail")
 end!!
-[shop/채찍/hidden] function(triggerId)
-    local itemName = "채찍"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/whip/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "whip")
 end!!
-[shop/로프/hidden] function(triggerId)
-    local itemName = "로프"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/rope/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "rope")
 end!!
-[shop/관장기/hidden] function(triggerId)
-    local itemName = "관장기"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/enema/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "enema")
 end!!
-[shop/착유기/hidden] function(triggerId)
-    local itemName = "착유기"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/collar/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "collar")
 end!!
-[shop/개목걸이/hidden] function(triggerId)
-    local itemName = "개목걸이"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+
+/// consumables 아이템 선택 핸들러
+[shop/oil/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "oil")
 end!!
-[shop/조합지식/hidden] function(triggerId)
-    local itemName = "조합지식"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/crystal_ball/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "crystal_ball")
 end!!
-[shop/음마지식/hidden] function(triggerId)
-    local itemName = "음마지식"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/nutrient/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "nutrient")
 end!!
-[shop/금단의지식/hidden] function(triggerId)
-    local itemName = "금단의지식"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/incense/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "incense")
 end!!
-[shop/콘돔/hidden] function(triggerId)
-    local itemName = "콘돔"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/aphrodisiac/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "aphrodisiac")
 end!!
-[shop/오일/hidden] function(triggerId)
-    local itemName = "오일"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/dewormer/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "dewormer")
 end!!
-[shop/이뇨제/hidden] function(triggerId)
-    local itemName = "이뇨제"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/hair_tonic/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "hair_tonic")
 end!!
-[shop/미약/hidden] function(triggerId)
-    local itemName = "미약"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/ovulation_inducer/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "ovulation_inducer")
 end!!
-[shop/수정구/hidden] function(triggerId)
-    local itemName = "수정구"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+
+/// unlock 아이템 선택 핸들러
+[shop/alchemy_knowledge/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "alchemy_knowledge")
 end!!
-[shop/구충제/hidden] function(triggerId)
-    local itemName = "구충제"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/demon_knowledge/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "demon_knowledge")
 end!!
-[shop/영양제/hidden] function(triggerId)
-    local itemName = "영양제"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/forbidden_knowledge/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "forbidden_knowledge")
 end!!
-[shop/향/hidden] function(triggerId)
-    local itemName = "향"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+
+/// 함정 아이템 선택 핸들러
+[shop/arrow_trap/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "arrow_trap")
 end!!
-[shop/강모제/hidden] function(triggerId)
-    local itemName = "강모제"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/poison_gas_trap/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "poison_gas_trap")
 end!!
-[shop/배란유발제/hidden] function(triggerId)
-    local itemName = "배란유발제"
-    sysFunction(triggerId, "itemSelect.sys", itemName)
+[shop/spike_pit/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "spike_pit")
+end!!
+[shop/fire_glyph/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "fire_glyph")
+end!!
+[shop/ice_floor_trap/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "ice_floor_trap")
+end!!
+[shop/shock_wire/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "shock_wire")
+end!!
+[shop/net_launcher/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "net_launcher")
+end!!
+[shop/sleep_mist/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "sleep_mist")
+end!!
+[shop/acid_spray/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "acid_spray")
+end!!
+[shop/blade_corridor/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "blade_corridor")
+end!!
+[shop/teleport_trap/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "teleport_trap")
+end!!
+[shop/darkness_trap/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "darkness_trap")
 end!!
 
 [shop/199/돌아가기] function(triggerId)
     setChatVar(triggerId, "itemName", "")
+    setChatVar(triggerId, "itemKey", "")
     setChatVar(triggerId, "itemQuantity", 0)
     setChatVar(triggerId, "itemPrice", 0)
     setChatVar(triggerId, "itemTotalPrice", 0)

@@ -1,282 +1,296 @@
-
 <style>
-/* Dictionary Container */
-.dict-container {
-display: flex;
-flex-direction: column;
-gap: 1rem;
-height: 100%;
-}
+    /* Dictionary Container */
+    .dict-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        height: 100%;
+    }
 
-/* Detail Panel (Fixed at top or bottom) */
-.dict-detail-panel {
-background-color: #1a1a1a;
-border: 1px solid #60d9f7;
-border-radius: 4px;
-padding: 1rem;
-margin-bottom: 1rem;
-box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-min-height: 80px;
-}
+    .tab-content {
+        max-height: 500px;
+        overflow-y: auto;
+    }
 
-.dict-title {
-color: #60d9f7;
-font-size: 1.2rem;
-font-weight: bold;
-margin-bottom: 0.5rem;
-border-bottom: 1px solid #333;
-padding-bottom: 0.25rem;
-}
+    /* Detail Panel (Fixed at top or bottom) */
+    .dict-detail-panel {
+        background-color: #1a1a1a;
+        border: 1px solid #60d9f7;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        min-height: 80px;
+    }
 
-.dict-desc {
-color: #ccc;
-font-size: 0.95rem;
-line-height: 1.5;
-}
+    .dict-title {
+        color: #60d9f7;
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid #333;
+        padding-bottom: 0.25rem;
+    }
 
-/* Item List Grid */
-.dict-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-gap: 0.5rem;
-max-height: 500px;
-overflow-y: auto;
-padding-right: 0.5rem;
-}
+    .dict-desc {
+        color: #ccc;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
 
-/* Sub-category Header */
-.dict-sub-header {
-grid-column: 1 / -1;
-color: #fff;
-font-weight: bold;
-margin-top: 1rem;
-margin-bottom: 0.5rem;
-border-bottom: 1px solid #444;
-padding-bottom: 0.25rem;
-}
-.dict-sub-header:first-child {
-margin-top: 0;
-}
+    /* Item List Grid */
+    .dict-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.5rem;
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
 
-.back-btn {
-grid-column: 1 / -1;
-background-color: #333;
-border: 1px solid #555;
-margin-bottom: 1rem;
-text-align: center;
-}
+    /* Sub-category Header */
+    .dict-sub-header {
+        grid-column: 1 / -1;
+        color: #fff;
+        font-weight: bold;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid #444;
+        padding-bottom: 0.25rem;
+    }
 
-.monster-item {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-background-color: #222;
-padding: 0.2rem;
-border-radius: 4px;
-border: 1px solid #333;
-text-align: left;
-cursor: pointer;
-}
-.monster-thumb {
-width: 64px;
-height: 64px;
-background-color: #000;
-border-radius: 2px;
-flex-shrink: 0;
-overflow: hidden;
-}
-.monster-thumb img {
-width: 100%;
-height: 100%;
-object-fit: cover;
-margin:0;
-}
-.monster-info {
-font-weight: bold;
-color: #ccc;
-font-size: 0.9rem;
-}
+    .dict-sub-header:first-child {
+        margin-top: 0;
+    }
 
-details{
-    grid-column: 1 / -1;
-}
+    .back-btn {
+        grid-column: 1 / -1;
+        background-color: #333;
+        border: 1px solid #555;
+        margin-bottom: 1rem;
+        text-align: center;
+        position: sticky;
+        top: 0;
+    }
 
+    .monster-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: #222;
+        padding: 0.2rem;
+        border-radius: 4px;
+        border: 1px solid #333;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .monster-thumb {
+        width: 64px;
+        height: 64px;
+        background-color: #000;
+        border-radius: 2px;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .monster-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        margin: 0;
+    }
+
+    .monster-info {
+        font-weight: bold;
+        color: #ccc;
+        font-size: 0.9rem;
+    }
+
+    details {
+        grid-column: 1 / -1;
+    }
 </style>
 
 <div class="container">
-<div class="line double"></div>
+    <div class="line double"></div>
 
-<header class="header">
-<h1>▋ 마계사전</h1>
-</header>
+    <header class="header">
+        <h1>▋ 마계사전</h1>
+    </header>
 
-<main>
-<!-- 탭 네비게이션 -->
-<div class="tabs-container">
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_abl}}}}active{{/if}}" risu-btn="d_abl">▋능력</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_trait}}}}active{{/if}}" risu-btn="d_trait">▋특성</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_mark}}}}active{{/if}}" risu-btn="d_mark">▋각인</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_trace}}}}active{{/if}}" risu-btn="d_trace">▋흔적</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_stat}}}}active{{/if}}" risu-btn="d_stat">▋상태</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_item}}}}active{{/if}}" risu-btn="d_item">▋아이템</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_monster}}}}active{{/if}}" risu-btn="d_monster">▋몬스터</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::d_patch}}}}active{{/if}}" risu-btn="d_patch">▋패치노트</div>
-</div>
+    <main>
+        <!-- 탭 네비게이션 -->
+        <div class="tabs-container">
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_abl}}}}active{{/if}}" risu-btn="d_abl">▋능력</div>
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_trait}}}}active{{/if}}" risu-btn="d_trait">▋특성</div>
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_mark}}}}active{{/if}}" risu-btn="d_mark">▋각인</div>
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_trace}}}}active{{/if}}" risu-btn="d_trace">▋흔적</div>
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_stat}}}}active{{/if}}" risu-btn="d_stat">▋상태</div>
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_item}}}}active{{/if}}" risu-btn="d_item">▋아이템</div>
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_monster}}}}active{{/if}}" risu-btn="d_monster">▋몬스터
+            </div>
+            <div class="tabs {{#if {{equal::{{getvar::category}}::d_patch}}}}active{{/if}}" risu-btn="d_patch">▋패치노트
+            </div>
+        </div>
 
-<div class="tab-content">
-<div class="command-container">
-{{#when::category::vis::d_abl}}
-{{#each {{getvar::ablList}} item}}
-<div class="btn command-btn" risu-btn="dict_abl_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+        <div class="tab-content">
+            <div class="command-container">
+                {{#when::category::vis::d_abl}}
+                {{#each {{getvar::ablList}} item}}
+                <div class="btn command-btn" risu-btn="dict_abl_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::category::vis::d_trait}}
-{{#when::dictSub::vis::}}
-<div class="btn command-btn" risu-btn="d_sub_personality">성격</div>
-<div class="btn command-btn" risu-btn="d_sub_body">신체특성</div>
-<div class="btn command-btn" risu-btn="d_sub_sexual">성적취향</div>
-<div class="btn command-btn" risu-btn="d_sub_constitution">체질</div>
-<div class="btn command-btn" risu-btn="d_sub_title">칭호</div>
-{{/when}}
+                {{#when::category::vis::d_trait}}
+                {{#when::dictSub::vis::}}
+                <div class="btn command-btn" risu-btn="d_sub_personality">성격</div>
+                <div class="btn command-btn" risu-btn="d_sub_body">신체특성</div>
+                <div class="btn command-btn" risu-btn="d_sub_sexual">성적취향</div>
+                <div class="btn command-btn" risu-btn="d_sub_constitution">체질</div>
+                <div class="btn command-btn" risu-btn="d_sub_title">칭호</div>
+                {{/when}}
 
-{{#when::dictSub::vis::성격}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
-{{#each {{getvar::성격List}} item}}
-<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::성격}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+                {{#each {{getvar::성격List}} item}}
+                <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::dictSub::vis::신체특성}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
-{{#each {{getvar::신체특성List}} item}}
-<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::신체특성}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+                {{#each {{getvar::신체특성List}} item}}
+                <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::dictSub::vis::성적취향}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
-{{#each {{getvar::성적취향List}} item}}
-<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::성적취향}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+                {{#each {{getvar::성적취향List}} item}}
+                <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::dictSub::vis::체질}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
-{{#each {{getvar::체질List}} item}}
-<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::체질}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+                {{#each {{getvar::체질List}} item}}
+                <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::dictSub::vis::칭호}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
-{{#each {{getvar::칭호List}} item}}
-<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
-{{/when}}
+                {{#when::dictSub::vis::칭호}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
+                {{#each {{getvar::칭호List}} item}}
+                <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
+                {{/when}}
 
-{{#when::category::vis::d_mark}}
-{{#each {{getvar::markList}} item}}
-<div class="btn command-btn" risu-btn="dict_mark_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::category::vis::d_mark}}
+                {{#each {{getvar::markList}} item}}
+                <div class="btn command-btn" risu-btn="dict_mark_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::category::vis::d_trace}}
-{{#each {{getvar::traceList}} item}}
-<div class="btn command-btn" risu-btn="dict_trace_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::category::vis::d_trace}}
+                {{#each {{getvar::traceList}} item}}
+                <div class="btn command-btn" risu-btn="dict_trace_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::category::vis::d_stat}}
-{{#each {{getvar::statList}} item}}
-<div class="btn command-btn" risu-btn="dict_stat_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::category::vis::d_stat}}
+                {{#each {{getvar::statList}} item}}
+                <div class="btn command-btn" risu-btn="dict_stat_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::category::vis::d_item}}
-{{#when::dictSub::vis::}}
-<div class="btn command-btn" risu-btn="d_sub_tools">조교도구</div>
-<div class="btn command-btn" risu-btn="d_sub_consumables">소모품</div>
-<div class="btn command-btn" risu-btn="d_sub_traps">함정</div>
-<div class="btn command-btn" risu-btn="d_sub_unlock">마계지식</div>
-{{/when}}
+                {{#when::category::vis::d_item}}
+                {{#when::dictSub::vis::}}
+                <div class="btn command-btn" risu-btn="d_sub_tools">조교도구</div>
+                <div class="btn command-btn" risu-btn="d_sub_consumables">소모품</div>
+                <div class="btn command-btn" risu-btn="d_sub_traps">함정</div>
+                <div class="btn command-btn" risu-btn="d_sub_unlock">마계지식</div>
+                {{/when}}
 
-{{#when::dictSub::vis::tools}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
-{{#each {{getvar::toolsList}} item}}
-<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::tools}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+                {{#each {{getvar::toolsList}} item}}
+                <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::dictSub::vis::consumables}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
-{{#each {{getvar::consumablesList}} item}}
-<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::consumables}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+                {{#each {{getvar::consumablesList}} item}}
+                <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::dictSub::vis::traps}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
-{{#each {{getvar::trapsList}} item}}
-<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::traps}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+                {{#each {{getvar::trapsList}} item}}
+                <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{#when::dictSub::vis::unlock}}
-<div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
-{{#each {{getvar::unlockList}} item}}
-<div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
+                {{#when::dictSub::vis::unlock}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_item">⬅ 목록으로</div>
+                {{#each {{getvar::unlockList}} item}}
+                <div class="btn command-btn" risu-btn="dict_item_{{slot::item}}">{{slot::item}}</div>
+                {{/each}}
+                {{/when}}
 
-{{/when}}
+                {{/when}}
 
-{{#when::category::vis::d_monster}}
-{{#when::dictSub::vis::}}
-<div class="btn command-btn" risu-btn="d_sub_low_monster">하급 몬스터</div>
-<div class="btn command-btn" risu-btn="d_sub_mid_monster">중급 몬스터</div>
-<div class="btn command-btn" risu-btn="d_sub_high_monster">상급 몬스터</div>
-{{/when}}
+                {{#when::category::vis::d_monster}}
+                {{#when::dictSub::vis::}}
+                <div class="btn command-btn" risu-btn="d_sub_low_monster">하급 몬스터</div>
+                <div class="btn command-btn" risu-btn="d_sub_mid_monster">중급 몬스터</div>
+                <div class="btn command-btn" risu-btn="d_sub_high_monster">상급 몬스터</div>
+                {{/when}}
 
-{{#when::dictSub::vis::low_monster}}
-<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
-{{getvar::dict_monsters}}
-{{/when}}
+                {{#when::dictSub::vis::low_monster}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+                {{getvar::dict_monsters}}
+                {{/when}}
 
-{{#when::dictSub::vis::mid_monster}}
-<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
-{{getvar::dict_monsters}}
-{{/when}}
+                {{#when::dictSub::vis::mid_monster}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+                {{getvar::dict_monsters}}
+                {{/when}}
 
-{{#when::dictSub::vis::high_monster}}
-<div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
-{{getvar::dict_monsters}}
-{{/when}}
-{{/when}}
+                {{#when::dictSub::vis::high_monster}}
+                <div class="btn command-btn back-btn" risu-btn="d_back_monster">⬅ 목록으로</div>
+                {{getvar::dict_monsters}}
+                {{/when}}
+                {{/when}}
 
 
-{{#when::category::vis::d_patch}}
-<details><summary>alpha v_0.1 (25.00.00)</summary>
-<p>리수마왕이 렐름에 최초공개된 버전입니다.</p>
-<p>현재 고유 캐릭터인 <s>갈피빈유</s> 마오에 대한 조교를 체험해볼 수 있도록 구현되어 있습니다.</p>
-<p>큼직한 컨텐츠만 따져도 임신시스템, 요의 시스템, 신규 캐릭터 생성, 함정 및 몬스터관리, 용사의 침입과 격퇴, 마을 침공, 광왕과의 상호작용 등 구현해 나가야 할 것이 산더미 처럼 많습니다.</p>
-<p>LLM을 활용한 진짜 텍스트 게임을 만들고자 열심히 개발했지만 어디서 어떤 버그가 터질지도 모릅니다.</p>
-<p>버그 제보나 개발 아이디어를 주고자 하는 분은 아카라이브 챗챈에서 리수마왕을 키워드로 글을 작성해주시거나</p>
-<p><a href="https://github.com/ChatPoongKun/RisuMaou/tree/dev">깃헙</a> 의 데브브런치에 지속적으로 작업된 코드의 최신버전이 공유되고 있으니 PR을 넣어주시면 검토하여 컨텐츠에 반영해보겠습니다.</p>
-</details>
-<div class="line double" style="grid-column: 1/-1;"></div>
-{{/when}}
+                {{#when::category::vis::d_patch}}
+                <details>
+                    <summary>alpha v_0.1 (25.00.00)</summary>
+                    <p>리수마왕이 렐름에 최초공개된 버전입니다.</p>
+                    <p>현재 고유 캐릭터인 <s>갈피빈유</s> 마오에 대한 조교를 체험해볼 수 있도록 구현되어 있습니다.</p>
+                    <p>큼직한 컨텐츠만 따져도 임신시스템, 요의 시스템, 신규 캐릭터 생성, 함정 및 몬스터관리, 용사의 침입과 격퇴, 마을 침공, 광왕과의 상호작용 등 구현해 나가야 할 것이
+                        산더미 처럼 많습니다.</p>
+                    <p>LLM을 활용한 진짜 텍스트 게임을 만들고자 열심히 개발했지만 어디서 어떤 버그가 터질지도 모릅니다.</p>
+                    <p>버그 제보나 개발 아이디어를 주고자 하는 분은 아카라이브 챗챈에서 리수마왕을 키워드로 글을 작성해주시거나</p>
+                    <p><a href="https://github.com/ChatPoongKun/RisuMaou/tree/dev">깃헙</a> 의 데브브런치에 지속적으로 작업된 코드의 최신버전이
+                        공유되고 있으니 PR을 넣어주시면 검토하여 컨텐츠에 반영해보겠습니다.</p>
+                </details>
+                <div class="line double" style="grid-column: 1/-1;"></div>
+                {{/when}}
 
-</div>
-</div>
-</main>
-<!-- 상세 설명 패널 -->
-<section class="dict-detail-panel">
-<div class="dict-title">{{getvar::dictTitle}}</div>
-<div class="dict-desc">{{getvar::dictDesc}}</div>
-</section>
+            </div>
+        </div>
+    </main>
+    <!-- 상세 설명 패널 -->
+    <section class="dict-detail-panel">
+        <div class="dict-title">{{getvar::dictTitle}}</div>
+        <div class="dict-desc">{{getvar::dictDesc}}</div>
+    </section>
 
-<div class="line double"></div>
-{{getVar::cmds}}
+    <div class="line double"></div>
+    {{getVar::cmds}}
 </div>

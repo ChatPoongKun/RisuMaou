@@ -1,16 +1,28 @@
-function (triggerId, itemName)
-    setChatVar(triggerId, "itemName", itemName)
+function (triggerId, itemKey)
+    setChatVar(triggerId, "itemKey", itemKey)
     setChatVar(triggerId, "itemQuantity", 1)
 
+    -- trap.db에서 먼저 검색
+    local trapDB = json.decode(getLoreBookContent(triggerId, "trap.db"))
+    if trapDB[itemKey] then
+        local trap = trapDB[itemKey]
+        setChatVar(triggerId, "itemName", trap.name)
+        setChatVar(triggerId, "itemPrice", intForm(trap.price))
+        setChatVar(triggerId, "itemTotalPrice", intForm(trap.price))
+        setChatVar(triggerId, "itemDetail", trap.desc)
+        return
+    end
+
+    -- items.db에서 검색 (새 객체 구조)
     local items = json.decode(getLoreBookContent(triggerId, "items.db"))
-    local item
-    for _, v in pairs(items) do
-        if v[itemName] then
-            item = v[itemName]
-            break
+    for _, category in pairs(items) do
+        if category[itemKey] then
+            local item = category[itemKey]
+            setChatVar(triggerId, "itemName", item.name)
+            setChatVar(triggerId, "itemPrice", intForm(item.price))
+            setChatVar(triggerId, "itemTotalPrice", intForm(item.price))
+            setChatVar(triggerId, "itemDetail", item.desc)
+            return
         end
     end
-    setChatVar(triggerId, "itemPrice", intForm(item[2]))
-    setChatVar(triggerId, "itemTotalPrice", intForm(item[2]))
-    setChatVar(triggerId, "itemDetail", item[1])
 end
