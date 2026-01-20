@@ -31,13 +31,17 @@ function (triggerId)
 
     --인벤토리 초기화
     local inventory = {}
-    local items = json.decode((getLoreBookContent(triggerId, "items.db")))
-    for _, tbl in pairs(items) do
-        for k,_ in pairs(tbl) do
-            inventory[k] = 0
-        end
+    local items = getDB(triggerId, "items.db") 
+    for k, v in pairs(items) do
+        inventory[k] = 0
+    end
+    -- trap.db의 함정들도 인벤토리에 추가
+    local traps = getDB(triggerId, "trap.db")
+    for k, v in pairs(traps) do
+        inventory[k] = 0
     end
     stateToVar(triggerId, "inventory", inventory)
+
 
     --수정구 기록 초기화
     upsertLocalLoreBook(triggerId, "crystalRec", "{}", option)
@@ -46,18 +50,28 @@ function (triggerId)
     local trace = {}
     for _, v in ipairs(json.decode(initVars.chars)) do --리수배열 스타일에 맞게 저장
         local content = json.decode(getLoreBookContent(triggerId, v..".init")) -- 대상 캐릭터의 로어북을 불러와 테이블로 저장
-        --[[
-        현재 로직을 별도의 캐릭터 생성로직에 포함하고 해당 함수를 가져와서 쓰는 방식을 고려할것.
-        ]]
-
+        
         --캐릭터에는 정의가 필요한 부분만 들어있음. 캐릭터 시트에 없는 trait, trace등의 필드를 db에서 읽어와서 추가
-        local db = {"mark.db", "abl.db", "exp.db"}
+        --새 구조에서는 mark.db, abl.db, exp.db의 키 값을 전부 0으로 초기화해서 추가
+        local dbNames = {"mark.db", "abl.db", "exp.db"}
         local added = ""
-        for _, tbl in pairs(db) do
-            for key,_ in pairs(json.decode(getLoreBookContent(triggerId, tbl))) do
-                if not content[key] then
-                    content[key] = "0"
-                    added = added .. ", ".. key
+        
+        for _, dbName in ipairs(dbNames) do
+            local dbData = getDB(triggerId, dbName)
+            for key, val in pairs(dbData) do
+                -- DB의 한글 이름(name 필드)을 키로 사용
+                if val.name then
+                   local korKey = val.name
+                   if not content[korKey] then
+                       content[korKey] = "0"
+                       added = added .. ", ".. korKey
+                   end
+                else
+                    -- name 필드가 없으면 키 자체를 사용 (비상시)
+                    if not content[key] then
+                       content[key] = "0"
+                       added = added .. ", ".. key
+                   end
                 end
             end
         end
@@ -66,11 +80,13 @@ function (triggerId)
         --캐릭터 정보를 로컬로어북에 저장
         upsertLocalLoreBook(triggerId, v, json.encode(content), option)
 
-        --흔적은 별도의 state로 저장
-        local tracedb = json.decode(getLoreBookContent(triggerId, "trace.db"))
+        --흔적은 별도의 state로 저장 (trace.db 사용)
+        local traceDB = getDB(triggerId, "trace.db")
         trace[v] = {}
-        for j, _ in pairs(tracedb) do
-            trace[v][j] = 0
+        for _, val in pairs(traceDB) do
+            if val.name then
+                trace[v][val.name] = 0
+            end 
         end
     end
     setState(triggerId, "trace", trace)
@@ -80,100 +96,93 @@ function (triggerId)
     stateToVar(triggerId, "user", user)
 
 
-    --[[ 
-    순서 보존을 위한 키 추출 함수
-    JSON Decode를 거치면 순서가 뒤섞이므로, Raw String에서 Regex로 키를 추출함
-    ]]
-    local function getOrderedKeys(raw_json)
-        local keys = {}
-        -- "key" : 패턴을 찾음 (공백 포함)
-        for k in raw_json:gmatch('"([^"]-)"%s*:') do
-            table.insert(keys, k)
+    --###########################
+    --DB 로딩 및 리스트 생성 (JSON 기반 + 정렬)
+    --###########################
+    
+    local function createListFromDB(dbName)
+        local db = getDB(triggerId, dbName)
+        local list = {}
+        for k, v in pairs(db) do
+            -- 키가 아닌 'name' 필드가 있는 경우 (대부분의 DB)
+            -- 하지만 리스트에는 무엇을 담아야 하는가?
+            -- 기존: 한글 키 목록 (dictSelect 등에서 사용)
+            -- 변경: 영문 키 목록 (dictSelect.sys.txt 수정 예정)
+            -- *중요*: dictSelect.sys.txt와 dictionary.lua.txt를 수정하여 '영문 키'를 인자로 받도록 변경할 것이므로
+            -- 여기서도 영문 키를 리스트에 담아야 합니다.
+            table.insert(list, k)
         end
-        return keys
+        table.sort(list)
+        return list
     end
 
-    -- 1. 단순 구조 DB (monsters, abl, exp, trace, mark, stat)
-    local simpleDBs = {"monsters", "abl", "exp", "trace", "mark", "stat"}
-    for _, name in ipairs(simpleDBs) do
-        local raw = getLoreBookContent(triggerId, name..".db")
-        local keys = getOrderedKeys(raw)
-        
-        -- JSON 배열 문자열로 변환하여 저장
-        local listStr = json.encode(keys)
-        setChatVar(triggerId, name.."List", listStr)
+    -- 1. 단순 구조 DB
+    local simpleDBs = {
+        ["race"] = "race.db",
+        ["class"] = "class.db",
+        ["monsters"] = "monsters.db",
+        ["abl"] = "abl.db",
+        ["exp"] = "exp.db",
+        ["mark"] = "mark.db",
+        ["stat"] = "stat.db"
+    }
+
+    for name, filename in pairs(simpleDBs) do
+        local list = createListFromDB(filename)
+        setChatVar(triggerId, name.."List", json.encode(list))
     end
+    
+    -- traceList (임시 빈 리스트)
+    setChatVar(triggerId, "traceList", "[]")
 
-    -- 2. 중첩 구조 DB (items)
-    -- items는 tools, consumables 등으로 나뉘어 있음
-    local itemsRaw = getLoreBookContent(triggerId, "items.db")
-    local itemsObj = json.decode(itemsRaw)
-    local allItemKeys = getOrderedKeys(itemsRaw)
 
+    -- 2. Items & Traps (카테고리 분류)
+    local itemsDB = getDB(triggerId, "items.db")
+    local trapDB = getDB(triggerId, "trap.db")
+    
     local toolsList = {}
     local consumablesList = {}
-    local trapsList = {}
     local unlockList = {}
+    local trapsList = {}
 
-    for _, key in ipairs(allItemKeys) do
-        if itemsObj["tools"][key] then table.insert(toolsList, key)
-        elseif itemsObj["consumables"][key] then table.insert(consumablesList, key)
-        elseif itemsObj["traps"][key] then table.insert(trapsList, key)
-        elseif itemsObj["unlock"][key] then table.insert(unlockList, key)
+    for k, v in pairs(itemsDB) do
+        if v.category == "tools" then table.insert(toolsList, k)
+        elseif v.category == "consumables" then table.insert(consumablesList, k)
+        elseif v.category == "unlock" then table.insert(unlockList, k)
         end
     end
+    
+    for k, v in pairs(trapDB) do
+        table.insert(trapsList, k)
+    end
+    
+    table.sort(toolsList); table.sort(consumablesList); table.sort(unlockList); table.sort(trapsList)
     
     setChatVar(triggerId, "toolsList", json.encode(toolsList))
     setChatVar(triggerId, "consumablesList", json.encode(consumablesList))
-    setChatVar(triggerId, "trapsList", json.encode(trapsList))
     setChatVar(triggerId, "unlockList", json.encode(unlockList))
+    setChatVar(triggerId, "trapsList", json.encode(trapsList))
 
 
-    -- 3. 중첩 구조 DB (trait)
-    -- trait는 성격:[], 신체특성:[] 형태의 배열 내 객체 구조임
-    local traitRaw = getLoreBookContent(triggerId, "trait.db")
-    local traitObj = json.decode(traitRaw)
-    local allTraitKeys = getOrderedKeys(traitRaw)
-    
-    -- traitObj를 평탄화해서 키 존재 여부 확인용으로 사용
-    local flatTrait = flatten(traitObj)
-    
-    -- 각 카테고리별 리스트 초기화
-    local traitCategories = {
+    -- 3. Trait (평탄화된 구조에서 카테고리 분류)
+    local traitDB = getDB(triggerId, "trait.db")
+    local traitLists = {
         ["성격"] = {},
         ["신체특성"] = {},
         ["성적취향"] = {},
+        ["체질"] = {},
         ["칭호"] = {}
     }
 
-    -- 전체 키를 순회하며 어느 카테고리에 속하는지 확인 (순서 보존)
-    -- 주의: traitObj["성격"]은 배열이므로 flatten된 값을 참조하거나, 
-    -- traitObj 구조를 직접 순회해야 함. 여기선 flatten된 값을 활용.
-    
-    -- 그런데 trait.db 구조상 "성격" 키 다음에 "호기심", "신중함" 키가 순서대로 나옴.
-    -- 단순하게 가기 위해, 로어북의 카테고리 키("성격" 등)를 만나면 현재 카테고리를 스위칭하는 방식 사용
-    
-    local currentCat = ""
-    for _, key in ipairs(allTraitKeys) do
-        if traitCategories[key] then
-            currentCat = key -- 카테고리 키를 만나면 스위칭
-        elseif currentCat ~= "" then
-            -- 현재 카테고리 내에 존재하는 키인지 확인 (JSON 객체 참조)
-            -- traitObj[currentCat]은 배열([{키:값}, {키:값}]) 형태임
-            local exists = false
-            for _, item in ipairs(traitObj[currentCat]) do
-                    if item[key] then exists = true; break end
-                end
-                
-            if exists then
-                table.insert(traitCategories[currentCat], key)
-            end
+    for k, v in pairs(traitDB) do
+        if v.category and traitLists[v.category] then
+            table.insert(traitLists[v.category], k) --영문 키 저장
         end
     end
 
-    -- 결과 저장
-    for cat, list in pairs(traitCategories) do
-        setChatVar(triggerId, cat.."List", json.encode(list))
+    for k, list in pairs(traitLists) do
+        table.sort(list)
+        setChatVar(triggerId, k.."List", json.encode(list))
     end
 
     addChat(triggerId, "user", "{{".."getvar::html".."}}")

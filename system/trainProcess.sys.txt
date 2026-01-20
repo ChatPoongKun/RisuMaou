@@ -6,27 +6,26 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     math.randomseed(os.time())
     local screenEffect = "" --screenEffect 초기화
 
-    --[[날짜계산]]
-    local day = getChatVar(triggerId, "day")
-    local ampm = tonumber(getChatVar(triggerId, "ampm"))
-    local date = "day"..day
-    if ampm == 0 then
-        date = date.." ☀️ 낮"
-    else
-        date = date.." 🌙 밤"
-    end
+    --날짜계산 (유틸리티 함수 사용)
+    local date = getDateString(triggerId, "full")
 
-    --[[DB호출]]
-    local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
-    local markDB = json.decode(getLoreBookContent(triggerId, "mark.db"))
-    local ablDB = json.decode(getLoreBookContent(triggerId, "abl.db"))
-    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db"))
-    local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
-    local expDB = json.decode(getLoreBookContent(triggerId, "exp.db"))
-    local itemDB = json.decode(getLoreBookContent(triggerId, "items.db"))
-    --statdb에서 설명파트만 추출
+    --DB호출 (캐싱 메커니즘 사용)
+    local EXPtbl = getDB(triggerId, "EXPtable.db")
+    local markDB = getDB(triggerId, "mark.db")
+    local ablDB = getDB(triggerId, "abl.db")
+    local traitDB = getDB(triggerId, "trait.db")
+    local statDB = getDB(triggerId, "stat.db")
+    local expDB = getDB(triggerId, "exp.db")
+    local itemDB = getDB(triggerId, "items.db")
+    --statdb에서 설명파트만 추출 (shallow copy로 원본 캐시 보호)
+    local statDescDB = {}
     for k,v in pairs(statDB) do
-        statDB[k] = v[1]
+        -- 한글 이름을 키로 사용해 LLM에 전달
+        if v.name then
+            statDescDB[v.name] = v.desc
+        else
+            statDescDB[k] = v.desc
+        end
     end
 
     --[[유저와 조교대상의 정보 호출]]
@@ -57,11 +56,12 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     local rollBonus = 0
     rollBonus = rollBonus + json.decode(user)["레벨"] - 1 --유저 레벨당 1, 1레벨부터 시작이므로 1을 차감
     rollBonus = rollBonus - currentStat["저항"] --저항 stat 1레벨당 1만큼 페널티
-    for _, v in ipairs(markDB) do -- 각인 보너스 적용
-        if v == "반발각인" then
-            rollBonus = rollBonus - 2^tonumber((target[v] or 0))
+    for k, v in pairs(markDB) do -- 각인 보너스 적용 (객체 순회)
+        local markName = v.name or k
+        if markName == "반발각인" then
+            rollBonus = rollBonus - 2^tonumber((target[markName] or 0))
         else
-            rollBonus = rollBonus + (target[v] or 0)*2
+            rollBonus = rollBonus + (target[markName] or 0)*2
         end
     end
 
@@ -175,10 +175,11 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
 
     --target가 보유한 trait에 대한 설명만 추출
     local traitProm = {}
-    for k,_ in pairs(traitDB) do
-        local found, foundVal = hasVal(target, k)
+    for k, v in pairs(traitDB) do
+        local tName = v.name or k -- 한글 이름으로 체크
+        local found, foundVal = hasVal(target, tName)
         if found then
-            traitProm[k] = foundVal --target한테 있는 trait 설명만 입력
+            traitProm[tName] = v.desc --target한테 있는 trait 설명만 입력
         end
     end
     traitProm = json.encode(traitProm)
@@ -186,7 +187,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     --trainResponse (stat 계산) 프롬프트
     prompt = {
     promptBuild("system", getLoreBookContent(triggerId, "trainResponse.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDB)),
+    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
     promptBuild("system", "- MARK: "..json.encode(markDB)),
     promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
     promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
@@ -373,7 +374,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "trainLog.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "worldBriefing.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDB)),
+    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
     promptBuild("system", "- MARK: "..json.encode(markDB)),
     promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
     promptBuild("system", "- TRAIT: "..json.encode(traitProm)),

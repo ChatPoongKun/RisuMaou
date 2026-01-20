@@ -1,130 +1,127 @@
+--[[
+    각인 획득 시스템 (리팩토링 버전)
+    반복되는 각인 처리 로직을 데이터 기반으로 통합
+]]
 function (triggerId, stats, target)
-    local markDB = json.decode(getLoreBookContent(triggerId, "mark.db"))
-    local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
-    local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
+    -- mark.db 직접 로드 제거: 내부 정의 사용
+    local EXPtbl = getDB(triggerId, "EXPtable.db")
     local target = target
     local stats = stats
     local markBase = 25 --각인 획득 베이스 수치
     local markSum = 0 --모든 각인의 합계
     local screenEffect = ""
 
-    --각인레벨 합계 도출
-    for k, _ in pairs(markDB) do
-        if tonumber(target[k]) > 0 then
+    --[[
+        각인 정의 테이블
+        name: 각인명
+        icon: 이모지 아이콘
+        isNegative: 네거티브 각인 여부 (반발, 고통, 공포)
+        calculator: maxP 계산 함수
+    ]]
+    local markDefinitions = {
+        {
+            name = "반발각인",
+            icon = "💢",
+            isNegative = true,
+            calculator = function(s)
+                return math.max(s["저항"] or 0, ((s["수치"] or 0) + (s["고통"] or 0) + (s["불쾌"] or 0)) * 0.1 + (s["저항"] or 0) * 0.5)
+            end
+        },
+        {
+            name = "고통각인",
+            icon = "🪱",
+            isNegative = true,
+            calculator = function(s)
+                return math.max(s["고통"] or 0, ((s["공포"] or 0) + (s["불쾌"] or 0)) * 0.15 + (s["고통"] or 0) * 0.5)
+            end
+        },
+        {
+            name = "공포각인",
+            icon = "🩻",
+            isNegative = true,
+            calculator = function(s)
+                return math.max(s["공포"] or 0, ((s["굴복"] or 0) + (s["고통"] or 0) + (s["불쾌"] or 0)) * 0.1 + (s["공포"] or 0) * 0.5)
+            end
+        },
+        {
+            name = "복종각인",
+            icon = "🙏",
+            isNegative = false,
+            calculator = function(s)
+                return math.max(s["온순"] or 0, ((s["욕정"] or 0) + (s["굴복"] or 0)) * 0.15 + (s["온순"] or 0) * 0.5)
+            end
+        },
+        {
+            name = "치욕각인",
+            icon = "⛓️‍💥",
+            isNegative = false,
+            calculator = function(s)
+                return math.max(s["수치"] or 0, (s["굴복"] or 0) * 0.4 + (s["수치"] or 0) * 0.4)
+            end
+        },
+        {
+            name = "쾌락각인",
+            icon = "⭐",
+            isNegative = false,
+            calculator = function(s)
+                return math.max(
+                    s["C쾌락"] or 0, s["V쾌락"] or 0, s["B쾌락"] or 0, s["A쾌락"] or 0, 
+                    s["U쾌락"] or 0, s["M쾌락"] or 0, s["S쾌락"] or 0,
+                    ((s["C쾌락"] or 0) + (s["V쾌락"] or 0) + (s["B쾌락"] or 0) + (s["A쾌락"] or 0)) * 0.2
+                )
+            end
+        }
+    }
+
+    --각인레벨 합계 도출 (정의된 각인 목록 기준)
+    for _, def in ipairs(markDefinitions) do
+        if tonumber(target[def.name]) and tonumber(target[def.name]) > 0 then
             markSum = markSum + 1
         end
     end
 
-    --빈 stat 0으로 채우기
-    for k,v in pairs(statDB) do
-        stats[k] = stats[k] or 0
+    --[[
+        각인 처리 함수
+        한 턴에 하나의 각인만 획득 가능
+    ]]
+    local function processMark(markDef)
+        local currentLevel = tonumber(target[markDef.name]) or 0
+        if currentLevel >= 3 then
+            return false --이미 최대 레벨
+        end
+
+        local maxP = markDef.calculator(stats)
+        local cssClass = "neggative" -- CSS 클래스 통일 (기존 코드 유지)
+
+        --레벨업 판정 (한번에 최대 3까지 가능)
+        local newLevel = currentLevel
+        -- EXPtbl 키가 문자열인지 숫자인지 확인 필요하나 일단 tostring 유지
+        local threshold2 = markBase * (EXPtbl[tostring(markSum + 2)] or 99999)
+        local threshold1 = markBase * (EXPtbl[tostring(markSum + 1)] or 99999)
+        local threshold0 = markBase * (EXPtbl[tostring(markSum)] or 99999)
+
+        if maxP > threshold2 then
+            newLevel = 3
+        elseif maxP > threshold1 then
+            newLevel = math.min(currentLevel + 2, 3)
+        elseif maxP > threshold0 then
+            newLevel = currentLevel + 1
+        end
+
+        if newLevel > currentLevel then
+            target[markDef.name] = tostring(newLevel)
+            screenEffect = "<div class='getMark'><div class='getMarkText " .. cssClass .. "'>" ..
+                markDef.icon .. " " .. markDef.name .. " Lv." .. newLevel .. " 획득!!</div></div>"
+            return true --각인 획득 성공
+        end
+
+        return false
     end
 
-    --반발각인
-    if tonumber(target["반발각인"]) < 3 then
-        local maxP = math.max(stats["저항"], (stats["수치"]+stats["고통"]+stats["불쾌"])*0.1 + stats["저항"]*0.5)
-        if maxP > markBase * EXPtbl[tostring(markSum+2)] then
-            target["반발각인"] = "3"
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>💢 반발각인 Lv.3 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum+1)] then
-            target["반발각인"] = tostring(math.min(target["반발각인"] + 2, 3))
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>💢 반발각인 Lv."..target["반발각인"].." 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum)] then
-            target["반발각인"] = tostring(target["반발각인"] + 1)
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>💢 반발각인 Lv."..target["반발각인"].." 획득!!</div></div>"
-        end
-        if maxP > markBase * EXPtbl[tostring(markSum)] then
-            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
-        end
-    end
-
-    --고통각인
-    if tonumber(target["고통각인"]) < 3 then
-        local maxP = math.max(stats["고통"], (stats["공포"]+stats["불쾌"])*0.15 + stats["고통"]*0.5)
-        if maxP > markBase * EXPtbl[tostring(markSum+2)] then
-            target["고통각인"] = "3"
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🪱 고통각인 Lv.3 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum+1)] then
-            target["고통각인"] = tostring(math.min(target["고통각인"] + 2, 3))
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🪱 고통각인 Lv."..target["고통각인"].." 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum)] then
-            target["고통각인"] = tostring(target["고통각인"] + 1)
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🪱 고통각인 Lv."..target["고통각인"].." 획득!!</div></div>"
-        end
-        if maxP > markBase * EXPtbl[tostring(markSum)] then
-            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
-        end
-    end
-
-    --공포각인
-    if tonumber(target["공포각인"]) < 3 then
-        local maxP = math.max(stats["공포"], (stats["굴복"]+stats["고통"]+stats["불쾌"])*0.1 + stats["공포"]*0.5)
-        if maxP > markBase * EXPtbl[tostring(markSum+2)] then
-            target["공포각인"] = "3"
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🩻 공포각인 Lv.3 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum+1)] then
-            target["공포각인"] = tostring(math.min(target["공포각인"] + 2, 3))
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🩻 공포각인 Lv."..target["공포각인"].." 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum)] then
-            target["공포각인"] = tostring(target["공포각인"] + 1)
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🩻 공포각인 Lv."..target["공포각인"].." 획득!!</div></div>"
-        end
-        if maxP > markBase * EXPtbl[tostring(markSum)] then
-            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
-        end
-    end
-
-    --복종각인
-    if tonumber(target["복종각인"]) < 3 then
-        local maxP = math.max(stats["온순"], (stats["욕정"]+stats["굴복"])*0.15 + stats["온순"]*0.5)
-        if maxP > markBase * EXPtbl[tostring(markSum+2)] then
-            target["복종각인"] = "3"
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🙏 복종각인 Lv.3 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum+1)] then
-            target["복종각인"] = tostring(math.min(target["복종각인"] + 2, 3))
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🙏 복종각인 Lv."..target["복종각인"].." 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum)] then
-            target["복종각인"] = tostring(target["복종각인"] + 1)
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>🙏 복종각인 Lv."..target["복종각인"].." 획득!!</div></div>"
-        end
-        if maxP > markBase * EXPtbl[tostring(markSum)] then
-            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
-        end
-    end
-
-    --치욕각인
-    if tonumber(target["치욕각인"]) < 3 then
-        local maxP = math.max(stats["수치"], stats["굴복"]*0.4 + stats["수치"]*0.4)
-        if maxP > markBase * EXPtbl[tostring(markSum+2)] then
-            target["치욕각인"] = "3"
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⛓️‍💥 치욕각인 Lv.3 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum+1)] then
-            target["치욕각인"] = tostring(math.min(target["치욕각인"] + 2, 3))
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⛓️‍💥 치욕각인 Lv."..target["치욕각인"].." 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum)] then
-            target["치욕각인"] = tostring(target["치욕각인"] + 1)
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⛓️‍💥 치욕각인 Lv."..target["치욕각인"].." 획득!!</div></div>"
-        end
-        if maxP > markBase * EXPtbl[tostring(markSum)] then
-            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
-        end
-    end
-
-    --쾌락각인
-    if tonumber(target["쾌락각인"]) < 3 then
-        local maxP = math.max(stats["C쾌락"], stats["V쾌락"], stats["B쾌락"], stats["A쾌락"], stats["U쾌락"], stats["M쾌락"], stats["S쾌락"], (stats["C쾌락"]+stats["V쾌락"]+stats["B쾌락"]+stats["A쾌락"])*0.2)
-        if maxP > markBase * EXPtbl[tostring(markSum+2)] then
-            target["쾌락각인"] = "3"
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⭐ 쾌락각인 Lv.3 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum+1)] then
-            target["쾌락각인"] = tostring(math.min(target["쾌락각인"] + 2, 3))
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⭐ 쾌락각인 Lv."..target["쾌락각인"].." 획득!!</div></div>"
-        elseif maxP > markBase * EXPtbl[tostring(markSum)] then
-            target["쾌락각인"] = tostring(target["쾌락각인"] + 1)
-            screenEffect = "<div class='getMark'><div class='getMarkText neggative'>⭐ 쾌락각인 Lv."..target["쾌락각인"].." 획득!!</div></div>"
-        end
-        if maxP > markBase * EXPtbl[tostring(markSum)] then
-            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없도록 함수 종료하고 target변수 전달
+    --모든 각인에 대해 순차적으로 처리
+    for _, markDef in ipairs(markDefinitions) do
+        if processMark(markDef) then
+            return target, screenEffect --하나의 각인을 얻으면 다른 각인은 얻을 수 없음
         end
     end
 

@@ -119,11 +119,12 @@ end!!
     local ratingMax = 300 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+        -- m은 이제 영문 키
+        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
-            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            <div class="monster-thumb"><img src="{{raw::]]..monsters[m].name..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
             contents = contents .. add
@@ -146,11 +147,11 @@ end!!
     local ratingMax = 1000 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
-            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            <div class="monster-thumb"><img src="{{raw::]]..monsters[m].name..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
             contents = contents .. add
@@ -172,11 +173,11 @@ end!!
     local ratingMax = 9999 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
-            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            <div class="monster-thumb"><img src="{{raw::]]..monsters[m].name..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
             contents = contents .. add
