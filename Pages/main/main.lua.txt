@@ -32,8 +32,10 @@ end!!
 end!!
 
 [main/102/포로 처분] function(triggerId)
-    local screen = "포로 처분"
-    alertNormal(triggerId, screen.." 미구현")
+    local screen = "disposal"
+    screenChange(triggerId, screen)
+    setChatVar(triggerId, "category", "index")
+    sysFunction(triggerId, "makeCharList.sys")
 end!!
 
 [main/103/노예 매각] function(triggerId)
