@@ -1,5 +1,5 @@
 function (triggerId)
-    debug("dayEnd 실행")
+    debug("turnEnd 실행")
     
     --HP/SP 회복 처리 함수
     --isNight: true면 밤(높은 회복률), false면 낮(낮은 회복률)

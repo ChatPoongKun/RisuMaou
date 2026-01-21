@@ -304,7 +304,7 @@ end!!
         setChatVar(triggerId, "traceText", "")
         setChatVar(triggerId, "targetTrace", "")
 
-        sysFunction(triggerId, "dayEnd.sys")
+        sysFunction(triggerId, "turnEnd.sys")
         setChatVar(triggerId, "category", "items")
         screenChange(triggerId, "main")
     else

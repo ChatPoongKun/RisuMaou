@@ -76,7 +76,7 @@ end!!
 
 [main/199/휴식] function(triggerId)
     --하루가 지나갈때의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 별도처리
-    sysFunction(triggerId, "dayEnd.sys")
+    sysFunction(triggerId, "turnEnd.sys")
 end!!
 
 [main/hr/ ] function end!!
