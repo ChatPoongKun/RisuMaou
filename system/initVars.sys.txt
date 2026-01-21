@@ -80,7 +80,7 @@ function (triggerId)
         --캐릭터 정보를 로컬로어북에 저장
         upsertLocalLoreBook(triggerId, v, json.encode(content), option)
 
-        --흔적은 별도의 state로 저장 (trace.db 사용)
+        --캐릭터의 흔적은 별도의 state로 저장 (trace.db 사용)
         local traceDB = getDB(triggerId, "trace.db")
         trace[v] = {}
         for _, val in pairs(traceDB) do

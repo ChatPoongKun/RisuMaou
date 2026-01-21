@@ -64,13 +64,13 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/108/{{#when::{{? {{dict_element::{{getvar::inventory}}::음마지식}}==1}}}}실험실{{/when}}] function(triggerId)
-    local screen = "실험실"
+[main/108/시설 관리] function(triggerId)
+    local screen = "시설 관리"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/109/시설 관리] function(triggerId)
-    local screen = "시설 관리"
+[main/109/{{#when::{{? {{dict_element::{{getvar::inventory}}::음마지식}}==1}}}}실험실{{/when}}] function(triggerId)
+    local screen = "실험실"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
