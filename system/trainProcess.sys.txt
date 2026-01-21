@@ -416,7 +416,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget)
     --신규로그 저장
     local dialog = trainLog.result
     dialog = dialog:gsub("<Thoughts>.-</Thoughts>", "") --생각의 사슬 제거
-    dialog = dialog:gsub("<br>", "") --불필요한 줄바꿈 제거
+    dialog = dialog:gsub("<br><br>", "<br>") --불필요한 줄바꿈 제거
     debug("조교로그: "..dialog)
     local newLog = "<br>" .. dialog
 
