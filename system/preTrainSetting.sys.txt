@@ -17,7 +17,7 @@ function (triggerId, name)
 
         --조교화면 변수 초기화
         setChatVar(triggerId, "category", "애무계")
-        setChatVar(triggerId, "oldLog", date)
+        setChatVar(triggerId, "oldLog", date.." ")
         setChatVar(triggerId, "newLog", "["..target["이름"].."의 "..target["조교회수"].."번째 조교]<br>")
         setChatVar(triggerId, "statLvUp", " ")
         setChatVar(triggerId, "ej_target_ratio", 0) --조교대상 절정치
