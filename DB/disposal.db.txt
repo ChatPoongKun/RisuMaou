@@ -1,0 +1,30 @@
+{///disposal[키]: {name: 한글명, desc: 설명}
+    "release": {
+        "name": "석방",
+        "desc": "용사를 석방하여 자유롭게 풀어줍니다."
+    },
+    "cannibalism": {
+        "name": "식육형",
+        "desc": "용사를 몬스터들의 식재료로 사용합니다."
+    },
+    "burning": {
+        "name": "화형",
+        "desc": "용사를 불태워 처형합니다."
+    },
+    "taxidermy": {
+        "name": "박제형",
+        "desc": "용사를 음란한 포즈로 박제하여 보존합니다."
+    },
+    "petrification": {
+        "name": "석화형",
+        "desc": "용사를 음란한 포즈를 취한 석상으로 만듭니다."
+    },
+    "painting": {
+        "name": "회화형",
+        "desc": "용사를 살아있는 그림 세상 안에 봉인합니다."
+    },
+    "dismemberment_onahole": {
+        "name": "사지절단 오나홀형",
+        "desc": "용사의 사지를 절단하여 살아있는 오나홀로 만듭니다."
+    }
+}
