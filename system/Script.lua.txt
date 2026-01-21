@@ -1,15 +1,15 @@
 --기본 변수
-local TIME = -1
-local SPAMING = 0.2
-local DEBUG = 1      --디버그 활성화 여부
-local MAXROLL = 30   --조교성공굴림
-local TRAIN_REC = 0  --수정구 녹화 남은회수
-local DC_PENALTY = 1 --조교 난이도굴림 전역 페널티. 1보다 작으면 보너스
+TIME = -1
+SPAMING = 0.2
+DEBUG = 1      --디버그 활성화 여부
+MAXROLL = 30   --조교성공굴림
+TRAIN_REC = 0  --수정구 녹화 남은회수
+DC_PENALTY = 1 --조교 난이도굴림 전역 페널티. 1보다 작으면 보너스
 
 --전역 상수
-local DEFAULT_LORE_OPTION = { alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false }
-local DB_CACHE = {}   --로어북 DB 캐시 저장소
-local LORE_CACHE = {} --로어북 컨텐츠 캐시 저장소
+DEFAULT_LORE_OPTION = { alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false }
+DB_CACHE = {}   --로어북 DB 캐시 저장소
+LORE_CACHE = {} --로어북 컨텐츠 캐시 저장소
 
 --====================================
 -- 유틸리티 함수
@@ -28,14 +28,10 @@ function getDB(triggerId, dbName)
 end
 
 --DB 캐시 초기화 (게임 시작시 또는 필요시 호출)
-function clearDBCache(triggerId)
+function clearDBCache()
     DB_CACHE = {}
     LORE_CACHE = {}
     debug("DB 및 Lore 캐시 초기화됨")
-    local screen = getState(triggerId, "screen")
-    if not screen == "gameStart" then
-        processAndStoreLore(triggerId, screen..".lua")
-    end
 end
 
 --날짜/시간 문자열 생성 유틸리티
@@ -275,7 +271,7 @@ function processAndStoreLore(triggerId, loreBookId)
         sysFunction(triggerId, "debugCmds.sys") --디버그 함수 저장 (최초 1회만)
         funcs = getState(triggerId, "funcs") -- debugCmds 실행 후 funcs 갱신
     end
-    
+
     --debug(loreBookId .. "로어북에서 함수 호출")
     local loreEntries = getLoreBookContent(triggerId, loreBookId)
 
@@ -410,8 +406,8 @@ onButtonClick = async(function(triggerId, data)
         if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
             --local cmd = string.match(data, "(.*)_charInfo") --숫자입력을 통한 캐릭터 선택의 구현은 추후 고민
             local name = string.match(data, "charInfo_(.*)")
-                local f_code = "charCard.sys"
-                sysFunction(triggerId, f_code, name)
+            local f_code = "charCard.sys"
+            sysFunction(triggerId, f_code, name)
 
             -- 사전 버튼 클릭 (동적 라우팅)
         elseif string.find(data, "dict_") then
