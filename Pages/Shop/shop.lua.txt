@@ -182,6 +182,9 @@ end!!
 [shop/demon_knowledge/hidden] function(triggerId)
     sysFunction(triggerId, "itemSelect.sys", "demon_knowledge")
 end!!
+[shop/lewd_demon_knowledge/hidden] function(triggerId)
+    sysFunction(triggerId, "itemSelect.sys", "lewd_demon_knowledge")
+end!!
 [shop/forbidden_knowledge/hidden] function(triggerId)
     sysFunction(triggerId, "itemSelect.sys", "forbidden_knowledge")
 end!!

@@ -38,7 +38,10 @@ function (triggerId, itemCat)
             if k=="demon_knowledge" and inventory["alchemy_knowledge"] == "0" then
                 condition = false
                 reason = "조합지식 필요"
-            elseif k=="forbidden_knowledge" and inventory["demon_knowledge"] == "0" then
+            elseif k=="lewd_demon_knowledge" and inventory["demon_knowledge"] == "0" then
+                condition = false
+                reason = "마족정보 필요"
+            elseif k=="forbidden_knowledge" and inventory["lewd_demon_knowledge"] == "0" then
                 condition = false
                 reason = "음마지식 필요"
             elseif (itemCat == "tools" or itemCat == "unlock") and inventory[k] == "1" then
