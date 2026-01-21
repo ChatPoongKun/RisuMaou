@@ -167,7 +167,7 @@ end!!
         if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m].name..[[.png}}"></div>
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
@@ -194,7 +194,7 @@ end!!
         if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m].name..[[.png}}"></div>
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
@@ -220,7 +220,7 @@ end!!
         if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m].name..[[.png}}"></div>
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
