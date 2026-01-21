@@ -405,20 +405,8 @@ onButtonClick = async(function(triggerId, data)
         if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
             --local cmd = string.match(data, "(.*)_charInfo") --숫자입력을 통한 캐릭터 선택의 구현은 추후 고민
             local name = string.match(data, "charInfo_(.*)")
-            
-            -- disposal 화면에서는 처분 선택으로 처리
-            if screen == "disposal" then
-                -- user는 처리 불가
-                if name == "user" or name == "{{user}}" then
-                    alertError(triggerId, "유저는 처분할 수 없습니다.")
-                    return false
-                end
-                setChatVar(triggerId, "selectedChar", name)
-                sysFunction(triggerId, "disposalSelect.sys", name)
-            else
                 local f_code = "charCard.sys"
                 sysFunction(triggerId, f_code, name)
-            end
 
             -- 사전 버튼 클릭 (동적 라우팅)
         elseif string.find(data, "dict_") then
