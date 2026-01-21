@@ -19,11 +19,16 @@ LORE_CACHE = {} --로어북 컨텐츠 캐시 저장소
 --DB를 한 번만 로드하고 이후에는 캐시에서 반환
 function getDB(triggerId, dbName)
     local key = dbName
-    if not DB_CACHE[key] then
+    --[[if not DB_CACHE[key] then
         local content = getLoreBookContent(triggerId, dbName)
         DB_CACHE[key] = json.decode(content)
         debug("DB 캐시 저장: " .. dbName)
-    end
+    end]]
+    --테스트를 위해 매번 새로 캐싱
+    local content = getLoreBookContent(triggerId, dbName)
+    DB_CACHE[key] = json.decode(content)
+    debug("DB 캐시 저장: " .. dbName)
+
     return DB_CACHE[key]
 end
 
