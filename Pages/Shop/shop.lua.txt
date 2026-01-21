@@ -85,7 +85,7 @@ end!!
     local message = '<div class="purchased">'..itemName..' 구매완료!</div>'
 
     if itemTotalPrice > spirit then
-        alertNormal(triggerId, "혼이 부족합니다.")
+        alertNormal(triggerId, "spirit이 부족합니다.")
         return
     end
 

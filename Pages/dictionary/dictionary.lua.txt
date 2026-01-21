@@ -25,7 +25,7 @@ end!!
     local dictCat = "d_trace"
     setChatVar(triggerId, "category", dictCat)
     setChatVar(triggerId, "dictTitle", "흔적 (Trace)")
-    setChatVar(triggerId, "dictDesc", "캐릭터의 능력 레벨업에 필요한 조교의 흔적. 플레이어는 조교로 흔적을 새김에 따라 혼을 얻을 수 있다.")
+    setChatVar(triggerId, "dictDesc", "캐릭터의 능력 레벨업에 필요한 조교의 흔적. 플레이어는 조교로 흔적을 새김에 따라 영혼(spirit)을 얻을 수 있다.")
 end!!
 
 [dictionary/d_stat/hidden] function(triggerId)
