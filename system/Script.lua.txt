@@ -8,7 +8,8 @@ DC_PENALTY = 1 --조교 난이도굴림 전역 페널티. 1보다 작으면 보�
 
 --전역 상수
 DEFAULT_LORE_OPTION = { alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false }
-DB_CACHE = {} --로어북 DB 캐시 저장소
+DB_CACHE = {}   --로어북 DB 캐시 저장소
+LORE_CACHE = {} --로어북 컨텐츠 캐시 저장소
 
 --====================================
 -- 유틸리티 함수
@@ -29,7 +30,8 @@ end
 --DB 캐시 초기화 (게임 시작시 또는 필요시 호출)
 function clearDBCache()
     DB_CACHE = {}
-    debug("DB 캐시 초기화됨")
+    LORE_CACHE = {}
+    debug("DB 및 Lore 캐시 초기화됨")
 end
 
 --날짜/시간 문자열 생성 유틸리티
@@ -95,6 +97,15 @@ function time()
     end
 end
 
+--upsertLocalLoreBook 오버라이드
+old_upsertLocalLoreBook = upsertLocalLoreBook
+upsertLocalLoreBook = function(triggerId, name, content, ...)
+    old_upsertLocalLoreBook(triggerId, name, content, ...)
+    local modContent = string.gsub(content, "%s*///[^\n]*\n?", "\n")
+    LORE_CACHE[name] = modContent
+    debug("Lore 캐시 업데이트: " .. name)
+end
+
 --정수 포맷팅
 function intForm(str)
     if tonumber(str) ~= nil and tonumber(str) >= 1000 then --숫자변환이 불가하면 바이패스하고 입력값을 다시 반환
@@ -139,8 +150,23 @@ end
 
 --로어북 컨텐츠 로딩
 function getLoreBookContent(triggerId, lore)
+    -- HTML 파일은 캐시하지 않음 (UI 갱신 문제 방지)
+    if string.find(lore, "%.html$") then
+        local rawContent = getLoreBooks(triggerId, lore)[1].content
+        local modContent = string.gsub(rawContent, "%s*///[^\n]*\n?", "\n")
+        return modContent
+    end
+
+    if LORE_CACHE[lore] then
+        --debug("Lore 캐시 적중: " .. lore)
+        return LORE_CACHE[lore]
+    end
+
     local rawContent = getLoreBooks(triggerId, lore)[1].content
     local modContent = string.gsub(rawContent, "%s*///[^\n]*\n?", "\n") --로어북 주석처리 "///" 제거
+
+    LORE_CACHE[lore] = modContent
+    debug("Lore 캐시 생성: " .. lore)
     return modContent
 end
 
@@ -256,12 +282,12 @@ function processAndStoreLore(triggerId, loreBookId)
         --cmds 챗변수에 버튼들 입력
         if number == "hr" then --구분선 처리
             cmds = cmds ..
-            "<div style='text-align:center;border-bottom:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'>" ..
-            description .. "</div>"
+                "<div style='text-align:center;border-bottom:solid 1px;width:100%;margin:0.1em;grid-column:1/-1;'>" ..
+                description .. "</div>"
         elseif description ~= "hidden" then
             cmds = cmds ..
-            "<button class='btn command-btn' risu-btn='" .. number .. "'>[" .. number .. "] " .. description ..
-            "</button>"
+                "<button class='btn command-btn' risu-btn='" .. number .. "'>[" .. number .. "] " .. description ..
+                "</button>"
         end
     end
     setChatVar(triggerId, "cmds", cmds)

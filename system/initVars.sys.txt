@@ -32,8 +32,11 @@ function (triggerId)
     --인벤토리 초기화
     local inventory = {}
     local items = getDB(triggerId, "items.db") 
-    for k, v in pairs(items) do
-        inventory[k] = 0
+    local items = getDB(triggerId, "items.db") 
+    for cat, list in pairs(items) do
+        for k, v in pairs(list) do
+            inventory[k] = 0
+        end
     end
     -- trap.db의 함정들도 인벤토리에 추가
     local traps = getDB(triggerId, "trap.db")

@@ -54,7 +54,7 @@ function (triggerId, itemCat)
             
             if condition then
                 local price = intForm(itemPrice)
-                contents = contents .. "<div class='shop-item btn' risu-btn='"..k.."'><div class='item-image'><img src='{{raw::"..k..".png}}'></div><div class='item-info'><span class='item-name'>"..itemName.."</span><span class='item-price'>"..price.." spirit</span></div></div>"
+                contents = contents .. "<div class='shop-item btn' risu-btn='"..k.."'><div class='item-image'><img src='{{raw::"..itemName..".png}}'></div><div class='item-info'><span class='item-name'>"..itemName.."</span><span class='item-price'>"..price.." spirit</span></div></div>"
             end
             debug(k, reason)
         end
