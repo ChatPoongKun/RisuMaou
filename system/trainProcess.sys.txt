@@ -1,5 +1,6 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
-function(triggerId, dc, HP, SP, exps, feeling, command)
+--조교 커맨드에 따른 LLM의 출력을 처리
+function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget)
     debug("trainProcess 실행")
 
     --[[초기화]]
@@ -81,9 +82,21 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     end
 
     --성공한 경우에만 경험 추가
-    if roll + rollBonus > dc and #exps > 0 then
-        for _, k in ipairs(exps) do
-            target[k] = target[k] + 1
+    if roll + rollBonus > dc then
+        if #exps > 0 then
+            for _, k in ipairs(exps) do
+                target[k] = target[k] + 1
+            end
+        end
+        --성공 시 장비 탈착 변경
+        if equipTarget then
+            local equipTable = json.decode(equipments)
+            if equipTable[equipTarget] == "착용" then
+                equipTable[equipTarget] = "미착용"
+            else
+                equipTable[equipTarget] = "착용"
+            end
+            setChatVar(triggerId, "equipments", json.encode(equipTable))
         end
     end
 
@@ -402,8 +415,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     --[[응답처리]]
     --신규로그 저장
     local dialog = trainLog.result
-    --생각의 사슬 제거
-    dialog = dialog:gsub("<Thoughts>.-</Thoughts>", "")
+    dialog = dialog:gsub("<Thoughts>.-</Thoughts>", "") --생각의 사슬 제거
+    dialog = dialog:gsub("<br>", "") --불필요한 줄바꿈 제거
     debug("조교로그: "..dialog)
     local newLog = "<br>" .. dialog
 
