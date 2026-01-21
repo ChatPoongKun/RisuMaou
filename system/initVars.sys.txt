@@ -100,43 +100,60 @@ function (triggerId)
     --DB 로딩 및 리스트 생성 (JSON 기반 + 정렬)
     --###########################
     
-    local function createListFromDB(dbName)
+    -- DB 로딩 및 리스트 생성 (JSON 기반 + 정렬)
+    -- useName: true이면 한글 이름(v.name)을 리스트에 저장, false/nil이면 영문 키(k)를 저장
+    local function createListFromDB(dbName, useName)
         local db = getDB(triggerId, dbName)
         local list = {}
         for k, v in pairs(db) do
-            -- 키가 아닌 'name' 필드가 있는 경우 (대부분의 DB)
-            -- 하지만 리스트에는 무엇을 담아야 하는가?
-            -- 기존: 한글 키 목록 (dictSelect 등에서 사용)
-            -- 변경: 영문 키 목록 (dictSelect.sys.txt 수정 예정)
-            -- *중요*: dictSelect.sys.txt와 dictionary.lua.txt를 수정하여 '영문 키'를 인자로 받도록 변경할 것이므로
-            -- 여기서도 영문 키를 리스트에 담아야 합니다.
-            table.insert(list, k)
+            if useName and v.name then
+                table.insert(list, v.name)
+            else
+                table.insert(list, k)
+            end
         end
         table.sort(list)
         return list
     end
 
-    -- 1. 단순 구조 DB
-    local simpleDBs = {
+    -- 1. 단순 구조 DB - 키(Key)를 사용하는 리스트
+    -- race, class, monster는 RNG나 시스템 내부에서 키로 접근함
+    local keyListDBs = {
         ["race"] = "race.db",
         ["class"] = "class.db",
-        ["monsters"] = "monsters.db",
+        ["monsters"] = "monsters.db"
+    }
+
+    for name, filename in pairs(keyListDBs) do
+        local list = createListFromDB(filename, false)
+        setChatVar(triggerId, name.."List", json.encode(list))
+    end
+
+    -- 2. 단순 구조 DB - 이름(Name)을 사용하는 리스트
+    -- abl, exp, mark, stat은 캐릭터 데이터에 한글 이름으로 저장되고 HTML에서 순회함
+    local nameListDBs = {
         ["abl"] = "abl.db",
         ["exp"] = "exp.db",
         ["mark"] = "mark.db",
         ["stat"] = "stat.db"
     }
 
-    for name, filename in pairs(simpleDBs) do
-        local list = createListFromDB(filename)
+    for name, filename in pairs(nameListDBs) do
+        local list = createListFromDB(filename, true)
         setChatVar(triggerId, name.."List", json.encode(list))
     end
     
-    -- traceList (임시 빈 리스트)
-    setChatVar(triggerId, "traceList", "[]")
+    -- traceList (trace.db 기반 한글 이름 리스트)
+    local traceDB = getDB(triggerId, "trace.db")
+    local traceList = {}
+    for k, v in pairs(traceDB) do
+        if v.name then table.insert(traceList, v.name) end
+    end
+    table.sort(traceList)
+    setChatVar(triggerId, "traceList", json.encode(traceList))
 
 
-    -- 2. Items & Traps (카테고리 분류)
+    -- 2. Items & Traps (카테고리 분류) - 아이템은 영문 키 유지 (상점에서 키 사용)
     local itemsDB = getDB(triggerId, "items.db")
     local trapDB = getDB(triggerId, "trap.db")
     
@@ -144,16 +161,31 @@ function (triggerId)
     local consumablesList = {}
     local unlockList = {}
     local trapsList = {}
+    local itemNameMap = {}
 
-    for k, v in pairs(itemsDB) do
-        if v.category == "tools" then table.insert(toolsList, k)
-        elseif v.category == "consumables" then table.insert(consumablesList, k)
-        elseif v.category == "unlock" then table.insert(unlockList, k)
+    -- items.db는 [카테고리][키] 구조임
+    for category, items in pairs(itemsDB) do
+        if category == "tools" then
+            for k, v in pairs(items) do 
+                table.insert(toolsList, k)
+                if v.name then itemNameMap[k] = v.name end
+            end
+        elseif category == "consumables" then
+            for k, v in pairs(items) do 
+                table.insert(consumablesList, k)
+                if v.name then itemNameMap[k] = v.name end
+            end
+        elseif category == "unlock" then
+            for k, v in pairs(items) do 
+                table.insert(unlockList, k)
+                if v.name then itemNameMap[k] = v.name end
+            end
         end
     end
     
     for k, v in pairs(trapDB) do
         table.insert(trapsList, k)
+        if v.name then itemNameMap[k] = v.name end
     end
     
     table.sort(toolsList); table.sort(consumablesList); table.sort(unlockList); table.sort(trapsList)
@@ -162,9 +194,10 @@ function (triggerId)
     setChatVar(triggerId, "consumablesList", json.encode(consumablesList))
     setChatVar(triggerId, "unlockList", json.encode(unlockList))
     setChatVar(triggerId, "trapsList", json.encode(trapsList))
+    setChatVar(triggerId, "itemNameMap", json.encode(itemNameMap))
 
 
-    -- 3. Trait (평탄화된 구조에서 카테고리 분류)
+    -- 3. Trait (평탄화된 구조에서 카테고리 분류) - 특성은 한글 이름 사용 (캐릭터 데이터 키)
     local traitDB = getDB(triggerId, "trait.db")
     local traitLists = {
         ["성격"] = {},
@@ -176,7 +209,7 @@ function (triggerId)
 
     for k, v in pairs(traitDB) do
         if v.category and traitLists[v.category] then
-            table.insert(traitLists[v.category], k) --영문 키 저장
+            table.insert(traitLists[v.category], v.name) -- 한글 이름 저장
         end
     end
 

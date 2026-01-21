@@ -263,8 +263,14 @@ function (triggerId, reason)
 
     -- Trace 초기화
     local allTrace = getState(triggerId, "trace") or {}
-    -- trace.db 없음. 빈 객체 생성
+    local traceDB = getDB(triggerId, "trace.db")
     allTrace[skeleton["이름"]] = {}
+    
+    for k, v in pairs(traceDB) do
+        if v.name then
+            allTrace[skeleton["이름"]][v.name] = 0
+        end
+    end
     setState(triggerId, "trace", allTrace)
     
     -- 캐릭터 리스트 업데이트

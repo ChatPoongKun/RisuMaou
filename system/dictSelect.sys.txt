@@ -32,8 +32,19 @@ function (triggerId, category, name)
         
     else
         local db = getDB(triggerId, dbName)
-        if db and db[name] then
-            data = db[name]
+        if db then
+            -- 1. 키로 직접 검색 시도
+            if db[name] then
+                data = db[name]
+            else
+                -- 2. 키 검색 실패 시, 이름(v.name)으로 검색 시도
+                for k, v in pairs(db) do
+                    if v.name == name then
+                        data = v
+                        break
+                    end
+                end
+            end
         end
     end
     
@@ -55,7 +66,7 @@ function (triggerId, category, name)
                    "Rating: " .. rating .. " | HP: " .. hp .. "<br>" ..
                    "ATK: " .. atk .. " | DEF: " .. def
         end
-        
+        --[[그룹은 굳이 보여줄 필요가 없을듯?
         if category == "trait" and data.group then
              desc = desc .."<br>(그룹: " .. data.group .. ")"
              -- 추가: 서로 배타적인 특성 표시 등
@@ -68,7 +79,8 @@ function (triggerId, category, name)
             end
             desc = desc .. "<br>(관련: " .. related .. ")"
         end
-        
+        ]]
+
         if (category == "item") and data.price then
              desc = desc .. "<br>가격: " .. data.price .. " Spirit"
         end

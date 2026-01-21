@@ -89,21 +89,65 @@ end!!
     setChatVar(triggerId, "dictSub", "tools")
     setChatVar(triggerId, "dictTitle", "tools")
     setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+
+    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local list = json.decode(getChatVar(triggerId, "toolsList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items["tools"][k] then
+            local name = items["tools"][k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 [dictionary/d_sub_consumables/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "consumables")
     setChatVar(triggerId, "dictTitle", "consumables")
     setChatVar(triggerId, "dictDesc", "다양한 효과를 지닌 일회성 소모품")
+
+    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local list = json.decode(getChatVar(triggerId, "consumablesList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items["consumables"][k] then
+            local name = items["consumables"][k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 [dictionary/d_sub_traps/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "traps")
     setChatVar(triggerId, "dictTitle", "traps")
     setChatVar(triggerId, "dictDesc", "던전에 설치할 수 있는 함정들")
+
+    local items = json.decode(getLoreBookContent(triggerId, "trap.db"))
+    local list = json.decode(getChatVar(triggerId, "trapsList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items[k] then
+            local name = items[k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 [dictionary/d_sub_unlock/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "unlock")
     setChatVar(triggerId, "dictTitle", "unlock")
     setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+
+    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local list = json.decode(getChatVar(triggerId, "unlockList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items["unlock"][k] then
+            local name = items["unlock"][k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 
 [dictionary/d_sub_low_monster/hidden] function(triggerId)
