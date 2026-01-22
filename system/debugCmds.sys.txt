@@ -36,14 +36,5 @@ function (triggerId)
     end]]
     funcs[key] = functionBody
 
-    --5882: 캐싱된 함수 초기화
-    key = "5882"
-    functionBody = [[
-    function(triggerId)
-    alertNormal(triggerId, "강제커맨드 발생. 캐싱된 함수를 초기화합니다. "..screen..".lua로어북 로딩")
-    clearDBCache(triggerId)
-    end]]
-    funcs[key] = functionBody
-
     setState(triggerId, "funcs", funcs)
 end
