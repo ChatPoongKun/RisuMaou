@@ -270,11 +270,11 @@ end
 --- 로어 텍스트를 처리하여 funcs 테이블에 저장
 function processAndStoreLore(triggerId, loreBookId)
     local funcs = getState(triggerId, "funcs")
-    
+
     -- debugCmds는 한 번만 로드하도록 캐싱 체크
     if not funcs or not funcs["0000"] then
         sysFunction(triggerId, "debugCmds.sys") --디버그 함수 저장 (최초 1회만)
-        funcs = getState(triggerId, "funcs") -- debugCmds 실행 후 funcs 갱신
+        funcs = getState(triggerId, "funcs")    -- debugCmds 실행 후 funcs 갱신
     end
 
     --debug(loreBookId .. "로어북에서 함수 호출")
