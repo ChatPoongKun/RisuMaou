@@ -1,4 +1,34 @@
 { ///train - 조교 커맨드 정의
+    "use_oil": {
+        "name": "오일 사용",
+        "category": "소모품",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": ["애정경험"],
+        "feeling": 0,
+        "command": "{{user}}는 오일을 {target}의 몸 구석구석에 펴바른다."
+    },
+    "use_aphrodisiac": {
+        "name": "미약 사용",
+        "category": "소모품",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": ["약물경험"],
+        "feeling": 0,
+        "command": "{{user}}는 {target}에게 강제로 미약을 먹인다."
+    },
+    "use_crystal_ball": {
+        "name": "수정구 사용",
+        "category": "소모품",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": ["피사경험"],
+        "feeling": 0,
+        "command": "{{user}}는 수정구를 꺼내 {target}의 모습을 기록하기 시작한다."
+    },
     "observe": {
         "name": "가만 지켜본다",
         "category": "애무계",

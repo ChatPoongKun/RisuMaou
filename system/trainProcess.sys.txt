@@ -417,4 +417,5 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     stateToVar(triggerId, "target", target)
 
     reloadDisplay(triggerId)
+    return true
 end

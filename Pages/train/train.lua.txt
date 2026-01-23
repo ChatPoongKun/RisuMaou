@@ -530,7 +530,7 @@ end!!
     sysFunction(triggerId, "train.sys", "action", "anal_double_fist")
 end!!
 
-[train/61/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::오일}}}}>0}}}}
+[train/61/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::oil}}}}>0}}}}
 {{#when::category::vis::소모품}}
 오일
 {{/when}}
@@ -543,131 +543,119 @@ end!!
 
     --소모품 사용처리
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
-    if inventory['오일'] < 1 then
+    if tonumber(inventory['oil']) < 1 then
         alertNormal(triggerId, "오일이 부족합니다.")
         reloadDisplay(triggerId)
         return
     end
-    inventory['오일'] = tostring(inventory['오일'] - 1)
+    inventory['oil'] = tostring(inventory['oil'] - 1)
     setChatVar(triggerId, "inventory", json.encode(inventory))
 
     --윤활 최대 4까지 증가
     local stat = json.decode(getChatVar(triggerId, "stat"))
-    stat['V윤활'] = tostring(math.min(4, stat['V윤활'] +1))
-    stat['A윤활'] = tostring(math.min(4, stat['A윤활'] +1))
+    local oldVLub = tonumber(stat['V윤활']) or 0
+    local oldALub = tonumber(stat['A윤활']) or 0
+    local newVLub = math.min(4, oldVLub + 1)
+    local newALub = math.min(4, oldALub + 1)
+    stat['V윤활'] = tostring(newVLub)
+    stat['A윤활'] = tostring(newALub)
 
-    local exps = {"애정경험"}
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 오일을"..target['이름'] .."의 몸 구석구석에 펴바른다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    --LLM 실행 (train.sys action 경유)
+    local success = sysFunction(triggerId, "train.sys", "action", "use_oil")
 
     --stat변화가 있더라도 다른 stat은 안건드리게 강제함
     setChatVar(triggerId, "stat", json.encode(stat))
     --stat변화 멘트 강제처리
     local lvUpcomment = ""
-    if stat['V윤활'] <=4 then
-        lvUpcomment = lvUpcomment.."<br>※ V윤활이 " .. stat['V윤활']-1 .. "에서 " .. stat['V윤활'] .. "로 증가했습니다!"
+    if newVLub > oldVLub then
+        lvUpcomment = lvUpcomment.."<br>※ V윤활이 " .. oldVLub .. "에서 " .. newVLub .. "로 증가했습니다!"
     end
-    if stat['A윤활'] <=4 then
-        lvUpcomment = lvUpcomment.."<br>※ A윤활이 " .. stat['A윤활']-1 .. "에서 " .. stat['A윤활'] .. "로 증가했습니다!"
+    if newALub > oldALub then
+        lvUpcomment = lvUpcomment.."<br>※ A윤활이 " .. oldALub .. "에서 " .. newALub .. "로 증가했습니다!"
     end
     setChatVar(triggerId, "statLvUp", lvUpcomment)
 end!!
 
-[train/62/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::미약}}}}>0}}}}
+[train/62/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::aphrodisiac}}}}>0}}}}
 {{#when::category::vis::소모품}}
 미약
-{{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 0
-    local costHP = 10
-    local costSP = 20
-
-    --소모품 사용처리
+    --소모품 사전 체크
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
-    if tonumber(inventory['미약']) < 1 then
+    if tonumber(inventory['aphrodisiac']) < 1 then
         alertNormal(triggerId, "미약이 부족합니다.")
         reloadDisplay(triggerId)
         return
     end
-    inventory['미약'] = tostring(inventory['미약'] - 1)
-    setChatVar(triggerId, "inventory", json.encode(inventory))
 
-    --욕정 최대 4까지 증가
-    local stat = json.decode(getChatVar(triggerId, "stat"))
-    stat['욕정'] = tostring(math.min(4, stat['욕정'] +1))
+    --LLM 실행 (train.sys action 경유)
+    local success = sysFunction(triggerId, "train.sys", "action", "use_aphrodisiac")
 
-    local exps = {"약물경험"}
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는"..target['이름'] .."에게 강제로 미약을 먹인다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    if success then
+        --아이템 소모
+        sysFunction(triggerId, "item.sys", "consume", "aphrodisiac", 1)
 
-    --stat변화가 있더라도 다른 stat은 안건드리게 강제함
-    setChatVar(triggerId, "stat", json.encode(stat))
-    --stat변화 멘트 강제처리
-    local lvUpcomment = ""
-    if tonumber(stat['욕정']) <=4 then
-        lvUpcomment = lvUpcomment.."<br>※ 욕정이 " .. stat['욕정']-1 .. "에서 " .. stat['욕정'] .. "로 증가했습니다!"
+        --욕정 최대 4까지 증가
+        local stat = json.decode(getChatVar(triggerId, "stat"))
+        local oldLust = tonumber(stat['욕정']) or 0
+        local newLust = math.min(4, oldLust + 1)
+        stat['욕정'] = tostring(newLust)
+        setChatVar(triggerId, "stat", json.encode(stat))
+
+        --stat변화 멘트 설정
+        if newLust > oldLust then
+            local lvUpcomment = "<br>※ 욕정이 " .. oldLust .. "에서 " .. newLust .. "로 증가했습니다!"
+            setChatVar(triggerId, "statLvUp", lvUpcomment)
+        end
     end
-    setChatVar(triggerId, "statLvUp", lvUpcomment)
 end!!
 
 [train/63/hidden] function(triggerId)
     --이뇨제
 end!!
 
-[train/64/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::수정구}}}}>0}}}}
+[train/64/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::crystal_ball}}}}>0}}}}
 {{#when::category::vis::소모품}}
 수정구
-{{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 0
-    local costHP = 10
-    local costSP = 20
-
-    --소모품 사용처리
-    local inventory = json.decode(getChatVar(triggerId, "inventory"))
-    if tonumber(inventory['수정구']) < 1 then
-        alertNormal(triggerId, "수정구가 부족합니다.")
-        reloadDisplay(triggerId)
-        return
-    end
-    inventory['수정구'] = tostring(inventory['수정구'] - 1)
-    setChatVar(triggerId, "inventory", json.encode(inventory))
-
-    --녹화여부 판단
+    --녹화여부 사전 판단
     if TRAIN_REC > 0 then
         alertNormal(triggerId, "이미 활성화된 수정구가 있습니다.")
         reloadDisplay(triggerId)
         return
-    else
-        TRAIN_REC = 5 --수정구 녹화 회수
     end
 
-    --수치 최대 4까지 증가
-    local stat = json.decode(getChatVar(triggerId, "stat"))
-    stat['수치'] = tostring(math.min(4, stat['수치'] +1))
-
-    local exps = {"피사경험"}
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 수정구를 꺼내 "..target['이름'] .."의 모습을 기록하기 시작한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
-
-    --stat변화가 있더라도 다른 stat은 안건드리게 강제함
-    setChatVar(triggerId, "stat", json.encode(stat))
-    --stat변화 멘트 강제처리
-    local lvUpcomment = ""
-    if tonumber(stat['수치']) <=4 then
-        lvUpcomment = lvUpcomment.."<br>※ 수치가 " .. stat['수치']-1 .. "에서 " .. stat['수치'] .. "로 증가했습니다!"
+    --소모품 사전 체크
+    local inventory = json.decode(getChatVar(triggerId, "inventory"))
+    if tonumber(inventory['crystal_ball']) < 1 then
+        alertNormal(triggerId, "수정구가 부족합니다.")
+        reloadDisplay(triggerId)
+        return
     end
-    setChatVar(triggerId, "statLvUp", lvUpcomment)
+
+    --LLM 실행 (train.sys action 경유)
+    local success = sysFunction(triggerId, "train.sys", "action", "use_crystal_ball")
+
+    if success then
+        --아이템 소모
+        sysFunction(triggerId, "item.sys", "consume", "crystal_ball", 1)
+
+        --녹화 상태 설정
+        TRAIN_REC = 5
+
+        --수치 최대 4까지 증가
+        local stat = json.decode(getChatVar(triggerId, "stat"))
+        local oldShame = tonumber(stat['수치']) or 0
+        local newShame = math.min(4, oldShame + 1)
+        stat['수치'] = tostring(newShame)
+        setChatVar(triggerId, "stat", json.encode(stat))
+
+        --stat변화 멘트
+        if newShame > oldShame then
+            local lvUpcomment = "<br>※ 수치가 " .. oldShame .. "에서 " .. newShame .. "로 증가했습니다!"
+            setChatVar(triggerId, "statLvUp", lvUpcomment)
+        end
+    end
 end!!
 
 [train/65/hidden] function(triggerId)--임신시스템 구현 후 추가
