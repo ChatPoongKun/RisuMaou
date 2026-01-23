@@ -187,7 +187,13 @@
         -- 커맨드에서 {target} 치환
         command = command:gsub("{target}", target["이름"])
 
-        --[[6. trainProcess.sys 호출]]
+        --[[6. DC_PENALTY 수정 (장비 착탈 등)]]
+        if trainData.dcPenaltyMod then
+            DC_PENALTY = DC_PENALTY * trainData.dcPenaltyMod
+            debug(string.format("[Train:Action] DC_PENALTY modified by %.2f -> %.2f", trainData.dcPenaltyMod, DC_PENALTY))
+        end
+
+        --[[7. trainProcess.sys 호출]]
         local abbrCmd = command:sub(1, 20) .. "..."
         debug(string.format("[Train:Result] FinalDC: %d, Feeling: %d, Command: %s", dc, feeling, abbrCmd))
         sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, trainData.equipment, tags)
@@ -276,7 +282,6 @@
 
         -- 변수 저장
         setChatVar(triggerId, countVar, count)
-        setChatVar(triggerId, countVar, count)
         setChatVar(triggerId, ratioVar, string.format("%.2f", newRatio))
 
         debug(string.format("[Train:Orgasm] Who: %s, Ratio: %.2f%%, Orgasm: %s", who, newRatio, tostring(isOrgasm)))
@@ -288,195 +293,181 @@
         }
     end
 
-    -- 조교 종료 처리 (postTrain.sys 통합)
-    local function post(triggerId)
-        local target = getState(triggerId, "target")   --조교 종료시의 캐릭터 정보를 호출
-        local exp = getDB(triggerId, "EXPtable.db")    --경험치 테이블 호출
-        local allTraces = getState(triggerId, "trace") --모든 대상의 trace을 호출
-        local traceCurrent = allTraces[target["이름"]] or {}
-        local totalTrace = 0                           --spirit으로 전환할 trace 합계
+    -- 조교 종료 처리 (postTrain.sys 통합, 최적화됨)
+    local cachedValidTraces = nil
+    local cachedStatDBMap = nil
 
-        -- traceDB 로드 (유효한 흔적 키인지 확인용)
-        local traceDB = getDB(triggerId, "trace.db")
-        local validTraces = {}
-        for k, v in pairs(traceDB) do
-            if v.name then validTraces[v.name] = true end
+    local function post(triggerId)
+        local target = getState(triggerId, "target")
+        local exp = getDB(triggerId, "EXPtable.db")
+        local allTraces = getState(triggerId, "trace")
+        local traceCurrent = allTraces[target["이름"]] or {}
+        local totalTrace = 0
+
+        -- 1. 캐시 초기화 (한 번만 실행)
+        if not cachedValidTraces then
+            local traceDB = getDB(triggerId, "trace.db")
+            cachedValidTraces = {}
+            for k, v in pairs(traceDB) do
+                if v.name then cachedValidTraces[v.name] = true end
+            end
+
+            local statDB = getDB(triggerId, "stat.db")
+            cachedStatDBMap = {}
+            for k, v in pairs(statDB) do
+                if v.name then cachedStatDBMap[v.name] = v.related end
+            end
         end
 
-        --조교 종료시의 stat레벨에 따라 traceEXP를 저장 (stat은 한글 키)
+        -- 2. Stat에 따른 경험치(traceEXP) 계산
         local stat = getState(triggerId, "stat")
-        local traceEXP = {}
+        local traceEXP = {} -- 이번 조교로 얻은 잠재적 경험치
 
         for k, v in pairs(stat) do
-            local val = tonumber(v)
+            local val = tonumber(v) or 0
             if val > 0 then
-                local lvMin = tostring(val - 1)
-                local minExp = exp[lvMin] or 0
+                local minExp = exp[tostring(val - 1)] or 0
                 local maxExp = exp[tostring(val)] or 0
 
                 if maxExp > 0 then
-                    traceEXP[k] = math.random(minExp, maxExp) --stat 경험치를 랜덤하게 얻되 범위는 stat레벨-1에서 현재 레벨까지로 설정
-                else
-                    traceEXP[k] = 0
-                end
-
-                if traceEXP[k] == 0 then
-                    traceEXP[k] = nil                     --traceEXP를 1이상 얻지못하면 테이블에서 제거
-                else
-                    totalTrace = totalTrace + traceEXP[k] --traceEXP를 획득하면 totalTrace에 합산
+                    local gained = math.random(minExp, maxExp)
+                    if gained > 0 then
+                        traceEXP[k] = gained
+                        totalTrace = totalTrace + gained
+                    end
                 end
             end
         end
-        -- debug("traceEXP: " .. json.encode(traceEXP))
 
-        --traceEXP에 따라 trace을 획득
-        local statDB = getDB(triggerId, "stat.db")
-        -- statDB 역매핑 (Name -> Related List)
-        local statDBMap = {}
-        for k, v in pairs(statDB) do
-            if v.name then statDBMap[v.name] = v.related end
-        end
+        -- 3. traceEXP를 실제 흔적(trace)으로 변환
+        local traceAdd = {} -- 이번에 추가될 흔적 양
+        local traceSum = {} -- 기존 + 추가 합산 (차감 전)
 
-        local traceAdd = {}
-        local traceSum = {}
-
-        -- traceSum 초기화 (traceCurrent 복사)
+        -- 기존 흔적 복사
         for k, v in pairs(traceCurrent) do
             traceSum[k] = v
         end
 
-        local traceSort = {}
-
-        for k, val in pairs(traceEXP) do -- trace획득량 계산 (k는 한글 스탯명)
-            local relatedList = statDBMap[k]
+        for statName, expVal in pairs(traceEXP) do
+            local relatedList = cachedStatDBMap[statName]
             if relatedList and #relatedList > 0 then
                 local len = #relatedList
-                local totalWeight = len * (len + 1) * 0.5 -- 1부터 len까지 합 (가중치 총합)
+                local totalWeight = len * (len + 1) * 0.5
 
                 for i, traceName in ipairs(relatedList) do
-                    -- 유효한 흔적 이름인지 확인
-                    if validTraces[traceName] then
-                        -- 가중치: 목록의 앞에 있을수록 높음 (len, len-1, ..., 1)
+                    if cachedValidTraces[traceName] then
                         local weight = len - i + 1
-                        local addAmount = math.floor(val * weight / totalWeight)
+                        local addAmount = math.floor(expVal * weight / totalWeight)
 
-                        traceAdd[traceName] = addAmount
+                        traceAdd[traceName] = (traceAdd[traceName] or 0) + addAmount
                         traceSum[traceName] = (traceSum[traceName] or 0) + addAmount
                     end
                 end
             end
         end
 
-        --부정이 0보다 큰 경우에만 차감로직 실행
-        local deductLevel = 0 --각 흔적에서 차감하게 될 양
-        local deduct = traceSum["부정"] or 0 --차감 대상 부정구슬의 양
-        local deductSum = 0 --실제 차감한 부정 구슬의 합계
+        -- 4. 부정 흔적에 의한 차감 로직 (Water-leveling deduction)
+        local deductLevel = 0 -- 삭감 기준 높이 (이 높이 이상인 흔적은 잘려나감)
+        local deductTotal = traceSum["부정"] or 0 -- 삭감에 사용할 총 자원 (부정 흔적의 총량)
+        local deductUsed = 0 -- 실제로 사용된 삭감 자원
 
-        if deduct > 0 then
-            --traceSort에 부정을 제외한 0이상의 흔적 입력
+        if deductTotal > 0 then
+            -- 차감 대상 흔적 수집 (부정 제외, 0보다 큰 것)
+            local targets = {}
             for k, v in pairs(traceSum) do
                 if k ~= "부정" and v > 0 then
-                    table.insert(traceSort, v)
+                    table.insert(targets, v)
                 end
             end
+            table.sort(targets) -- 오름차순 정렬
 
-            --traceSort 오름차순 정렬
-            table.sort(traceSort)
+            -- 삭감 로직
+            for i, val in ipairs(targets) do
+                local remainingCount = #targets - i + 1
+                local heightDiff = val - deductLevel
+                local costToNextLevel = heightDiff * remainingCount
 
-            --deductLevel계산
-            for i, v in ipairs(traceSort) do
-                local len = #traceSort - i + 1 --남은 차감 대상의 수
-                local cost = v - deductLevel   --현재 단계에서 차감해야할 비용
-
-                if cost > 0 then
-                    local sub = cost * len    --현재 단계에서 필요한 총비용
-                    if deduct >= sub then     --부정구슬이 남으면
-                        deduct = deduct - sub --부정구슬에서 현재단계 필요비용만큼 차감
-                        deductSum = deductSum + sub
-                        deductLevel = v
-                    else --안남으면 for문 중단
-                        local delta = math.floor(deduct / len)
-                        deductLevel = deductLevel + delta
-                        deductSum = deductSum + delta * len
-                        break
-                    end
-                end
-            end
-        end
-
-        --실제 흔적에 획득/차감 반영
-        local traceText = "조교로부터 " .. intForm(totalTrace) .. " Spirit을 획득했습니다.<br>"
-        for k, v in pairs(traceSum) do
-            local pp = traceAdd[k] or 0
-            local mm = 0
-            if k ~= "부정" then
-                mm = math.min(deductLevel, v)
-            end
-
-            --trace 변동 텍스트
-            if pp ~= 0 or mm ~= 0 or (k == "부정" and deductSum > 0) then
-                if k == "부정" then
-                    traceText = traceText ..
-                        k ..
-                        ": " ..
-                        (traceCurrent[k] or 0) ..
-                        " + " .. pp .. " - " .. deductSum .. " = " .. (traceCurrent[k] or 0) + pp - deductSum .. "<br>"
+                if deductTotal >= costToNextLevel then
+                    -- 충분한 자원이 있다면 다음 높이까지 모두 삭감
+                    deductTotal = deductTotal - costToNextLevel
+                    deductUsed = deductUsed + costToNextLevel
+                    deductLevel = val
                 else
-                    traceText = traceText ..
-                        k ..
-                        ": " ..
-                        (traceCurrent[k] or 0) ..
-                        " + " .. pp .. " - " .. mm .. " = " .. (traceCurrent[k] or 0) + pp - mm .. "<br>"
+                    -- 자원이 부족하면 가능한 만큼만 높이를 올리고 중단
+                    local lift = math.floor(deductTotal / remainingCount)
+                    deductLevel = deductLevel + lift
+                    deductUsed = deductUsed + (lift * remainingCount)
+                    break
                 end
             end
+        end
 
-            --traceCurrent에 변동값 반영
+        -- 5. 결과 적용 및 로그 생성
+        local traceText = "조교로부터 " .. intForm(totalTrace) .. " Spirit을 획득했습니다.<br>"
+
+        for k, v in pairs(traceSum) do
+            local added = traceAdd[k] or 0
+            local deducted = 0
+
             if k == "부정" then
-                traceCurrent[k] = (traceCurrent[k] or 0) + (traceAdd[k] or 0) - deductSum
+                deducted = deductUsed -- 부정 흔적은 사용된 만큼 차감
             else
-                traceCurrent[k] = math.max((traceCurrent[k] or 0) + (traceAdd[k] or 0) - deductLevel, 0)
+                -- 일반 흔적은 deductLevel을 초과하는 부분을 잘라냄 (min(deductLevel, v) 만큼 차감하는 효과)
+                -- 즉 최종값 = v - min(deductLevel, v) = max(v - deductLevel, 0)
+                -- 차감량 = v - max(..., 0) = min(v, deductLevel)
+                deducted = math.min(deductLevel, v)
+            end
+
+            -- 로그 출력 (변동이 있는 경우만)
+            if added ~= 0 or deducted ~= 0 then
+                local finalVal = (traceCurrent[k] or 0) + added - deducted
+                traceText = traceText .. string.format("%s: %d + %d - %d = %d<br>",
+                    k, (traceCurrent[k] or 0), added, deducted, finalVal)
+
+                -- 값 적용
+                traceCurrent[k] = finalVal
             end
         end
 
-        --조교로 얻은 spirit 합산
-        local spirit = tonumber(getChatVar(triggerId, "spirit") or "0") --기존 값이 "10,000" 형태라면 tonumber 실패 가능성 -> intForm 역함수 필요하나 로직상 숫자 문자열 가정
-        -- initVars에서 "10,000"으로 초기화함. 쉼표 제거 필요.
-        if type(getChatVar(triggerId, "spirit")) == "string" then
-            spirit = tonumber((getChatVar(triggerId, "spirit"):gsub(",", ""))) or 0
+        -- 스피릿 업데이트
+        local oldSpiritStr = getChatVar(triggerId, "spirit")
+        local oldSpirit = 0
+        if type(oldSpiritStr) == "string" then
+            oldSpirit = tonumber((oldSpiritStr:gsub(",", ""))) or 0
+        else
+            oldSpirit = tonumber(oldSpiritStr) or 0
         end
+        local newSpirit = oldSpirit + totalTrace
+        setChatVar(triggerId, "spirit", intForm(newSpirit))
+        debug(string.format("[Train:Post] Spirit: %d -> %d (Gained: %d)", oldSpirit, newSpirit, totalTrace))
 
-        spirit = intForm(spirit + totalTrace)
-        spirit = intForm(spirit + totalTrace)
-        setChatVar(triggerId, "spirit", spirit)
-        debug(string.format("[Train:Post] Trace Gained: %d", totalTrace))
-
-        --조교로 변경된 target값을 로어북에 업데이트
+        -- 데이터 저장 및 업데이트
         upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), DEFAULT_LORE_OPTION)
         stateToVar(triggerId, "target", target)
 
-        --갱신된 trace 정보를 변수에 업데이트
         stateToVar(triggerId, "targetTrace", traceCurrent)
         allTraces[target["이름"]] = traceCurrent
         setState(triggerId, "trace", allTraces)
         setChatVar(triggerId, "traceText", traceText)
 
-        --조교 로그를 저장후 신규 챗 인덱스에 게임 화면 생성
+        -- 로그 및 화면 갱신
         addChat(triggerId, "user", "{{" .. "getvar::html" .. "}}")
-        local ampm = getChatVar(triggerId, "ampm")
-        if ampm == "0" then ampm = "낮" else ampm = "밤" end
-        local lastTrainLog =
-            "<div class='showLog' style='visibility: {{#when::showLog::vis::1}}visible{{:else}}hidden{{/when}};'><p>" ..
-            getChatVar(triggerId, "day") ..
-            "일차 " ..
-            ampm ..
-            " / 조교 대상:" ..
-            target["이름"] ..
-            "</p><p>" .. getChatVar(triggerId, "oldLog") .. getChatVar(triggerId, "newLog") .. "</p></div>"
+
+        local ampmVal = getChatVar(triggerId, "ampm")
+        local ampmStr = (ampmVal == "0") and "낮" or "밤"
+
+        local lastTrainLog = string.format(
+            "<div class='showLog'><p>%s일차 %s / 조교 대상:%s</p><p>%s%s</p></div>",
+            getChatVar(triggerId, "day"),
+            ampmStr,
+            target["이름"],
+            getChatVar(triggerId, "oldLog"),
+            getChatVar(triggerId, "newLog")
+        )
         setChat(triggerId, getChatLength(triggerId) - 2, lastTrainLog)
 
-        --정보 초기화
+        -- 초기화 및 화면 이동
         setChatVar(triggerId, "selectedAbl", "none")
-        --조교후 화면으로 이동
         screenChange(triggerId, "ablUp")
     end
 

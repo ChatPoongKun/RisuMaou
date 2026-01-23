@@ -89,22 +89,7 @@ end!!
 조개벌리기
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 18 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 15
-    local costSP = 30
-    dc = dc + stat["수치"] * 1.1
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["굴복"] * 0.2
-    dc = dc - stat["공포"] * 0.1
-
-    local exps = {"수치경험", "자위경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."가 스스로 보지를 벌려보이도록 명령한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "spread_pussy")
 end!!
 
 [train/110/{{#when::category::vis::애무계}}
@@ -112,45 +97,13 @@ end!!
 손가락 넣기
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 18 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 15
-    local costSP = 30
-    dc = dc + stat["수치"] * 0.4
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["굴복"] * 0.1
-    dc = dc - (stat["V윤활"] - 5) * 1.0
-    dc = dc - stat["욕정"] * 0.3
-
-    local exps = {"V경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."의 질 안으로 손가락을 밀어넣는다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "fingering")
 end!!
 
 [train/111/{{#when::category::vis::애무계}}
 애널 핥기
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 45 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 15
-    local costSP = 35
-    dc = dc + stat["불쾌"] * 1.0
-    dc = dc - stat["온순"] * 0.2
-    dc = dc - stat["굴복"] * 0.1
-    dc = dc - stat["공포"] * 0.1
-    dc = dc - stat["욕정"] * 0.2
-
-    local exps = {"A경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."의 애널 주변을 혀로 핥는다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "anal_lick")
 end!!
 
 [train/112/{{#when::category::vis::애무계}}
@@ -160,20 +113,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 15
-    local costSP = 25
-    dc = dc - stat["V윤활"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"봉사경험", "C경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."의 가랑이에 자신의 가랑이를 문지르며 애무한다."
-    local feeling = 5
-    feeling = feeling + stat["V윤활"] * 0.5 + stat["A윤활"] * 0.3
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "grinding")
 end!!
 
 [train/21/{{#when::category::vis::도구계}}
@@ -181,21 +121,10 @@ end!!
 심장석 애무
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 10
-    local costHP = 10
-    local costSP = 10
-    dc = dc - stat["욕정"] * 0.3
-
-    local exps = {"C경험", "B경험"}
-
-    local command = "<br>{{user}}는 심장석을 사용해 "..target['이름'] .."의 성감대를 자극한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "heart_stone")
 end!!
 
-[train/21/{{#when::category::vis::도구계}}
+[train/22/{{#when::category::vis::도구계}}
 {{#when::{{? {{dict_element::{{getvar::inventory}}::honey_worm}}==1}}}}
 {{#when::{{dict_element::{{getvar::target}}::성별}}::isnot::남성}}
 꿀단지웜
@@ -290,46 +219,7 @@ end!!
 [train/31/{{#when::category::vis::V계}}
 정상위
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 20
-    local costSP = 30
-    dc = dc - stat["온순"] * 0.3
-    dc = dc - stat["욕정"] * 0.5
-    dc = dc - (stat["V윤활"] - 5) * 1.0
-
-    local exps = {"V경험", "성교경험"}
-    local command = "<br>{{user}}는 "..target['이름'] .."의 다리 사이를 파고들어 정상위로 질에 삽입한다."
-    local feeling = 10
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["V확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["V확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["V확장"] - 6)
-        if tonumber(target["V확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "missionary")
 end!!
 
 [train/32/{{#when::category::vis::V계}}
@@ -341,34 +231,8 @@ end!!
 [train/33/{{#when::category::vis::V계}}
 대면좌위
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25
-    local costHP = 15
-    local costSP = 30
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"V경험", "성교경험", "애정경험"}
-
-[train/33/{{#when::category::vis::V계}}
-정상위
-{{/when}}] function(triggerId)
-    sysFunction(triggerId, "train.sys", "action", "missionary")
+    sysFunction(triggerId, "train.sys", "action", "front_seated")
 end!!
-
-[train/34/{{#when::category::vis::V계}}
-배면좌위
-{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 20
-    local costSP = 30
-    dc = dc + stat["수치"] * 0.5
-    dc = dc - stat["굴복"] * 0.3
-
-    local exps = {"V경험", "성교경험"}
 
 [train/34/{{#when::category::vis::V계}}
 배면좌위
@@ -379,36 +243,8 @@ end!!
 [train/35/{{#when::category::vis::V계}}
 기승위
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 35
-    local costHP = 25
-    local costSP = 35
-    dc = dc + stat["수치"] * 0.8
-    dc = dc - stat["욕정"] * 0.8
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["굴복"] * 0.5
-
-    local exps = {"V경험", "성교경험", "봉사경험"}
-
-[train/35/{{#when::category::vis::V계}}
-기승위
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "cowgirl")
 end!!
-
-[train/36/{{#when::category::vis::V계}}
-들박
-{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 20
-    local costSP = 35
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"V경험", "성교경험", "애정경험"}
 
 [train/36/{{#when::category::vis::V계}}
 들박
@@ -425,40 +261,8 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 35
-    local costHP = 20
-    local costSP = 40
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"V경험", "성교경험", "긴박경험"}
-
-[train/37/{{#when::category::vis::V계}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
-뒷들박
-{{/when}}
-{{/when}}
-{{/when}}
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "back_standing")
 end!!
-
-[train/38/{{#when::category::vis::V계}}
-교배프레스
-{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 30
-    local costSP = 40
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"V경험", "성교경험", "긴박경험"}
 
 [train/38/{{#when::category::vis::V계}}
 교배프레스
@@ -475,41 +279,8 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 40
-    local costHP = 30
-    local costSP = 45
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"V경험", "성교경험", "긴박경험"}
-
-[train/39/{{#when::category::vis::V계}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
-풀넬슨
-{{/when}}
-{{/when}}
-{{/when}}
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "full_nelson")
 end!!
-
-[train/41/{{#when::category::vis::A계}}
-정상위애널
-{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 25
-    local costSP = 35
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["굴복"] * 0.2
-    dc = dc - (stat["A윤활"] - 5) * 1.0
-
-    local exps = {"A경험", "애널성교경험", "성교경험"}
 
 [train/41/{{#when::category::vis::A계}}
 정상위애널
@@ -520,38 +291,8 @@ end!!
 [train/42/{{#when::category::vis::A계}}
 후배위애널
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 35
-    local costHP = 25
-    local costSP = 35
-    dc = dc + stat["저항"] * 1.8
-    dc = dc + stat["수치"] * 0.8
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["굴복"] * 0.3
-    dc = dc - (stat["A윤활"] - 5) * 1.0
-
-    local exps = {"A경험", "애널성교경험", "성교경험"}
-
-[train/42/{{#when::category::vis::A계}}
-후배위애널
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "anal_doggy")
 end!!
-
-[train/43/{{#when::category::vis::A계}}
-대면좌위애널
-{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 35
-    local costHP = 20
-    local costSP = 30
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["온순"] * 0.3
-    dc = dc - stat["욕정"] * 0.3
-
-    local exps = {"A경험", "애널성교경험", "성교경험"}
 
 [train/43/{{#when::category::vis::A계}}
 대면좌위애널
@@ -562,58 +303,14 @@ end!!
 [train/44/{{#when::category::vis::A계}}
 배면좌위애널
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 40
-    local costHP = 20
-    local costSP = 30
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc + stat["저항"] * 1.8
-    dc = dc + stat["수치"] * 0.8
-    dc = dc - stat["굴복"] * 0.3
-
-    local exps = {"A경험", "애널성교경험", "성교경험"}
-
-[train/44/{{#when::category::vis::A계}}
-배면좌위애널
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "anal_back_seated")
 end!!
 
 [train/45/{{#when::category::vis::A계}}
 기승위애널
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 45
-    local costHP = 15
-    local costSP = 25
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc + stat["수치"] * 1.0
-    dc = dc - stat["굴복"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"A경험", "애널성교경험", "성교경험", "봉사경험"}
-
-[train/45/{{#when::category::vis::A계}}
-기승위애널
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "anal_cowgirl")
 end!!
-
-[train/46/{{#when::category::vis::A계}}
-들박애널
-{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 20
-    local costSP = 35
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"A경험", "성교경험", "애정경험"}
 
 [train/46/{{#when::category::vis::A계}}
 들박애널
@@ -630,68 +327,14 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 40
-    local costHP = 20
-    local costSP = 45
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"A경험", "성교경험", "긴박경험"}
-
-[train/47/{{#when::category::vis::A계}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
-뒷들박애널
-{{/when}}
-{{/when}}
-{{/when}}
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "anal_back_standing")
 end!!
 
 [train/48/{{#when::category::vis::A계}}
 교배프레스애널
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 35
-    local costHP = 30
-    local costSP = 45
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"A경험", "성교경험", "긴박경험"}
-
-[train/48/{{#when::category::vis::A계}}
-교배프레스애널
-{{/when}}] function(triggerId)
     sysFunction(triggerId, "train.sys", "action", "anal_mating_press")
 end!!
-
-[train/49/{{#when::category::vis::A계}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
-{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
-풀넬슨애널
-{{/when}}
-{{/when}}
-{{/when}}
-{{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 45
-    local costHP = 30
-    local costSP = 50
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-
-    local exps = {"A경험", "성교경험", "긴박경험"}
 
 [train/49/{{#when::category::vis::A계}}
 {{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
@@ -802,30 +445,7 @@ end!!
 
 [train/91/{{#when::{{? {{dict_element::{{getvar::inventory}}::collar}}==1}}}}야외플레이
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 0
-    local costHP = 10
-    local costSP = 30
-
-    local exps = {"수치경험"}
-
-    DC_PENALTY = DC_PENALTY * 1.1
-
-    local command
-    local equipment = "개목걸이"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."를 조교실로 데려와 개목걸이를 풀어준다."
-        equipped[equipment] = "미착용"
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."에게 개목걸이를 채워 몬스터들이 돌아다니는 야외로 끌고나간다."
-        equipped[equipment] = "착용"
-    end
-    setChatVar(triggerId, "equipped", json.encode(equipped))
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
-
+    sysFunction(triggerId, "train.sys", "action", "outdoor_play")
 end!!
 
 [train/92/{{#when::category::vis::하드계}}
@@ -839,33 +459,7 @@ end!!
 귀갑묶기
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 10
-    local costSP = 20
-    dc = dc - stat["온순"] * 0.3
-
-    local exps = {"긴박경험"}
-
-    DC_PENALTY = DC_PENALTY * 0.9
-
-    local command
-    local equipment = "로프"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 밧줄로 "..target['이름'] .."를 결박했ㄷ던 로프를 풀어준다."
-        equipped[equipment] = "미착용"
-    else
-        command = "<br>{{user}}는 밧줄로 "..target['이름'] .."을 귀갑묶기로 결박한다."
-        equipped[equipment] = "착용"
-    end
-    setChatVar(triggerId, "equipped", json.encode(equipped))
-
-    
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
-    
+    sysFunction(triggerId, "train.sys", "action", "tortoise_shell")
 end!!
 
 [train/95/{{#when::category::vis::하드계}}
@@ -875,31 +469,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 40
-    local costHP = 30
-    local costSP = 40
-    dc = dc + stat["불쾌"] * 1.0
-    dc = dc + stat["수치"] * 0.5
-    dc = dc - (getState(triggerId, "target")["위생민감"] or 0)* 5
-    dc = dc - (getState(triggerId, "target")["불결무시"] or 0)* 5
-
-    local exps = {"A경험", "A확장경험", "오물경험"}
-
-    local command
-    local equipment = "애널플러그"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))[equipment]
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."에게서 애널플러그를 빼낸다."
-        equipped[equipment] = "미착용"
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."에게 관장액을 주입하고 플러그로 막아버린다."
-        equipped[equipment] = "착용"
-    end
-    setChatVar(triggerId, "equipped", json.encode(equipped))
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "enema_plug")
 end!!
 
 [train/96/{{#when::category::vis::하드계}}
@@ -915,20 +485,7 @@ end!!
 end!!
 
 [train/98/hidden] function(triggerId)--추후 동물 구매를 구현한 뒤 추가
-    --수간
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 60
-    local costHP = 40
-    local costSP = 50
-    dc = dc + stat["공포"] * 1.0
-    dc = dc + stat["불쾌"] * 1.0
-
-    local exps = {"수간경험", "V경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."을 짐승과 교미하게 한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "bestiality")
 end!!
 
 [train/99/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>3}}}}
@@ -954,7 +511,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    sysFunction(triggerId, "trainAction.sys", "double_hole_fist")
+    sysFunction(triggerId, "train.sys", "action", "double_hole_fist")
 end!!
 
 [train/912/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>6}}}}
@@ -970,7 +527,7 @@ end!!
 애널더블피스트
 {{/when}}
 {{/when}}] function(triggerId)
-    sysFunction(triggerId, "trainAction.sys", "anal_double_fist")
+    sysFunction(triggerId, "train.sys", "action", "anal_double_fist")
 end!!
 
 [train/61/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::오일}}}}>0}}}}
