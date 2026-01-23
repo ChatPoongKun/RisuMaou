@@ -1,26 +1,26 @@
 [charList/sort_index/hidden] function(triggerId)
     setChatVar(triggerId, "category", "index")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [charList/sort_name/hidden] function(triggerId)
     setChatVar(triggerId, "category", "name")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [charList/sort_level/hidden] function(triggerId)
     setChatVar(triggerId, "category", "level")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [charList/sort_hp/hidden] function(triggerId)
     setChatVar(triggerId, "category", "hp")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [charList/sort_rating/hidden] function(triggerId)
     setChatVar(triggerId, "category", "rating")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [charList/199/돌아가기] function(triggerId)

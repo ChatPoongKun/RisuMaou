@@ -1,6 +1,5 @@
 function (triggerId)
     --초기 변수 설정
-    print("initVars 실행")
     local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false} --로어북 저장용 옵션
     local initVars = {
         spirit = "10,000",
@@ -31,7 +30,6 @@ function (triggerId)
 
     --인벤토리 초기화
     local inventory = {}
-    local items = getDB(triggerId, "items.db") 
     local items = getDB(triggerId, "items.db") 
     for cat, list in pairs(items) do
         for k, v in pairs(list) do
@@ -78,7 +76,7 @@ function (triggerId)
                 end
             end
         end
-        debug(v.."의 캐릭터 테이블에 ".. added.."필드 추가")
+        debug(v.."의 캐릭터 테이블에 미정의 필드 추가")
 
         --캐릭터 정보를 로컬로어북에 저장
         upsertLocalLoreBook(triggerId, v, json.encode(content), option)
@@ -102,7 +100,7 @@ function (triggerId)
     --###########################
     --DB 로딩 및 리스트 생성 (JSON 기반 + 정렬)
     --###########################
-    
+
     -- DB 로딩 및 리스트 생성 (JSON 기반 + 정렬)
     -- useName: true이면 한글 이름(v.name)을 리스트에 저장, false/nil이면 영문 키(k)를 저장
     local function createListFromDB(dbName, useName)
@@ -116,6 +114,7 @@ function (triggerId)
             end
         end
         table.sort(list)
+        debug("chatVar: " .. dbName.." 리스트 생성")
         return list
     end
 
@@ -154,6 +153,7 @@ function (triggerId)
     end
     table.sort(traceList)
     setChatVar(triggerId, "traceList", json.encode(traceList))
+    debug("chatVar: traceList 생성")
 
 
     -- 2. Items & Traps (카테고리 분류) - 아이템은 영문 키 유지 (상점에서 키 사용)
@@ -194,10 +194,15 @@ function (triggerId)
     table.sort(toolsList); table.sort(consumablesList); table.sort(unlockList); table.sort(trapsList)
     
     setChatVar(triggerId, "toolsList", json.encode(toolsList))
+    debug("chatVar: toolsList 생성")
     setChatVar(triggerId, "consumablesList", json.encode(consumablesList))
+    debug("chatVar: consumablesList 생성")
     setChatVar(triggerId, "unlockList", json.encode(unlockList))
+    debug("chatVar: unlockList 생성")
     setChatVar(triggerId, "trapsList", json.encode(trapsList))
+    debug("chatVar: trapsList 생성")
     setChatVar(triggerId, "itemNameMap", json.encode(itemNameMap))
+    debug("chatVar: itemNameMap 생성")
 
 
     -- 3. Trait (평탄화된 구조에서 카테고리 분류) - 특성은 한글 이름 사용 (캐릭터 데이터 키)
@@ -218,6 +223,7 @@ function (triggerId)
     for k, list in pairs(traitLists) do
         table.sort(list)
         setChatVar(triggerId, k.."List", json.encode(list))
+        debug("chatVar: " .. k.."List 생성")
     end
 
     addChat(triggerId, "user", "{{".."getvar::html".."}}")

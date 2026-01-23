@@ -1,19 +1,19 @@
 [main/items/hidden] function(triggerId)
     local mainCat = "items"
     setChatVar(triggerId, "category", mainCat)
-    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+    sysFunction(triggerId, "item.sys", "category", mainCat)
 end!!
 
 [main/traps/hidden] function(triggerId)
     local mainCat = "traps"
     setChatVar(triggerId, "category", mainCat)
-    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+    sysFunction(triggerId, "item.sys", "category", mainCat)
 end!!
 
 [main/dungeon/hidden] function(triggerId)
     local mainCat = "dungeon"
     setChatVar(triggerId, "category", mainCat)
-    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+    sysFunction(triggerId, "item.sys", "category", mainCat)
 end!!
 
 
@@ -21,14 +21,14 @@ end!!
     local screen = "preTrain"
     screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [main/101/캐릭터 정보] function(triggerId)
     local screen = "charList"
     screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [main/102/포로 처분] function(triggerId)
@@ -36,7 +36,7 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
     --[[screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
-    sysFunction(triggerId, "makeCharList.sys")]]
+    sysFunction(triggerId, "char.sys", "list")]]
 end!!
 
 [main/103/노예 매각] function(triggerId)
@@ -49,7 +49,7 @@ end!!
     screenChange(triggerId, screen)
     local itemCat = "tools"
     setChatVar(triggerId, "category", itemCat)
-    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
+    sysFunction(triggerId, "item.sys", "category", itemCat)
 end!!
 
 [main/105/장비 관리] function(triggerId)

@@ -1,0 +1,142 @@
+-- item.sys.txt
+-- 아이템/상점 관리 통합 모듈
+-- 사용법: sysFunction(triggerId, "item.sys", "select", itemKey)
+--         sysFunction(triggerId, "item.sys", "category", itemCat)
+
+(function()
+    ---------------------------------------
+    -- 로컬 함수 정의
+    ---------------------------------------
+
+    -- 개별 아이템 선택 (상세정보 표시)
+    local function select(triggerId, itemKey)
+        setChatVar(triggerId, "itemKey", itemKey)
+        setChatVar(triggerId, "itemQuantity", 1)
+
+        -- trap.db에서 먼저 검색
+        local trapDB = json.decode(getLoreBookContent(triggerId, "trap.db"))
+        if trapDB[itemKey] then
+            local trap = trapDB[itemKey]
+            setChatVar(triggerId, "itemName", trap.name)
+            setChatVar(triggerId, "itemPrice", intForm(trap.price))
+            setChatVar(triggerId, "itemTotalPrice", intForm(trap.price))
+            setChatVar(triggerId, "itemDetail", trap.desc)
+            return
+        end
+
+        -- items.db에서 검색 (새 객체 구조)
+        local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+        for _, category in pairs(items) do
+            if category[itemKey] then
+                local item = category[itemKey]
+                setChatVar(triggerId, "itemName", item.name)
+                setChatVar(triggerId, "itemPrice", intForm(item.price))
+                setChatVar(triggerId, "itemTotalPrice", intForm(item.price))
+                setChatVar(triggerId, "itemDetail", item.desc)
+                return
+            end
+        end
+    end
+
+    -- 카테고리별 아이템 목록 생성
+    local function category(triggerId, itemCat)
+        local itemList
+        local orderedKeys
+
+        -- traps는 별도의 trap.db에서 로드
+        if itemCat == "traps" then
+            itemList = json.decode(getLoreBookContent(triggerId, "trap.db"))
+            orderedKeys = json.decode(getChatVar(triggerId, "trapsList"))
+        else
+            itemList = json.decode(getLoreBookContent(triggerId, "items.db"))[itemCat]
+            orderedKeys = json.decode(getChatVar(triggerId, itemCat .. "List"))
+        end
+
+        local contents = ""
+        local inventory = json.decode(getChatVar(triggerId, "inventory"))
+
+        -- 조합지식이 필요한 아이템 목록
+        local needKnowl = {
+            ["nutrient"] = true,
+            ["diuretic"] = true,
+            ["aphrodisiac"] = true,
+            ["dewormer"] = true,
+            ["hair_tonic"] = true,
+            ["ovulation_inducer"] = true
+        }
+
+        -- orderedKeys를 순회하여 itemList에서 정보를 가져옴
+        for _, k in ipairs(orderedKeys) do
+            local v = itemList[k]
+            if v then
+                local condition = true
+                local reason = ""
+
+                -- 새 객체 구조에서 필드 접근
+                local itemName = v.name
+                local itemPrice = v.price
+
+                if k == "demon_knowledge" and inventory["alchemy_knowledge"] == "0" then
+                    condition = false
+                    reason = "조합지식 필요"
+                elseif k == "lewd_demon_knowledge" and inventory["demon_knowledge"] == "0" then
+                    condition = false
+                    reason = "마족정보 필요"
+                elseif k == "forbidden_knowledge" and inventory["lewd_demon_knowledge"] == "0" then
+                    condition = false
+                    reason = "음마지식 필요"
+                elseif (itemCat == "tools" or itemCat == "unlock") and inventory[k] == "1" then
+                    condition = false
+                    reason = "이미 보유중"
+                elseif tonumber(inventory[k] or 0) >= 99 then
+                    condition = false
+                    reason = "이미 최대로 보유중"
+                elseif needKnowl[k] and inventory["alchemy_knowledge"] == "0" then
+                    condition = false
+                    reason = "조합지식 필요"
+                end
+
+                if condition then
+                    local price = intForm(itemPrice)
+                    contents = contents ..
+                    "<div class='shop-item btn' risu-btn='" ..
+                    k ..
+                    "'><div class='item-image'><img src='{{raw::" ..
+                    itemName ..
+                    ".png}}'></div><div class='item-info'><span class='item-name'>" ..
+                    itemName .. "</span><span class='item-price'>" .. price .. " spirit</span></div></div>"
+                end
+            end
+        end
+
+        if contents == "" then
+            contents =
+            "<div class='shop-item btn'><div class='item-image'><img src='{{raw::empty.png}}'></div><div class='item-info'><span class='item-name'>모두 구매하였습니다.</span></div></div>"
+        end
+
+        setChatVar(triggerId, "tools", contents)
+        setChatVar(triggerId, "itemName", "아이템을 선택하세요")
+        setChatVar(triggerId, "itemQuantity", 0)
+        setChatVar(triggerId, "itemTotalPrice", 0)
+        setChatVar(triggerId, "itemDetail", "")
+    end
+
+    ---------------------------------------
+    -- 디스패처 테이블
+    ---------------------------------------
+    local funcs = {
+        select = select,
+        category = category
+    }
+
+    ---------------------------------------
+    -- 메인 함수 (외부에서 호출됨)
+    ---------------------------------------
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        else
+            debug("item.sys: 알 수 없는 함수 - " .. tostring(subFunc))
+        end
+    end
+end)()

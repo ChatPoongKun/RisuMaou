@@ -26,8 +26,18 @@ function (triggerId, category, name)
         local itemsDB = getDB(triggerId, "items.db")
         local trapDB = getDB(triggerId, "trap.db")
         
-        if itemsDB[name] then data = itemsDB[name]
-        elseif trapDB[name] then data = trapDB[name]
+        -- items.db는 중첩 구조: itemsDB[카테고리][키]
+        -- 모든 카테고리를 순회하여 키 검색
+        for catName, items in pairs(itemsDB) do
+            if type(items) == "table" and items[name] then
+                data = items[name]
+                break
+            end
+        end
+        
+        -- items.db에서 못 찾으면 trap.db 검색
+        if not data and trapDB[name] then 
+            data = trapDB[name]
         end
         
     else
@@ -59,12 +69,13 @@ function (triggerId, category, name)
         if category == "monster" then
             local rating = data.rating or "?"
             local hp = data.hp or "?"
-            local atk = data.atk or "?"
+            local atkMin = data.atkMin or "?"
+            local atkMax = data.atkMax or "?"
             local def = data.def or "?"
             
             desc = desc .. "<br><br>" ..
                    "Rating: " .. rating .. " | HP: " .. hp .. "<br>" ..
-                   "ATK: " .. atk .. " | DEF: " .. def
+                   "ATK: " .. atkMin .. "~" .. atkMax .. " | DEF: " .. def
         end
         --[[그룹은 굳이 보여줄 필요가 없을듯?
         if category == "trait" and data.group then

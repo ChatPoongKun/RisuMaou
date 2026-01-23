@@ -284,6 +284,6 @@ function (triggerId, reason)
     debug("신규 용사 생성 완료", skeleton["이름"])
     
     if getState(triggerId, "screen") == "charList" then
-        sysFunction(triggerId, "makeCharList.sys")
+        sysFunction(triggerId, "char.sys", "list")
     end
 end
