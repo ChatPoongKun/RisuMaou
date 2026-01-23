@@ -1,0 +1,97 @@
+--절정치 계산
+--@param who: "target" 또는 "user"
+--@param statEXP: stat 변화량 테이블
+--@param feeling: user 절정치 증가값 (target은 무관)
+--@param tags: 조교 태그
+--@return {isOrgasm, count, ratio}
+function(triggerId, who, statEXP, feeling, tags)
+    local ORGASM_MAX_DEFAULT = 10000
+    local ORGASM_MULTIPLIER = 1.2
+    local DECAY_RATE = 0.95
+    
+    local countVar = "ej_" .. who .. "_count"
+    local ratioVar = "ej_" .. who .. "_ratio"
+    
+    local count = tonumber(getChatVar(triggerId, countVar)) or 0
+    local maxVal = ORGASM_MAX_DEFAULT * (ORGASM_MULTIPLIER ^ count)
+    local ratio = tonumber(getChatVar(triggerId, ratioVar)) or 0
+    ratio = math.floor(ratio * DECAY_RATE)  -- 자연감소
+    local current = math.floor(ratio * maxVal * 0.01)
+    
+    if who == "target" then
+        local target = getState(triggerId, "target")
+        
+        -- 쾌락 stat으로 증가
+        local plusStats = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"}
+        for _, s in ipairs(plusStats) do
+            current = current + (statEXP[s] or 0)
+        end
+        
+        -- 부정 stat으로 감소
+        local minusStats = {"공포", "불쾌", "부정"}
+        for _, s in ipairs(minusStats) do
+            current = current - (statEXP[s] or 0)
+        end
+        
+        -- 조건부 stat (abl에 따라 + 또는 -)
+        -- 굴복: 복종각인 있거나 봉사기술 > 4면 +
+        local ejCon = statEXP["굴복"] or 0
+        if tonumber(target["복종각인"] or 0) > 0 or tonumber(target["봉사기술"] or 0) > 4 then
+            current = current + ejCon
+        else
+            current = current - ejCon
+        end
+        
+        -- 수치: 노출벽 > 4면 +
+        ejCon = statEXP["수치"] or 0
+        if tonumber(target["노출벽"] or 0) > 4 then
+            current = current + ejCon
+        else
+            current = current - ejCon
+        end
+        
+        -- 고통: 마조끼 > 4면 +
+        ejCon = statEXP["고통"] or 0
+        if tonumber(target["마조끼"] or 0) > 4 then
+            current = current + ejCon
+        else
+            current = current - ejCon
+        end
+        
+        -- onOrgasmCalc 이벤트 발동
+        local ctx = {
+            orgasm = current,
+            statEXP = statEXP,
+            tags = tags or {},
+            target = target
+        }
+        ctx = sysFunction(triggerId, "customEvent.sys", "onOrgasmCalc", ctx)
+        current = ctx.orgasm
+        
+    elseif who == "user" then
+        -- user는 feeling으로만 증가
+        current = current + (feeling or 0) * ORGASM_MAX_DEFAULT * 0.01
+    end
+    
+    -- 최대/최소 클램핑
+    current = math.min(maxVal, math.max(0, math.floor(current)))
+    local newRatio = current / maxVal * 100
+    
+    -- 절정 여부 체크
+    local isOrgasm = false
+    if current >= maxVal then
+        isOrgasm = true
+        count = count + 1
+        newRatio = 0
+    end
+    
+    -- 변수 저장
+    setChatVar(triggerId, countVar, count)
+    setChatVar(triggerId, ratioVar, string.format("%.2f", newRatio))
+    
+    return {
+        isOrgasm = isOrgasm,
+        count = count,
+        ratio = newRatio
+    }
+end

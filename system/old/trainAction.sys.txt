@@ -1,0 +1,72 @@
+--조교 액션 처리 (train.db 기반)
+--train.lua에서 호출되어 train.db 데이터를 읽고 처리
+--@param trainKey: train.db의 조교 키
+--@param actor: 삽입 시 사용할 actor ("user" 또는 "king"), 기본값 "user"
+function(triggerId, trainKey, actor)
+    actor = actor or "user"
+print("00")
+    -- train.db 로드
+    local trainDB = getDB(triggerId, "train.db")
+    local trainData = trainDB[trainKey]
+print("001")
+    if not trainData then
+        alertNormal(triggerId, "train.db에서 '"..trainKey.."'를 찾을 수 없습니다.")
+        return false
+    end
+print("002")
+    local target = getState(triggerId, "target")
+    local stat = getState(triggerId, "stat")
+    local tags = trainData.tags or {}
+print("01")
+    --[[1. DC 계산]]
+    local dc = DC_PENALTY * trainData.baseDC
+    
+    -- customEvent: onDCCalc 발동 (trait/abl/mark/stat 모두 처리)
+    local ctx = {dc = dc, tags = tags, stat = stat, category = trainData.category, target = target}
+    ctx = sysFunction(triggerId, "customEvent.sys", "onDCCalc", ctx)
+    dc = ctx.dc
+print("02")
+    --[[2. 비용 계산]]
+    local costHP = trainData.costHP
+    local costSP = trainData.costSP
+    
+    -- customEvent: onCostCalc 발동
+    ctx = {costHP = costHP, costSP = costSP, tags = tags, stat = stat, target = target}
+    ctx = sysFunction(triggerId, "customEvent.sys", "onCostCalc", ctx)
+    costHP = ctx.costHP
+    costSP = ctx.costSP
+print("03")
+    --[[3. 경험치 및 커맨드]]
+    local exps = {}
+    for _, v in ipairs(trainData.exps or {}) do
+        table.insert(exps, v)
+    end
+    local feeling = trainData.feeling or 0
+    local command = trainData.command
+    
+    --[[4. 삽입 로직 처리]]
+    if trainData.insertion then
+        local difficulty = trainData.insertion.difficulty or 1
+        local insertResult = sysFunction(triggerId, "insertionLogic.sys", trainData, actor, difficulty)
+        dc = dc + (insertResult.dc - trainData.baseDC)
+        feeling = insertResult.feeling
+        command = insertResult.command
+        exps = insertResult.exps
+    end
+    
+    --[[5. 장비 토글 커맨드 처리]]
+    if trainData.equipment then
+        local equipments = json.decode(getChatVar(triggerId, "equipments"))
+        if equipments[trainData.equipment] == "착용" then
+            command = trainData.commands.unequip or command
+        else
+            command = trainData.commands.equip or command
+        end
+    end
+    
+    -- 커맨드에서 {target} 치환
+    command = command:gsub("{target}", target["이름"])
+    
+    --[[6. trainProcess.sys 호출]]
+    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, trainData.equipment, tags)
+end

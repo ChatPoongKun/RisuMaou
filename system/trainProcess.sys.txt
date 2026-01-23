@@ -1,32 +1,32 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
-function(triggerId, dc, HP, SP, exps, feeling, command)
+--조교 커맨드에 따른 LLM의 출력을 처리
+function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     debug("trainProcess 실행")
 
     --[[초기화]]
     math.randomseed(os.time())
     local screenEffect = "" --screenEffect 초기화
 
-    --[[날짜계산]]
-    local day = getChatVar(triggerId, "day")
-    local ampm = tonumber(getChatVar(triggerId, "ampm"))
-    local date = "day"..day
-    if ampm == 0 then
-        date = date.." ☀️ 낮"
-    else
-        date = date.." 🌙 밤"
-    end
+    --날짜계산 (유틸리티 함수 사용)
+    local date = getDateString(triggerId, "full")
 
-    --[[DB호출]]
-    local EXPtbl = json.decode(getLoreBookContent(triggerId, "EXPtable.db"))
-    local markDB = json.decode(getLoreBookContent(triggerId, "mark.db"))
-    local ablDB = json.decode(getLoreBookContent(triggerId, "abl.db"))
-    local traitDB = json.decode(getLoreBookContent(triggerId, "trait.db"))
-    local statDB = json.decode(getLoreBookContent(triggerId, "stat.db"))
-    local expDB = json.decode(getLoreBookContent(triggerId, "exp.db"))
-    local itemDB = json.decode(getLoreBookContent(triggerId, "items.db"))
-    --statdb에서 설명파트만 추출
+    --DB호출 (캐싱 메커니즘 사용)
+    local EXPtbl = getDB(triggerId, "EXPtable.db")
+    local markDB = getDB(triggerId, "mark.db")
+    local ablDB = getDB(triggerId, "abl.db")
+    local traitDB = getDB(triggerId, "trait.db")
+    local statDB = getDB(triggerId, "stat.db")
+    local expDB = getDB(triggerId, "exp.db")
+    local itemDB = getDB(triggerId, "items.db")
+    --statdb에서 설명파트만 추출 (shallow copy로 원본 캐시 보호)
+    local statDescDB = {}
     for k,v in pairs(statDB) do
-        statDB[k] = v[1]
+        -- 한글 이름을 키로 사용해 LLM에 전달
+        if v.name then
+            statDescDB[v.name] = v.desc
+        else
+            statDescDB[k] = v.desc
+        end
     end
 
     --[[유저와 조교대상의 정보 호출]]
@@ -57,11 +57,12 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     local rollBonus = 0
     rollBonus = rollBonus + json.decode(user)["레벨"] - 1 --유저 레벨당 1, 1레벨부터 시작이므로 1을 차감
     rollBonus = rollBonus - currentStat["저항"] --저항 stat 1레벨당 1만큼 페널티
-    for _, v in ipairs(markDB) do -- 각인 보너스 적용
-        if v == "반발각인" then
-            rollBonus = rollBonus - 2^tonumber((target[v] or 0))
+    for k, v in pairs(markDB) do -- 각인 보너스 적용 (객체 순회)
+        local markName = v.name or k
+        if markName == "반발각인" then
+            rollBonus = rollBonus - 2^tonumber((target[markName] or 0))
         else
-            rollBonus = rollBonus + (target[v] or 0)*2
+            rollBonus = rollBonus + (target[markName] or 0)*2
         end
     end
 
@@ -81,9 +82,21 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     end
 
     --성공한 경우에만 경험 추가
-    if roll + rollBonus > dc and #exps > 0 then
-        for _, k in ipairs(exps) do
-            target[k] = target[k] + 1
+    if roll + rollBonus > dc then
+        if #exps > 0 then
+            for _, k in ipairs(exps) do
+                target[k] = target[k] + 1
+            end
+        end
+        --성공 시 장비 탈착 변경
+        if equipTarget then
+            local equipTable = json.decode(equipments)
+            if equipTable[equipTarget] == "착용" then
+                equipTable[equipTarget] = "미착용"
+            else
+                equipTable[equipTarget] = "착용"
+            end
+            setChatVar(triggerId, "equipments", json.encode(equipTable))
         end
     end
 
@@ -175,10 +188,11 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
 
     --target가 보유한 trait에 대한 설명만 추출
     local traitProm = {}
-    for k,_ in pairs(traitDB) do
-        local found, foundVal = hasVal(target, k)
+    for k, v in pairs(traitDB) do
+        local tName = v.name or k -- 한글 이름으로 체크
+        local found, foundVal = hasVal(target, tName)
         if found then
-            traitProm[k] = foundVal --target한테 있는 trait 설명만 입력
+            traitProm[tName] = v.desc --target한테 있는 trait 설명만 입력
         end
     end
     traitProm = json.encode(traitProm)
@@ -186,7 +200,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     --trainResponse (stat 계산) 프롬프트
     prompt = {
     promptBuild("system", getLoreBookContent(triggerId, "trainResponse.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDB)),
+    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
     promptBuild("system", "- MARK: "..json.encode(markDB)),
     promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
     promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
@@ -212,6 +226,23 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     local statEXP = content:match("({.*})")
     statEXP = json.decode(statEXP)
 
+    -- customEvent: onStatEXP 처리
+    tags = tags or {}
+    for statName, amount in pairs(statEXP) do
+        if tonumber(amount) and amount > 0 then
+             local ctx = {
+                statEXP = amount,
+                statName = statName,
+                tags = tags,
+                target = target,
+                stat = currentStat,
+                allStatEXP = statEXP
+            }
+            ctx = sysFunction(triggerId, "customEvent.sys", "onStatEXP", ctx)
+            statEXP[statName] = ctx.statEXP
+        end
+    end
+
     --dc에 따른 statEXP 획득 제어
     for k,v in pairs(statEXP) do
         local maxLv = math.floor(dc*0.15) --난이도 60이면 9렙, 67이면 10렙 경험치까지 받을 수 있음
@@ -231,86 +262,30 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     end
 
     --[[절정 계산]]
-    local orgasmMax_default = 10000
-    local orgasm_multiplier = 1.2
-
-    local ej_target_count = tonumber(getChatVar(triggerId, "ej_target_count"))
-    local ej_target_max = orgasmMax_default*(orgasm_multiplier^ej_target_count)
-    local ej_target_ratio = getChatVar(triggerId, "ej_target_ratio")
-    ej_target_ratio = math.floor(tonumber(ej_target_ratio)*0.95) --매턴 절정치 자연감소시키면서 숫자로 형변환
-    local ej_target = math.floor(ej_target_ratio * ej_target_max*0.01)
-
-    local ej_user_count = tonumber(getChatVar(triggerId, "ej_user_count"))
-    local ej_user_max = orgasmMax_default*(orgasm_multiplier^ej_user_count)
-    local ej_user_ratio = getChatVar(triggerId, "ej_user_ratio")
-    ej_user_ratio = math.floor(tonumber(ej_user_ratio)*0.95) --매턴 절정치 자연감소시키면서 숫자로 형변환
-    local ej_user = math.floor(ej_user_ratio * ej_user_max*0.01)
-
-    local ejPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"} --절정치를 증가시키는 stat
-    for k, v in ipairs(ejPlus) do
-        local val = statEXP[v] or 0
-        ej_target = ej_target + val
-        debug("절정치: "..v.."(+"..val..")")
+    -- 실패 시 유저 쾌락(feeling) 제거 (봉사 실패 등)
+    if roll + rollBonus <= dc then
+        feeling = 0
     end
 
-    local ejMinus = {"공포", "불쾌", "부정"} --절정치를 감소시키는 stat
-    for k, v in ipairs(ejMinus) do
-        local val = statEXP[v] or 0
-        ej_target = ej_target - val
-        debug("절정치: "..v.."(-"..val..")")
-    end
+    local resTarget = sysFunction(triggerId, "train.sys", "orgasm", "target", statEXP, 0, tags)
+    local resUser = sysFunction(triggerId, "train.sys", "orgasm", "user", {}, feeling, tags)
 
-    --상황에 따라 달라지는 stat: "굴복", "수치", "고통"
-    local ejCon
-    ejCon = statEXP["굴복"] or 0
-    if hasVal(target, "복종각인") == true or tonumber(target["봉사기술"])> 4 then
-        ej_target = ej_target + ejCon
-        debug("절정치: 굴복(+"..ejCon..")")
-    else
-        ej_target = ej_target - ejCon
-        debug("절정치: 굴복(-"..ejCon..")")
-    end
-    ejCon = statEXP["수치"] or 0
-    if tonumber(target["노출벽"])> 4 then
-        ej_target = ej_target + ejCon
-        debug("절정치: 수치(+"..ejCon..")")
-    else
-        ej_target = ej_target - ejCon
-        debug("절정치: 수치(-"..ejCon..")")
-    end
-    ejCon = statEXP["고통"] or 0
-    if tonumber(target["마조끼"])> 4 then
-        ej_target = ej_target + ejCon
-        debug("절정치: 고통(+"..ejCon..")")
-    else
-        ej_target = ej_target - ejCon
-        debug("절정치: 고통(-"..ejCon..")")
-    end
+    local orgasm_t = resTarget.isOrgasm
+    local orgasm_u = resUser.isOrgasm
 
-    --target 절정치 계산
-    ej_target = math.min(ej_target_max, math.max(0, math.floor(ej_target)))--절정치가 최대 최소값을 넘지 않도록 후처리
-    ej_target_ratio = ej_target/ej_target_max*100 --실제 수치를 보여줄게 아니라서 소숫점도 허용
-    debug(target["이름"].."절정치: " .. ej_target, ej_target_ratio, ej_target_max)
-
-    --user 절정치 계산
-    ej_user = math.min(ej_user_max, ej_user + feeling * orgasmMax_default*0.01)
-    ej_user_ratio = math.floor(ej_user/ej_user_max*100)
-    debug("{{user}}절정치: " .. ej_user, ej_user_ratio, ej_user_max)
+    debug(target["이름"].."절정치: " .. resTarget.ratio .. "%")
+    debug("{{user}}절정치: " .. resUser.ratio .. "%")
 
     --절정여부 체크
     local ejMsg = "아무도 절정하지 않음."
-    local orgasm_t, orgasm_u = false, false
-    if ej_target >= ej_target_max then
+    if orgasm_t then
         ejMsg = "조교대상 절정."
-        orgasm_t = true
-        ej_target_count = ej_target_count +1
-        ej_target_ratio = 0
     end
-    if ej_user >= ej_user_max then
+    if orgasm_u then
         ejMsg = "{{user}} 절정."
-        orgasm_u = true
-        ej_user_count = ej_user_count +1
-        ej_user_ratio = 0
+    end
+    if orgasm_t and orgasm_u then
+        ejMsg = "조교대상과 {{user}} 동시 절정."
     end
 
 
@@ -373,7 +348,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "trainLog.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "worldBriefing.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDB)),
+    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
     promptBuild("system", "- MARK: "..json.encode(markDB)),
     promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
     promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
@@ -401,8 +376,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     --[[응답처리]]
     --신규로그 저장
     local dialog = trainLog.result
-    --생각의 사슬 제거
-    dialog = dialog:gsub("<Thoughts>.-</Thoughts>", "")
+    dialog = dialog:gsub("<Thoughts>.-</Thoughts>", "") --생각의 사슬 제거
+    dialog = dialog:gsub("<br><br>", "<br>") --불필요한 줄바꿈 제거
     debug("조교로그: "..dialog)
     local newLog = "<br>" .. dialog
 
@@ -426,11 +401,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
     setChatVar(triggerId, "stat", stat_c) --변경된 stat을 chatVar에 반영
 
-    --절정치 변수에 적용
-    setChatVar(triggerId, "ej_target_count", ej_target_count)
-    setChatVar(triggerId, "ej_target_ratio", string.format("%.2f", ej_target_ratio))
-    setChatVar(triggerId, "ej_user_count", ej_user_count)
-    setChatVar(triggerId, "ej_user_ratio", string.format("%.2f", ej_user_ratio))
+    --절정치 변수에 적용 (train.orgasm에서 처리됨)
 
     --로그 처리
     setChatVar(triggerId, "oldLog", oldLog)
@@ -446,4 +417,5 @@ function(triggerId, dc, HP, SP, exps, feeling, command)
     stateToVar(triggerId, "target", target)
 
     reloadDisplay(triggerId)
+    return true
 end

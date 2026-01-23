@@ -1,0 +1,1665 @@
+{ ///train - 조교 커맨드 정의
+    "use_oil": {
+        "name": "오일 사용",
+        "category": "소모품",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": ["애정경험"],
+        "feeling": 0,
+        "command": "{{user}}는 오일을 {target}의 몸 구석구석에 펴바른다."
+    },
+    "use_aphrodisiac": {
+        "name": "미약 사용",
+        "category": "소모품",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": ["약물경험"],
+        "feeling": 0,
+        "command": "{{user}}는 {target}에게 강제로 미약을 먹인다."
+    },
+    "use_crystal_ball": {
+        "name": "수정구 사용",
+        "category": "소모품",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": ["피사경험"],
+        "feeling": 0,
+        "command": "{{user}}는 수정구를 꺼내 {target}의 모습을 기록하기 시작한다."
+    },
+    "observe": {
+        "name": "가만 지켜본다",
+        "category": "애무계",
+        "tags": [
+            "passive",
+            "safe"
+        ],
+        "baseDC": 0,
+        "costHP": 5,
+        "costSP": 10,
+        "exps": [
+            "수치경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 아무것도 하지 않고 {target}을 가만히 관찰한다.",
+        "statMods": {}
+    },
+    "talk": {
+        "name": "대화한다",
+        "category": "애무계",
+        "tags": [
+            "passive",
+            "safe"
+        ],
+        "baseDC": 0,
+        "costHP": 5,
+        "costSP": 10,
+        "exps": [
+            "조교회화경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}에게 말을 건다.",
+        "statMods": {}
+    },
+    "caress": {
+        "name": "애무",
+        "category": "애무계",
+        "tags": [
+            "touch",
+            "gentle",
+            "love"
+        ],
+        "baseDC": 5,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": [
+            "애정경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}을 어루만진다.",
+        "statMods": {
+            "공포": 0.1
+        }
+    },
+    "cunnilingus": {
+        "name": "커닐링구스",
+        "category": "애무계",
+        "tags": [
+            "oral",
+            "C",
+            "service_recv"
+        ],
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "C경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}의 다리를 벌리고 비부를 혀로 핥는다.",
+        "statMods": {
+            "불쾌": 0.7
+        },
+        "conditions": {
+            "targetGender": "!남성"
+        }
+    },
+    "anal_caress": {
+        "name": "애널애무",
+        "category": "애무계",
+        "tags": [
+            "touch",
+            "A"
+        ],
+        "baseDC": 30,
+        "costHP": 15,
+        "costSP": 40,
+        "exps": [
+            "A경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}의 애널을 부드럽게 어루만진다.",
+        "statMods": {
+            "불쾌": 1.0
+        }
+    },
+    "masturbation": {
+        "name": "자위",
+        "category": "애무계",
+        "tags": [
+            "shame",
+            "C"
+        ],
+        "baseDC": 25,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "수치경험",
+            "자위경험",
+            "C경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}에게 스스로 자위 할 것을 명령한다.",
+        "statMods": {
+            "수치": 0.5,
+            "욕정": -0.3,
+            "온순": -0.3,
+            "굴복": -0.3,
+            "공포": -0.1
+        }
+    },
+    "breast_caress": {
+        "name": "가슴 애무",
+        "category": "애무계",
+        "tags": [
+            "touch",
+            "B",
+            "gentle"
+        ],
+        "baseDC": 5,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": [
+            "B경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}의 가슴을 어루만진다.",
+        "statMods": {
+            "온순": -0.5
+        }
+    },
+    "kiss": {
+        "name": "키스",
+        "category": "애무계",
+        "tags": [
+            "oral",
+            "love",
+            "gentle"
+        ],
+        "baseDC": 20,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": [
+            "애정경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}와 입을 맞춘다.",
+        "statMods": {
+            "불쾌": 0.3,
+            "M쾌락": -0.5,
+            "온순": -0.5,
+            "욕정": -0.2,
+            "굴복": -0.1
+        }
+    },
+    "missionary": {
+        "name": "정상위",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "gentle"
+        ],
+        "baseDC": 20,
+        "costHP": 20,
+        "costSP": 30,
+        "exps": [
+            "V경험",
+            "성교경험"
+        ],
+        "feeling": 10,
+        "command": "{{user}}는 {target}의 다리 사이를 파고들어 정상위로 질에 삽입한다.",
+        "statMods": {
+            "온순": -0.3,
+            "욕정": -0.5,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "doggy": {
+        "name": "후배위",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V"
+        ],
+        "baseDC": 25,
+        "costHP": 20,
+        "costSP": 30,
+        "exps": [
+            "V경험",
+            "성교경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 엎드린 {target}의 엉덩이를 들어올려 후배위로 질에 삽입한다.",
+        "statMods": {
+            "수치": 0.5,
+            "굴복": -0.3,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "cowgirl": {
+        "name": "기승위",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "service"
+        ],
+        "baseDC": 35,
+        "costHP": 25,
+        "costSP": 35,
+        "exps": [
+            "V경험",
+            "성교경험",
+            "봉사경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}에게 기승위로 올라와 스스로 질에 삽입하도록 명령한다.",
+        "statMods": {
+            "수치": 0.8,
+            "욕정": -0.8,
+            "온순": -0.5,
+            "굴복": -0.5
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "anal_missionary": {
+        "name": "정상위애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A"
+        ],
+        "baseDC": 30,
+        "costHP": 25,
+        "costSP": 35,
+        "exps": [
+            "A경험",
+            "애널성교경험",
+            "성교경험"
+        ],
+        "feeling": 10,
+        "command": "{{user}}는 {target}를 눕히고 다리를 잡아벌려 정상위로 애널에 삽입한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "굴복": -0.2,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_doggy": {
+        "name": "후배위애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A"
+        ],
+        "baseDC": 35,
+        "costHP": 25,
+        "costSP": 35,
+        "exps": [
+            "A경험",
+            "애널성교경험",
+            "성교경험"
+        ],
+        "feeling": 10,
+        "command": "{{user}}는 엎드린 {target}의 엉덩이를 들어올려 후배위로 애널에 삽입한다.",
+        "statMods": {
+            "저항": 1.8,
+            "수치": 0.8,
+            "불쾌": 0.5,
+            "굴복": -0.3,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "handjob": {
+        "name": "수음",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "touch"
+        ],
+        "baseDC": 15,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": [
+            "봉사경험"
+        ],
+        "feeling": 6,
+        "command": "{{user}}는 {target}에게 손으로 자지를 쓰다듬으며 봉사하라고 명령한다.",
+        "statMods": {
+            "온순": -0.5,
+            "굴복": -0.3
+        },
+        "conditions": {
+            "userGender": "!여성"
+        }
+    },
+    "fellatio": {
+        "name": "펠라치오",
+        "category": "봉사계",
+        "tags": [
+            "oral",
+            "service",
+            "M",
+            "insert_M"
+        ],
+        "baseDC": 25,
+        "costHP": 15,
+        "costSP": 25,
+        "exps": [
+            "봉사경험",
+            "펠라경험"
+        ],
+        "feeling": 10,
+        "command": "{{user}}는 {target}에게 펠라치오를 명령한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "온순": -0.4,
+            "굴복": -0.4
+        },
+        "insertion": {
+            "type": "M",
+            "target": null,
+            "difficulty": 1
+        },
+        "conditions": {
+            "userGender": "!여성"
+        }
+    },
+    "rimming": {
+        "name": "리밍",
+        "category": "봉사계",
+        "tags": [
+            "oral",
+            "service",
+            "filth",
+            "A"
+        ],
+        "baseDC": 40,
+        "costHP": 15,
+        "costSP": 35,
+        "exps": [
+            "봉사경험",
+            "오물경험"
+        ],
+        "feeling": 8,
+        "command": "{{user}}는 {target}에게 {{user}}의 항문을 핥으라고 명령한다.",
+        "statMods": {
+            "저항": 1.8,
+            "불쾌": 1.2,
+            "굴복": -0.5
+        }
+    },
+    "honey_worm": {
+        "name": "꿀단지웜",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "V",
+            "insert_V",
+            "tentacle",
+            "beast"
+        ],
+        "baseDC": 30,
+        "costHP": 20,
+        "costSP": 20,
+        "exps": [
+            "V경험",
+            "촉수경험",
+            "수간경험"
+        ],
+        "feeling": 0,
+        "statMods": {
+            "공포": 0.5,
+            "불쾌": 1.0
+        },
+        "equipment": "honey_worm",
+        "commands": {
+            "equip": "{{user}}는 꿀단지웜을 {target}의 질에 밀어넣는다.",
+            "unequip": "{{user}}는 꿀단지웜을 {target}의 질에서 뽑아낸다."
+        },
+        "conditions": {
+            "item": "honey_worm",
+            "targetGender": "!남성"
+        }
+    },
+    "anal_worm": {
+        "name": "애널웜",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "A",
+            "insert_A",
+            "tentacle",
+            "beast"
+        ],
+        "baseDC": 40,
+        "costHP": 20,
+        "costSP": 20,
+        "exps": [
+            "A경험",
+            "촉수경험",
+            "수간경험"
+        ],
+        "feeling": 0,
+        "statMods": {
+            "공포": 0.5,
+            "불쾌": 1.2
+        },
+        "equipment": "anal_worm",
+        "commands": {
+            "equip": "{{user}}는 애널웜을 {target}의 항문에 밀어넣는다.",
+            "unequip": "{{user}}는 애널웜을 {target}의 애널에서 뽑아낸다."
+        },
+        "conditions": {
+            "item": "anal_worm"
+        }
+    },
+    "whip": {
+        "name": "채찍",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "pain",
+            "hard"
+        ],
+        "baseDC": 30,
+        "costHP": 30,
+        "costSP": 20,
+        "exps": [
+            "피학경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 채찍을 들어 {target}의 등을 내리친다.",
+        "statMods": {
+            "공포": 0.5
+        },
+        "conditions": {
+            "item": "whip"
+        }
+    },
+    "spanking": {
+        "name": "스팽킹",
+        "category": "하드계",
+        "tags": [
+            "pain",
+            "hard"
+        ],
+        "baseDC": 20,
+        "costHP": 20,
+        "costSP": 15,
+        "exps": [
+            "피학경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 손바닥으로 {target}의 엉덩이를 세게 내려친다.",
+        "statMods": {
+            "고통": 0.5
+        }
+    },
+    "urination": {
+        "name": "방뇨",
+        "category": "하드계",
+        "tags": [
+            "filth",
+            "shame"
+        ],
+        "baseDC": 40,
+        "costHP": 15,
+        "costSP": 40,
+        "exps": [
+            "방뇨경험",
+            "오물경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}에게 그 자리에서 다리를 벌리고 오줌을 싸라고 명령한다.",
+        "statMods": {
+            "수치": 1.0,
+            "굴복": -0.5
+        }
+    },
+    "fist_v": {
+        "name": "피스트퍽",
+        "category": "하드계",
+        "tags": [
+            "hard",
+            "V",
+            "insert_V",
+            "pain"
+        ],
+        "baseDC": 70,
+        "costHP": 50,
+        "costSP": 50,
+        "exps": [
+            "V경험",
+            "피학경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}의 질 안으로 주먹을 밀어넣는다.",
+        "statMods": {
+            "공포": 1.0,
+            "V윤활": -1.0
+        },
+        "conditions": {
+            "targetVExpand": ">=3"
+        }
+    },
+    "fist_a": {
+        "name": "애널피스트",
+        "category": "하드계",
+        "tags": [
+            "hard",
+            "A",
+            "insert_A",
+            "pain"
+        ],
+        "baseDC": 80,
+        "costHP": 50,
+        "costSP": 50,
+        "exps": [
+            "A경험",
+            "피학경험"
+        ],
+        "feeling": 0,
+        "command": "{{user}}는 {target}의 애널 안으로 주먹을 밀어넣는다.",
+        "statMods": {
+            "공포": 1.2,
+            "A윤활": -1.0
+        },
+        "conditions": {
+            "targetAExpand": ">=3"
+        }
+    },
+    "back_seated": {
+        "name": "배면좌위",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V"
+        ],
+        "baseDC": 30,
+        "costHP": 20,
+        "costSP": 30,
+        "exps": [
+            "V경험",
+            "성교경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}을 뒤에서 안아올려 배면좌위로 질에 삽입한다.",
+        "statMods": {
+            "수치": 0.5,
+            "굴복": -0.3,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "front_seated": {
+        "name": "대면좌위",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "gentle",
+            "love"
+        ],
+        "baseDC": 25,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "V경험",
+            "성교경험",
+            "애정경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}을 마주보고 안아올려 대면좌위로 질에 삽입한다.",
+        "statMods": {
+            "온순": -0.3,
+            "욕정": -0.5,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "standing": {
+        "name": "들박",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "hard"
+        ],
+        "baseDC": 30,
+        "costHP": 20,
+        "costSP": 35,
+        "exps": [
+            "V경험",
+            "성교경험"
+        ],
+        "feeling": 14,
+        "command": "{{user}}는 선 채로 {target}을 들어올려 대면입위로 질에 삽입한다.",
+        "statMods": {
+            "온순": -0.5,
+            "욕정": -0.5,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "back_standing": {
+        "name": "뒷들박",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "hard"
+        ],
+        "baseDC": 35,
+        "costHP": 20,
+        "costSP": 40,
+        "exps": [
+            "V경험",
+            "성교경험",
+            "긴박경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 선 채로 {target}을 들어올려 배면입위로 질에 삽입한다.",
+        "statMods": {
+            "온순": -0.5,
+            "욕정": -0.5,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "mating_press": {
+        "name": "교배프레스",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "hard",
+            "bondage"
+        ],
+        "baseDC": 30,
+        "costHP": 30,
+        "costSP": 40,
+        "exps": [
+            "V경험",
+            "성교경험",
+            "긴박경험"
+        ],
+        "feeling": 15,
+        "command": "{{user}}는 {target}의 두다리를 잡고 꼼짝 못하게 누르며 교배프레스 자세로 질에 삽입한다.",
+        "statMods": {
+            "온순": -0.5,
+            "욕정": -0.5,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "full_nelson": {
+        "name": "풀넬슨",
+        "category": "V계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "hard",
+            "bondage"
+        ],
+        "baseDC": 40,
+        "costHP": 30,
+        "costSP": 45,
+        "exps": [
+            "V경험",
+            "성교경험",
+            "긴박경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}의 겨드랑이 사이로 팔을 넣어 다리를 잡고 풀넬슨 체위로 질에 삽입한다.",
+        "statMods": {
+            "온순": -0.5,
+            "욕정": -0.5,
+            "V윤활": -1.0
+        },
+        "insertion": {
+            "type": "V",
+            "target": "V확장",
+            "difficulty": 1
+        }
+    },
+    "anal_front_seated": {
+        "name": "대면좌위애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A"
+        ],
+        "baseDC": 35,
+        "costHP": 20,
+        "costSP": 30,
+        "exps": [
+            "A경험",
+            "애널성교경험",
+            "성교경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}을 마주보고 안아 대면좌위로 애널에 삽입한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "온순": -0.3,
+            "욕정": -0.3,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_back_seated": {
+        "name": "배면좌위애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A"
+        ],
+        "baseDC": 40,
+        "costHP": 20,
+        "costSP": 30,
+        "exps": [
+            "A경험",
+            "애널성교경험",
+            "성교경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}을 뒤에서 안아올려 배면좌위로 애널에 삽입한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "저항": 1.8,
+            "수치": 0.8,
+            "굴복": -0.3,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_cowgirl": {
+        "name": "기승위애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A",
+            "service"
+        ],
+        "baseDC": 45,
+        "costHP": 15,
+        "costSP": 25,
+        "exps": [
+            "A경험",
+            "애널성교경험",
+            "성교경험",
+            "봉사경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}에게 자신의 자지위로 올라와 스스로 애널에 삽입하도록 명령한다",
+        "statMods": {
+            "불쾌": 0.5,
+            "수치": 1.0,
+            "굴복": -0.5,
+            "욕정": -0.5,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_standing": {
+        "name": "들박애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A",
+            "hard"
+        ],
+        "baseDC": 30,
+        "costHP": 20,
+        "costSP": 35,
+        "exps": [
+            "A경험",
+            "성교경험",
+            "애정경험"
+        ],
+        "feeling": 14,
+        "command": "{{user}}는 선 채로 {target}을 들어올려 대면입위로 애널에 삽입한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "온순": -0.5,
+            "욕정": -0.5,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_back_standing": {
+        "name": "뒷들박애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A",
+            "hard"
+        ],
+        "baseDC": 40,
+        "costHP": 20,
+        "costSP": 45,
+        "exps": [
+            "A경험",
+            "성교경험",
+            "긴박경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 선 채로 {target}을 들어올려 배면입위로 애널에 삽입한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "온순": -0.5,
+            "욕정": -0.5,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_mating_press": {
+        "name": "교배프레스애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A",
+            "hard",
+            "bondage"
+        ],
+        "baseDC": 35,
+        "costHP": 30,
+        "costSP": 45,
+        "exps": [
+            "A경험",
+            "성교경험",
+            "긴박경험"
+        ],
+        "feeling": 15,
+        "command": "{{user}}는 {target}의 두다리를 잡고 꼼짝 못하게 누르며 교배프레스 자세로 애널에 삽입한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "온순": -0.5,
+            "욕정": -0.5,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_full_nelson": {
+        "name": "풀넬슨애널",
+        "category": "A계",
+        "tags": [
+            "sex",
+            "A",
+            "insert_A",
+            "hard",
+            "bondage"
+        ],
+        "baseDC": 45,
+        "costHP": 30,
+        "costSP": 50,
+        "exps": [
+            "A경험",
+            "성교경험",
+            "긴박경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}의 겨드랑이 사이로 팔을 넣어 다리를 잡고 풀넬슨 체위로 애널에 삽입한다.",
+        "statMods": {
+            "불쾌": 0.5,
+            "온순": -0.5,
+            "욕정": -0.5,
+            "A윤활": -1.0
+        },
+        "insertion": {
+            "type": "A",
+            "target": "A확장",
+            "difficulty": 2
+        }
+    },
+    "anal_plug": {
+        "name": "애널플러그",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "A",
+            "insert_A"
+        ],
+        "equipment": "anal_plug",
+        "baseDC": 25,
+        "costHP": 15,
+        "costSP": 10,
+        "exps": [
+            "A경험",
+            "A확장경험"
+        ],
+        "commands": {
+            "equip": "{{user}}는 {target}의 항문에 애널플러그를 꽂아넣는다.",
+            "unequip": "{{user}}는 {target}의 항문에서 애널플러그를 뽑아낸다."
+        }
+    },
+    "anal_beads": {
+        "name": "애널비즈",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "A",
+            "insert_A"
+        ],
+        "equipment": "anal_beads",
+        "baseDC": 35,
+        "costHP": 20,
+        "costSP": 20,
+        "exps": [
+            "A경험",
+            "A확장경험"
+        ],
+        "commands": {
+            "equip": "{{user}}는 {target}의 애널에 비즈를 하나씩 밀어넣는다.",
+            "unequip": "{{user}}는 {target}의 애널에 비즈를 하나씩 뽑아낸다."
+        }
+    },
+    "blindfold": {
+        "name": "눈가리개",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "bondage"
+        ],
+        "equipment": "blindfold",
+        "baseDC": 10,
+        "costHP": 5,
+        "costSP": 5,
+        "exps": [
+            "긴박경험"
+        ],
+        "statMods": {
+            "공포": 0.2,
+            "불안": 0.2
+        },
+        "commands": {
+            "equip": "{{user}}는 {target}의 눈을 가리개로 가려 시야를 차단한다.",
+            "unequip": "{{user}}는 {target}에게서 눈 가리개를 떼어낸다."
+        }
+    },
+    "ball_gag": {
+        "name": "볼개그",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "bondage",
+            "shame"
+        ],
+        "equipment": "ball_gag",
+        "baseDC": 15,
+        "costHP": 10,
+        "costSP": 10,
+        "exps": [
+            "수치경험",
+            "긴박경험"
+        ],
+        "statMods": {
+            "수치": 0.3
+        },
+        "commands": {
+            "equip": "{{user}}는 {target}의 입에 볼개그를 물린다.",
+            "unequip": "{{user}}는 {target}의 입에서 볼개그를 뺀다."
+        }
+    },
+    "ring_gag": {
+        "name": "O링개그",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "bondage",
+            "shame"
+        ],
+        "equipment": "ring_gag",
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 15,
+        "exps": [
+            "수치경험",
+            "긴박경험"
+        ],
+        "statMods": {
+            "수치": 0.5
+        },
+        "commands": {
+            "equip": "{{user}}는 {target}의 입을 O링 개그로 고정시켜 벌려둔다.",
+            "unequip": "{{user}}는 {target}의 입에서 O링 개그를 뺀다."
+        }
+    },
+    "clit_cap": {
+        "name": "클리캡",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "C",
+            "tentacle"
+        ],
+        "equipment": "slime_snail",
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 10,
+        "exps": [
+            "C경험",
+            "촉수경험"
+        ],
+        "statMods": {
+            "욕정": -0.3
+        },
+        "commands": {
+            "equip": "{{user}}는 점액달팽이를 {target}의 성기에 붙인다.",
+            "unequip": "{{user}}는 점액달팽이를 {target}의 성기에서 떼어낸다."
+        }
+    },
+    "nipple_cap": {
+        "name": "유두캡",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "B",
+            "tentacle"
+        ],
+        "equipment": "milk_snail",
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 10,
+        "exps": [
+            "B경험",
+            "촉수경험"
+        ],
+        "statMods": {
+            "욕정": -0.3
+        },
+        "commands": {
+            "equip": "{{user}}는 우유달팽이를 {target}의 유두에 붙인다.",
+            "unequip": "{{user}}는 우유달팽이를 {target}의 유두에서 떼어낸다."
+        }
+    },
+    "milker": {
+        "name": "착유기",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "B",
+            "machine"
+        ],
+        "equipment": "milker",
+        "baseDC": 25,
+        "costHP": 20,
+        "costSP": 20,
+        "exps": [
+            "B경험",
+            "분유경험"
+        ],
+        "statMods": {
+            "수치": 0.5
+        },
+        "commands": {
+            "equip": "{{user}}는 {target}의 가슴에 착유기를 장착해 착유를 시도한다.",
+            "unequip": "{{user}}는 {target}의 가슴에 착유기를 떼어내 우유를 확인한다."
+        }
+    },
+    "double_fist": {
+        "name": "더블피스트퍽",
+        "category": "하드계",
+        "tags": [
+            "hard",
+            "V",
+            "insert_V",
+            "pain",
+            "fist"
+        ],
+        "baseDC": 80,
+        "costHP": 60,
+        "costSP": 60,
+        "statMods": {
+            "공포": 1.0,
+            "V윤활": -1.0
+        },
+        "exps": [
+            "V경험",
+            "피학경험"
+        ],
+        "command": "{{user}}는 {target}의 질 안으로 두 주먹을 모두 밀어넣는다."
+    },
+    "anal_double_fist": {
+        "name": "애널더블피스트",
+        "category": "하드계",
+        "tags": [
+            "hard",
+            "A",
+            "insert_A",
+            "pain",
+            "fist"
+        ],
+        "baseDC": 90,
+        "costHP": 60,
+        "costSP": 60,
+        "statMods": {
+            "공포": 1.2,
+            "A윤활": -1.0
+        },
+        "exps": [
+            "A경험",
+            "피학경험"
+        ],
+        "command": "{{user}}는 {target}의 애널 안으로 두 주먹을 모두 밀어넣는다."
+    },
+    "double_hole_fist": {
+        "name": "양구멍피스트",
+        "category": "하드계",
+        "tags": [
+            "hard",
+            "V",
+            "A",
+            "insert_V",
+            "insert_A",
+            "pain",
+            "fist"
+        ],
+        "baseDC": 100,
+        "costHP": 70,
+        "costSP": 70,
+        "statMods": {
+            "공포": 1.5,
+            "V윤활": -0.5,
+            "A윤활": -0.5
+        },
+        "exps": [
+            "V경험",
+            "A경험",
+            "피학경험"
+        ],
+        "command": "{{user}}는 {target}의 질과 애널 양쪽에 주먹을 쑤셔넣는다."
+    },
+    "sumata": {
+        "name": "스마타",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "sex"
+        ],
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 20,
+        "exps": [
+            "봉사경험",
+            "성교경험"
+        ],
+        "feeling": 8,
+        "command": "{{user}}는 {target}에게 허벅지로 자지를 비비며 봉사하도록 명령한다."
+    },
+    "paizuri": {
+        "name": "파이즈리",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "B",
+            "sex"
+        ],
+        "baseDC": 25,
+        "costHP": 15,
+        "costSP": 25,
+        "exps": [
+            "봉사경험",
+            "B경험"
+        ],
+        "feeling": 6,
+        "command": "{{user}}는 {target}에게 가슴을 자신의 자지에 비비며 봉사하라고 명령한다."
+    },
+    "breast_rubbing": {
+        "name": "가슴비비기",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "B"
+        ],
+        "baseDC": 15,
+        "costHP": 15,
+        "costSP": 25,
+        "exps": [
+            "봉사경험",
+            "B경험"
+        ],
+        "feeling": 6,
+        "command": "{{user}}는 {target}에게 가슴을 자신의 가슴에 비비며 봉사하라고 명령한다."
+    },
+    "footjob": {
+        "name": "풋잡",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "touch",
+            "leg",
+            "shame"
+        ],
+        "baseDC": 30,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "봉사경험",
+            "피학경험"
+        ],
+        "feeling": 5,
+        "command": "{{user}}는 {target}에게 발로 자지를 밟고 문지르며 봉사하도록 명령한다.",
+        "statMods": {}
+    },
+    "six_nine": {
+        "name": "식스나인",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "oral",
+            "sex"
+        ],
+        "baseDC": 35,
+        "costHP": 20,
+        "costSP": 35,
+        "exps": [
+            "봉사경험",
+            "펠라경험",
+            "C경험"
+        ],
+        "feeling": 12,
+        "command": "{{user}}는 {target}와 서로의 성기를 마주대고 69자세로 서로를 핥는다.",
+        "statMods": {}
+    },
+    "oil_massage": {
+        "name": "오일마사지",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "touch",
+            "oil"
+        ],
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 25,
+        "exps": [
+            "봉사경험",
+            "애정경험"
+        ],
+        "feeling": 5,
+        "command": "{{user}}는 {target}에게 몸에 오일을 바르고 {user}의 몸을 마사지하도록 명령한다.",
+        "statMods": {}
+    },
+    "cunnilingus_service": {
+        "name": "커닐링구스봉사",
+        "category": "봉사계",
+        "tags": [
+            "service",
+            "oral"
+        ],
+        "baseDC": 30,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "봉사경험",
+            "C경험"
+        ],
+        "feeling": 8,
+        "command": "{{user}}는 {target}에게 자신의 보지를 핥으라고 명령한다.",
+        "statMods": {}
+    },
+    "tortoise_shell": {
+        "name": "귀갑묶기",
+        "category": "하드계",
+        "tags": [
+            "bondage",
+            "rope",
+            "hard"
+        ],
+        "equipment": "rope",
+        "baseDC": 20,
+        "costHP": 10,
+        "costSP": 20,
+        "exps": [
+            "긴박경험"
+        ],
+        "statMods": {
+            "온순": -0.3
+        },
+        "dcPenaltyMod": 0.9,
+        "commands": {
+            "equip": "{{user}}는 밧줄로 {target}을 귀갑묶기로 결박한다.",
+            "unequip": "{{user}}는 {target}를 결박했던 로프를 풀어준다."
+        }
+    },
+    "outdoor_play": {
+        "name": "야외플레이",
+        "category": "하드계",
+        "tags": [
+            "outdoor",
+            "shame",
+            "hard"
+        ],
+        "equipment": "collar",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 30,
+        "exps": [
+            "수치경험"
+        ],
+        "statMods": {},
+        "dcPenaltyMod": 1.1,
+        "commands": {
+            "equip": "{{user}}는 {target}에게 개목걸이를 채워 몬스터들이 돌아다니는 야외로 끌고나간다.",
+            "unequip": "{{user}}는 {target}를 조교실로 데려와 개목걸이를 풀어준다."
+        }
+    },
+    "bestiality": {
+        "name": "수간",
+        "category": "하드계",
+        "tags": [
+            "bestiality",
+            "V",
+            "insert_V",
+            "hard"
+        ],
+        "baseDC": 60,
+        "costHP": 40,
+        "costSP": 50,
+        "exps": [
+            "수간경험",
+            "V경험"
+        ],
+        "statMods": {
+            "공포": 1.0,
+            "불쾌": 1.0
+        },
+        "command": "{{user}}는 {target}을 짐승과 교미하게 한다."
+    },
+    "enema": {
+        "name": "관장",
+        "category": "하드계",
+        "tags": [
+            "filth",
+            "A",
+            "liquid",
+            "hard"
+        ],
+        "baseDC": 40,
+        "costHP": 30,
+        "costSP": 40,
+        "exps": [
+            "오물경험",
+            "A경험",
+            "피학경험"
+        ],
+        "statMods": {
+            "수치": 1.0,
+            "불쾌": 1.0,
+            "배설": 1.0
+        },
+        "command": "{{user}}는 {target}의 항문에 관장액을 주입하고 참으라고 명령한다."
+    },
+    "enema_plug": {
+        "name": "관장+플러그",
+        "category": "하드계",
+        "tags": [
+            "filth",
+            "A",
+            "insert_A",
+            "hard"
+        ],
+        "equipment": "anal_plug",
+        "baseDC": 40,
+        "costHP": 30,
+        "costSP": 40,
+        "exps": [
+            "A경험",
+            "A확장경험",
+            "오물경험"
+        ],
+        "statMods": {
+            "불쾌": 1.0,
+            "수치": 0.5
+        },
+        "commands": {
+            "equip": "{{user}}는 {target}에게 관장액을 주입하고 플러그로 막아버린다.",
+            "unequip": "{{user}}는 {target}에게서 애널플러그를 빼낸다."
+        }
+    },
+    "drink_urine": {
+        "name": "음뇨",
+        "category": "하드계",
+        "tags": [
+            "filth",
+            "oral",
+            "shame",
+            "hard"
+        ],
+        "baseDC": 60,
+        "costHP": 20,
+        "costSP": 50,
+        "exps": [
+            "오물경험",
+            "봉사경험",
+            "피학경험"
+        ],
+        "statMods": {
+            "수치": 1.5,
+            "불쾌": 1.5,
+            "굴복": -0.5
+        },
+        "command": "{{user}}는 {target}에게 자신의 오줌을 받아 마시게 한다."
+    },
+    "spread_pussy": {
+        "name": "조개벌리기",
+        "category": "애무계",
+        "tags": [
+            "shame",
+            "C",
+            "open_body"
+        ],
+        "baseDC": 18,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "수치경험",
+            "자위경험"
+        ],
+        "statMods": {
+            "수치": 1.1,
+            "온순": -0.5,
+            "굴복": -0.2,
+            "공포": -0.1
+        },
+        "command": "{{user}}는 {target}가 스스로 보지를 벌려보이도록 명령한다.",
+        "conditions": {
+            "targetGender": "!남성"
+        }
+    },
+    "fingering": {
+        "name": "손가락 넣기",
+        "category": "애무계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "finger"
+        ],
+        "baseDC": 18,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "V경험"
+        ],
+        "statMods": {
+            "수치": 0.4,
+            "온순": -0.5,
+            "굴복": -0.1,
+            "V윤활": -1.0,
+            "욕정": -0.3
+        },
+        "insertion": {
+            "type": "V",
+            "target": null,
+            "difficulty": 1
+        },
+        "command": "{{user}}는 {target}의 질 안으로 손가락을 밀어넣는다.",
+        "conditions": {
+            "targetGender": "!남성"
+        }
+    },
+    "anal_lick": {
+        "name": "애널 핥기",
+        "category": "애무계",
+        "tags": [
+            "oral",
+            "A",
+            "filth"
+        ],
+        "baseDC": 45,
+        "costHP": 15,
+        "costSP": 35,
+        "exps": [
+            "A경험"
+        ],
+        "statMods": {
+            "불쾌": 1.0,
+            "온순": -0.2,
+            "굴복": -0.1,
+            "공포": -0.1,
+            "욕정": -0.2
+        },
+        "command": "{{user}}는 {target}의 애널 주변을 혀로 핥는다."
+    },
+    "grinding": {
+        "name": "가랑이 비비기",
+        "category": "애무계",
+        "tags": [
+            "service",
+            "C",
+            "sex"
+        ],
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 25,
+        "exps": [
+            "봉사경험",
+            "C경험"
+        ],
+        "feeling": 5,
+        "statMods": {
+            "V윤활": -0.5,
+            "욕정": -0.5
+        },
+        "command": "{{user}}는 {target}의 가랑이에 자신의 가랑이를 문지르며 애무한다.",
+        "conditions": {
+            "targetGender": "!남성",
+            "userGender": "!남성"
+        }
+    },
+    "heart_stone": {
+        "name": "심장석 애무",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "C",
+            "B"
+        ],
+        "equipment": "heart_stone",
+        "baseDC": 10,
+        "costHP": 10,
+        "costSP": 10,
+        "exps": [
+            "C경험",
+            "B경험"
+        ],
+        "statMods": {
+            "욕정": -0.3
+        },
+        "command": "{{user}}는 심장석을 사용해 {target}의 성감대를 자극한다.",
+        "conditions": {
+            "item": "heart_stone"
+        }
+    }
+}

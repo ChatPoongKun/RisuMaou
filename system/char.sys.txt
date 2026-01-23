@@ -1,0 +1,175 @@
+-- char.sys.txt
+-- 캐릭터 관리 통합 모듈
+-- 사용법: sysFunction(triggerId, "char.sys", "card", name)
+--         sysFunction(triggerId, "char.sys", "list")
+
+(function()
+    ---------------------------------------
+    -- 로컬 함수 정의
+    ---------------------------------------
+
+    ---------------------------------------
+    -- 디스패처 테이블 및 로컬 변수
+    ---------------------------------------
+    local funcs = {}
+
+    -- 캐릭터 카드 선택 처리
+    function funcs.card(triggerId, name)
+        debug(string.format("[Char:Select] Target: %s, Screen: %s", name, getState(triggerId, "screen")))
+        local screen = getState(triggerId, "screen")
+        if screen == "charList" then --캐릭터 조회화면
+            if name == getPersonaName(triggerId) then
+                name = "user"
+            end
+            local target = json.decode(getLoreBookContent(triggerId, name))
+            setState(triggerId, "target", target)
+            stateToVar(triggerId, "target", target)
+            local targetTrace = getState(triggerId, "trace")[name]
+            stateToVar(triggerId, "targetTrace", targetTrace)
+            setChatVar(triggerId, "category", "appearance")
+            screenChange(triggerId, "charInfo") --캐릭터 상세 정보 화면으로 이동
+        elseif screen == "preTrain" then        --조교 대상 화면
+            sysFunction(triggerId, "train.sys", "prepare", name)
+            local targetTrace = getState(triggerId, "trace")[name]
+            stateToVar(triggerId, "targetTrace", targetTrace)
+            screenChange(triggerId, "train") --조교 화면으로 이동
+        end
+    end
+
+    -- 캐릭터 목록 생성
+    function funcs.list(triggerId)
+        local chars = json.decode(getChatVar(triggerId, "chars"))
+        local html = ""
+        local screen = getState(triggerId, "screen")
+        local sortMode = getChatVar(triggerId, "category") or "index" -- 기본값 index
+
+        -- 1. 데이터 수집 및 전처리
+        local charDataList = {}
+        for i, name in ipairs(chars) do
+            -- preTrain 화면에서는 user 제외
+            local char = json.decode(getLoreBookContent(triggerId, name))
+            if not ((screen == "disposal" or screen == "preTrain") and char["condition"] ~= "조교가능") then
+                -- 정렬 및 표시에 필요한 데이터 미리 추출
+                local data = {
+                    index = i,
+                    name = name,
+                    raw = char,
+                    lv = tonumber(char["레벨"] or 0),
+                    hp = tonumber(char["체력"] or 0),
+                    hpMax = tonumber(char["최대체력"] or 0),
+                    st = tonumber(char["기력"] or 0),
+                    stMax = tonumber(char["최대기력"] or 0),
+                    atk = char["공격력"] or "0",
+                    def = char["방어력"] or "0",
+                    rating = tonumber(char["레이팅"] or 0),
+                    condition = char["condition"] or "",
+                    title = char["칭호"] or ""
+                }
+                table.insert(charDataList, data)
+            end
+        end
+
+        -- 2. 정렬 로직 수행
+        if sortMode == "level" then
+            table.sort(charDataList, function(a, b) return a.lv > b.lv end)         -- 레벨 내림차순
+        elseif sortMode == "name" then
+            table.sort(charDataList, function(a, b) return a.name < b.name end)     -- 이름 오름차순
+        elseif sortMode == "hp" then
+            table.sort(charDataList, function(a, b) return a.hp > b.hp end)         -- 체력 비율 오름차순
+        elseif sortMode == "rating" then
+            table.sort(charDataList, function(a, b) return a.rating > b.rating end) -- 레이팅 내림차순
+        else
+            -- index 정렬 (기본)
+            table.sort(charDataList, function(a, b) return a.index < b.index end)
+        end
+
+        -- 3. HTML 생성
+        for _, data in ipairs(charDataList) do
+            local name = data.name
+
+            -- 체력/기력 비율 계산
+            local hpRatio = 0
+            if data.hpMax > 0 then hpRatio = (data.hp / data.hpMax) * 100 end
+
+            local stRatio = 0
+            if data.stMax > 0 then stRatio = (data.st / data.stMax) * 100 end
+
+            -- 칭호 태그 스타일 결정
+            local tagClass = ""
+            local tagHtml = ""
+            local title = data.title
+
+            if title ~= "" then
+                if title == "음란" then
+                    tagClass = "tag-lewd"
+                elseif title == "연모" then
+                    tagClass = "tag-love"
+                elseif title == "암캐" then
+                    tagClass = "tag-puppy"
+                elseif title == "붕괴" then
+                    tagClass = "tag-destroyed"
+                elseif title == "광기" then
+                    tagClass = "tag-mad"
+                else
+                    tagClass = "tag-unconquered" -- 기본값
+                end
+                tagHtml = [[<span class="tag ]] .. tagClass .. [["> 〈]] .. title .. [[〉</span>]]
+            end
+
+            -- 상태에 따른 클래스 추가 (사망 등)
+            local cardClass = "character-card"
+            if data.condition == "사망" then cardClass = cardClass .. " 사망" end
+            if name == "user" then name = "{{" .. name .. "}}" end
+
+            -- HTML 조립
+            local card = [[
+<div class="]] .. cardClass .. [[" risu-btn="charInfo_]] .. name .. [[">
+<div class="char-info">
+<p class="char-name-line">
+<span class="char-condition">[]] ..
+                data.condition .. [[] </span>]] .. name .. [[<span class="char-level"> Lv.]] .. data.lv .. [[ </span>
+]] .. tagHtml .. [[
+</p>
+<span class="char-tags">
+AT ]] .. data.atk .. [[ / ]] .. data.def .. [[ / RT ]] .. data.rating .. [[
+</span>
+</div>
+<div class="char-status-bars">
+<div class="x-risu-bar-container">
+<span class="bar-label">체력:</span>
+<div class="progress-bar">
+<div class="x-risu-progress-bar-fill x-risu-hp" style="width: ]] .. hpRatio .. [[%;"></div>
+</div>
+<span class="bar-value">]] .. data.hp .. [[</span>
+</div>
+<div class="x-risu-bar-container">
+<span class="bar-label">기력:</span>
+<div class="progress-bar">
+<div class="x-risu-progress-bar-fill x-risu-st" style="width: ]] .. stRatio .. [[%;"></div>
+</div>
+<span class="bar-value">]] .. data.st .. [[</span>
+</div>
+</div>
+</div>]]
+
+            html = html .. card
+        end
+
+        if html == "" then
+            html = "<div class='status-message'><p>표시할 캐릭터가 없습니다.</p></div>"
+        end
+
+        setChatVar(triggerId, "charList", html)
+    end
+
+    ---------------------------------------
+    -- 메인 함수 (외부에서 호출됨)
+    ---------------------------------------
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        else
+            debug("char.sys: 알 수 없는 함수 - " .. tostring(subFunc))
+        end
+    end
+end)()
