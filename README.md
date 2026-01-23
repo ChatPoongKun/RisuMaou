@@ -102,8 +102,7 @@ RisuMaou/
 
 ## 🙏 크레딧
 
-- CBS 참조: [어느 챗붕의 개념글](https://arca.live/b/characterai/137514168)
-- Lua 스크립트: [어느 챗붕의 개념글](https://arca.live/b/characterai/137518956)
+- Risuai: https://github.com/kwaroran/Risuai
 
 ## 📜 라이선스
 
