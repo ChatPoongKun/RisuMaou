@@ -147,7 +147,6 @@ grid-column: 1 / -1;
 <div class="btn command-btn" risu-btn="d_sub_personality">성격</div>
 <div class="btn command-btn" risu-btn="d_sub_body">신체특성</div>
 <div class="btn command-btn" risu-btn="d_sub_sexual">성적취향</div>
-<div class="btn command-btn" risu-btn="d_sub_constitution">체질</div>
 <div class="btn command-btn" risu-btn="d_sub_title">칭호</div>
 {{/when}}
 
@@ -168,13 +167,6 @@ grid-column: 1 / -1;
 {{#when::dictSub::vis::성적취향}}
 <div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
 {{#each {{getvar::성적취향List}} item}}
-<div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
-{{/each}}
-{{/when}}
-
-{{#when::dictSub::vis::체질}}
-<div class="btn command-btn back-btn" risu-btn="d_back_trait">⬅ 목록으로</div>
-{{#each {{getvar::체질List}} item}}
 <div class="btn command-btn" risu-btn="dict_trait_{{slot::item}}">{{slot::item}}</div>
 {{/each}}
 {{/when}}
