@@ -1,27 +1,57 @@
-{///abl[어빌]
+{ ///abl[어빌]
     "c_sensibility": {
         "name": "C민감도",
-        "desc": "클리토리스의 민감도. 높을수록 쾌감을 느끼기 쉽다."
+        "desc": "클리토리스의 민감도. 높을수록 쾌감을 느끼기 쉽다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == 'C쾌락' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "b_sensibility": {
         "name": "B민감도",
-        "desc": "가슴 및 유두의 민감도. 높을수록 쾌감을 느끼기 쉽다."
+        "desc": "가슴 및 유두의 민감도. 높을수록 쾌감을 느끼기 쉽다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == 'B쾌락' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "v_sensibility": {
         "name": "V민감도",
-        "desc": "질의 민감도. 높을수록 쾌감을 느끼기 쉽다."
+        "desc": "질의 민감도. 높을수록 쾌감을 느끼기 쉽다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == 'V쾌락' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "a_sensibility": {
         "name": "A민감도",
-        "desc": "애널의 민감도. 높을수록 쾌감을 느끼기 쉽다."
+        "desc": "애널의 민감도. 높을수록 쾌감을 느끼기 쉽다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == 'A쾌락' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "u_sensibility": {
         "name": "U민감도",
-        "desc": "요도의 민감도. 높을수록 쾌감을 느끼기 쉽다. 요도성감 trait을 가진 경우에만 활성화됩니다."
+        "desc": "요도의 민감도. 높을수록 쾌감을 느끼기 쉽다. 요도성감 trait을 가진 경우에만 활성화됩니다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == 'U쾌락' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "m_sensibility": {
         "name": "M민감도",
-        "desc": "목구멍의 민감도. 높을수록 쾌감을 느끼기 쉽다. 인후성감 trait을 가진 경우에만 활성화됩니다."
+        "desc": "목구멍의 민감도. 높을수록 쾌감을 느끼기 쉽다. 인후성감 trait을 가진 경우에만 활성화됩니다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == 'M쾌락' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "v_expand": {
         "name": "V확장",
@@ -37,19 +67,39 @@
     },
     "obedience": {
         "name": "순응",
-        "desc": "{{user}}의 명령에 잘 따르는 정도. 높을수록 각종 조교 커맨드의 성공확률이 증가한다."
+        "desc": "{{user}}의 명령에 잘 따르는 정도. 높을수록 각종 조교 커맨드의 성공확률이 증가한다.",
+        "events": {
+            "onDCCalc": {
+                "func": "dc = dc - level * 0.5"
+            }
+        }
     },
     "desire": {
         "name": "성욕",
-        "desc": "쾌락을 갈구하는 정도. 높을수록 각종 조교 커맨드의 성공확률이 증가한다."
+        "desc": "쾌락을 갈구하는 정도. 높을수록 각종 조교 커맨드의 성공확률이 증가한다.",
+        "events": {
+            "onDCCalc": {
+                "func": "dc = dc - level * 0.3"
+            }
+        }
     },
     "service": {
         "name": "봉사기술",
-        "desc": "말그대로 봉사기술. 높을수록 봉사관련 조교의 효과가 증가한다."
+        "desc": "말그대로 봉사기술. 높을수록 봉사관련 조교의 효과가 증가한다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == '봉사기술' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "sex_technique": {
         "name": "성교기술",
-        "desc": "말그대로 섹스기술. 높을수록 삽입관련 조교의 효과가 증가한다."
+        "desc": "말그대로 섹스기술. 높을수록 삽입관련 조교의 효과가 증가한다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == '성교기술' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "speech": {
         "name": "화술",
@@ -57,10 +107,26 @@
     },
     "exhibitionism": {
         "name": "노출벽",
-        "desc": "자신의 부끄러운 부위 혹은 행위를 보여지면서 쾌감을 느끼는 정도. 높을수록 수치를 느낄때 얻는 쾌감이 증가하고 부정은 감소한다."
+        "desc": "자신의 부끄러운 부위 혹은 행위를 보여지면서 쾌감을 느끼는 정도. 높을수록 수치를 느낄때 얻는 쾌감이 증가하고 부정은 감소한다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == '수치' then statEXP = statEXP * (1 + level * 0.1) end"
+            }
+        }
     },
     "masochism": {
         "name": "마조끼",
-        "desc": "육체적 고통을 느낄때 쾌감을 느끼는 정도. 높을수록 고통을 느낄때 얻는 쾌감이 증가하고 부정은 감소한다."
+        "desc": "육체적 고통을 느낄때 쾌감을 느끼는 정도. 높을수록 고통을 느낄때 얻는 쾌감이 증가하고 부정은 감소한다.",
+        "events": {
+            "onStatEXP": {
+                "func": "if statName == '고통' then statEXP = statEXP * (1 + level * 0.1); allStatEXP['S쾌락'] = (allStatEXP['S쾌락'] or 0) + statEXP * level * 0.5 end"
+            },
+            "onOrgasmCalc": {
+                "hasTags": [
+                    "pain"
+                ],
+                "func": "orgasm = orgasm + level * 100"
+            }
+        }
     }
 }

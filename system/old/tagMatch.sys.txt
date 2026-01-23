@@ -1,0 +1,35 @@
+--태그 매칭 함수
+--@param tags: 조교 커맨드의 태그 목록
+--@param hasTags: 모두 포함해야 하는 태그들 (nil이면 무시)
+--@param notTags: 하나라도 있으면 실패하는 태그들 (nil이면 무시)
+--@return boolean: 매칭 성공 여부
+function(triggerId, tags, hasTags, notTags)
+    -- hasTags 검사: 모두 있어야 함
+    if hasTags then
+        for _, requiredTag in ipairs(hasTags) do
+            local found = false
+            for _, tag in ipairs(tags) do
+                if tag == requiredTag then
+                    found = true
+                    break
+                end
+            end
+            if not found then
+                return false
+            end
+        end
+    end
+    
+    -- notTags 검사: 하나라도 있으면 실패
+    if notTags then
+        for _, excludeTag in ipairs(notTags) do
+            for _, tag in ipairs(tags) do
+                if tag == excludeTag then
+                    return false
+                end
+            end
+        end
+    end
+    
+    return true
+end

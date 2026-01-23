@@ -1,6 +1,6 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
 --조교 커맨드에 따른 LLM의 출력을 처리
-function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget)
+function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     debug("trainProcess 실행")
 
     --[[초기화]]
@@ -225,6 +225,23 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget)
     --statEXP 저장
     local statEXP = content:match("({.*})")
     statEXP = json.decode(statEXP)
+
+    -- customEvent: onStatEXP 처리
+    tags = tags or {}
+    for statName, amount in pairs(statEXP) do
+        if tonumber(amount) and amount > 0 then
+             local ctx = {
+                statEXP = amount,
+                statName = statName,
+                tags = tags,
+                target = target,
+                stat = currentStat,
+                allStatEXP = statEXP
+            }
+            ctx = sysFunction(triggerId, "customEvent.sys", "onStatEXP", ctx)
+            statEXP[statName] = ctx.statEXP
+        end
+    end
 
     --dc에 따른 statEXP 획득 제어
     for k,v in pairs(statEXP) do
