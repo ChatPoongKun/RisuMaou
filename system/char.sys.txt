@@ -8,8 +8,13 @@
     -- 로컬 함수 정의
     ---------------------------------------
 
+    ---------------------------------------
+    -- 디스패처 테이블 및 로컬 변수
+    ---------------------------------------
+    local funcs = {}
+
     -- 캐릭터 카드 선택 처리
-    local function card(triggerId, name)
+    function funcs.card(triggerId, name)
         debug(string.format("[Char:Select] Target: %s, Screen: %s", name, getState(triggerId, "screen")))
         local screen = getState(triggerId, "screen")
         if screen == "charList" then --캐릭터 조회화면
@@ -32,7 +37,7 @@
     end
 
     -- 캐릭터 목록 생성
-    local function list(triggerId)
+    function funcs.list(triggerId)
         local chars = json.decode(getChatVar(triggerId, "chars"))
         local html = ""
         local screen = getState(triggerId, "screen")
@@ -156,14 +161,6 @@ AT ]] .. data.atk .. [[ / ]] .. data.def .. [[ / RT ]] .. data.rating .. [[
 
         setChatVar(triggerId, "charList", html)
     end
-
-    ---------------------------------------
-    -- 디스패처 테이블
-    ---------------------------------------
-    local funcs = {
-        card = card,
-        list = list
-    }
 
     ---------------------------------------
     -- 메인 함수 (외부에서 호출됨)

@@ -9,8 +9,13 @@
     -- 로컬 함수 정의
     ---------------------------------------
 
+    ---------------------------------------
+    -- 디스패처 테이블 및 로컬 변수
+    ---------------------------------------
+    local funcs = {}
+
     -- 태그 매칭 로직
-    local function tagMatch(triggerId, tags, hasTags, notTags)
+    function funcs.tagMatch(triggerId, tags, hasTags, notTags)
         -- hasTags 검사: 모두 있어야 함
         if hasTags then
             for _, requiredTag in ipairs(hasTags) do
@@ -41,7 +46,7 @@
     end
 
     -- 삽입 로직: DC, feeling, command 보정
-    local function insertionLogic(triggerId, trainData, actor, difficulty)
+    function funcs.insertionLogic(triggerId, trainData, actor, difficulty)
         local insertion = trainData.insertion
         if not insertion then
             return {
@@ -120,7 +125,7 @@
     end
 
     -- 조교 액션 처리
-    local function action(triggerId, trainKey, actor)
+    function funcs.action(triggerId, trainKey, actor)
         actor = actor or "user"
 
         -- train.db 로드
@@ -167,7 +172,7 @@
         if trainData.insertion then
             local difficulty = trainData.insertion.difficulty or 1
             -- 내부 로컬 함수 호출
-            local insertResult = insertionLogic(triggerId, trainData, actor, difficulty)
+            local insertResult = funcs.insertionLogic(triggerId, trainData, actor, difficulty)
             dc = dc + (insertResult.dc - trainData.baseDC)
             feeling = insertResult.feeling
             command = insertResult.command
@@ -196,11 +201,11 @@
         --[[7. trainProcess.sys 호출]]
         local abbrCmd = command:sub(1, 20) .. "..."
         debug(string.format("[Train:Result] FinalDC: %d, Feeling: %d, Command: %s", dc, feeling, abbrCmd))
-        sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, trainData.equipment, tags)
+        return sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, trainData.equipment, tags)
     end
 
     -- 절정치 계산 (orgasmCalc.sys 통합)
-    local function orgasm(triggerId, who, statEXP, feeling, tags)
+    function funcs.orgasm(triggerId, who, statEXP, feeling, tags)
         local ORGASM_MAX_DEFAULT = 10000
         local ORGASM_MULTIPLIER = 1.2
         local DECAY_RATE = 0.95
@@ -297,7 +302,7 @@
     local cachedValidTraces = nil
     local cachedStatDBMap = nil
 
-    local function post(triggerId)
+    function funcs.post(triggerId)
         local target = getState(triggerId, "target")
         local exp = getDB(triggerId, "EXPtable.db")
         local allTraces = getState(triggerId, "trace")
@@ -472,7 +477,7 @@
     end
 
     -- 조교 초기 설정 (preTrainSetting.sys 통합)
-    local function prepare(triggerId, name)
+    function funcs.prepare(triggerId, name)
         --target를 로어북에서 불러와 1차원으로 flatten
         local target = json.decode(getLoreBookContent(triggerId, name))
         setState(triggerId, "target", target) --대상 캐릭터 로어북 정보를 state에 저장
@@ -685,18 +690,6 @@
         stat_c = string.gsub(stat_c, ",$", "}") -- 마지막 쉼표 대신 중괄호 닫기
         setChatVar(triggerId, "stat", stat_c)   --가공된 stat을 챗변수에 저장
     end
-
-    ---------------------------------------
-    -- 디스패처 테이블
-    ---------------------------------------
-    local funcs = {
-        action = action,
-        insertionLogic = insertionLogic,
-        tagMatch = tagMatch,
-        orgasm = orgasm,
-        post = post,
-        prepare = prepare
-    }
 
     ---------------------------------------
     -- 메인 함수 (외부에서 호출됨)
