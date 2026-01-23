@@ -179,17 +179,17 @@ end!!
 end!!
 
 /// unlock 아이템 선택 핸들러
-[shop/alchemy_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "item.sys", "select", "alchemy_knowledge")
+[shop/unlock1/hidden] function(triggerId)
+    sysFunction(triggerId, "item.sys", "select", "unlock1")
 end!!
-[shop/demon_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "item.sys", "select", "demon_knowledge")
+[shop/unlock2/hidden] function(triggerId)
+    sysFunction(triggerId, "item.sys", "select", "unlock2")
 end!!
-[shop/lewd_demon_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "item.sys", "select", "lewd_demon_knowledge")
+[shop/unlock3/hidden] function(triggerId)
+    sysFunction(triggerId, "item.sys", "select", "unlock3")
 end!!
-[shop/forbidden_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "item.sys", "select", "forbidden_knowledge")
+[shop/unlock4/hidden] function(triggerId)
+    sysFunction(triggerId, "item.sys", "select", "unlock4")
 end!!
 
 /// 함정 아이템 선택 핸들러

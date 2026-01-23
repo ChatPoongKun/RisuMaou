@@ -68,8 +68,7 @@
             ["diuretic"] = true,
             ["aphrodisiac"] = true,
             ["dewormer"] = true,
-            ["hair_tonic"] = true,
-            ["ovulation_inducer"] = true
+            ["hair_tonic"] = true
         }
 
         -- orderedKeys를 순회하여 itemList에서 정보를 가져옴
@@ -83,13 +82,13 @@
                 local itemName = v.name
                 local itemPrice = v.price
 
-                if k == "demon_knowledge" and inventory["alchemy_knowledge"] == "0" then
+                if k == "unlock2" and inventory["unlock1"] == "0" then
                     condition = false
                     reason = "조합지식 필요"
-                elseif k == "lewd_demon_knowledge" and inventory["demon_knowledge"] == "0" then
+                elseif k == "unlock3" and inventory["unlock2"] == "0" then
                     condition = false
                     reason = "마족정보 필요"
-                elseif k == "forbidden_knowledge" and inventory["lewd_demon_knowledge"] == "0" then
+                elseif k == "unlock4" and inventory["unlock3"] == "0" then
                     condition = false
                     reason = "음마지식 필요"
                 elseif (itemCat == "tools" or itemCat == "unlock") and inventory[k] == "1" then
@@ -98,7 +97,7 @@
                 elseif tonumber(inventory[k] or 0) >= 99 then
                     condition = false
                     reason = "이미 최대로 보유중"
-                elseif needKnowl[k] and inventory["alchemy_knowledge"] == "0" then
+                elseif needKnowl[k] and inventory["unlock1"] == "0" then
                     condition = false
                     reason = "조합지식 필요"
                 end
