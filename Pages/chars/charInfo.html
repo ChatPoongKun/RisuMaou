@@ -404,6 +404,8 @@
 <div class="narrative-block"><h3>용사가 된 동기</h3><p>{{dict_element::{{getvar::target}}::용사가 된 동기}}</p></div>{{/when}}
 {{#when::{{dict_element::{{getvar::target}}::용사가 되기 전}}::isnot::null}}
 <div class="narrative-block"><h3>용사가 되기 전</h3><p>{{dict_element::{{getvar::target}}::용사가 되기 전}}</p></div>{{/when}}
+{{#when::{{dict_element::{{getvar::target}}::처분}}::isnot::null}}
+<div class="narrative-block"><h3>처분</h3><p>{{dict_element::{{getvar::target}}::처분}}</p></div>{{/when}}
 <!--{{#when::{{? {{array_length::{{dict_element::{{getvar::target}}::이상경험 기록}}}} > 0}}}}
 <div class="narrative-block"><h3>이상경험 기록</h3><ul>
 {{#each {{dict_element::{{getvar::target}}::이상경험 기록}} R}}<li>{{slot::R}}</li>{{/each}}

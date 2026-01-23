@@ -17,7 +17,7 @@ function (triggerId, name)
 
         --조교화면 변수 초기화
         setChatVar(triggerId, "category", "애무계")
-        setChatVar(triggerId, "oldLog", date)
+        setChatVar(triggerId, "oldLog", date.." ")
         setChatVar(triggerId, "newLog", "["..target["이름"].."의 "..target["조교회수"].."번째 조교]<br>")
         setChatVar(triggerId, "statLvUp", " ")
         setChatVar(triggerId, "ej_target_ratio", 0) --조교대상 절정치
@@ -32,11 +32,16 @@ function (triggerId, name)
         TRAIN_REC = 0 
         setState(triggerId, "recLog", "")
 
-        --스탯 초기화
-        local statDB =json.decode(getLoreBookContent(triggerId, "stat.db"))
+        --스탯 초기화 (캐싱 메커니즘 사용)
+        local statDB = getDB(triggerId, "stat.db")
         local stat = {}
-        for k, _ in pairs(statDB) do
-            stat[k] = 0
+        for k, v in pairs(statDB) do
+            -- statBonus 등이 한글 키를 사용하므로 한글 이름으로 초기화
+            if v.name then
+                stat[v.name] = 0
+            else
+                stat[k] = 0
+            end
         end
 
         --stat에 영향을 주는 모든 속성을 나열한 후 대상 캐릭터의 데이터를 모두 순회하며 stat에 영향을 주는 항목이 있는지 체크

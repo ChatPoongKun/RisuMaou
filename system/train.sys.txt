@@ -1,0 +1,704 @@
+-- train.sys.txt
+-- 조교 액션 및 로직 통합 모듈
+-- 사용법: sysFunction(triggerId, "train.sys", "action", trainKey, actor)
+--         sysFunction(triggerId, "train.sys", "insertionLogic", trainData, actor, difficulty)
+--         sysFunction(triggerId, "train.sys", "tagMatch", tags, hasTags, notTags)
+
+(function()
+    ---------------------------------------
+    -- 로컬 함수 정의
+    ---------------------------------------
+
+    ---------------------------------------
+    -- 디스패처 테이블 및 로컬 변수
+    ---------------------------------------
+    local funcs = {}
+
+    -- 태그 매칭 로직
+    function funcs.tagMatch(triggerId, tags, hasTags, notTags)
+        -- hasTags 검사: 모두 있어야 함
+        if hasTags then
+            for _, requiredTag in ipairs(hasTags) do
+                local found = false
+                for _, tag in ipairs(tags) do
+                    if tag == requiredTag then
+                        found = true
+                        break
+                    end
+                end
+                if not found then
+                    return false
+                end
+            end
+        end
+
+        -- notTags 검사: 하나라도 있으면 실패
+        if notTags then
+            for _, excludeTag in ipairs(notTags) do
+                for _, tag in ipairs(tags) do
+                    if tag == excludeTag then
+                        return false
+                    end
+                end
+            end
+        end
+        return true
+    end
+
+    -- 삽입 로직: DC, feeling, command 보정
+    function funcs.insertionLogic(triggerId, trainData, actor, difficulty)
+        local insertion = trainData.insertion
+        if not insertion then
+            return {
+                dc = trainData.baseDC,
+                feeling = trainData.feeling or 0,
+                command = trainData.command,
+                exps = trainData.exps,
+                tooTight = false
+            }
+        end
+
+        -- actor 데이터 로드
+        local actorData = json.decode(getChatVar(triggerId, actor))
+        local target = getState(triggerId, "target")
+        local penis = actorData["페니스"]
+
+        -- 확장도 속성
+        local expandAttr = insertion.target -- "V확장", "A확장" 등
+        local expandLv = expandAttr and tonumber(target[expandAttr]) or 10
+
+        -- 페니스 크기 매핑
+        local penisSize = {
+            ["실좆"] = 1,
+            ["작음"] = 2,
+            ["평범"] = 3,
+            ["대물"] = 4,
+            ["말자지"] = 5
+        }
+        local pSize = penisSize[penis] or 3
+
+        -- 필요 확장도 = (페니스크기 × 난이도) - 1
+        local reqExpand = (pSize * difficulty) - 1
+
+        local dc = trainData.baseDC
+        local feeling = trainData.feeling or 0
+        local command = trainData.command
+        local exps = {}
+        for _, v in ipairs(trainData.exps or {}) do
+            table.insert(exps, v)
+        end
+        local tooTight = false
+
+        -- 확장도 부족 시: DC 증가, command 추가, 확장경험 추가
+        if expandLv < reqExpand then
+            local gap = reqExpand - expandLv
+            dc = dc + (gap * difficulty) -- 난이도 배수 적용
+            tooTight = true
+
+            local typeKor = { V = "질", A = "애널", U = "요도", M = "입" }
+            command = command .. " {{user}}의 것이 들어가기에 {target}의 "
+                .. (typeKor[insertion.type] or "") .. "은 너무 좁다."
+
+            if insertion.type ~= "M" then
+                table.insert(exps, insertion.type .. "확장경험")
+            end
+        end
+
+        -- 확장도 여유 시: Feeling 감소
+        local looseGap = math.max(0, expandLv - reqExpand)
+        if looseGap > 0 then
+            feeling = feeling - math.floor(looseGap * 0.5)
+            feeling = math.max(0, feeling) -- 음수 방지
+        end
+
+        if tooTight then
+            debug(string.format("[Train:Insertion] Depth: Tight (Expand: %d < Req: %d)", expandLv, reqExpand))
+        end
+
+        return {
+            dc = dc,
+            feeling = feeling,
+            command = command,
+            exps = exps,
+            tooTight = tooTight
+        }
+    end
+
+    -- 조교 액션 처리
+    function funcs.action(triggerId, trainKey, actor)
+        actor = actor or "user"
+
+        -- train.db 로드
+        local trainDB = getDB(triggerId, "train.db")
+        local trainData = trainDB[trainKey]
+
+        if not trainData then
+            alertNormal(triggerId, "train.db에서 '" .. trainKey .. "'를 찾을 수 없습니다.")
+            return false
+        end
+
+        local target = getState(triggerId, "target")
+        local stat = getState(triggerId, "stat")
+        local tags = trainData.tags or {}
+
+        --[[1. DC 계산]]
+        debug(string.format("[Train:Action] Key: %s, Actor: %s, BaseDC: %d", trainKey, actor, trainData.baseDC))
+        local dc = DC_PENALTY * trainData.baseDC
+
+        -- customEvent: onDCCalc 발동
+        local ctx = { dc = dc, tags = tags, stat = stat, category = trainData.category, target = target }
+        ctx = sysFunction(triggerId, "customEvent.sys", "onDCCalc", ctx)
+        dc = ctx.dc
+
+        --[[2. 비용 계산]]
+        local costHP = trainData.costHP
+        local costSP = trainData.costSP
+
+        -- customEvent: onCostCalc 발동
+        ctx = { costHP = costHP, costSP = costSP, tags = tags, stat = stat, target = target }
+        ctx = sysFunction(triggerId, "customEvent.sys", "onCostCalc", ctx)
+        costHP = ctx.costHP
+        costSP = ctx.costSP
+
+        --[[3. 경험치 및 커맨드]]
+        local exps = {}
+        for _, v in ipairs(trainData.exps or {}) do
+            table.insert(exps, v)
+        end
+        local feeling = trainData.feeling or 0
+        local command = trainData.command
+
+        --[[4. 삽입 로직 처리]]
+        if trainData.insertion then
+            local difficulty = trainData.insertion.difficulty or 1
+            -- 내부 로컬 함수 호출
+            local insertResult = funcs.insertionLogic(triggerId, trainData, actor, difficulty)
+            dc = dc + (insertResult.dc - trainData.baseDC)
+            feeling = insertResult.feeling
+            command = insertResult.command
+            exps = insertResult.exps
+        end
+
+        --[[5. 장비 토글 커맨드 처리]]
+        if trainData.equipment then
+            local equipments = json.decode(getChatVar(triggerId, "equipments"))
+            if equipments[trainData.equipment] == "착용" then
+                command = trainData.commands.unequip or command
+            else
+                command = trainData.commands.equip or command
+            end
+        end
+
+        -- 커맨드에서 {target} 치환
+        command = command:gsub("{target}", target["이름"])
+
+        --[[6. DC_PENALTY 수정 (장비 착탈 등)]]
+        if trainData.dcPenaltyMod then
+            DC_PENALTY = DC_PENALTY * trainData.dcPenaltyMod
+            debug(string.format("[Train:Action] DC_PENALTY modified by %.2f -> %.2f", trainData.dcPenaltyMod, DC_PENALTY))
+        end
+
+        --[[7. trainProcess.sys 호출]]
+        local abbrCmd = command:sub(1, 20) .. "..."
+        debug(string.format("[Train:Result] FinalDC: %d, Feeling: %d, Command: %s", dc, feeling, abbrCmd))
+        return sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, trainData.equipment, tags)
+    end
+
+    -- 절정치 계산 (orgasmCalc.sys 통합)
+    function funcs.orgasm(triggerId, who, statEXP, feeling, tags)
+        local ORGASM_MAX_DEFAULT = 10000
+        local ORGASM_MULTIPLIER = 1.2
+        local DECAY_RATE = 0.95
+
+        local countVar = "ej_" .. who .. "_count"
+        local ratioVar = "ej_" .. who .. "_ratio"
+
+        local count = tonumber(getChatVar(triggerId, countVar)) or 0
+        local maxVal = ORGASM_MAX_DEFAULT * (ORGASM_MULTIPLIER ^ count)
+        local ratio = tonumber(getChatVar(triggerId, ratioVar)) or 0
+        ratio = math.floor(ratio * DECAY_RATE) -- 자연감소
+        local current = math.floor(ratio * maxVal * 0.01)
+
+        if who == "target" then
+            local target = getState(triggerId, "target")
+
+            -- 쾌락 stat으로 증가
+            local plusStats = { "C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락" }
+            for _, s in ipairs(plusStats) do
+                current = current + (statEXP[s] or 0)
+            end
+
+            -- 부정 stat으로 감소
+            local minusStats = { "공포", "불쾌", "부정" }
+            for _, s in ipairs(minusStats) do
+                current = current - (statEXP[s] or 0)
+            end
+
+            -- 조건부 stat (abl에 따라 + 또는 -)
+            -- 굴복: 복종각인 있거나 봉사기술 > 4면 +
+            local ejCon = statEXP["굴복"] or 0
+            if tonumber(target["복종각인"] or 0) > 0 or tonumber(target["봉사기술"] or 0) > 4 then
+                current = current + ejCon
+            else
+                current = current - ejCon
+            end
+
+            -- 수치: 노출벽 > 4면 +
+            ejCon = statEXP["수치"] or 0
+            if tonumber(target["노출벽"] or 0) > 4 then
+                current = current + ejCon
+            else
+                current = current - ejCon
+            end
+
+            -- 고통: 마조끼 > 4면 +
+            ejCon = statEXP["고통"] or 0
+            if tonumber(target["마조끼"] or 0) > 4 then
+                current = current + ejCon
+            else
+                current = current - ejCon
+            end
+
+            -- onOrgasmCalc 이벤트 발동
+            local ctx = {
+                orgasm = current,
+                statEXP = statEXP,
+                tags = tags or {},
+                target = target
+            }
+            ctx = sysFunction(triggerId, "customEvent.sys", "onOrgasmCalc", ctx)
+            current = ctx.orgasm
+        elseif who == "user" then
+            -- user는 feeling으로만 증가
+            current = current + (feeling or 0) * ORGASM_MAX_DEFAULT * 0.01
+        end
+
+        -- 최대/최소 클램핑
+        current = math.min(maxVal, math.max(0, math.floor(current)))
+        local newRatio = current / maxVal * 100
+
+        -- 절정 여부 체크
+        local isOrgasm = false
+        if current >= maxVal then
+            isOrgasm = true
+            count = count + 1
+            newRatio = 0
+        end
+
+        -- 변수 저장
+        setChatVar(triggerId, countVar, count)
+        setChatVar(triggerId, ratioVar, string.format("%.2f", newRatio))
+
+        debug(string.format("[Train:Orgasm] Who: %s, Ratio: %.2f%%, Orgasm: %s", who, newRatio, tostring(isOrgasm)))
+
+        return {
+            isOrgasm = isOrgasm,
+            count = count,
+            ratio = newRatio
+        }
+    end
+
+    -- 조교 종료 처리 (postTrain.sys 통합, 최적화됨)
+    local cachedValidTraces = nil
+    local cachedStatDBMap = nil
+
+    function funcs.post(triggerId)
+        local target = getState(triggerId, "target")
+        local exp = getDB(triggerId, "EXPtable.db")
+        local allTraces = getState(triggerId, "trace")
+        local traceCurrent = allTraces[target["이름"]] or {}
+        local totalTrace = 0
+
+        -- 1. 캐시 초기화 (한 번만 실행)
+        if not cachedValidTraces then
+            local traceDB = getDB(triggerId, "trace.db")
+            cachedValidTraces = {}
+            for k, v in pairs(traceDB) do
+                if v.name then cachedValidTraces[v.name] = true end
+            end
+
+            local statDB = getDB(triggerId, "stat.db")
+            cachedStatDBMap = {}
+            for k, v in pairs(statDB) do
+                if v.name then cachedStatDBMap[v.name] = v.related end
+            end
+        end
+
+        -- 2. Stat에 따른 경험치(traceEXP) 계산
+        local stat = getState(triggerId, "stat")
+        local traceEXP = {} -- 이번 조교로 얻은 잠재적 경험치
+
+        for k, v in pairs(stat) do
+            local val = tonumber(v) or 0
+            if val > 0 then
+                local minExp = exp[tostring(val - 1)] or 0
+                local maxExp = exp[tostring(val)] or 0
+
+                if maxExp > 0 then
+                    local gained = math.random(minExp, maxExp)
+                    if gained > 0 then
+                        traceEXP[k] = gained
+                        totalTrace = totalTrace + gained
+                    end
+                end
+            end
+        end
+
+        -- 3. traceEXP를 실제 흔적(trace)으로 변환
+        local traceAdd = {} -- 이번에 추가될 흔적 양
+        local traceSum = {} -- 기존 + 추가 합산 (차감 전)
+
+        -- 기존 흔적 복사
+        for k, v in pairs(traceCurrent) do
+            traceSum[k] = v
+        end
+
+        for statName, expVal in pairs(traceEXP) do
+            local relatedList = cachedStatDBMap[statName]
+            if relatedList and #relatedList > 0 then
+                local len = #relatedList
+                local totalWeight = len * (len + 1) * 0.5
+
+                for i, traceName in ipairs(relatedList) do
+                    if cachedValidTraces[traceName] then
+                        local weight = len - i + 1
+                        local addAmount = math.floor(expVal * weight / totalWeight)
+
+                        traceAdd[traceName] = (traceAdd[traceName] or 0) + addAmount
+                        traceSum[traceName] = (traceSum[traceName] or 0) + addAmount
+                    end
+                end
+            end
+        end
+
+        -- 4. 부정 흔적에 의한 차감 로직 (Water-leveling deduction)
+        local deductLevel = 0 -- 삭감 기준 높이 (이 높이 이상인 흔적은 잘려나감)
+        local deductTotal = traceSum["부정"] or 0 -- 삭감에 사용할 총 자원 (부정 흔적의 총량)
+        local deductUsed = 0 -- 실제로 사용된 삭감 자원
+
+        if deductTotal > 0 then
+            -- 차감 대상 흔적 수집 (부정 제외, 0보다 큰 것)
+            local targets = {}
+            for k, v in pairs(traceSum) do
+                if k ~= "부정" and v > 0 then
+                    table.insert(targets, v)
+                end
+            end
+            table.sort(targets) -- 오름차순 정렬
+
+            -- 삭감 로직
+            for i, val in ipairs(targets) do
+                local remainingCount = #targets - i + 1
+                local heightDiff = val - deductLevel
+                local costToNextLevel = heightDiff * remainingCount
+
+                if deductTotal >= costToNextLevel then
+                    -- 충분한 자원이 있다면 다음 높이까지 모두 삭감
+                    deductTotal = deductTotal - costToNextLevel
+                    deductUsed = deductUsed + costToNextLevel
+                    deductLevel = val
+                else
+                    -- 자원이 부족하면 가능한 만큼만 높이를 올리고 중단
+                    local lift = math.floor(deductTotal / remainingCount)
+                    deductLevel = deductLevel + lift
+                    deductUsed = deductUsed + (lift * remainingCount)
+                    break
+                end
+            end
+        end
+
+        -- 5. 결과 적용 및 로그 생성
+        local traceText = "조교로부터 " .. intForm(totalTrace) .. " Spirit을 획득했습니다.<br>"
+
+        for k, v in pairs(traceSum) do
+            local added = traceAdd[k] or 0
+            local deducted = 0
+
+            if k == "부정" then
+                deducted = deductUsed -- 부정 흔적은 사용된 만큼 차감
+            else
+                -- 일반 흔적은 deductLevel을 초과하는 부분을 잘라냄 (min(deductLevel, v) 만큼 차감하는 효과)
+                -- 즉 최종값 = v - min(deductLevel, v) = max(v - deductLevel, 0)
+                -- 차감량 = v - max(..., 0) = min(v, deductLevel)
+                deducted = math.min(deductLevel, v)
+            end
+
+            -- 로그 출력 (변동이 있는 경우만)
+            if added ~= 0 or deducted ~= 0 then
+                local finalVal = (traceCurrent[k] or 0) + added - deducted
+                traceText = traceText .. string.format("%s: %d + %d - %d = %d<br>",
+                    k, (traceCurrent[k] or 0), added, deducted, finalVal)
+
+                -- 값 적용
+                traceCurrent[k] = finalVal
+            end
+        end
+
+        -- 스피릿 업데이트
+        local oldSpiritStr = getChatVar(triggerId, "spirit")
+        local oldSpirit = 0
+        if type(oldSpiritStr) == "string" then
+            oldSpirit = tonumber((oldSpiritStr:gsub(",", ""))) or 0
+        else
+            oldSpirit = tonumber(oldSpiritStr) or 0
+        end
+        local newSpirit = oldSpirit + totalTrace
+        setChatVar(triggerId, "spirit", intForm(newSpirit))
+        debug(string.format("[Train:Post] Spirit: %d -> %d (Gained: %d)", oldSpirit, newSpirit, totalTrace))
+
+        -- 데이터 저장 및 업데이트
+        upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), DEFAULT_LORE_OPTION)
+        stateToVar(triggerId, "target", target)
+
+        stateToVar(triggerId, "targetTrace", traceCurrent)
+        allTraces[target["이름"]] = traceCurrent
+        setState(triggerId, "trace", allTraces)
+        setChatVar(triggerId, "traceText", traceText)
+
+        -- 로그 및 화면 갱신
+        addChat(triggerId, "user", "{{" .. "getvar::html" .. "}}")
+
+        local ampmVal = getChatVar(triggerId, "ampm")
+        local ampmStr = (ampmVal == "0") and "낮" or "밤"
+
+        local lastTrainLog = string.format(
+            "<div class='showLog'><p>%s일차 %s / 조교 대상:%s</p><p>%s%s</p></div>",
+            getChatVar(triggerId, "day"),
+            ampmStr,
+            target["이름"],
+            getChatVar(triggerId, "oldLog"),
+            getChatVar(triggerId, "newLog")
+        )
+        setChat(triggerId, getChatLength(triggerId) - 2, lastTrainLog)
+
+        -- 초기화 및 화면 이동
+        setChatVar(triggerId, "selectedAbl", "none")
+        screenChange(triggerId, "ablUp")
+    end
+
+    -- 조교 초기 설정 (preTrainSetting.sys 통합)
+    function funcs.prepare(triggerId, name)
+        --target를 로어북에서 불러와 1차원으로 flatten
+        local target = json.decode(getLoreBookContent(triggerId, name))
+        setState(triggerId, "target", target) --대상 캐릭터 로어북 정보를 state에 저장
+        target = flatten(target)
+        local day = getChatVar(triggerId, "day")
+        local ampm = tonumber(getChatVar(triggerId, "ampm"))
+        local date = day .. "일째, "
+        if ampm == 0 then
+            date = date .. "낮"
+        else
+            date = date .. "밤"
+        end
+
+        --조교경험 추가
+        target["조교회수"] = tostring(target["조교회수"] + 1)
+
+        --조교화면 변수 초기화
+        setChatVar(triggerId, "category", "애무계")
+        setChatVar(triggerId, "oldLog", date .. " ")
+        setChatVar(triggerId, "newLog", "[" .. target["이름"] .. "의 " .. target["조교회수"] .. "번째 조교]<br>")
+        setChatVar(triggerId, "statLvUp", " ")
+        setChatVar(triggerId, "ej_target_ratio", 0) --조교대상 절정치
+        setChatVar(triggerId, "ej_user_ratio", 0) --유저 절정치
+        setChatVar(triggerId, "요의", 0) --조교대상 요의
+        setChatVar(triggerId, "ej_target_count", 0) --조교대상 절정 회수 초기화
+        setChatVar(triggerId, "ej_user_count", 0) --유저 절정 회수 초기화
+        setChatVar(triggerId, "statFold", "0") --stat 세부 내역이 보이도록 초기화
+        setChatVar(triggerId, "equipments", getLoreBookContent(triggerId, "equipments.db")) --착용품 모두 미착용으로 초기화
+
+        --수정구 영상 초기화
+        TRAIN_REC = 0
+        setState(triggerId, "recLog", "")
+
+        --스탯 초기화 (캐싱 메커니즘 사용)
+        local statDB = getDB(triggerId, "stat.db")
+        local stat = {}
+        for k, v in pairs(statDB) do
+            -- statBonus 등이 한글 키를 사용하므로 한글 이름으로 초기화
+            if v.name then
+                stat[v.name] = 0
+            else
+                stat[k] = 0
+            end
+        end
+
+        --stat에 영향을 주는 모든 속성을 나열한 후 대상 캐릭터의 데이터를 모두 순회하며 stat에 영향을 주는 항목이 있는지 체크
+        --abl같은 특정테이블만 순회하는것보다 확장성이 뛰어남
+        local ablBase = 0.2  --abl*ablBase가 stat의 최소치를 보장해 높은 abl의 효과를 보장하도록 함
+        local ablRatio = 0.5 --abl*ablRatio*math.random()을 더해 매 조교마다 조금씩 다른 stat치로 시작하도록 함
+        local statBonus = {  --한글키값을 넣기위해 ["키값"]구조 적용
+            --abl
+            ["C감각"] = function(v)
+                stat["C쾌락"] = stat["C쾌락"] + v * (ablBase + ablRatio * math.random()) --자동 형변환 하겠지..
+            end,
+            ["B감각"] = function(v)
+                stat["B쾌락"] = stat["B쾌락"] + v * (ablBase + ablRatio * math.random())
+            end,
+            ["V감각"] = function(v)
+                stat["V쾌락"] = stat["V쾌락"] + v * (ablBase + ablRatio * math.random())
+            end,
+            ["A감각"] = function(v)
+                stat["A쾌락"] = stat["A쾌락"] + v * (ablBase + ablRatio * math.random())
+            end,
+            ["U감각"] = function(v)
+                stat["U쾌락"] = stat["U쾌락"] + v * (ablBase + ablRatio * math.random())
+            end,
+            ["M감각"] = function(v)
+                stat["M쾌락"] = stat["M쾌락"] + v * (ablBase + ablRatio * math.random())
+            end,
+            ["V확장"] = function(v) --확장이 높아지면 쾌감이 감소
+                stat["V쾌락"] = stat["V쾌락"] - v * (ablBase + ablRatio * math.random()) * 0.5
+                stat["V윤활"] = stat["V윤활"] + v * (ablBase + ablRatio * math.random()) * 1.5
+            end,
+            ["A확장"] = function(v) --확장이 높아지면 쾌감이 감소
+                stat["A쾌락"] = stat["A쾌락"] - v * (ablBase + ablRatio * math.random()) * 0.5
+                stat["A윤활"] = stat["A윤활"] + v * (ablBase + ablRatio * math.random()) * 1.5
+            end,
+            ["U확장"] = function(v) --확장이 높아지면 쾌감이 감소. 요도의 경우에는 확장되지 않으면 할 수 있는게 적으므로 페널티 감소
+                stat["U쾌락"] = stat["U쾌락"] - v * (ablBase + ablRatio * math.random()) * 0.2
+                stat["V윤활"] = stat["V윤활"] + v * (ablBase + ablRatio * math.random()) * 1.2 --V윤활이라도 올려줘야..
+            end,
+            ["순종"] = function(v)
+                stat["온순"] = stat["온순"] + v * (ablBase + ablRatio * math.random())
+            end,
+            ["욕망"] = function(v)
+                stat["욕정"] = stat["욕정"] + v * (ablBase + ablRatio * math.random())
+            end,
+            ["봉사기술"] = function(v)
+                stat["굴복"] = stat["굴복"] + v * (ablBase + ablRatio * math.random()) * 0.5
+                stat["온순"] = stat["온순"] + v * (ablBase + ablRatio * math.random()) * 0.25
+                stat["습득"] = stat["습득"] + v * (ablBase + ablRatio * math.random()) * 0.25
+            end,
+            ["성교기술"] = function(v)
+                stat["욕정"] = stat["욕정"] + v * (ablBase + ablRatio * math.random()) * 0.2
+                stat["습득"] = stat["습득"] + v * (ablBase + ablRatio * math.random()) * 0.2
+                stat["온순"] = stat["온순"] + v * (ablBase + ablRatio * math.random()) * 0.1
+                stat["C쾌락"] = stat["C쾌락"] + v * (ablBase + ablRatio * math.random()) * 0.1
+                stat["V쾌락"] = stat["V쾌락"] + v * (ablBase + ablRatio * math.random()) * 0.1
+                stat["A쾌락"] = stat["A쾌락"] + v * (ablBase + ablRatio * math.random()) * 0.1
+                stat["B쾌락"] = stat["B쾌락"] + v * (ablBase + ablRatio * math.random()) * 0.1
+                stat["V윤활"] = stat["V윤활"] + v * (ablBase + ablRatio * math.random()) * 0.1
+            end,
+            ["노출벽"] = function(v)
+                stat["굴복"] = stat["굴복"] + v * (ablBase + ablRatio * math.random()) * 0.5
+                stat["수치"] = stat["수치"] + v * (ablBase + ablRatio * math.random()) * 0.5
+            end,
+            ["마조끼"] = function(v)
+                stat["굴복"] = stat["굴복"] + v * (ablBase + ablRatio * math.random()) * 0.5
+                stat["고통"] = stat["고통"] + v * (ablBase + ablRatio * math.random()) * 0.5
+            end,
+
+            --trait_체질
+            ["성교중독"] = function(v)
+                stat["온순"] = stat["온순"] + 0.5
+                stat["V쾌락"] = stat["V쾌락"] + 0.25
+                stat["A쾌락"] = stat["A쾌락"] + 0.25
+            end,
+            ["자위중독"] = function(v)
+                stat["온순"] = stat["온순"] + 0.5
+                stat["V윤활"] = stat["V윤활"] + 0.5
+                stat["A윤활"] = stat["A윤활"] + 0.5
+            end,
+            ["정액중독"] = function(v)
+                stat["굴복"] = stat["굴복"] + 0.5
+                stat["습득"] = stat["습득"] + 0.5
+            end,
+            ["매춘중독"] = function(v)
+                stat["온순"] = stat["온순"] + 0.5
+            end,
+            ["방뇨중독"] = function(v)
+                stat["수치"] = stat["수치"] + 1.5
+                stat["불쾌"] = stat["불쾌"] + 0.5
+            end,
+            ["촉수중독"] = function(v)
+                stat["온순"] = stat["온순"] + 0.5
+            end,
+            ["수간중독"] = function(v)
+                stat["온순"] = stat["온순"] + 0.5
+            end,
+            ["상시발정"] = function(v)
+                stat["V윤활"] = stat["V윤활"] + 1
+            end,
+
+            --trait_칭호
+            ["음란"] = function(v)
+                stat["V윤활"] = stat["V윤활"] + 2
+                stat["욕정"] = stat["욕정"] + 3
+            end,
+            ["연모"] = function(v)
+                stat["온순"] = stat["온순"] + 5
+            end,
+            ["암캐"] = function(v)
+                stat["C쾌락"] = stat["C쾌락"] + 1
+                stat["V쾌락"] = stat["V쾌락"] + 1
+                stat["A쾌락"] = stat["A쾌락"] + 1
+                stat["B쾌락"] = stat["B쾌락"] + 1
+                stat["욕정"] = stat["욕정"] + 1
+            end,
+            ["붕괴"] = function(v)
+                stat["공포"] = stat["공포"] + 5
+            end,
+            ["광기"] = function(v)
+                stat["부정"] = stat["부정"] + 5
+            end,
+
+            --mark
+            ["고통각인"] = function(v)
+                stat["고통"] = stat["고통"] + v * 1
+            end,
+            ["쾌락각인"] = function(v)
+                stat["욕정"] = stat["욕정"] + v * 1
+            end,
+            ["공포각인"] = function(v)
+                stat["공포"] = stat["공포"] + v * 1
+            end,
+            ["복종각인"] = function(v)
+                stat["온순"] = stat["온순"] + v * 1
+            end,
+            ["치욕각인"] = function(v)
+                stat["굴복"] = stat["굴복"] + v * 1
+            end,
+            ["반발각인"] = function(v)
+                stat["저항"] = stat["저항"] + v * 2
+            end
+        }
+
+        --평탄화된 target테이블을 순회하며 statBonus 적용
+        for k, v in pairs(target) do
+            local v = tonumber(v) or v
+            if v ~= 0 then
+                local suc, _ = pcall(statBonus[k], v)
+                if suc then
+                    -- print(k.."보너스 적용") -- debug removed or kept
+                end
+            end
+        end
+
+        --stat을 정수화하고 0~10사이에 있도록 제한
+        for k, v in pairs(stat) do
+            stat[k] = math.min(math.max(math.floor(v), 0), 10)
+        end
+        setState(triggerId, "target", target)
+        stateToVar(triggerId, "target", target) --대상 캐릭터를 챗변수에 저장
+        setState(triggerId, "stat", stat)       --계산된 stat를 state에 저장
+        --챗변수를 위한 사전처리
+        local stat_c = "{"
+        for k, v in pairs(stat) do
+            stat_c = stat_c .. '"' .. k .. '":"' .. v .. '",'
+        end
+        stat_c = string.gsub(stat_c, ",$", "}") -- 마지막 쉼표 대신 중괄호 닫기
+        setChatVar(triggerId, "stat", stat_c)   --가공된 stat을 챗변수에 저장
+    end
+
+    ---------------------------------------
+    -- 메인 함수 (외부에서 호출됨)
+    ---------------------------------------
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        else
+            debug("train.sys: 알 수 없는 함수 - " .. tostring(subFunc))
+        end
+    end
+end)()

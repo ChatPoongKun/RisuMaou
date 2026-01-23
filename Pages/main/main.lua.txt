@@ -1,19 +1,19 @@
 [main/items/hidden] function(triggerId)
     local mainCat = "items"
     setChatVar(triggerId, "category", mainCat)
-    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+    sysFunction(triggerId, "item.sys", "category", mainCat)
 end!!
 
 [main/traps/hidden] function(triggerId)
     local mainCat = "traps"
     setChatVar(triggerId, "category", mainCat)
-    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+    sysFunction(triggerId, "item.sys", "category", mainCat)
 end!!
 
 [main/dungeon/hidden] function(triggerId)
     local mainCat = "dungeon"
     setChatVar(triggerId, "category", mainCat)
-    sysFunction(triggerId, "itemCatSelect.sys", mainCat)
+    sysFunction(triggerId, "item.sys", "category", mainCat)
 end!!
 
 
@@ -21,19 +21,22 @@ end!!
     local screen = "preTrain"
     screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [main/101/캐릭터 정보] function(triggerId)
     local screen = "charList"
     screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
-    sysFunction(triggerId, "makeCharList.sys")
+    sysFunction(triggerId, "char.sys", "list")
 end!!
 
 [main/102/포로 처분] function(triggerId)
-    local screen = "포로 처분"
+    local screen = "disposal"
     alertNormal(triggerId, screen.." 미구현")
+    --[[screenChange(triggerId, screen)
+    setChatVar(triggerId, "category", "index")
+    sysFunction(triggerId, "char.sys", "list")]]
 end!!
 
 [main/103/노예 매각] function(triggerId)
@@ -43,10 +46,10 @@ end!!
 
 [main/104/마계 상점] function(triggerId)
     local screen = "shop"
-   screenChange(triggerId, screen)
+    screenChange(triggerId, screen)
     local itemCat = "tools"
     setChatVar(triggerId, "category", itemCat)
-    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
+    sysFunction(triggerId, "item.sys", "category", itemCat)
 end!!
 
 [main/105/장비 관리] function(triggerId)
@@ -64,19 +67,19 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/108/{{#when::{{? {{dict_element::{{getvar::inventory}}::음마지식}}==1}}}}실험실{{/when}}] function(triggerId)
-    local screen = "실험실"
+[main/108/시설 관리] function(triggerId)
+    local screen = "시설 관리"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/109/시설 관리] function(triggerId)
-    local screen = "시설 관리"
+[main/109/{{#when::{{? {{dict_element::{{getvar::inventory}}::음마지식}}==1}}}}실험실{{/when}}] function(triggerId)
+    local screen = "실험실"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
 [main/199/휴식] function(triggerId)
     --하루가 지나갈때의 처리는 복잡한 처리가 필요하므로 유지관리를 위해 별도처리
-    sysFunction(triggerId, "dayEnd.sys")
+    sysFunction(triggerId, "turnEnd.sys")
 end!!
 
 [main/hr/ ] function end!!
@@ -95,7 +98,7 @@ end!!
     setChatVar(triggerId, "dictDesc", "카테고리를 선택해 마계사전을 펼쳐보세요.")
 end!!
 
-[main/666/디버그 툴] function(triggerId)
+[main/666/cheat] function(triggerId)
     local screen = "cheat"
     screenChange(triggerId, screen)
 end!!

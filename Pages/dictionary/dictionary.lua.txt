@@ -25,7 +25,7 @@ end!!
     local dictCat = "d_trace"
     setChatVar(triggerId, "category", dictCat)
     setChatVar(triggerId, "dictTitle", "흔적 (Trace)")
-    setChatVar(triggerId, "dictDesc", "캐릭터의 능력 레벨업에 필요한 조교의 흔적. 플레이어는 조교로 흔적을 새김에 따라 혼을 얻을 수 있다.")
+    setChatVar(triggerId, "dictDesc", "캐릭터의 능력 레벨업에 필요한 조교의 흔적. 플레이어는 조교로 흔적을 새김에 따라 영혼(spirit)을 얻을 수 있다.")
 end!!
 
 [dictionary/d_stat/hidden] function(triggerId)
@@ -89,21 +89,65 @@ end!!
     setChatVar(triggerId, "dictSub", "tools")
     setChatVar(triggerId, "dictTitle", "tools")
     setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+
+    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local list = json.decode(getChatVar(triggerId, "toolsList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items["tools"][k] then
+            local name = items["tools"][k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 [dictionary/d_sub_consumables/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "consumables")
     setChatVar(triggerId, "dictTitle", "consumables")
     setChatVar(triggerId, "dictDesc", "다양한 효과를 지닌 일회성 소모품")
+
+    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local list = json.decode(getChatVar(triggerId, "consumablesList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items["consumables"][k] then
+            local name = items["consumables"][k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 [dictionary/d_sub_traps/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "traps")
     setChatVar(triggerId, "dictTitle", "traps")
     setChatVar(triggerId, "dictDesc", "던전에 설치할 수 있는 함정들")
+
+    local items = json.decode(getLoreBookContent(triggerId, "trap.db"))
+    local list = json.decode(getChatVar(triggerId, "trapsList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items[k] then
+            local name = items[k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 [dictionary/d_sub_unlock/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "unlock")
     setChatVar(triggerId, "dictTitle", "unlock")
     setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+
+    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local list = json.decode(getChatVar(triggerId, "unlockList"))
+    local html = ""
+    for _, k in ipairs(list) do
+        if items["unlock"][k] then
+            local name = items["unlock"][k].name
+            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+        end
+    end
+    setChatVar(triggerId, "dict_items_html", html)
 end!!
 
 [dictionary/d_sub_low_monster/hidden] function(triggerId)
@@ -119,11 +163,12 @@ end!!
     local ratingMax = 300 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+        -- m은 이제 영문 키
+        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
-            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
             contents = contents .. add
@@ -146,11 +191,11 @@ end!!
     local ratingMax = 1000 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
-            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
             contents = contents .. add
@@ -172,11 +217,11 @@ end!!
     local ratingMax = 9999 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m][3] <= ratingMax and monsters[m][3] >ratingMin then
+        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
             <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..monsters[m][1]..[[.png}}"></div>
-            <div class="monster-info">]]..monsters[m][1]..[[</div>
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
+            <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
             contents = contents .. add

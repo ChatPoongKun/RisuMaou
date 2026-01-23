@@ -1,0 +1,136 @@
+-- ability.sys.txt
+-- 어빌리티 관리 통합 모듈
+-- 사용법: sysFunction(triggerId, "ability.sys", "levelUp", abl, condition, alert)
+--         sysFunction(triggerId, "ability.sys", "selectCondition", abl, conditions)
+
+(function()
+    ---------------------------------------
+    -- 로컬 함수 정의
+    ---------------------------------------
+
+    ---------------------------------------
+    -- 디스패처 테이블 및 로컬 변수
+    ---------------------------------------
+    local funcs = {}
+
+    -- 어빌리티 레벨업 처리
+    function funcs.levelUp(triggerId, abl, selectedCondition, alert)
+        local target = getState(triggerId, "target")
+        local ablLv = tonumber(target[abl])
+        local allTrace = getState(triggerId, "trace")
+        local targetTrace = allTrace[target["이름"]]
+
+        if alert == nil then
+            alert = true
+        end
+
+        -- 레벨업 조건 확인
+        for k, v in pairs(selectedCondition) do
+            if targetTrace[k] then
+                print("targetTrace", k, targetTrace[k], v)
+                if tonumber(targetTrace[k]) < v then
+                    if alert == true then
+                        alertNormal(triggerId, "레벨업 불가: " .. k .. " 흔적 " .. (v - (targetTrace[k] or 0)) .. "부족")
+                    end
+                    setChatVar(triggerId, "selectedAbl", "none")
+                    return false
+                end
+            end
+            if target[k] then
+                print("target", k, target[k], v)
+                if tonumber(target[k]) < v then
+                    if alert == true then
+                        alertNormal(triggerId, "레벨업 불가: " .. k .. " " .. (v - (target[k] or 0)) .. "부족")
+                    end
+                    setChatVar(triggerId, "selectedAbl", "none")
+                    return false
+                end
+            end
+        end
+
+        -- t/f확인용이면 true 반환하고 끝내기
+        if alert == false then
+            return true
+        end
+
+        -- 레벨업 처리
+        alertNormal(triggerId, abl .. "레벨 상승! (" .. ablLv .. "->" .. tostring(ablLv + 1) .. ")")
+        target[abl] = tostring(ablLv + 1)
+        for k, v in pairs(selectedCondition) do
+            if targetTrace[k] then
+                targetTrace[k] = targetTrace[k] - v
+            end
+        end
+
+        -- 능력 선택 초기화
+        setChatVar(triggerId, "selectedAbl", "none")
+
+        -- 변경된 trace와 abl정보 저장
+        allTrace[target["이름"]] = targetTrace
+        setState(triggerId, "trace", allTrace)
+        stateToVar(triggerId, "targetTrace", targetTrace)
+        setState(triggerId, "target", target)
+        stateToVar(triggerId, "target", target)
+
+        -- 캐릭터 정보를 로컬로어북에 저장
+        local option = { alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false }
+        upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
+    end
+
+    -- 어빌리티 레벨업 조건 선택 UI 생성
+    function funcs.selectCondition(triggerId, abl, lvUpConditions)
+        local target = getState(triggerId, "target")
+        local ablLv = tonumber(target[abl])
+
+        if ablLv >= 10 then
+            alertNormal(triggerId, abl .. ": 이미 최대레벨입니다.")
+            return
+        end
+
+        -- 레벨업 조건 html표현식
+        local selectedAbl = ""
+        local selectedCondition = { abl }
+
+        for i, condition in ipairs(lvUpConditions) do
+            selectedCondition[i + 1] = {}
+            for k, v in pairs(condition) do
+                selectedCondition[i + 1][k] = v[ablLv + 1]
+            end
+
+            -- 조건을 미리 검토해 렙업이 가능한 조건에는 녹색 테두리로 표기
+            local available = "notAvailable"
+            if funcs.levelUp(triggerId, abl, selectedCondition[i + 1], false) then
+                available = "available"
+            end
+
+            selectedAbl = selectedAbl .. "<div class='lvUpConditions btn " .. available .. "' risu-btn='ablLvUp" ..
+            i .. "'>"
+            for k, v in pairs(condition) do
+                selectedAbl = selectedAbl .. "<span><b>" .. k .. "</b>: " .. v[ablLv + 1] .. "</span><br>"
+            end
+            selectedAbl = selectedAbl .. "</div>"
+        end
+
+        setChatVar(triggerId, "selectedAbl", selectedAbl)
+        setState(triggerId, "selectedCondition", selectedCondition)
+    end
+
+    ---------------------------------------
+    -- 디스패처 테이블
+    ---------------------------------------
+    local funcs = {
+        levelUp = levelUp,
+        selectCondition = selectCondition
+    }
+
+    ---------------------------------------
+    -- 메인 함수 (외부에서 호출됨)
+    ---------------------------------------
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        else
+            debug("ability.sys: 알 수 없는 함수 - " .. tostring(subFunc))
+        end
+    end
+end)()

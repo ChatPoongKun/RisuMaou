@@ -10,7 +10,7 @@ function (triggerId)
     for i, name in ipairs(chars) do
         -- preTrain 화면에서는 user 제외
         local char = json.decode(getLoreBookContent(triggerId, name))
-        if not (screen == "preTrain" and char["condition"] ~= "조교가능") then
+        if not ((screen == "disposal" or screen == "preTrain") and char["condition"] ~= "조교가능") then
             -- 정렬 및 표시에 필요한 데이터 미리 추출
             local data = {
                 index = i,
