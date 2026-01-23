@@ -37,52 +37,19 @@ end!!
 [train/11/{{#when::category::vis::애무계}}
 가만 지켜본다
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 0 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 5
-    local costSP = 10
-
-    local exps = {"수치경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 아무것도 하지 않고"..target['이름'] .."을 가만히 관찰한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "observe")
 end!!
 
 [train/12/{{#when::category::vis::애무계}}
 대화한다
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 0 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 5
-    local costSP = 10
-
-    local exps = {"조교회화경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."에게 말을 건다.."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "talk")
 end!!
 
 [train/13/{{#when::category::vis::애무계}}
 애무
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 5 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 10
-    local costSP = 20
-    dc = dc + stat["공포"] * 0.1 -- "+"임
-
-    local exps = {"애정경험"}
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."을 어루만진다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "caress")
 end!!
 
 [train/14/{{#when::category::vis::애무계}}
@@ -90,102 +57,31 @@ end!!
 커닐링구스
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 15
-    local costSP = 30
-    dc = dc + stat["불쾌"] * 0.7
-
-    local exps = {"C경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."의 다리를 벌리고 비부를 혀로 핥는다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "cunnilingus")
 end!!
 
 [train/15/{{#when::category::vis::애무계}}
 애널애무
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 15
-    local costSP = 40
-    dc = dc + stat["불쾌"] * 1.0
-    
-    local exps = {"A경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."의 애널을 부드럽게 어루만진다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "anal_caress")
 end!!
 
 [train/16/{{#when::category::vis::애무계}}
 자위
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 15
-    local costSP = 30
-    dc = dc + stat["수치"] * 0.5
-    dc = dc - stat["욕정"] * 0.3
-    dc = dc - stat["온순"] * 0.3
-    dc = dc - stat["굴복"] * 0.3
-    dc = dc - stat["공포"] * 0.1
-
-    local exps = {"수치경험", "자위경험", "C경험"}
-    if tonumber(target["성교경험"]) > 0  and tonumber(target["V감각"]) > 4 then
-        table.insert(exps, "V경험")
-    end
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."에게 스스로 자위 할 것을 명령한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "masturbation")
 end!!
 
 [train/17/{{#when::category::vis::애무계}}
 가슴 애무
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 5 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 10
-    local costSP = 20
-    dc = dc - stat["온순"] * 0.5
-
-    local exps = {"B경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."의 가슴을 어루만진다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "breast_caress")
 end!!
 
 [train/18/{{#when::category::vis::애무계}}
 키스
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20 --조교의 난이도. 높을수록 성공확률 낮음
-    local costHP = 10
-    local costSP = 20
-    dc = dc + stat["불쾌"] * 0.3
-    dc = dc - stat["M쾌락"] * 0.5
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["욕정"] * 0.2
-    dc = dc - stat["굴복"] * 0.1
-
-    local exps = {"애정경험"}
-
-    --LLM에 전달할 조교 커맨드
-    local command =  "<br>{{user}}는 "..target['이름'] .."와 입을 맞춘다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "kiss")
 end!!
 
 [train/19/{{#when::category::vis::애무계}}
@@ -299,33 +195,14 @@ end!!
     sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
 end!!
 
-[train/22/{{#when::category::vis::도구계}}
+[train/21/{{#when::category::vis::도구계}}
 {{#when::{{? {{dict_element::{{getvar::inventory}}::honey_worm}}==1}}}}
 {{#when::{{dict_element::{{getvar::target}}::성별}}::isnot::남성}}
 꿀단지웜
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 20
-    local costSP = 20
-    dc = dc + stat["공포"] * 0.5
-    dc = dc + stat["불쾌"] * 1.0
-
-    local exps = {"V경험", "촉수경험", "수간경험"}
-
-    local command
-    local equipment = "honey_worm"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 꿀단지웜을 "..target['이름'] .."의 질에서 뽑아낸다."
-    else
-        command = "<br>{{user}}는 꿀단지웜을 "..target['이름'] .."의 질에 밀어넣는다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "honey_worm")
 end!!
 
 [train/23/{{#when::category::vis::도구계}}
@@ -333,26 +210,7 @@ end!!
 애널웜
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 40
-    local costHP = 20
-    local costSP = 20
-    dc = dc + stat["공포"] * 0.5
-    dc = dc + stat["불쾌"] * 1.2
-
-    local exps = {"A경험", "촉수경험", "수간경험"}
-
-    local command
-    local equipment = "anal_worm"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 애널웜을 "..target['이름'] .."의 애널에서 뽑아낸다."
-    else
-        command = "<br>{{user}}는 애널웜을 "..target['이름'] .."의 항문에 밀어넣는다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "anal_worm")
 end!!
 
 [train/24/{{#when::category::vis::도구계}}
@@ -360,25 +218,7 @@ end!!
 애널플러그
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25
-    local costHP = 15
-    local costSP = 10
-    dc = dc - (stat["A윤활"] - 5) * 1.0
-
-    local exps = {"A경험", "A확장경험"}
-
-    local command
-    local equipment = "anal_plug"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."의 항문에서 애널플러그를 뽑아낸다."
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."의 항문에 애널플러그를 꽂아넣는다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "anal_plug")
 end!!
 
 [train/25/{{#when::category::vis::도구계}}
@@ -386,25 +226,7 @@ end!!
 애널비즈
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 35
-    local costHP = 20
-    local costSP = 20
-    dc = dc - (stat["A윤활"] - 5) * 1.0
-
-    local exps = {"A경험", "A확장경험"}
-
-    local command
-    local equipment = "anal_beads"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."의 애널에 비즈를 하나씩 뽑아낸다."
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."의 애널에 비즈를 하나씩 밀어넣는다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "anal_beads")
 end!!
 
 [train/26/{{#when::category::vis::도구계}}
@@ -412,26 +234,7 @@ end!!
 눈가리개
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 10
-    local costHP = 5
-    local costSP = 5
-    dc = dc + stat["공포"] * 0.2
-    dc = dc + stat["불안"] * 0.2
-
-    local exps = {"긴박경험"}
-
-    local command
-    local equipment = "blindfold"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."에게서 눈 가리개를 떼어낸다."
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."의 눈을 가리개로 가려 시야를 차단한다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "blindfold")
 end!!
 
 [train/27/{{#when::category::vis::도구계}}
@@ -439,25 +242,7 @@ end!!
 볼개그
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 15
-    local costHP = 10
-    local costSP = 10
-    dc = dc + stat["수치"] * 0.3
-
-    local exps = {"수치경험", "긴박경험"}
-
-    local equipment = "ball_gag"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    local command
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."의 입에서 볼개그를 뺀다."
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."의 입에 볼개그를 물린다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "ball_gag")
 end!!
 
 [train/28/{{#when::category::vis::도구계}}
@@ -465,25 +250,7 @@ end!!
 O링개그
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 15
-    local costSP = 15
-    dc = dc + stat["수치"] * 0.5
-
-    local exps = {"수치경험", "긴박경험"}
-
-    local command
-    local equipment = "ring_gag"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."의 입에서 O링 개그를 뺀다."
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."의 입을 O링 개그로 고정시켜 벌려둔다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "ring_gag")
 end!!
 
 [train/29/{{#when::category::vis::도구계}}
@@ -491,34 +258,7 @@ end!!
 클리캡
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 15
-    local costSP = 10
-    dc = dc - stat["욕정"] * 0.3
-
-    local exps = {"C경험", "촉수경험"}
-
-    local command
-    local gender = json.decode(getChatVar(triggerId, "target"))["성별"]
-    local equipment = "slime_snail"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        if gender == 여성 then
-            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 클리토리스에서 떼어낸다."
-        else
-            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 귀두에서 떼어낸다."
-        end
-    else
-        if gender == 여성 then
-            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 클리토리스에 붙인다."
-        else
-            command = "<br>{{user}}는 점액달팽이를 "..target['이름'] .."의 귀두에 붙인다."
-        end
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "clit_cap")
 end!!
 
 [train/210/{{#when::category::vis::도구계}}
@@ -526,25 +266,7 @@ end!!
 유두캡
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 15
-    local costSP = 10
-    dc = dc - stat["욕정"] * 0.3
-
-    local exps = {"B경험", "촉수경험"}
-
-    local command
-    local equipment = "milk_snail"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 우유달팽이를 "..target['이름'] .."의 유두에서 떼어낸다."
-    else
-        command = "<br>{{user}}는 우유달팽이를 "..target['이름'] .."의 유두에 붙인다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "nipple_cap")
 end!!
 
 [train/211/{{#when::category::vis::도구계}}
@@ -554,25 +276,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25
-    local costHP = 20
-    local costSP = 20
-    dc = dc + stat["수치"] * 0.5
-
-    local exps = {"B경험", "분유경험"}
-
-    local command
-    local equipment = "milker"
-    local equipped = json.decode(getChatVar(triggerId, "equipments"))
-    if equipped[equipment] == "착용" then
-        command = "<br>{{user}}는 "..target['이름'] .."의 가슴에 착유기를 떼어내 우유를 확인한다."
-    else
-        command = "<br>{{user}}는 "..target['이름'] .."의 가슴에 착유기를 장착해 착유를 시도한다."
-    end
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, equipment)
+    sysFunction(triggerId, "train.sys", "action", "milker")
 end!!
 
 [train/212/{{#when::category::vis::도구계}}
@@ -580,18 +284,7 @@ end!!
 채찍
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 30
-    local costSP = 20
-    dc = dc + stat["공포"] * 0.5
-
-    local exps = {"피학경험"}
-
-    local command = "<br>{{user}}는 채찍을 들어 "..target['이름'] .."의 등을 내리친다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "whip")
 end!!
 
 [train/31/{{#when::category::vis::V계}}
@@ -642,47 +335,7 @@ end!!
 [train/32/{{#when::category::vis::V계}}
 후배위
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25
-    local costHP = 20
-    local costSP = 30
-    dc = dc + stat["수치"] * 0.5
-    dc = dc - stat["굴복"] * 0.3
-    dc = dc - (stat["V윤활"] - 5) * 1.0
-
-    local exps = {"V경험", "성교경험"}
-
-    local command = "<br>{{user}}는 엎드린 "..target['이름'] .."의 엉덩이를 들어올려 후배위로 질에 삽입한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["V확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["V확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["V확장"] - 6)
-        if tonumber(target["V확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "doggy")
 end!!
 
 [train/33/{{#when::category::vis::V계}}
@@ -698,36 +351,10 @@ end!!
 
     local exps = {"V경험", "성교경험", "애정경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."을 마주보고 안아올려 대면좌위로 질에 삽입한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["V확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["V확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["V확장"] - 6)
-        if tonumber(target["V확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/33/{{#when::category::vis::V계}}
+정상위
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "missionary")
 end!!
 
 [train/34/{{#when::category::vis::V계}}
@@ -743,36 +370,10 @@ end!!
 
     local exps = {"V경험", "성교경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."을 뒤에서 안아올려 배면좌위로 질에 삽입한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["V확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["V확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["V확장"] - 6)
-        if tonumber(target["V확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/34/{{#when::category::vis::V계}}
+배면좌위
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "back_seated")
 end!!
 
 [train/35/{{#when::category::vis::V계}}
@@ -790,36 +391,10 @@ end!!
 
     local exps = {"V경험", "성교경험", "봉사경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 기승위로 올라와 스스로 질에 삽입하도록 명령한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["V확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["V확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["V확장"] - 6)
-        if tonumber(target["V확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/35/{{#when::category::vis::V계}}
+기승위
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "cowgirl")
 end!!
 
 [train/36/{{#when::category::vis::V계}}
@@ -835,36 +410,10 @@ end!!
 
     local exps = {"V경험", "성교경험", "애정경험"}
 
-    local command = "<br>{{user}}는 선 채로"..target['이름'] .."을 들어올려 대면입위로 질에 삽입한다."
-    local feeling = 14
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["V확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["V확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["V확장"] - 6)
-        if tonumber(target["V확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/36/{{#when::category::vis::V계}}
+들박
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "standing")
 end!!
 
 [train/37/{{#when::category::vis::V계}}
@@ -886,25 +435,16 @@ end!!
 
     local exps = {"V경험", "성교경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 선 채로"..target['이름'] .."을 들어올려 배면입위로 질에 삽입한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/37/{{#when::category::vis::V계}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
+뒷들박
+{{/when}}
+{{/when}}
+{{/when}}
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "back_standing")
 end!!
 
 [train/38/{{#when::category::vis::V계}}
@@ -920,35 +460,10 @@ end!!
 
     local exps = {"V경험", "성교경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 두다리를 잡고 꼼짝 못하게 누르며 교배프레스 자세로 질에 삽입한다."
-    local feeling = 15
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["V확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["V확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["V확장"] - 6)
-        if tonumber(target["V확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/38/{{#when::category::vis::V계}}
+교배프레스
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "mating_press")
 end!!
 
 [train/39/{{#when::category::vis::V계}}
@@ -970,25 +485,16 @@ end!!
 
     local exps = {"V경험", "성교경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 겨드랑이 사이로 팔을 넣어 다리를 잡고 풀넬슨 체위로 질에 삽입한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "대물" then
-        feeling = feeling - math.max(0, target["V확장"] - 8)
-        if tonumber(target["V확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["V확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-            table.insert(exps, "V확장경험")
-            dc = dc + 5
-        end
-    end
-    feeling = feeling + stat["V윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/39/{{#when::category::vis::V계}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
+풀넬슨
+{{/when}}
+{{/when}}
+{{/when}}
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "full_nelson")
 end!!
 
 [train/41/{{#when::category::vis::A계}}
@@ -1005,35 +511,10 @@ end!!
 
     local exps = {"A경험", "애널성교경험", "성교경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."를 눕히고 다리를 잡아벌려 정상위로 애널에 삽입한다."
-    local feeling = 10
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["A확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["A확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["A확장"] - 6)
-        if tonumber(target["A확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/41/{{#when::category::vis::A계}}
+정상위애널
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_missionary")
 end!!
 
 [train/42/{{#when::category::vis::A계}}
@@ -1052,35 +533,10 @@ end!!
 
     local exps = {"A경험", "애널성교경험", "성교경험"}
 
-    local command = "<br>{{user}}는 엎드린 "..target['이름'] .."의 엉덩이를 들어올려 후배위로 애널에 삽입한다."
-    local feeling = 10
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["A확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["A확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["A확장"] - 6)
-        if tonumber(target["A확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/42/{{#when::category::vis::A계}}
+후배위애널
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_doggy")
 end!!
 
 [train/43/{{#when::category::vis::A계}}
@@ -1097,35 +553,10 @@ end!!
 
     local exps = {"A경험", "애널성교경험", "성교경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."을 마주보고 안아 대면좌위로 애널에 삽입한다."
-    local feeling = 12
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["A확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["A확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["A확장"] - 6)
-        if tonumber(target["A확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/43/{{#when::category::vis::A계}}
+대면좌위애널
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_front_seated")
 end!!
 
 [train/44/{{#when::category::vis::A계}}
@@ -1143,35 +574,10 @@ end!!
 
     local exps = {"A경험", "애널성교경험", "성교경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."을 뒤에서 안아올려 배면좌위로 애널에 삽입한다."
-    local feeling = 12
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["A확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["A확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["A확장"] - 6)
-        if tonumber(target["A확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/44/{{#when::category::vis::A계}}
+배면좌위애널
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_back_seated")
 end!!
 
 [train/45/{{#when::category::vis::A계}}
@@ -1189,35 +595,10 @@ end!!
 
     local exps = {"A경험", "애널성교경험", "성교경험", "봉사경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 자신의 자지위로 올라와 스스로 애널에 삽입하도록 명령한다"
-    local feeling = 12
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["A확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["A확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["A확장"] - 6)
-        if tonumber(target["A확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/45/{{#when::category::vis::A계}}
+기승위애널
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_cowgirl")
 end!!
 
 [train/46/{{#when::category::vis::A계}}
@@ -1234,35 +615,10 @@ end!!
 
     local exps = {"A경험", "성교경험", "애정경험"}
 
-    local command = "<br>{{user}}는 선 채로"..target['이름'] .."을 들어올려 대면입위로 애널에 삽입한다."
-    local feeling = 14
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["A확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["A확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["A확장"] - 6)
-        if tonumber(target["A확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/46/{{#when::category::vis::A계}}
+들박애널
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_standing")
 end!!
 
 [train/47/{{#when::category::vis::A계}}
@@ -1285,25 +641,16 @@ end!!
 
     local exps = {"A경험", "성교경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 선 채로"..target['이름'] .."을 들어올려 배면입위로 애널에 삽입한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/47/{{#when::category::vis::A계}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
+뒷들박애널
+{{/when}}
+{{/when}}
+{{/when}}
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_back_standing")
 end!!
 
 [train/48/{{#when::category::vis::A계}}
@@ -1320,35 +667,10 @@ end!!
 
     local exps = {"A경험", "성교경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 두다리를 잡고 꼼짝 못하게 누르며 교배프레스 자세로 애널에 삽입한다."
-    local feeling = 15
-    if penis == "실좆" then
-        feeling = feeling - math.max(0, target["A확장"] - 2)
-    elseif penis == "작음" then
-        feeling = feeling - math.max(0, target["A확장"] - 4)
-    elseif penis == "평범" then
-        feeling = feeling - math.max(0, target["A확장"] - 6)
-        if tonumber(target["A확장"]) < 1 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 10
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/48/{{#when::category::vis::A계}}
+교배프레스애널
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_mating_press")
 end!!
 
 [train/49/{{#when::category::vis::A계}}
@@ -1371,25 +693,16 @@ end!!
 
     local exps = {"A경험", "성교경험", "긴박경험"}
 
-    local command = "<br>{{user}}는 "..target['이름'] .."의 겨드랑이 사이로 팔을 넣어 다리를 잡고 풀넬슨 체위로 애널에 삽입한다."
-    local feeling = 12
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "대물" then
-        feeling = feeling - math.max(0, target["A확장"] - 8)
-        if tonumber(target["A확장"]) < 4 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 3
-        end
-    elseif penis == "말자지" then
-        if tonumber(target["A확장"]) < 8 then
-            command = command .. "{{user}}의 자지가 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-            table.insert(exps, "A확장경험")
-            dc = dc + 5
-        end
-    end
-    feeling = feeling + stat["A윤활"] * 0.5
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+[train/49/{{#when::category::vis::A계}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::실좆}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::작음}}
+{{#when::{{dict_element::{{getvar::user}}::페니스}}::isnot::평범}}
+풀넬슨애널
+{{/when}}
+{{/when}}
+{{/when}}
+{{/when}}] function(triggerId)
+    sysFunction(triggerId, "train.sys", "action", "anal_full_nelson")
 end!!
 
 [train/51/{{#when::category::vis::봉사계}}
@@ -1397,19 +710,7 @@ end!!
 수음
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 15
-    local costHP = 10
-    local costSP = 20
-    dc = dc - stat["온순"] * 0.5
-    dc = dc - stat["굴복"] * 0.3
-
-    local exps = {"봉사경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 손으로 자지를 쓰다듬으며 봉사하라고 명령한다."
-    local feeling = 6
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "handjob")
 end!!
 
 [train/52/{{#when::category::vis::봉사계}}
@@ -1417,30 +718,7 @@ end!!
 펠라치오
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25
-    local costHP = 15
-    local costSP = 25
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["온순"] * 0.4
-    dc = dc - stat["굴복"] * 0.4
-
-    local exps = {"봉사경험", "펠라경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 펠라치오를 명령한다."
-    local feeling = 10
-    local penis = json.decode(getChatVar(triggerId, "user"))["페니스"]
-    if penis == "대물" then
-        feeling = feeling - 2
-        command = command .. "{{user}}의 거대한 자지를 모두 입에 담기는 어렵다."
-        dc = dc + 2
-    elseif penis == "말자지" then
-        feeling = feeling - 4
-        command = command .. "{{user}}의 자지는 너무 커서 귀두 정도만 입에 담을 수 있다."
-        dc = dc + 4
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "fellatio")
 end!!
 
 [train/53/{{#when::category::vis::봉사계}}
@@ -1458,26 +736,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25
-    local costHP = 15
-    local costSP = 25
-    dc = dc - stat["온순"] * 0.4
-    dc = dc - stat["굴복"] * 0.3
-    dc = dc - stat["B쾌락"] * 0.2
-
-    local exps = {"봉사경험", "B경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 가슴을 자신의 자지에 비비며 봉사하라고 명령한다."
-    local feeling = 6
-    local bast = target["가슴"]
-    if bast == "거유" then
-        feeling = feeling + 2
-    elseif bast == "폭유" then
-        feeling = feeling + 4
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "paizuri")
 end!!
 
 [train/54/{{#when::category::vis::봉사계}}
@@ -1491,20 +750,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 15
-    local costSP = 25
-    dc = dc + stat["수치"] * 0.5
-    dc = dc - stat["욕정"] * 0.5
-    dc = dc - stat["V윤활"] * 0.5
-
-    local exps = {"봉사경험", "C경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 가랑이를 자신의 자지에 비비며 봉사하라고 명령한다."
-    local feeling = 6
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "sumata")
 end!!
 
 [train/55/{{#when::category::vis::봉사계}}
@@ -1512,37 +758,13 @@ end!!
 풋잡
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 30
-    local costHP = 10
-    local costSP = 20
-    dc = dc - stat["굴복"] * 0.5
-
-    local exps = {"봉사경험", "가학경험"} 
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 발을 사용해 자신의 자지에 봉사하라고 명령한다."
-    local feeling = 6
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "footjob")
 end!!
 
 [train/56/{{#when::category::vis::봉사계}}
 식스나인
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 35
-    local costHP = 20
-    local costSP = 30
-    dc = dc + stat["수치"] * 0.8
-    dc = dc - stat["욕정"] * 0.6
-    dc = dc - stat["온순"] * 0.4
-
-    local exps = {"봉사경험", "펠라경험", "C경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 69자세로 봉사할것을 명령한 후 "..target['이름'].."의 음부를 탐한다."
-    local feeling = 12
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "six_nine")
 end!!
 
 [train/57/{{#when::category::vis::봉사계}}
@@ -1550,49 +772,13 @@ end!!
 오일 마사지
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 15
-    local costHP = 20
-    local costSP = 15
-    dc = dc - stat["온순"] * 0.5
-
-    --소모품 사용처리
-    local inventory = json.decode(getChatVar(triggerId, "inventory"))
-    if inventory['오일'] < 1 then
-        alertNormal(triggerId, "오일이 부족합니다.")
-        reloadDisplay(triggerId)
-        return
-    end
-    inventory['오일'] = tostring(inventory['오일'] - 1)
-    setChatVar(triggerId, "inventory", json.encode(inventory))
-
-    local exps = {"봉사경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 오일을 이용한 마사지 봉사를 명령한다."
-    local feeling = 8
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "oil_massage")
 end!!
 
 [train/58/{{#when::category::vis::봉사계}}
 리밍
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 40
-    local costHP = 15
-    local costSP = 35
-    dc = dc + stat["저항"] * 1.8
-    dc = dc + stat["불쾌"] * 1.2
-    dc = dc - stat["굴복"] * 0.5
-    dc = dc - (getState(triggerId, "target")["위생민감"] or 0)* 5
-    dc = dc - (getState(triggerId, "target")["불결무시"] or 0)* 5
-
-    local exps = {"봉사경험", "오물경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 {{user}}의 항문을 핥으라고 명령한다."
-    local feeling = 8
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "rimming")
 end!!
 
 [train/59/{{#when::category::vis::봉사계}}
@@ -1602,26 +788,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 15
-    local costHP = 15
-    local costSP = 25
-    dc = dc - stat["온순"] * 0.4
-    dc = dc - stat["굴복"] * 0.3
-    dc = dc - stat["B쾌락"] * 0.2
-
-    local exps = {"봉사경험", "B경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 가슴을 자신의 가슴에 비비며 봉사하라고 명령한다."
-    local feeling = 6
-    local bast = target["가슴"]
-    if bast == "거유" then
-        feeling = feeling + 1
-    elseif bast == "폭유" then
-        feeling = feeling + 2
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "breast_rubbing")
 end!!
 
 [train/510/{{#when::category::vis::봉사계}}
@@ -1629,22 +796,7 @@ end!!
 커닐링구스봉사
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 25
-    local costHP = 15
-    local costSP = 25
-    dc = dc + stat["불쾌"] * 0.5
-    dc = dc - stat["온순"] * 0.4
-    dc = dc - stat["굴복"] * 0.4
-    dc = dc - (getState(triggerId, "target")["위생민감"] or 0)* 3
-    dc = dc - (getState(triggerId, "target")["불결무시"] or 0)* 3
-
-    local exps = {"봉사경험", "펠라경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 자신의 비부를 핥으며 봉사하도록 한다."
-    local feeling = 10
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "cunnilingus_service")
 end!!
 
 
@@ -1679,18 +831,7 @@ end!!
 [train/92/{{#when::category::vis::하드계}}
 스팽킹
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 20
-    local costHP = 20
-    local costSP = 15
-    dc = dc + stat["고통"] * 0.5 - target["마조끼"]
-
-    local exps = {"피학경험"}
-
-    local command = "<br>{{user}}는 손바닥으로 "..target['이름'] .."의 엉덩이를 세게 내려친다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "spanking")
 end!!
 
 [train/93/{{#when::category::vis::하드계}}
@@ -1764,41 +905,13 @@ end!!
 [train/96/{{#when::category::vis::하드계}}
 방뇨
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 40
-    local costHP = 15
-    local costSP = 40
-    dc = dc + stat["수치"] * 1.0
-    dc = dc - stat["굴복"] * 0.5
-    dc = dc - (getState(triggerId, "target")["위생민감"] or 0)* 3
-    dc = dc - (getState(triggerId, "target")["불결무시"] or 0)* 3
-
-    local exps = {"방뇨경험", "오물경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 그 자리에서 다리를 벌리고 오줌을 싸라고 명령한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "urination")
 end!!
 
 [train/97/{{#when::category::vis::하드계}}
 음뇨
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 50
-    local costHP = 20
-    local costSP = 40
-    dc = dc + stat["불쾌"] * 1.5
-    dc = dc - stat["굴복"] * 0.5
-    dc = dc - (getState(triggerId, "target")["위생민감"] or 0)* 7
-    dc = dc - (getState(triggerId, "target")["불결무시"] or 0)* 7
-
-    local exps = {"오물경험", "피학경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."에게 오줌을 마시게 한다."
-    local feeling = 0
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "drink_urine")
 end!!
 
 [train/98/hidden] function(triggerId)--추후 동물 구매를 구현한 뒤 추가
@@ -1823,24 +936,7 @@ end!!
 피스트퍽
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 70
-    local costHP = 50
-    local costSP = 50
-    dc = dc + stat["공포"] * 1.0
-    dc = dc - (stat["V윤활"] - 5) * 1.0
-
-    local exps = {"V경험", "피학경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."의 질 안으로 주먹을 밀어넣는다."
-    local feeling = 0
-    if tonumber(target["A확장"]) < 7 then
-        command = command .. "주먹이 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-        table.insert(exps, "V확장경험")
-        dc = dc + 5
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "fist_v")
 end!!
 
 [train/910/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::A확장}}}}>3}}}}
@@ -1848,24 +944,7 @@ end!!
 애널피스트
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 80
-    local costHP = 50
-    local costSP = 50
-    dc = dc + stat["공포"] * 1.2
-    dc = dc - (stat["A윤활"] - 5) * 1.0
-
-    local exps = {"A경험", "피학경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."의 애널 안으로 주먹을 밀어넣는다."
-    local feeling = 0
-    if tonumber(target["A확장"]) < 7 then
-        command = command .. "주먹이 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-        table.insert(exps, "A확장경험")
-        dc = dc + 5
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "train.sys", "action", "fist_a")
 end!!
 
 [train/911/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>3}}}}
@@ -1875,30 +954,7 @@ end!!
 {{/when}}
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 100
-    local costHP = 70
-    local costSP = 70
-    dc = dc + stat["공포"] * 1.5
-    dc = dc - (stat["V윤활"] - 5) * 0.5
-    dc = dc - (stat["A윤활"] - 5) * 0.5
-
-    local exps = {"V경험", "A경험", "피학경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."의 질과 애널 양쪽에 주먹을 쑤셔넣는다."
-    local feeling = 0
-    if tonumber(target["V확장"]) < 7 then
-        command = command .. "주먹이 들어가기에 "..target["이름"].."의 질은 너무 좁다."
-        table.insert(exps, "V확장경험")
-        dc = dc + 5
-    end
-    if tonumber(target["A확장"]) < 7 then
-        command = command .. "주먹이 들어가기에 "..target["이름"].."의 애널은 너무 좁다."
-        table.insert(exps, "A확장경험")
-        dc = dc + 5
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "trainAction.sys", "double_hole_fist")
 end!!
 
 [train/912/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::V확장}}}}>6}}}}
@@ -1906,24 +962,7 @@ end!!
 더블피스트퍽
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 80
-    local costHP = 60
-    local costSP = 60
-    dc = dc + stat["공포"] * 1.0
-    dc = dc - (stat["V윤활"] - 7) * 1.0
-
-    local exps = {"V경험", "피학경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."의 질 안으로 두 주먹을 모두 밀어넣는다."
-    local feeling = 0
-    if tonumber(target["A확장"]) < 10 then
-        command = command .. "주먹이 둘 다 들어가기에는 "..target["이름"].."의 질은 아직 좁다."
-        table.insert(exps, "V확장경험")
-        dc = dc + 7
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "trainAction.sys", "double_fist")
 end!!
 
 [train/913/{{#when::{{? {{tonumber::{{dict_element::{{getvar::target}}::A확장}}}}>6}}}}
@@ -1931,24 +970,7 @@ end!!
 애널더블피스트
 {{/when}}
 {{/when}}] function(triggerId)
-    local target = getState(triggerId, "target")
-    local stat = getState(triggerId, "stat")
-    local dc = DC_PENALTY * 90
-    local costHP = 60
-    local costSP = 60
-    dc = dc + stat["공포"] * 1.2
-    dc = dc - (stat["A윤활"] - 7) * 1.0
-
-    local exps = {"A경험", "피학경험"}
-
-    local command = "<br>{{user}}는 "..target['이름'] .."의 애널 안으로 두 주먹을 모두 밀어넣는다."
-    local feeling = 0
-    if tonumber(target["A확장"]) < 10 then
-        command = command .. "주먹이 둘 다 들어가기에는 "..target["이름"].."의 애널은 아직 좁다."
-        table.insert(exps, "A확장경험")
-        dc = dc + 7
-    end
-    sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command)
+    sysFunction(triggerId, "trainAction.sys", "anal_double_fist")
 end!!
 
 [train/61/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::오일}}}}>0}}}}

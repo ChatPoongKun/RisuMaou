@@ -1,0 +1,122 @@
+--커스텀 이벤트 실행 엔진
+--캐릭터가 보유한 trait/abl/mark/stat의 해당 이벤트를 실행
+--@param eventName: 이벤트 이름 (onDCCalc, onStatEXP 등)
+--@param context: 이벤트에 전달할 변수 테이블 (must include: tags, target, stat)
+--@return context: 수정된 변수 테이블
+function(triggerId, eventName, context)
+    
+    -------------------------------------------------------
+    -- Helper Functions (내부 로컬 함수로 정의)
+    -------------------------------------------------------
+    
+    --이벤트 함수 문자열 실행
+    local function executeEventFunc(funcStr, ctx)
+        local env = {}
+        for k, v in pairs(ctx) do
+            env[k] = v
+        end
+        setmetatable(env, {__index = _G})
+        
+        -- Lua 5.2+ 호환: load 사용
+        local func, err = load(funcStr, "eventFunc", "t", env)
+        if func then
+            func()
+            -- 실행 후 변경된 환경 변수를 context에 반영
+            for k, _ in pairs(ctx) do
+                if env[k] ~= nil then
+                    ctx[k] = env[k]
+                end
+            end
+        else
+            debug("customEvent 함수 오류: " .. (err or "unknown"))
+        end
+        
+        return ctx
+    end
+
+    --이벤트 리스트 처리 헬퍼
+    local function processEvents(tId, events, eName, tags, ctx, level)
+        for evtKey, evt in pairs(events) do
+            -- 이벤트명이 일치하거나 이벤트명_숫자 형태인 경우
+            if evtKey == eName or evtKey:match("^"..eName.."_%d+$") then
+                -- 태그 조건 확인
+                local matched = sysFunction(tId, "train.sys", "tagMatch", tags, evt.hasTags, evt.notTags)
+                
+                -- 타겟 스탯 조건 확인 (targetStat 필드가 있는 경우)
+                if matched and evt.targetStat then
+                    if ctx.statName then
+                        local statMatched = false
+                        for _, tStat in ipairs(evt.targetStat) do
+                            if tStat == ctx.statName then
+                                statMatched = true
+                                break
+                            end
+                        end
+                        if not statMatched then matched = false end
+                    end
+                end
+
+                if matched then
+                    ctx.level = level
+                    ctx = executeEventFunc(evt.func, ctx)
+                end
+            end
+        end
+        return ctx
+    end
+
+    -------------------------------------------------------
+    -- Main Logic
+    -------------------------------------------------------
+
+    -- DB 로드 (캐싱 없이 매번 로드)
+    local traitDB = getDB(triggerId, "trait.db")
+    local ablDB = getDB(triggerId, "abl.db")
+    local markDB = getDB(triggerId, "mark.db")
+    local statDB = getDB(triggerId, "stat.db")
+    
+    local target = context.target or getState(triggerId, "target")
+    local currentStat = context.stat or getState(triggerId, "stat")
+    local tags = context.tags or {}
+    
+    -- trait 이벤트 처리
+    for traitKey, traitDef in pairs(traitDB) do
+        local tName = traitDef.name or traitKey
+        -- 평탄화된 타겟 테이블에서 트레이트 보유 여부 확인 (hasVal 로직 대체)
+        -- 보통 target["트레이트명"]에 값이 있거나 "1" 등으로 저장됨
+        local hasTrait = target[tName] ~= nil and target[tName] ~= "" 
+        
+        if hasTrait and traitDef.events then
+            context = processEvents(triggerId, traitDef.events, eventName, tags, context, nil)
+        end
+    end
+    
+    -- abl 이벤트 처리 (레벨 전달)
+    for ablKey, ablDef in pairs(ablDB) do
+        local ablName = ablDef.name or ablKey
+        local level = tonumber(target[ablName]) or 0
+        if level > 0 and ablDef.events then
+            context = processEvents(triggerId, ablDef.events, eventName, tags, context, level)
+        end
+    end
+    
+    -- mark 이벤트 처리 (레벨 전달)
+    for markKey, markDef in pairs(markDB) do
+        local markName = markDef.name or markKey
+        local level = tonumber(target[markName]) or 0
+        if level > 0 and markDef.events then
+            context = processEvents(triggerId, markDef.events, eventName, tags, context, level)
+        end
+    end
+    
+    -- stat 이벤트 처리 (현재 stat 레벨 전달)
+    for statKey, statDef in pairs(statDB) do
+        local statName = statDef.name or statKey
+        local level = tonumber(currentStat[statName]) or 0
+        if level > 0 and statDef.events then
+            context = processEvents(triggerId, statDef.events, eventName, tags, context, level)
+        end
+    end
+    
+    return context
+end
