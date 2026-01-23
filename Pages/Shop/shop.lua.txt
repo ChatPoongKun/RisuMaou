@@ -102,6 +102,9 @@ end!!
     local itemCat = getChatVar(triggerId, "category")
     sysFunction(triggerId, "item.sys", "category", itemCat)
     setChatVar(triggerId, "screenEffect", message)
+    
+    debug(string.format("[Item:Buy] Item: %s, Price: %d, Result: Success", itemKey, itemTotalPrice))
+    
     setChatVar(triggerId, "itemKey", "") -- 초기화
 end!!
 

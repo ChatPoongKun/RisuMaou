@@ -10,6 +10,7 @@
 
     -- 개별 아이템 선택 (상세정보 표시)
     local function select(triggerId, itemKey)
+        -- debug(string.format("[Item:Select] Key: %s", itemKey))
         setChatVar(triggerId, "itemKey", itemKey)
         setChatVar(triggerId, "itemQuantity", 1)
 
@@ -40,6 +41,7 @@
 
     -- 카테고리별 아이템 목록 생성
     local function category(triggerId, itemCat)
+        debug(string.format("[Item:Category] Switched to: %s", itemCat))
         local itemList
         local orderedKeys
 
@@ -99,12 +101,12 @@
                 if condition then
                     local price = intForm(itemPrice)
                     contents = contents ..
-                    "<div class='shop-item btn' risu-btn='" ..
-                    k ..
-                    "'><div class='item-image'><img src='{{raw::" ..
-                    itemName ..
-                    ".png}}'></div><div class='item-info'><span class='item-name'>" ..
-                    itemName .. "</span><span class='item-price'>" .. price .. " spirit</span></div></div>"
+                        "<div class='shop-item btn' risu-btn='" ..
+                        k ..
+                        "'><div class='item-image'><img src='{{raw::" ..
+                        itemName ..
+                        ".png}}'></div><div class='item-info'><span class='item-name'>" ..
+                        itemName .. "</span><span class='item-price'>" .. price .. " spirit</span></div></div>"
                 end
             end
         end
