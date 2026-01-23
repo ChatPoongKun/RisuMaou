@@ -393,7 +393,6 @@ onButtonClick = async(function(triggerId, data)
         screen = getState(triggerId, "screen")
         local html = getLoreBookContent(triggerId, screen .. ".html")
         setChatVar(triggerId, "html", html)
-        debug(screen .. ".html 화면을 갱신합니다.")
         processAndStoreLore(triggerId, screen .. ".lua")
         TIME = time()
     end
