@@ -262,7 +262,11 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     end
 
     --[[절정 계산]]
-    --[[절정 계산]]
+    -- 실패 시 유저 쾌락(feeling) 제거 (봉사 실패 등)
+    if roll + rollBonus <= dc then
+        feeling = 0
+    end
+
     local resTarget = sysFunction(triggerId, "train.sys", "orgasm", "target", statEXP, 0, tags)
     local resUser = sysFunction(triggerId, "train.sys", "orgasm", "user", {}, feeling, tags)
 
