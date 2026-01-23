@@ -1,25 +1,25 @@
 [shop/tools/hidden] function(triggerId)
     local itemCat = "tools"
     setChatVar(triggerId, "category", itemCat)
-    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
+    sysFunction(triggerId, "item.sys", "category", itemCat)
 end!!
 
 [shop/consumables/hidden] function(triggerId)
     local itemCat = "consumables"
     setChatVar(triggerId, "category", itemCat)
-    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
+    sysFunction(triggerId, "item.sys", "category", itemCat)
 end!!
 
 [shop/traps/hidden] function(triggerId)
     local itemCat = "traps"
     setChatVar(triggerId, "category", itemCat)
-    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
+    sysFunction(triggerId, "item.sys", "category", itemCat)
 end!!
 
 [shop/unlock/hidden] function(triggerId)
     local itemCat = "unlock"
     setChatVar(triggerId, "category", itemCat)
-    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
+    sysFunction(triggerId, "item.sys", "category", itemCat)
 end!!
 
 [shop/plus/hidden] function(triggerId)
@@ -100,131 +100,131 @@ end!!
     setChatVar(triggerId, "spirit", intForm(spirit))
     setChatVar(triggerId, "inventory", json.encode(inventory))
     local itemCat = getChatVar(triggerId, "category")
-    sysFunction(triggerId, "itemCatSelect.sys", itemCat)
+    sysFunction(triggerId, "item.sys", "category", itemCat)
     setChatVar(triggerId, "screenEffect", message)
     setChatVar(triggerId, "itemKey", "") -- 초기화
 end!!
 
 /// tools 아이템 선택 핸들러
 [shop/heart_stone/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "heart_stone")
+    sysFunction(triggerId, "item.sys", "select", "heart_stone")
 end!!
 [shop/honey_worm/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "honey_worm")
+    sysFunction(triggerId, "item.sys", "select", "honey_worm")
 end!!
 [shop/anal_worm/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "anal_worm")
+    sysFunction(triggerId, "item.sys", "select", "anal_worm")
 end!!
 [shop/anal_plug/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "anal_plug")
+    sysFunction(triggerId, "item.sys", "select", "anal_plug")
 end!!
 [shop/anal_beads/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "anal_beads")
+    sysFunction(triggerId, "item.sys", "select", "anal_beads")
 end!!
 [shop/blindfold/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "blindfold")
+    sysFunction(triggerId, "item.sys", "select", "blindfold")
 end!!
 [shop/ball_gag/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "ball_gag")
+    sysFunction(triggerId, "item.sys", "select", "ball_gag")
 end!!
 [shop/ring_gag/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "ring_gag")
+    sysFunction(triggerId, "item.sys", "select", "ring_gag")
 end!!
 [shop/slime_snail/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "slime_snail")
+    sysFunction(triggerId, "item.sys", "select", "slime_snail")
 end!!
 [shop/milk_snail/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "milk_snail")
+    sysFunction(triggerId, "item.sys", "select", "milk_snail")
 end!!
 [shop/whip/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "whip")
+    sysFunction(triggerId, "item.sys", "select", "whip")
 end!!
 [shop/rope/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "rope")
+    sysFunction(triggerId, "item.sys", "select", "rope")
 end!!
 [shop/enema/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "enema")
+    sysFunction(triggerId, "item.sys", "select", "enema")
 end!!
 [shop/collar/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "collar")
+    sysFunction(triggerId, "item.sys", "select", "collar")
 end!!
 
 /// consumables 아이템 선택 핸들러
 [shop/oil/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "oil")
+    sysFunction(triggerId, "item.sys", "select", "oil")
 end!!
 [shop/crystal_ball/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "crystal_ball")
+    sysFunction(triggerId, "item.sys", "select", "crystal_ball")
 end!!
 [shop/nutrient/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "nutrient")
+    sysFunction(triggerId, "item.sys", "select", "nutrient")
 end!!
 [shop/incense/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "incense")
+    sysFunction(triggerId, "item.sys", "select", "incense")
 end!!
 [shop/aphrodisiac/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "aphrodisiac")
+    sysFunction(triggerId, "item.sys", "select", "aphrodisiac")
 end!!
 [shop/dewormer/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "dewormer")
+    sysFunction(triggerId, "item.sys", "select", "dewormer")
 end!!
 [shop/hair_tonic/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "hair_tonic")
+    sysFunction(triggerId, "item.sys", "select", "hair_tonic")
 end!!
 [shop/ovulation_inducer/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "ovulation_inducer")
+    sysFunction(triggerId, "item.sys", "select", "ovulation_inducer")
 end!!
 
 /// unlock 아이템 선택 핸들러
 [shop/alchemy_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "alchemy_knowledge")
+    sysFunction(triggerId, "item.sys", "select", "alchemy_knowledge")
 end!!
 [shop/demon_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "demon_knowledge")
+    sysFunction(triggerId, "item.sys", "select", "demon_knowledge")
 end!!
 [shop/lewd_demon_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "lewd_demon_knowledge")
+    sysFunction(triggerId, "item.sys", "select", "lewd_demon_knowledge")
 end!!
 [shop/forbidden_knowledge/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "forbidden_knowledge")
+    sysFunction(triggerId, "item.sys", "select", "forbidden_knowledge")
 end!!
 
 /// 함정 아이템 선택 핸들러
 [shop/arrow_trap/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "arrow_trap")
+    sysFunction(triggerId, "item.sys", "select", "arrow_trap")
 end!!
 [shop/poison_gas_trap/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "poison_gas_trap")
+    sysFunction(triggerId, "item.sys", "select", "poison_gas_trap")
 end!!
 [shop/spike_pit/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "spike_pit")
+    sysFunction(triggerId, "item.sys", "select", "spike_pit")
 end!!
 [shop/fire_glyph/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "fire_glyph")
+    sysFunction(triggerId, "item.sys", "select", "fire_glyph")
 end!!
 [shop/ice_floor_trap/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "ice_floor_trap")
+    sysFunction(triggerId, "item.sys", "select", "ice_floor_trap")
 end!!
 [shop/shock_wire/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "shock_wire")
+    sysFunction(triggerId, "item.sys", "select", "shock_wire")
 end!!
 [shop/net_launcher/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "net_launcher")
+    sysFunction(triggerId, "item.sys", "select", "net_launcher")
 end!!
 [shop/sleep_mist/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "sleep_mist")
+    sysFunction(triggerId, "item.sys", "select", "sleep_mist")
 end!!
 [shop/acid_spray/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "acid_spray")
+    sysFunction(triggerId, "item.sys", "select", "acid_spray")
 end!!
 [shop/blade_corridor/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "blade_corridor")
+    sysFunction(triggerId, "item.sys", "select", "blade_corridor")
 end!!
 [shop/teleport_trap/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "teleport_trap")
+    sysFunction(triggerId, "item.sys", "select", "teleport_trap")
 end!!
 [shop/darkness_trap/hidden] function(triggerId)
-    sysFunction(triggerId, "itemSelect.sys", "darkness_trap")
+    sysFunction(triggerId, "item.sys", "select", "darkness_trap")
 end!!
 
 [shop/199/돌아가기] function(triggerId)

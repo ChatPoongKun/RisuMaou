@@ -1119,7 +1119,7 @@ end!!
 
 [train/199/hidden] function(triggerId)
     local feeling = 0
-    sysFunction(triggerId, "postTrain.sys")
+    sysFunction(triggerId, "train.sys", "post")
 end!!
 
 [train/200/hidden] function (triggerId, date, name, log)

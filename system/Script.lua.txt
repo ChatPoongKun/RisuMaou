@@ -8,35 +8,15 @@ DC_PENALTY = 1 --조교 난이도굴림 전역 페널티. 1보다 작으면 보�
 
 --전역 상수
 DEFAULT_LORE_OPTION = { alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false }
-DB_CACHE = {}   --로어북 DB 캐시 저장소
-LORE_CACHE = {} --로어북 컨텐츠 캐시 저장소
 
 --====================================
 -- 유틸리티 함수
 --====================================
 
---로어북 DB 캐싱 메커니즘
---DB를 한 번만 로드하고 이후에는 캐시에서 반환
+--로어북 DB 직접 로드 (캐싱 없음 - RisuAI 플랫폼에서 직접 호출이 더 빠름)
 function getDB(triggerId, dbName)
-    local key = dbName
-    --[[if not DB_CACHE[key] then
-        local content = getLoreBookContent(triggerId, dbName)
-        DB_CACHE[key] = json.decode(content)
-        debug("DB 캐시 저장: " .. dbName)
-    end]]
-    --테스트를 위해 매번 새로 캐싱
     local content = getLoreBookContent(triggerId, dbName)
-    DB_CACHE[key] = json.decode(content)
-    debug("DB 캐시 저장: " .. dbName)
-
-    return DB_CACHE[key]
-end
-
---DB 캐시 초기화 (게임 시작시 또는 필요시 호출)
-function clearDBCache()
-    DB_CACHE = {}
-    LORE_CACHE = {}
-    debug("DB 및 Lore 캐시 초기화됨")
+    return json.decode(content)
 end
 
 --날짜/시간 문자열 생성 유틸리티
@@ -102,13 +82,11 @@ function time()
     end
 end
 
---upsertLocalLoreBook 오버라이드
+--upsertLocalLoreBook 오버라이드 (주석 제거 처리 유지)
 old_upsertLocalLoreBook = upsertLocalLoreBook
 upsertLocalLoreBook = function(triggerId, name, content, ...)
     old_upsertLocalLoreBook(triggerId, name, content, ...)
-    local modContent = string.gsub(content, "%s*///[^\n]*\n?", "\n")
-    LORE_CACHE[name] = modContent
-    debug("Lore 캐시 업데이트: " .. name)
+    debug("Lore 업데이트: " .. name)
 end
 
 --정수 포맷팅
@@ -153,25 +131,10 @@ function hasVal(tbl, val)
     return false, nil
 end
 
---로어북 컨텐츠 로딩
+--로어북 컨텐츠 직접 로딩 (캐싱 없음 - RisuAI 플랫폼에서 getLoreBooks 직접 호출이 더 빠름)
 function getLoreBookContent(triggerId, lore)
-    -- HTML 파일은 캐시하지 않음 (UI 갱신 문제 방지)
-    if string.find(lore, "%.html$") then
-        local rawContent = getLoreBooks(triggerId, lore)[1].content
-        local modContent = string.gsub(rawContent, "%s*///[^\n]*\n?", "\n")
-        return modContent
-    end
-
-    if LORE_CACHE[lore] then
-        --debug("Lore 캐시 적중: " .. lore)
-        return LORE_CACHE[lore]
-    end
-
     local rawContent = getLoreBooks(triggerId, lore)[1].content
     local modContent = string.gsub(rawContent, "%s*///[^\n]*\n?", "\n") --로어북 주석처리 "///" 제거
-
-    LORE_CACHE[lore] = modContent
-    debug("Lore 캐시 생성: " .. lore)
     return modContent
 end
 
@@ -229,14 +192,13 @@ function stateToVar(triggerId, key, tbl)
         end
         new_tbl = string.gsub(new_tbl, ",$", "}")
     end
-    debug("state to chatVar: " .. key, new_tbl)
+    debug("state to chatVar: " .. key)
     setChatVar(triggerId, key, new_tbl)
 end
 
 --초기세팅 함수
 function initialize(triggerId)
     debug("초기 세팅 개시...")
-    clearDBCache(triggerId)
     sysFunction(triggerId, "initVars.sys")
     setChatVar(triggerId, "category", "user")
     screenChange(triggerId, "config")
@@ -411,8 +373,7 @@ onButtonClick = async(function(triggerId, data)
         if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
             --local cmd = string.match(data, "(.*)_charInfo") --숫자입력을 통한 캐릭터 선택의 구현은 추후 고민
             local name = string.match(data, "charInfo_(.*)")
-            local f_code = "charCard.sys"
-            sysFunction(triggerId, f_code, name)
+            sysFunction(triggerId, "char.sys", "card", name)
 
             -- 사전 버튼 클릭 (동적 라우팅)
         elseif string.find(data, "dict_") then

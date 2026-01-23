@@ -262,86 +262,26 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     end
 
     --[[절정 계산]]
-    local orgasmMax_default = 10000
-    local orgasm_multiplier = 1.2
+    --[[절정 계산]]
+    local resTarget = sysFunction(triggerId, "train.sys", "orgasm", "target", statEXP, 0, tags)
+    local resUser = sysFunction(triggerId, "train.sys", "orgasm", "user", {}, feeling, tags)
 
-    local ej_target_count = tonumber(getChatVar(triggerId, "ej_target_count"))
-    local ej_target_max = orgasmMax_default*(orgasm_multiplier^ej_target_count)
-    local ej_target_ratio = getChatVar(triggerId, "ej_target_ratio")
-    ej_target_ratio = math.floor(tonumber(ej_target_ratio)*0.95) --매턴 절정치 자연감소시키면서 숫자로 형변환
-    local ej_target = math.floor(ej_target_ratio * ej_target_max*0.01)
+    local orgasm_t = resTarget.isOrgasm
+    local orgasm_u = resUser.isOrgasm
 
-    local ej_user_count = tonumber(getChatVar(triggerId, "ej_user_count"))
-    local ej_user_max = orgasmMax_default*(orgasm_multiplier^ej_user_count)
-    local ej_user_ratio = getChatVar(triggerId, "ej_user_ratio")
-    ej_user_ratio = math.floor(tonumber(ej_user_ratio)*0.95) --매턴 절정치 자연감소시키면서 숫자로 형변환
-    local ej_user = math.floor(ej_user_ratio * ej_user_max*0.01)
-
-    local ejPlus = {"C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락"} --절정치를 증가시키는 stat
-    for k, v in ipairs(ejPlus) do
-        local val = statEXP[v] or 0
-        ej_target = ej_target + val
-        debug("절정치: "..v.."(+"..val..")")
-    end
-
-    local ejMinus = {"공포", "불쾌", "부정"} --절정치를 감소시키는 stat
-    for k, v in ipairs(ejMinus) do
-        local val = statEXP[v] or 0
-        ej_target = ej_target - val
-        debug("절정치: "..v.."(-"..val..")")
-    end
-
-    --상황에 따라 달라지는 stat: "굴복", "수치", "고통"
-    local ejCon
-    ejCon = statEXP["굴복"] or 0
-    if hasVal(target, "복종각인") == true or tonumber(target["봉사기술"])> 4 then
-        ej_target = ej_target + ejCon
-        debug("절정치: 굴복(+"..ejCon..")")
-    else
-        ej_target = ej_target - ejCon
-        debug("절정치: 굴복(-"..ejCon..")")
-    end
-    ejCon = statEXP["수치"] or 0
-    if tonumber(target["노출벽"])> 4 then
-        ej_target = ej_target + ejCon
-        debug("절정치: 수치(+"..ejCon..")")
-    else
-        ej_target = ej_target - ejCon
-        debug("절정치: 수치(-"..ejCon..")")
-    end
-    ejCon = statEXP["고통"] or 0
-    if tonumber(target["마조끼"])> 4 then
-        ej_target = ej_target + ejCon
-        debug("절정치: 고통(+"..ejCon..")")
-    else
-        ej_target = ej_target - ejCon
-        debug("절정치: 고통(-"..ejCon..")")
-    end
-
-    --target 절정치 계산
-    ej_target = math.min(ej_target_max, math.max(0, math.floor(ej_target)))--절정치가 최대 최소값을 넘지 않도록 후처리
-    ej_target_ratio = ej_target/ej_target_max*100 --실제 수치를 보여줄게 아니라서 소숫점도 허용
-    debug(target["이름"].."절정치: " .. ej_target, ej_target_ratio, ej_target_max)
-
-    --user 절정치 계산
-    ej_user = math.min(ej_user_max, ej_user + feeling * orgasmMax_default*0.01)
-    ej_user_ratio = math.floor(ej_user/ej_user_max*100)
-    debug("{{user}}절정치: " .. ej_user, ej_user_ratio, ej_user_max)
+    debug(target["이름"].."절정치: " .. resTarget.ratio .. "%")
+    debug("{{user}}절정치: " .. resUser.ratio .. "%")
 
     --절정여부 체크
     local ejMsg = "아무도 절정하지 않음."
-    local orgasm_t, orgasm_u = false, false
-    if ej_target >= ej_target_max then
+    if orgasm_t then
         ejMsg = "조교대상 절정."
-        orgasm_t = true
-        ej_target_count = ej_target_count +1
-        ej_target_ratio = 0
     end
-    if ej_user >= ej_user_max then
+    if orgasm_u then
         ejMsg = "{{user}} 절정."
-        orgasm_u = true
-        ej_user_count = ej_user_count +1
-        ej_user_ratio = 0
+    end
+    if orgasm_t and orgasm_u then
+        ejMsg = "조교대상과 {{user}} 동시 절정."
     end
 
 
@@ -457,11 +397,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     stat_c = string.gsub(stat_c, ",$", "}")-- 마지막 쉼표 대신 중괄호 닫기
     setChatVar(triggerId, "stat", stat_c) --변경된 stat을 chatVar에 반영
 
-    --절정치 변수에 적용
-    setChatVar(triggerId, "ej_target_count", ej_target_count)
-    setChatVar(triggerId, "ej_target_ratio", string.format("%.2f", ej_target_ratio))
-    setChatVar(triggerId, "ej_user_count", ej_user_count)
-    setChatVar(triggerId, "ej_user_ratio", string.format("%.2f", ej_user_ratio))
+    --절정치 변수에 적용 (train.orgasm에서 처리됨)
 
     --로그 처리
     setChatVar(triggerId, "oldLog", oldLog)
