@@ -117,22 +117,22 @@
         }
     },
     "unlock": {
-        "alchemy_knowledge": {
+        "unlock1": {
             "name": "조합지식",
             "desc": "다양한 약품을 조제할 수 있다.",
             "price": 15000
         },
-        "demon_knowledge": {
+        "unlock2": {
             "name": "마족정보",
             "desc": "강력한 몬스터들에 대한 정보가 담긴 책. 상급 몬스터들을 소환 할 수 있다.",
             "price": 50000
         },
-        "lewd_demon_knowledge": {
+        "unlock3": {
             "name": "음마지식",
             "desc": "마계의 다양한 지식이 담긴 책. 실험실을 만들어 다양한 실험을 할 수 있다.",
             "price": 100000
         },
-        "forbidden_knowledge": {
+        "unlock4": {
             "name": "금단의지식",
             "desc": "금단의 지식이 담긴 책. 조교시 촉수를 소환할 수 있다.",
             "price": 1000000
