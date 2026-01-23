@@ -8,8 +8,13 @@
     -- 로컬 함수 정의
     ---------------------------------------
 
+    ---------------------------------------
+    -- 디스패처 테이블 및 로컬 변수
+    ---------------------------------------
+    local funcs = {}
+
     -- 어빌리티 레벨업 처리
-    local function levelUp(triggerId, abl, selectedCondition, alert)
+    function funcs.levelUp(triggerId, abl, selectedCondition, alert)
         local target = getState(triggerId, "target")
         local ablLv = tonumber(target[abl])
         local allTrace = getState(triggerId, "trace")
@@ -73,7 +78,7 @@
     end
 
     -- 어빌리티 레벨업 조건 선택 UI 생성
-    local function selectCondition(triggerId, abl, lvUpConditions)
+    function funcs.selectCondition(triggerId, abl, lvUpConditions)
         local target = getState(triggerId, "target")
         local ablLv = tonumber(target[abl])
 
@@ -94,7 +99,7 @@
 
             -- 조건을 미리 검토해 렙업이 가능한 조건에는 녹색 테두리로 표기
             local available = "notAvailable"
-            if levelUp(triggerId, abl, selectedCondition[i + 1], false) then
+            if funcs.levelUp(triggerId, abl, selectedCondition[i + 1], false) then
                 available = "available"
             end
 
