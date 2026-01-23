@@ -40,11 +40,12 @@ RisuMaou/
 │   ├── Script.lua.txt      # 메인 스크립트 (진입점)
 │   ├── initVars.sys.txt    # 변수 초기화
 │   ├── newChar.sys.txt     # 캐릭터 생성 로직
-│   ├── trainProcess.sys.txt# 조교 프로세스 핸들링
+│   ├── train.sys.txt       # 조교 통합 로직 (액션, 태그매칭, 삽입 등)
+│   ├── trainProcess.sys.txt# 조교 프로세스 실행 (LLM 핸들링)
 │   ├── customEvent.sys.txt # 커스텀 이벤트 시스템
-│   ├── tagMatch.sys.txt    # 태그 매칭 로직
-│   ├── insertionLogic.sys.txt # 삽입 로직
-│   ├── orgasmCalc.sys.txt  # 절정 계산
+│   ├── item.sys.txt        # 아이템/상점 시스템
+│   ├── ability.sys.txt     # 어빌리티 시스템
+│   ├── char.sys.txt        # 캐릭터 관리 시스템
 │   └── ...
 ├── Imgs/                   # 이미지 에셋
 ├── CBS Guide.md            # CBS(Curly Braced Syntaxes) 가이드
@@ -227,16 +228,35 @@ local content = getLoreBookContent(triggerId, "some.lua")
 
 > ⚠️ **중요**: RisuAI 플랫폼 테스트 결과, 전역변수나 state에 캐싱하는 것보다 `getLoreBooks`를 직접 호출하는 것이 **훨씬 빠름**. 불필요한 캐싱 로직을 추가하지 마세요.
 
+### 8. 시스템 파일 패턴 (Dispatcher Pattern)
+여러 기능을 포함하는 `.sys` 파일은 확장성을 위해 디스패처 패턴을 사용합니다:
+```lua
+(function()
+    local funcs = {}
+
+    function funcs.funcA(triggerId, ...) ... end
+    function funcs.funcB(triggerId, ...) ... end
+
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        end
+    end
+end)()
+```
+- `sysFunction(id, "file.sys", "funcA", args...)` 형태로 호출합니다.
+- 단일 기능 파일(예: `initVars.sys`)은 이 패턴을 따르지 않습니다.
+
 ## 🔧 주요 시스템 파일
 
 | 파일 | 역할 |
 |------|------|
 | `Script.lua.txt` | 메인 진입점, 전역 함수 정의 |
 | `initVars.sys.txt` | 게임 초기화, 변수 설정 |
-| `trainProcess.sys.txt` | 조교 로직 핵심 처리 |
+| `trainProcess.sys.txt` | 조교 핵심 루프 실행 (LLM 요청 등) |
+| `train.sys.txt` | 조교 액션, 태그 매칭, 삽입 로직, 후처리 통합 관리 |
+| `item.sys.txt` | 아이템 사용, 구매, 소모 관리 |
 | `customEvent.sys.txt` | 이벤트 시스템 실행 엔진 |
-| `tagMatch.sys.txt` | 태그 매칭 로직 |
-| `postTrain.sys.txt` | 조교 후처리 (각인, 레벨업 등) |
 
 ## 📝 코드 수정 체크리스트
 
