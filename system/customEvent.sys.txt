@@ -88,6 +88,7 @@ function(triggerId, eventName, context)
                 end
 
                 if matched then
+                    debug(string.format("[Event:Trigger] Event: %s, Source: %s", eName, evtKey))
                     ctx.level = level
                     ctx = executeEventFunc(evt.func, ctx)
                 end

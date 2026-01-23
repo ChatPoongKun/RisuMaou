@@ -106,6 +106,10 @@
             feeling = math.max(0, feeling) -- 음수 방지
         end
 
+        if tooTight then
+            debug(string.format("[Train:Insertion] Depth: Tight (Expand: %d < Req: %d)", expandLv, reqExpand))
+        end
+
         return {
             dc = dc,
             feeling = feeling,
@@ -133,6 +137,7 @@
         local tags = trainData.tags or {}
 
         --[[1. DC 계산]]
+        debug(string.format("[Train:Action] Key: %s, Actor: %s, BaseDC: %d", trainKey, actor, trainData.baseDC))
         local dc = DC_PENALTY * trainData.baseDC
 
         -- customEvent: onDCCalc 발동
@@ -183,7 +188,8 @@
         command = command:gsub("{target}", target["이름"])
 
         --[[6. trainProcess.sys 호출]]
-        --[[6. trainProcess.sys 호출]]
+        local abbrCmd = command:sub(1, 20) .. "..."
+        debug(string.format("[Train:Result] FinalDC: %d, Feeling: %d, Command: %s", dc, feeling, abbrCmd))
         sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, trainData.equipment, tags)
     end
 
@@ -270,7 +276,10 @@
 
         -- 변수 저장
         setChatVar(triggerId, countVar, count)
+        setChatVar(triggerId, countVar, count)
         setChatVar(triggerId, ratioVar, string.format("%.2f", newRatio))
+
+        debug(string.format("[Train:Orgasm] Who: %s, Ratio: %.2f%%, Orgasm: %s", who, newRatio, tostring(isOrgasm)))
 
         return {
             isOrgasm = isOrgasm,
@@ -318,7 +327,7 @@
                 end
             end
         end
-        debug("traceEXP: " .. json.encode(traceEXP))
+        -- debug("traceEXP: " .. json.encode(traceEXP))
 
         --traceEXP에 따라 trace을 획득
         local statDB = getDB(triggerId, "stat.db")
@@ -437,7 +446,9 @@
         end
 
         spirit = intForm(spirit + totalTrace)
+        spirit = intForm(spirit + totalTrace)
         setChatVar(triggerId, "spirit", spirit)
+        debug(string.format("[Train:Post] Trace Gained: %d", totalTrace))
 
         --조교로 변경된 target값을 로어북에 업데이트
         upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), DEFAULT_LORE_OPTION)
