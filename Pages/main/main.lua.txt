@@ -98,7 +98,7 @@ end!!
     setChatVar(triggerId, "dictDesc", "카테고리를 선택해 마계사전을 펼쳐보세요.")
 end!!
 
-[main/666/디버그 툴] function(triggerId)
+[main/666/cheat] function(triggerId)
     local screen = "cheat"
     screenChange(triggerId, screen)
 end!!
