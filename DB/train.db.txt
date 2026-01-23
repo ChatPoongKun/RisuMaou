@@ -1366,18 +1366,65 @@
             "rope",
             "hard"
         ],
-        "baseDC": 30,
-        "costHP": 30,
-        "costSP": 30,
+        "equipment": "rope",
+        "baseDC": 20,
+        "costHP": 10,
+        "costSP": 20,
         "exps": [
-            "긴박경험",
-            "피학경험"
+            "긴박경험"
         ],
         "statMods": {
-            "공포": 0.5,
-            "수치": 0.5
+            "온순": -0.3
         },
-        "command": "{{user}}는 밧줄로 {target}의 몸을 귀갑묶기로 단단히 결박한다."
+        "dcPenaltyMod": 0.9,
+        "commands": {
+            "equip": "{{user}}는 밧줄로 {target}을 귀갑묶기로 결박한다.",
+            "unequip": "{{user}}는 {target}를 결박했던 로프를 풀어준다."
+        }
+    },
+    "outdoor_play": {
+        "name": "야외플레이",
+        "category": "하드계",
+        "tags": [
+            "outdoor",
+            "shame",
+            "hard"
+        ],
+        "equipment": "collar",
+        "baseDC": 0,
+        "costHP": 10,
+        "costSP": 30,
+        "exps": [
+            "수치경험"
+        ],
+        "statMods": {},
+        "dcPenaltyMod": 1.1,
+        "commands": {
+            "equip": "{{user}}는 {target}에게 개목걸이를 채워 몬스터들이 돌아다니는 야외로 끌고나간다.",
+            "unequip": "{{user}}는 {target}를 조교실로 데려와 개목걸이를 풀어준다."
+        }
+    },
+    "bestiality": {
+        "name": "수간",
+        "category": "하드계",
+        "tags": [
+            "bestiality",
+            "V",
+            "insert_V",
+            "hard"
+        ],
+        "baseDC": 60,
+        "costHP": 40,
+        "costSP": 50,
+        "exps": [
+            "수간경험",
+            "V경험"
+        ],
+        "statMods": {
+            "공포": 1.0,
+            "불쾌": 1.0
+        },
+        "command": "{{user}}는 {target}을 짐승과 교미하게 한다."
     },
     "enema": {
         "name": "관장",
@@ -1403,6 +1450,33 @@
         },
         "command": "{{user}}는 {target}의 항문에 관장액을 주입하고 참으라고 명령한다."
     },
+    "enema_plug": {
+        "name": "관장+플러그",
+        "category": "하드계",
+        "tags": [
+            "filth",
+            "A",
+            "insert_A",
+            "hard"
+        ],
+        "equipment": "anal_plug",
+        "baseDC": 40,
+        "costHP": 30,
+        "costSP": 40,
+        "exps": [
+            "A경험",
+            "A확장경험",
+            "오물경험"
+        ],
+        "statMods": {
+            "불쾌": 1.0,
+            "수치": 0.5
+        },
+        "commands": {
+            "equip": "{{user}}는 {target}에게 관장액을 주입하고 플러그로 막아버린다.",
+            "unequip": "{{user}}는 {target}에게서 애널플러그를 빼낸다."
+        }
+    },
     "drink_urine": {
         "name": "음뇨",
         "category": "하드계",
@@ -1426,5 +1500,136 @@
             "굴복": -0.5
         },
         "command": "{{user}}는 {target}에게 자신의 오줌을 받아 마시게 한다."
+    },
+    "spread_pussy": {
+        "name": "조개벌리기",
+        "category": "애무계",
+        "tags": [
+            "shame",
+            "C",
+            "open_body"
+        ],
+        "baseDC": 18,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "수치경험",
+            "자위경험"
+        ],
+        "statMods": {
+            "수치": 1.1,
+            "온순": -0.5,
+            "굴복": -0.2,
+            "공포": -0.1
+        },
+        "command": "{{user}}는 {target}가 스스로 보지를 벌려보이도록 명령한다.",
+        "conditions": {
+            "targetGender": "!남성"
+        }
+    },
+    "fingering": {
+        "name": "손가락 넣기",
+        "category": "애무계",
+        "tags": [
+            "sex",
+            "V",
+            "insert_V",
+            "finger"
+        ],
+        "baseDC": 18,
+        "costHP": 15,
+        "costSP": 30,
+        "exps": [
+            "V경험"
+        ],
+        "statMods": {
+            "수치": 0.4,
+            "온순": -0.5,
+            "굴복": -0.1,
+            "V윤활": -1.0,
+            "욕정": -0.3
+        },
+        "insertion": {
+            "type": "V",
+            "target": null,
+            "difficulty": 1
+        },
+        "command": "{{user}}는 {target}의 질 안으로 손가락을 밀어넣는다.",
+        "conditions": {
+            "targetGender": "!남성"
+        }
+    },
+    "anal_lick": {
+        "name": "애널 핥기",
+        "category": "애무계",
+        "tags": [
+            "oral",
+            "A",
+            "filth"
+        ],
+        "baseDC": 45,
+        "costHP": 15,
+        "costSP": 35,
+        "exps": [
+            "A경험"
+        ],
+        "statMods": {
+            "불쾌": 1.0,
+            "온순": -0.2,
+            "굴복": -0.1,
+            "공포": -0.1,
+            "욕정": -0.2
+        },
+        "command": "{{user}}는 {target}의 애널 주변을 혀로 핥는다."
+    },
+    "grinding": {
+        "name": "가랑이 비비기",
+        "category": "애무계",
+        "tags": [
+            "service",
+            "C",
+            "sex"
+        ],
+        "baseDC": 20,
+        "costHP": 15,
+        "costSP": 25,
+        "exps": [
+            "봉사경험",
+            "C경험"
+        ],
+        "feeling": 5,
+        "statMods": {
+            "V윤활": -0.5,
+            "욕정": -0.5
+        },
+        "command": "{{user}}는 {target}의 가랑이에 자신의 가랑이를 문지르며 애무한다.",
+        "conditions": {
+            "targetGender": "!남성",
+            "userGender": "!남성"
+        }
+    },
+    "heart_stone": {
+        "name": "심장석 애무",
+        "category": "도구계",
+        "tags": [
+            "tool",
+            "C",
+            "B"
+        ],
+        "equipment": "heart_stone",
+        "baseDC": 10,
+        "costHP": 10,
+        "costSP": 10,
+        "exps": [
+            "C경험",
+            "B경험"
+        ],
+        "statMods": {
+            "욕정": -0.3
+        },
+        "command": "{{user}}는 심장석을 사용해 {target}의 성감대를 자극한다.",
+        "conditions": {
+            "item": "heart_stone"
+        }
     }
 }
