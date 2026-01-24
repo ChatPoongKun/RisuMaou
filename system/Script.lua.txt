@@ -188,7 +188,6 @@ end
 function initialize(triggerId)
     debug("초기 세팅 개시...")
     sysFunction(triggerId, "initVars.sys")
-    setChatVar(triggerId, "category", "user")
     screenChange(triggerId, "config")
     processAndStoreLore(triggerId, "config.lua")
 end
@@ -313,72 +312,60 @@ end)
 
 --기본 입력창을 통해 리퀘가 가는걸 방지 + 입력한 번호 캐치해서 함수수행
 onStart = async(function(triggerId)
-    local status, err = pcall(function()
-        stopChat(triggerId)
-        local success, command = pcall(getUserLastMessage, triggerId)
-        debug(success, command)
-        
-        if command == nil then -- null checks
-            print("리퀘 차단")
-            return -- pcall 내부에서 return하면 pcall 종료
-        end
-        
-        removeChat(triggerId, getChatLength(triggerId) - 1)
+    stopChat(triggerId)
+    local success, command = pcall(getUserLastMessage, triggerId)
+    debug(success, command)
+    
+    if command == nil then -- null checks
+        print("리퀘 차단")
+        return -- pcall 내부에서 return하면 pcall 종료
+    end
+    
+    removeChat(triggerId, getChatLength(triggerId) - 1)
+    local screen = getState(triggerId, "screen")
+    debug("현재 " .. screen .. " 화면에 있습니다.")
+    executeFunction(triggerId, "debug", command)
+    debug("리퀘 차단")
+
+    --현재 페이지에 맞는 html호출
+    screen = getState(triggerId, "screen")
+    local html = getLoreBookContent(triggerId, screen .. ".html")
+    setChatVar(triggerId, "html", html)
+    debug(screen .. ".html 화면을 갱신합니다.")
+    processAndStoreLore(triggerId, screen .. ".lua")
+end)
+
+onButtonClick = async(function(triggerId, data)
+    setChatVar(triggerId, "screenEffect", "") --버튼 누를때마다 screenEffect 초기화
+    if data == "gameStart" then
+        initialize(triggerId)
+        print("게임 시작")
+    else
         local screen = getState(triggerId, "screen")
-        debug("현재 " .. screen .. " 화면에 있습니다.")
-        executeFunction(triggerId, "debug", command)
-        debug("리퀘 차단")
+        if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
+            --local cmd = string.match(data, "(.*)_charInfo") --숫자입력을 통한 캐릭터 선택의 구현은 추후 고민
+            local name = string.match(data, "charInfo_(.*)")
+            sysFunction(triggerId, "char.sys", "card", name)
+
+            -- 사전 버튼 클릭 (동적 라우팅)
+        elseif string.find(data, "dict_") then
+            -- dict_카테고리_항목이름 형태 파싱
+            -- 항목이름에 _가 포함될 수 있으므로 정규식 주의
+            local category, name = string.match(data, "dict_([^_]+)_(.*)")
+            if category and name then
+                sysFunction(triggerId, "dictSelect.sys", category, name)
+            else
+                debug("잘못된 사전 키 형식: " .. data)
+            end
+        else
+            executeFunction(triggerId, screen, data)
+        end
 
         --현재 페이지에 맞는 html호출
         screen = getState(triggerId, "screen")
         local html = getLoreBookContent(triggerId, screen .. ".html")
         setChatVar(triggerId, "html", html)
-        debug(screen .. ".html 화면을 갱신합니다.")
         processAndStoreLore(triggerId, screen .. ".lua")
-    end)
-
-    if not status then
-        print("onStart Error: " .. tostring(err))
     end
-end)
 
-onButtonClick = async(function(triggerId, data)
-    local status, err = pcall(function()
-        setChatVar(triggerId, "screenEffect", "") --버튼 누를때마다 screenEffect 초기화
-        if data == "gameStart" then
-            initialize(triggerId)
-            print("게임 시작")
-        else
-            local screen = getState(triggerId, "screen")
-            if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
-                --local cmd = string.match(data, "(.*)_charInfo") --숫자입력을 통한 캐릭터 선택의 구현은 추후 고민
-                local name = string.match(data, "charInfo_(.*)")
-                sysFunction(triggerId, "char.sys", "card", name)
-
-                -- 사전 버튼 클릭 (동적 라우팅)
-            elseif string.find(data, "dict_") then
-                -- dict_카테고리_항목이름 형태 파싱
-                -- 항목이름에 _가 포함될 수 있으므로 정규식 주의
-                local category, name = string.match(data, "dict_([^_]+)_(.*)")
-                if category and name then
-                    sysFunction(triggerId, "dictSelect.sys", category, name)
-                else
-                    debug("잘못된 사전 키 형식: " .. data)
-                end
-            else
-                executeFunction(triggerId, screen, data)
-            end
-
-            --현재 페이지에 맞는 html호출
-            screen = getState(triggerId, "screen")
-            local html = getLoreBookContent(triggerId, screen .. ".html")
-            setChatVar(triggerId, "html", html)
-            processAndStoreLore(triggerId, screen .. ".lua")
-        end
-    end)
-
-    if not status then
-        debug("onButtonClick Error: " .. tostring(err))
-        alertError(triggerId, "오류가 발생했습니다: " .. tostring(err))
-    end
 end)
