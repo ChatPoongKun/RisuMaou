@@ -102,8 +102,7 @@ RisuMaou/
 
 ## 🙏 크레딧
 
-- CBS 참조: [어느 챗붕의 개념글](https://arca.live/b/characterai/137514168)
-- Lua 스크립트: [어느 챗붕의 개념글](https://arca.live/b/characterai/137518956)
+- Risuai: https://github.com/kwaroran/Risuai
 
 ## 📜 라이선스
 
@@ -274,6 +273,7 @@ end)()
 2. **setDescription() 버그**: 현재 작동하지 않음 (RisuAI 소스코드 버그)
 3. **HTML 내 setvar 불가**: CBS 변수 설정은 Lua에서만 가능
 4. **os.clock() 제한**: 35분 후 오버플로우 발생
+5. **HTML 들여쓰기 금지**: Lua 스크립트 내에서 HTML 문자열 생성 시, **들여쓰기(Tab/Space)**를 포함하면 RisuAI 플랫폼에서 파싱 에러가 발생할 수 있습니다.
 
 ## 📚 참고 자료
 
