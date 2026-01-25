@@ -19,7 +19,7 @@ function (triggerId)
         trainUserPanel = "0", --조교화면 유저정보 상단고정 X
         combatDifficulty = "보통", --전투난이도 보통
         heroLvLimit = "5", --용사의 레벨 제한
-        showLog = "hidden", --과거 조교기록 보기. 기본값 OFF
+        showLog = "none", --과거 조교기록 보기. 기본값 OFF
         debug = DEBUG, --콘솔 디버그 표시
         king = '{"성별":"남성","페니스":"대물","음모":"무성함", "외형":"중년","헤어스타일":"날렵하게 세워올린 짧은 은발"}', --광왕 디폴트 설정
         models = '{"trainResponse":"0","trainLog":"1", "newChar":"0"}', --상황별 사용 모델 설정. 0:보조모델, 1:메인모델
