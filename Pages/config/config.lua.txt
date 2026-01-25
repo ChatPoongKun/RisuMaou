@@ -406,7 +406,7 @@ end!!
 
 [config/showLog/hidden] function(triggerId)
     local showLog = getChatVar(triggerId, "showLog")
-    if showLog == "visible" then showLog = "hidden" else showLog = "visible" end
+    if showLog == "block" then showLog = "none" else showLog = "block" end
     setChatVar(triggerId, "showLog", showLog)
 end!!
 

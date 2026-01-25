@@ -242,14 +242,12 @@ h3 {
 
 /* Utilities */
 .showLog {
-    font-family: Consolas, monospace;
-    font-size: 0.85rem;
-    background: #080808;
+    background: #111;
     padding: 0.5rem;
-    border: 1px solid #222;
-    margin-top: 0.5rem;
-    color: #aaa;
-    visibility: {{getvar::showLog}};
+    border: 1px solid #333;
+    margin: 0 auto;;
+    max-width: 720px;
+    display: {{getvar::showLog}};
 }
 
 /* Tabs */
