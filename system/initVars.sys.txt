@@ -23,6 +23,7 @@ function (triggerId)
         debug = DEBUG, --콘솔 디버그 표시
         minSummonInvest = 2500, --몬스터 소환비용 최소치
         summonInvestChange = 500, --몬스터 소환비용 최소변동치
+        expandCostBase = 10000, --던전 확장비용 기본값
         king = '{"성별":"남성","페니스":"대물","음모":"무성함", "외형":"중년","헤어스타일":"날렵하게 세워올린 짧은 은발"}', --광왕 디폴트 설정
         models = '{"trainResponse":"0","trainLog":"1", "newChar":"0"}', --상황별 사용 모델 설정. 0:보조모델, 1:메인모델
     }

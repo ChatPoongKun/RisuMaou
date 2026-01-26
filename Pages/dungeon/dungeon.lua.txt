@@ -1,0 +1,76 @@
+[dungeon/tab_place/hidden] function(triggerId)
+    setChatVar(triggerId, "category", "place")
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/tab_summon/hidden] function(triggerId)
+    setChatVar(triggerId, "category", "summon")
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/select_slot/hidden] function(triggerId, slotId)
+    setChatVar(triggerId, "selectedSlot", slotId)
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/select_unit/hidden] function(triggerId, unitKey)
+    setChatVar(triggerId, "selectedUnit", unitKey)
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/confirm_place/hidden] function(triggerId)
+    local slot = getChatVar(triggerId, "selectedSlot")
+    local unit = getChatVar(triggerId, "selectedUnit")
+    
+    if not slot or slot == "" then
+        alertNormal(triggerId, "배치할 슬롯을 선택해주세요.")
+        return
+    end
+    
+    if not unit or unit == "" then
+        alertNormal(triggerId, "배치할 유닛을 선택해주세요.")
+        return
+    end
+    
+    -- 배치 로직 호출
+    local res = sysFunction(triggerId, "dungeon.sys", "equip", slot, unit)
+    if res then
+        alertNormal(triggerId, "배치되었습니다.")
+        setChatVar(triggerId, "selectedSlot", "")
+        setChatVar(triggerId, "selectedUnit", "")
+        sysFunction(triggerId, "dungeon.sys", "render")
+    end
+end!!
+
+[dungeon/summon/hidden] function(triggerId)
+    sysFunction(triggerId, "summon.sys", "summon")
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/summon_inc/hidden] function(triggerId)
+    sysFunction(triggerId, "summon.sys", "adjustInvest", "plus")
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/summon_dec/hidden] function(triggerId)
+    sysFunction(triggerId, "summon.sys", "adjustInvest", "minus")
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/summon_input/hidden] function(triggerId)
+    local input = alertInput(triggerId, "투자할 Spirit을 입력하세요 (최소 2500, 500단위)"):await()
+    if input then
+        sysFunction(triggerId, "summon.sys", "adjustInvest", input)
+        sysFunction(triggerId, "dungeon.sys", "render")
+    end
+end!!
+
+[dungeon/expand/hidden] function(triggerId)
+    sysFunction(triggerId, "dungeon.sys", "expand")
+    sysFunction(triggerId, "dungeon.sys", "render")
+end!!
+
+[dungeon/199/뒤로가기] function(triggerId)
+    setChatVar(triggerId, "category", "items") -- 메인화면 초기 탭
+    screenChange(triggerId, "main")
+end!!

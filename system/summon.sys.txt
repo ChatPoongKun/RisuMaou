@@ -1,0 +1,182 @@
+-- summon.sys.txt
+-- 몬스터 소환 시스템
+
+(function()
+    local funcs = {}
+
+    -- 투자금 조절 (증감/설정)
+    function funcs.adjustInvest(triggerId, input)
+        local minInvest = tonumber(getChatVar(triggerId, "minSummonInvest"))
+        local invest = tonumber(getChatVar(triggerId, "summonInvest")) or minInvest
+        local spiritStr = getChatVar(triggerId, "spirit") or "0"
+        local spirit = tonumber((spiritStr:gsub(",", ""))) or 0
+
+        -- 피보나치 수열 (1, 2, 3, 5, 8, 13...) 및 누적합 계산
+        -- Invest = minInvest + 500 * Sum(Fib(1)..Fib(n))
+        local function getFib(n)
+            if n < 1 then return 0 end
+            if n == 1 then return 1 end
+            if n == 2 then return 2 end -- 1, 2, 3, 5, 8... starts here
+            local a, b = 1, 2
+            for i = 3, n do
+                a, b = b, a + b
+            end
+            return b
+        end
+
+        local function getCumulative(n)
+            local sum = 0
+            for i = 1, n do
+                sum = sum + getFib(i)
+            end
+            return minInvest + sum * 500
+        end
+
+        -- Invest값에 해당하는 n 찾기
+        local function getN(val)
+            if val <= minInvest then return 0 end
+            local n = 1
+            while true do
+                local current = getCumulative(n)
+                if current >= val then
+                    local prev = getCumulative(n-1)
+                    if (val - prev) < (current - val) then
+                        return n - 1
+                    else
+                        return n
+                    end
+                end
+                n = n + 1
+                if n > 100 then return 100 end -- Safety break
+            end
+        end
+
+        local target = minInvest
+        local nextN = 0
+
+        if input == "plus" then
+            local currentN = getN(invest)
+            nextN = currentN + 1
+            target = getCumulative(nextN)
+            
+            -- Spirit 체크
+            if target > spirit then
+                alertNormal(triggerId, "보유 Spirit이 부족하여 설정할 수 없습니다. (필요: " .. intForm(target) .. ")")
+                return
+            end
+        elseif input == "minus" then
+            local currentN = getN(invest)
+            nextN = math.max(0, currentN - 1)
+            target = getCumulative(nextN)
+        else
+            -- 직접 입력 (500단위 내림)
+            local val = tonumber(input) or minInvest    
+            target = math.floor(val / 500) * 500
+            
+            -- 보유 Spirit 초과 시 최대 가능 금액으로 조정
+            if target > spirit then
+                target = math.floor(spirit / 500) * 500
+            end
+
+            -- 최소 금액 minInvest 유지
+            if target < minInvest then target = minInvest end
+            nextN = getN(target)
+        end
+        
+        -- Change값은 다음 단계 비용(Fib(n+1) * 500)을 표시
+        -- 현재 단계 인덱스의 수열 값
+        local changeVal = getFib(nextN + 1) * 500
+
+        setChatVar(triggerId, "summonInvest", tostring(math.floor(target)))
+        setChatVar(triggerId, "summonInvestChange", tostring(math.floor(changeVal)))
+    end
+
+    -- 소환 실행
+    function funcs.summon(triggerId)
+        local spiritStr = getChatVar(triggerId, "spirit") or "0"
+        local spirit = tonumber((spiritStr:gsub(",", ""))) or 0
+        local invest = tonumber(getChatVar(triggerId, "summonInvest")) or tonumber(getChatVar(triggerId, "minSummonInvest"))
+        
+        if spirit < invest then
+            alertNormal(triggerId, "Spirit이 부족합니다. (필요: " .. intForm(invest) .. ")")
+            return
+        end
+        
+        -- 1. 소환 가능한 최대 레이팅 계산 (공식: sqrt(invest * 10))
+        local maxRating = math.floor(math.sqrt(invest * 10))
+        
+        -- 2. 몬스터 풀 로드 및 필터링
+        local monsterDB = getDB(triggerId, "monsters.db")
+        local inventory = json.decode(getChatVar(triggerId, "inventory") or "{}")
+        
+        local candidates = {}
+        for k, v in pairs(monsterDB) do
+            local qty = tonumber(inventory["monster:"..k]) or 0
+            if qty == 0 and v.rating <= maxRating then
+                table.insert(candidates, {key=k, data=v})
+            end
+        end
+        
+        if #candidates == 0 then
+            alertNormal(triggerId, "조건에 맞는 소환 가능한 몬스터가 없습니다.\n(보유한 Spirit 부족 또는 해당 등급 내 모든 몬스터 보유)")
+            return
+        end
+        
+        -- 3. 소환 성공 (랜덤 선택)
+        local pick = candidates[math.random(#candidates)]
+        
+        -- 비용 차감
+        spirit = spirit - invest
+        setChatVar(triggerId, "spirit", intForm(spirit))
+        
+        -- 인벤토리 추가
+        inventory["monster:"..pick.key] = 1
+        setChatVar(triggerId, "inventory", json.encode(inventory))
+        
+        -- Screen Effect로 성공 알림
+        local color = "#ffffff" -- 기본: 하급 (흰색)
+        
+        -- 태그 기반 색상 결정
+        local isMiddle = false
+        local isUpper = false
+        if pick.data.tags then
+            for _, tag in ipairs(pick.data.tags) do
+                if tag == "중급" then isMiddle = true end
+                if tag == "상급" then isUpper = true end
+            end
+        end
+        
+        if isMiddle then color = "#1e90ff" end -- 파란색
+        if isUpper then color = "#b04ef0" end -- 보라색
+        
+        -- 레이팅 2000 이상은 노란색 (최우선)
+        if pick.data.rating >= 2000 then color = "#ffd700" end
+
+        local effectHtml = string.format([[
+<div style="position:fixed; top:0; left:0; width:100%%; height:100%%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; animation:fadeInOut 1.0s forwards; pointer-events:none;">
+<h1 style="color:%s; text-shadow:0 0 10px %s; font-size:2rem; margin-bottom:1rem;">SUMMON SUCCESS!</h1>
+<div style="background:#222; border:2px solid %s; padding:1rem; border-radius:10px; text-align:center;">
+<img src="{{raw::%s}}" style="width:100px; height:100px; object-fit:contain; margin-bottom:0.5rem;">
+<div style="color:#fff; font-size:1.2rem; font-weight:bold;">%s</div>
+<div style="color:#aaa;">Rating: ★%d</div>
+</div>
+</div>
+<style>
+@keyframes fadeInOut {
+0%% { opacity: 0; transform: scale(0.8); }
+10%% { opacity: 1; transform: scale(1); }
+80%% { opacity: 1; }
+100%% { opacity: 0; }
+}
+</style>
+]], color, color, color, pick.key, pick.data.name, pick.data.rating)
+        
+        setChatVar(triggerId, "screenEffect", effectHtml)
+    end
+
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        end
+    end
+end)()
