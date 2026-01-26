@@ -341,28 +341,19 @@ onButtonClick = async(function(triggerId, data)
         initialize(triggerId)
         print("게임 시작")
     else
-        local screen = getState(triggerId, "screen")
-        if string.find(data, "charInfo") then --캐릭터카드 클릭시 작동
-            --local cmd = string.match(data, "(.*)_charInfo") --숫자입력을 통한 캐릭터 선택의 구현은 추후 고민
-            local name = string.match(data, "charInfo_(.*)")
-            sysFunction(triggerId, "char.sys", "card", name)
+        -- .sys 호출 패턴인지 확인 (단순히 .sys가 포함되어 있으면 해당 파일을 호출)
+        local sysFile = string.match(data, "^(.-%.sys)")
 
-            -- 사전 버튼 클릭 (동적 라우팅)
-        elseif string.find(data, "dict_") then
-            -- dict_카테고리_항목이름 형태 파싱
-            -- 항목이름에 _가 포함될 수 있으므로 정규식 주의
-            local category, name = string.match(data, "dict_([^_]+)_(.*)")
-            if category and name then
-                sysFunction(triggerId, "dictSelect.sys", category, name)
-            else
-                debug("잘못된 사전 키 형식: " .. data)
-            end
+        if sysFile then
+            -- 데이터 파싱은 각 sys파일의 click 함수 내에서 처리하도록 원본 data를 그대로 전달
+            sysFunction(triggerId, sysFile, "click", data)
         else
+            local screen = getState(triggerId, "screen")
             executeFunction(triggerId, screen, data)
         end
 
         --현재 페이지에 맞는 html호출
-        screen = getState(triggerId, "screen")
+        local screen = getState(triggerId, "screen")
         local html = getLoreBookContent(triggerId, screen .. ".html")
         setChatVar(triggerId, "html", html)
         processAndStoreLore(triggerId, screen .. ".lua")

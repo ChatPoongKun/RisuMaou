@@ -96,7 +96,7 @@ end!!
     for _, k in ipairs(list) do
         if items["tools"][k] then
             local name = items["tools"][k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. '<div class="btn command-btn" risu-btn="dictSelect.sys_item_'..k..'">'..name..'</div>'
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -112,7 +112,7 @@ end!!
     for _, k in ipairs(list) do
         if items["consumables"][k] then
             local name = items["consumables"][k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. '<div class="btn command-btn" risu-btn="dictSelect.sys_item_'..k..'">'..name..'</div>'
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -128,7 +128,7 @@ end!!
     for _, k in ipairs(list) do
         if items[k] then
             local name = items[k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. '<div class="btn command-btn" risu-btn="dictSelect.sys_item_'..k..'">'..name..'</div>'
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -144,7 +144,7 @@ end!!
     for _, k in ipairs(list) do
         if items["unlock"][k] then
             local name = items["unlock"][k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. '<div class="btn command-btn" risu-btn="dictSelect.sys_item_'..k..'">'..name..'</div>'
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -166,7 +166,7 @@ end!!
         -- m은 이제 영문 키
         if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
-            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
+            <div class="monster-item" risu-btn="dictSelect.sys_monster_]]..m..[[">
             <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
@@ -193,7 +193,7 @@ end!!
     for _, m in ipairs(monstersList) do
         if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
-            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
+            <div class="monster-item" risu-btn="dictSelect.sys_monster_]]..m..[[">
             <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
@@ -219,7 +219,7 @@ end!!
     for _, m in ipairs(monstersList) do
         if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
-            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
+            <div class="monster-item" risu-btn="dictSelect.sys_monster_]]..m..[[">
             <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
