@@ -36,6 +36,18 @@
         end
     end
 
+    -- 버튼 클릭 핸들러
+    -- data format: "char.sys_card_name"
+    function funcs.click(triggerId, data)
+        -- sys파일명_card_name 형태에서 name 추출
+        local name = string.match(data, "card_(.*)")
+        if name then
+            funcs.card(triggerId, name)
+        else
+            debug("char.sys: 잘못된 데이터 포맷 - " .. tostring(data))
+        end
+    end
+
     -- 캐릭터 목록 생성
     function funcs.list(triggerId)
         local chars = json.decode(getChatVar(triggerId, "chars"))
@@ -123,7 +135,7 @@
 
             -- HTML 조립
             local card = [[
-<div class="]] .. cardClass .. [[" risu-btn="charInfo_]] .. name .. [[">
+<div class="]] .. cardClass .. [[" risu-btn="char.sys_card_]] .. name .. [[">
 <div class="char-info">
 <p class="char-name-line">
 <span class="char-condition">[]] ..
