@@ -1,0 +1,83 @@
+<div class="container">
+<header class="header">
+<h1>던전 관리</h1>
+<div class="game-info">
+<span>{{getvar::dungeonFloors}}층 / 9층</span>
+<span>{{getvar::spirit}} Spirit</span>
+</div>
+</header>
+
+<main>
+<!-- Dungeon Content -->
+<section class="dungeon-container">
+<!-- Top Stats Bar -->
+<div class="dungeon-stats">
+<div><strong>Rating 합계: {{getvar::totalRating}}</strong></div>
+</div>
+
+<!-- Flex Layout for Grid and Synergy handled in Lua generation -->
+<div class="dungeon-floors">
+{{getvar::floorHtml}}
+</div>
+</section>
+<div class="line single"></div>
+<!-- Management Panel -->
+<section class="management-panel">
+<div class="tabs-container">
+<div class="tabs {{#if {{equal::{{getvar::category}}::place}}}}active{{/if}}" risu-btn="tab_place">배치</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::summon}}}}active{{/if}}" risu-btn="tab_summon">소환</div>
+</div>
+
+<div class="tab-content">
+{{#when::category::vis::place}}
+<div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+<strong>▶&nbsp;&nbsp;보유 전력</strong>
+</div>
+
+<div style="font-size:0.8rem; color:#888; margin-top:0.5rem;">몬스터</div>
+<div class="unit-list">
+{{getvar::monsterListHtml}}
+</div>
+
+<div style="font-size:0.8rem; color:#888; margin-top:1rem;">함정</div>
+<div class="unit-list">
+{{getvar::trapListHtml}}
+</div>
+
+{{#if {{equal::{{getvar::unitCount}}::0}}}}
+<div style="padding: 1rem; text-align: center; color: #555;">보유 중인 몬스터나 함정이 없습니다.</div>
+{{/if}}
+{{/when}}
+
+{{#when::category::vis::summon}}
+<div class="summon-panel">
+<div style="margin-bottom: 1rem; color: #ccc; text-align: center;">
+몬스터를 소환합니다.<br>
+</div>
+<div class="cost-display" style="text-align: center;">
+<span class="btn" risu-btn="summon_dec">-{{getvar::summonInvestChange}}</span>
+<span class="summonInvestDisplay" style="cursor:pointer;" risu-btn="summon_input">&nbsp;&nbsp;{{getvar::summonInvestDisplay}} Spirit&nbsp;&nbsp;</span>
+<span class="btn" risu-btn="summon_inc">+{{getvar::summonInvestChange}}</span>
+</div>
+
+<!-- Preview Section -->
+<div style="margin-bottom:1rem; text-align:center;">
+<div style="font-size:0.8rem; color:#888; margin-bottom:0.3rem;">소환 가능 목록</div>
+<div>{{getvar::summonPreviewHtml}}</div>
+</div>
+
+<div class="btn command-btn" style="text-align:center;" risu-btn="summon">
+🔯 몬스터 소환 🔯
+</div>
+</div>
+{{/when}}
+</div>
+</section>
+
+<div class="line single"></div>
+<section class="command-panel">
+{{getVar::cmds}}
+{{getvar::screenEffect}}
+</section>
+</main>
+</div>

@@ -1,0 +1,34 @@
+{///synergy[key]: {name: 이름, desc: 설명, type: "global"/"local", condition: "LUA Code", targets: "LUA Code/String", effect: "LUA Code"}
+    "trap_master": {
+        "name": "함정 전문가",
+        "desc": "던전 내에 함정 5개 이상 배치 (전체 함정 데미지 증가)",
+        "type": "global",
+        "condition": "return count('tag', '함정') >= 5",
+        "targets": "return getByTag('함정')",
+        "effect": "trapDmg(1.2)"
+    },
+    "beast_flank": {
+        "name": "야수의 호위",
+        "desc": "인간형 몬스터 좌우에 야수가 배치되면 야수들의 방어력 증가",
+        "type": "local",
+        "condition": "return self.hasTag('인간형') and left.hasTag('야수') and right.hasTag('야수')",
+        "targets": "return {left.index, right.index}",
+        "effect": "defBuff(1.5)"
+    },
+    "underdog": {
+        "name": "언더독",
+        "desc": "던전 전체 레이팅 합계가 500 미만 (전체 경험치 보너스)",
+        "type": "global",
+        "condition": "return sum('rating') < 500",
+        "targets": "return 'all'",
+        "effect": "expBonus(1.5)"
+    },
+    "fire_combo": {
+        "name": "화염 확산",
+        "desc": "화염 속성 개체가 서로 인접하면 해당 개체들의 화염 데미지 증가",
+        "type": "local",
+        "condition": "return self.hasTag('화염') and (left.hasTag('화염') or right.hasTag('화염'))",
+        "targets": "return 'center'",
+        "effect": "fireDmg(1.3)"
+    }
+}

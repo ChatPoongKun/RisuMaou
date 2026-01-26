@@ -23,12 +23,6 @@ flex-shrink: 0;
 overflow: hidden;
 }
 
-.character-portrait img {
-width: 100%;
-height: 100%;
-object-fit: cover;
-}
-
 .character-info-wrapper {
 flex-grow: 1;
 min-width: 0;
@@ -69,15 +63,28 @@ gap: 0.25rem;
 margin-bottom: 1.5rem;
 }
 
+.info-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+gap: 0.25rem;
+}
+
 .inventory-item {
 background: #222;
-padding: 0.2rem 0.5rem;
+padding: 0.2rem 0.3rem;
 border-radius: 2px;
-font-size: 0.85rem;
+font-size: 0.75rem;
 color: #ccc;
 border: 1px solid #333;
 display: flex;
-justify-content: space-between;
+align-items: center;
+overflow: hidden;
+white-space: nowrap;
+}
+
+.inventory-item span {
+overflow: hidden;
+text-overflow: ellipsis;
 }
 
 .dungeon-floor-grid {
@@ -226,26 +233,18 @@ class="inventory-item" style="border-color:#880e4f"><strong>금단의지식</str
 
 {{#when::category::vis::traps}}
 <span class="section-label">몬스터</span>
-<div style="font-size:0.8rem; color:#555;">보유 몬스터 없음</div>
+<div class="info-grid">
+{{getvar::monsterListHtml}}
+</div>
 
 <span class="section-label" style="margin-top:1rem;">함정</span>
-<div style="font-size:0.8rem; color:#555;">보유 함정 없음</div>
+<div class="info-grid">
+    {{getvar::trapListHtml}}
+</div>
 {{/when}}
 
 {{#when::category::vis::dungeon}}
-<div
-style="display:flex; justify-content:space-between; margin-bottom:1rem; font-size:0.85rem; color:#888;">
-<span>던전 Lv.{{getvar::dungeonLv}}</span>
-</div>
-<div class="dungeon-floor-grid">
-<div class="dungeon-floor"><strong>1F</strong> 부하 50체</div>
-<div class="dungeon-floor"><strong>2F</strong> 부하 35체 / <span style="color:#aaa">인간목장</span></div>
-<div class="dungeon-floor"><strong>3F</strong> 부하 20체 / <span style="color:#aaa">미궁</span></div>
-</div>
-<div
-style="margin-top:1rem; border-top:1px solid #333; padding-top:0.5rem; font-size:0.8rem; color:#666; text-align:right;">
-종합 전력: 105
-</div>
+{{getvar::dungeonStatusHtml}}
 {{/when}}
 </div>
 </section>

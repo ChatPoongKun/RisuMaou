@@ -1,0 +1,614 @@
+-- dungeon.sys.txt
+-- 던전 관리 시스템 (배치, 확장, 시너지 계산)
+
+(function()
+    local funcs = {}
+
+    -- 던전 확장 로직
+    function funcs.expand(triggerId)
+        local dungeon = getState(triggerId, "dungeon") or {}
+        local currentFloors = dungeon.floors or 1
+        
+        if currentFloors >= 9 then
+            alertNormal(triggerId, "더 이상 확장할 수 없습니다.")
+            return
+        end
+        
+        local cost = currentFloors * 5000
+        local spirit = tonumber((getChatVar(triggerId, "spirit"):gsub(",", ""))) or 0
+        
+        if spirit < cost then
+            alertNormal(triggerId, "Spirit이 부족합니다. (필요: " .. intForm(cost) .. ")")
+            return
+        end
+        
+        -- 비용 지불 및 확장
+        spirit = spirit - cost
+        setChatVar(triggerId, "spirit", intForm(spirit))
+        
+        dungeon.floors = currentFloors + 1
+        setState(triggerId, "dungeon", dungeon)
+        alertNormal(triggerId, "던전이 " .. dungeon.floors .. "층으로 확장되었습니다!")
+    end
+
+    -- 버튼 클릭 핸들러 (Script.lua 연동)
+    function funcs.click(triggerId, data)
+        -- 접두사 제거 ("dungeon.sys_" 제거)
+        local cmd = data:gsub("^dungeon%.sys_", "")
+        
+        if cmd == "expand" then
+            funcs.expand(triggerId)
+            funcs.render(triggerId) -- 화면 갱신
+            
+        elseif cmd:find("^selectSlot_") then
+            local slotId = cmd:match("^selectSlot_(.+)")
+            local selectedUnit = getChatVar(triggerId, "selectedUnit")
+            
+            if selectedUnit and selectedUnit ~= "" then
+                -- 유닛 선택 상태: 빈 슬롯이면 배치 시도
+                if funcs.equip(triggerId, slotId, selectedUnit) then
+                    setChatVar(triggerId, "selectedUnit", "")
+                    setChatVar(triggerId, "selectedSlot", "")
+                end
+            else
+                -- 유닛 미선택 상태:
+                -- 1. 이미 배치된 슬롯이면 배치 해제
+                local dungeon = getState(triggerId, "dungeon") or {}
+                if dungeon.grid and dungeon.grid[slotId] then
+                    funcs.unequip(triggerId, slotId)
+                    setChatVar(triggerId, "selectedSlot", "") -- 선택 해제
+                else
+                    -- 2. 빈 슬롯이면 선택 상태 토글 (기존 로직)
+                    local current = getChatVar(triggerId, "selectedSlot")
+                    if current == slotId then
+                        setChatVar(triggerId, "selectedSlot", "")
+                    else
+                        setChatVar(triggerId, "selectedSlot", slotId)
+                    end
+                end
+            end
+            funcs.render(triggerId)
+            
+        elseif cmd:find("^selectUnit_") then
+            -- "selectUnit_monster:key" 형태
+            local unitKey = cmd:match("^selectUnit_(.+)")
+            local selectedSlot = getChatVar(triggerId, "selectedSlot")
+            
+            -- 배치 제한 및 트랩 예외 처리
+            local type, key = unitKey:match("^(%w+):(.+)$")
+            local inventory = json.decode(getChatVar(triggerId, "inventory") or "{}")
+            local owned = tonumber(inventory[unitKey]) or 0
+            local placed = funcs.countPlaced(triggerId, unitKey)
+            
+            local isFull = (type ~= "trap" and placed >= owned)
+            
+            if isFull then
+                -- 이미 가득 찬 유닛을 클릭하면 배치 해제 (마지막 인스턴스)
+                local dungeon = getState(triggerId, "dungeon") or {}
+                local grid = dungeon.grid or {}
+                local lastSlotId = nil
+                
+                -- 가장 높은 슬롯 번호(혹은 임의의) 찾기
+                for k, v in pairs(grid) do
+                    if v.type == type and v.key == key then
+                        lastSlotId = k
+                    end
+                end
+                
+                if lastSlotId then
+                    funcs.unequip(triggerId, lastSlotId)
+                end
+            else
+                -- 일반 선택 로직
+                if selectedSlot and selectedSlot ~= "" then
+                    if funcs.equip(triggerId, selectedSlot, unitKey) then
+                        setChatVar(triggerId, "selectedUnit", "")
+                        setChatVar(triggerId, "selectedSlot", "")
+                    end
+                else
+                     local current = getChatVar(triggerId, "selectedUnit")
+                     if current == unitKey then
+                         setChatVar(triggerId, "selectedUnit", "")
+                     else
+                         setChatVar(triggerId, "selectedUnit", unitKey)
+                         -- 슬롯 선택이 있으면 해제? (요청사항: 몬스터>슬롯 방식이면 몬스터 강조)
+                         -- 기존 selectedSlot을 유지할지 말지는 정책 나름이나, "몬스터>슬롯" 흐름을 위해선 유지하지 않는게 깔끔할 수 있음.
+                         -- 하지만 "슬롯 선택 상태에서 몬스터만 바꾸는" 케이스도 있으므로 유지.
+                     end
+                end
+            end
+            funcs.render(triggerId)
+        end
+    end
+
+    -- 유닛 배치 로직
+    -- unitKey format: "type:key" (e.g., "monster:slime_minor")
+    function funcs.equip(triggerId, slotId, unitKey)
+        local dungeon = getState(triggerId, "dungeon") or {}
+        dungeon.grid = dungeon.grid or {}
+        
+        -- ":"로 파싱하거나, 없는 경우 타입 추론 필요. 현재는 UI에서 항상 "type:key"로 보냄.
+        local type, key = unitKey:match("^(%w+):(.+)$")
+        if not type then return false end
+        
+        -- 보유량 체크
+        local inventory = json.decode(getChatVar(triggerId, "inventory") or "{}")
+        local owned = tonumber(inventory[unitKey]) or 0
+        local placed = funcs.countPlaced(triggerId, unitKey)
+        
+        if type ~= "trap" and placed >= owned then
+            alertNormal(triggerId, "보유한 수량만큼 이미 배치했습니다.")
+            return false
+        end
+        
+        dungeon.grid[slotId] = {
+            type = type,
+            key = key
+        }
+        
+        setState(triggerId, "dungeon", dungeon)
+        funcs.recalcStats(triggerId) -- 스탯 재계산
+        return true
+    end
+
+    -- 배치 해제
+    function funcs.unequip(triggerId, slotId)
+        local dungeon = getState(triggerId, "dungeon") or {}
+        dungeon.grid = dungeon.grid or {}
+        
+        if dungeon.grid[slotId] then
+            dungeon.grid[slotId] = nil
+            setState(triggerId, "dungeon", dungeon)
+            funcs.recalcStats(triggerId)
+        end
+    end
+
+    -- 현재 배치된 특정 유닛 수량 카운트
+    function funcs.countPlaced(triggerId, targetKey)
+        local dungeon = getState(triggerId, "dungeon") or {}
+        local grid = dungeon.grid or {}
+        local count = 0
+        
+        -- targetKey format: "type:key" or just "key" (if type known)
+        -- safe check
+        local tType, tKey = targetKey:match("^(%w+):(.+)$")
+        if not tType then return 0 end
+        
+        for k, v in pairs(grid) do
+            if v.type == tType and v.key == tKey then
+                count = count + 1
+            end
+        end
+        return count
+    end
+
+    -- 시너지 및 스탯 재계산 (핵심 로직)
+    function funcs.recalcStats(triggerId)
+        local dungeon = getState(triggerId, "dungeon") or {}
+        local grid = dungeon.grid or {}
+        local synergyDB = getDB(triggerId, "synergy.db")
+        local monomerDB = getDB(triggerId, "monsters.db")
+        local trapDB = getDB(triggerId, "trap.db")
+        
+        -- 1. 그리드 데이터 강화 (태그, 스탯 등 미리 로드하여 접근성 향상)
+        local richGrid = {}
+        local totalRating = 0
+        local floorRatings = {} -- 층별 레이팅 저장
+        for f=1, dungeon.floors do floorRatings[f] = 0 end
+        
+        for k, v in pairs(grid) do
+            local data = (v.type == "monster" and monomerDB[v.key]) or (v.type == "trap" and trapDB[v.key])
+            if data then
+                richGrid[k] = {
+                    slot = k,
+                    type = v.type,
+                    key = v.key,
+                    tags = data.tags or {},
+                    rating = data.rating or 0,
+                    data = data,
+                    
+                    -- 편의 메서드
+                    hasTag = function(self_obj, t)
+                        for _, tag in ipairs(self_obj.tags) do
+                            if tag == t then return true end
+                        end
+                        return false
+                    end
+                }
+                totalRating = totalRating + (data.rating or 0)
+                
+                -- 층별 합계 계산
+                local f, s = k:match("^(%d+)_(%d+)$")
+                if f then
+                    f = tonumber(f)
+                    floorRatings[f] = (floorRatings[f] or 0) + (data.rating or 0)
+                end
+            end
+        end
+        
+        -- 2. 시너지 패턴 매칭 엔진
+        local activeSynergies = {}
+        local floorSynergies = {} -- 층별 시너지 저장
+        for f = 1, dungeon.floors do floorSynergies[f] = {} end
+        
+        -- 헬퍼 함수 정의 (_ENV for Lua Sandbox)
+        local env = {
+            pairs = pairs, ipairs = ipairs, tonumber = tonumber,
+            string = string, table = table, math = math,
+            count = function(field, val)
+                local c = 0
+                for _, node in pairs(richGrid) do
+                    if field == 'tag' then
+                        if node.hasTag(node, val) then c = c + 1 end
+                    end
+                end
+                return c
+            end,
+            sum = function(field)
+                local s = 0
+                for _, node in pairs(richGrid) do
+                    if field == 'rating' then s = s + node.rating end
+                end
+                return s
+            end
+        }
+        
+        for synKey, synData in pairs(synergyDB) do
+            if synData.type == "global" then
+                -- 글로벌 조건 체크
+                local condFunc = load("return " .. synData.condition, nil, "t", env)
+                if condFunc and condFunc() then
+                    table.insert(activeSynergies, synData.name)
+                    -- 글로벌 시너지는 모든 층에 표시? or 상단에만? 
+                    -- 요청: "각 층에 귀속되게". 글로벌은 "전체 층" 귀속으로 1층 혹은 별도 표기가 맞으나,
+                    -- 편의상 'Global' 태그 달고 1층에 보이거나 별도 처리.
+                    -- 여기서는 activeSynergies(전체)에만 넣고 층별엔 안넣음 (혹은 모든 층에?)
+                    -- 일단 로컬 시너지가 중요하므로 로컬에 집중.
+                end
+                
+            elseif synData.type == "local" then
+                -- 로컬(슬롯별) 조건 체크
+                for f = 1, dungeon.floors do
+                    local matchCount = 0
+                    for s = 1, 5 do
+                        local slotId = string.format("%d_%d", f, s)
+                        local node = richGrid[slotId]
+                        
+                        if node then
+                            local left = richGrid[string.format("%d_%d", f, s-1)] or {hasTag=function() return false end, index="none"}
+                            local right = richGrid[string.format("%d_%d", f, s+1)] or {hasTag=function() return false end, index="none"}
+                            
+                            env.self = node
+                            env.left = left
+                            env.right = right
+                            env.index = slotId
+                            
+                            local condFunc = load("return " .. synData.condition, nil, "t", env)
+                            if condFunc and condFunc() then
+                                matchCount = matchCount + 1
+                            end
+                        end
+                    end
+                    
+                    if matchCount > 0 then
+                         local text = synData.name .. " x" .. matchCount
+                         table.insert(floorSynergies[f], text)
+                         table.insert(activeSynergies, text .. " ("..f.."F)")
+                    end
+                end
+            end
+        end
+        
+        -- 결과 저장
+        setChatVar(triggerId, "totalRating", intForm(totalRating))
+        
+        if #activeSynergies > 0 then
+            setChatVar(triggerId, "activeSynergies", table.concat(activeSynergies, ", "))
+        else
+            setChatVar(triggerId, "activeSynergies", "없음")
+        end
+        
+        return floorSynergies, floorRatings
+    end
+
+    -- (Helper) 던전 그리드 HTML 생성
+    function funcs.getGridHtml(triggerId, readOnly)
+        local dungeon = getState(triggerId, "dungeon") or {}
+        local floorSyns, floorRatings = funcs.recalcStats(triggerId)
+        
+        -- 툴팁용 DB 로드
+        local monsters = getDB(triggerId, "monsters.db")
+        local traps = getDB(triggerId, "trap.db")
+        
+        local floorHtml = ""
+        for f = 1, dungeon.floors do
+            -- 시너지 텍스트 생성
+            local synText = ""
+            if floorSyns[f] and #floorSyns[f] > 0 then
+                synText = table.concat(floorSyns[f], "<br>")
+            else
+                synText = "<span style='color:#555'>-</span>"
+            end
+
+            -- 층별 래퍼 시작
+            floorHtml = floorHtml .. string.format([[
+<div class="floor-wrapper">
+<div class="floor-header">
+<span>%dF</span>
+</div>
+<div class="floor-left">
+<div class="floor-slots">
+]], f, f)
+            
+            for s = 1, 5 do
+                local slotId = string.format("%d_%d", f, s)
+                local content = dungeon.grid[slotId]
+                local inner = '<div class="slot-empty">+</div>'
+                local selectedClass = ""
+                local btnAttr = ""
+                local inlineStyle = ""
+                
+                -- 툴팁 생성
+                local tooltipAttr = ""
+                if content then
+                    local name = ""
+                    local rating = 0
+                    if content.type == "monster" and monsters[content.key] then
+                        name = monsters[content.key].name
+                        rating = monsters[content.key].rating
+                    elseif content.type == "trap" and traps[content.key] then
+                        name = traps[content.key].name
+                        rating = traps[content.key].rating
+                    end
+                    
+                    if name ~= "" then
+                        tooltipAttr = string.format('title="%s (★%d)"', name, rating)
+                    end
+                end
+                
+                if readOnly then
+                    -- 읽기 전용 모드
+                    if content then
+                        inner = string.format('<img src="{{raw::%s}}" %s>', content.key, tooltipAttr)
+                        selectedClass = "occupied"
+                        inlineStyle = "cursor:default;"
+                    else
+                        inner = '<div class="slot-empty" style="opacity:0.3">+</div>' 
+                    end
+                else
+                    -- 관리 모드
+                    if getChatVar(triggerId, "selectedSlot") == slotId then
+                        selectedClass = "selected"
+                        inner = inner .. "<div style='position:absolute; top:0; left:0; width:100%; height:100%; border:2px solid #60d9f7; box-shadow:0 0 8px rgba(96, 217, 247, 0.5); pointer-events:none; box-sizing:border-box;'></div>"
+                    end
+
+                    if content then
+                        inner = string.format('<img src="{{raw::%s}}" %s>', content.key, tooltipAttr)
+                        selectedClass = selectedClass .. "occupied"
+                    end
+                    btnAttr = string.format('risu-btn="dungeon.sys_selectSlot_%s"', slotId)
+                end
+                
+                floorHtml = floorHtml .. string.format([[
+<div class="d-slot %s" style="%s" %s>
+%s
+</div>
+]], selectedClass, inlineStyle, btnAttr, inner)
+            end
+            
+            -- 래퍼 종료 및 시너지 섹션 추가
+            -- 층별 레이팅 표시 (시너지 영역)
+            local floorRatingText = ""
+            if floorRatings[f] and floorRatings[f] > 0 then
+                floorRatingText = string.format(" <span style='font-size:0.7em; color:#fbc02d;'>(Total: %s)</span>", intForm(floorRatings[f]))
+            end
+            
+            floorHtml = floorHtml .. string.format([[
+</div>
+</div>
+<div class="floor-right">
+<div class="floor-synergy-title">Synergy%s</div>
+<div class="floor-synergy-list">%s</div>
+</div>
+</div>]], floorRatingText, synText)
+            
+            -- 확장 버튼 (관리 모드 && 마지막층 && 최대층 미만)
+            if not readOnly and (f == dungeon.floors and f < 9) then 
+                floorHtml = floorHtml .. string.format([[
+<div class="btn command-btn" risu-btn="dungeon.sys_expand">
+확장 ({{getvar::expandCost}} Sp)
+</div>
+]])
+            end
+        end
+        
+        -- readOnly 모드(메인 화면)일 때 상단에 Total Rating 표시 추가
+        if readOnly then
+            local totalRating = getChatVar(triggerId, "totalRating") or "0"
+            local topStats = string.format([[
+<div class="dungeon-stats" style="margin-bottom:0.5rem;">
+<div><strong>Rating 합계: %s</strong></div>
+</div>
+]], totalRating)
+            floorHtml = topStats .. floorHtml
+        end
+        
+        return floorHtml
+    end
+
+    -- 던전 화면 렌더링 (HTML 생성 -> ChatVar 설정)
+    function funcs.render(triggerId)
+        local dungeon = getState(triggerId, "dungeon") or {}
+        if not dungeon.floors then
+            dungeon.floors = 1
+            dungeon.grid = {} 
+            setState(triggerId, "dungeon", dungeon)
+        end
+        
+        local expandCostBase = getChatVar(triggerId, "expandCostBase") or 5000
+        setChatVar(triggerId, "dungeonFloors", dungeon.floors)
+        setChatVar(triggerId, "expandCost", intForm(dungeon.floors * expandCostBase)) 
+        setChatVar(triggerId, "category", getChatVar(triggerId, "category") or "place")
+        
+        local html = funcs.getGridHtml(triggerId, false)
+        setChatVar(triggerId, "floorHtml", html)
+        
+        -- 소환 투자금 & 미리보기 계산 (기존 유지)
+        if not getChatVar(triggerId, "summonInvest") then
+            setChatVar(triggerId, "summonInvest", 2500)
+        end
+        local investStr = intForm(getChatVar(triggerId, "summonInvest"))
+        setChatVar(triggerId, "summonInvestDisplay", investStr)
+        
+        local invest = tonumber(getChatVar(triggerId, "summonInvest")) or 2500
+        local maxRating = math.floor(math.sqrt(invest * 10))
+        setChatVar(triggerId, "summonMaxRating", maxRating)
+        
+        -- 소환 후보군 미리보기용 로직
+        local monsters = getDB(triggerId, "monsters.db")
+        local inventory = json.decode(getChatVar(triggerId, "inventory") or "{}")
+        local candidates = {}
+        for k, v in pairs(monsters) do
+            local qty = tonumber(inventory["monster:"..k]) or 0
+            if qty == 0 and v.rating <= maxRating then
+                table.insert(candidates, {name=v.name, rating=v.rating})
+            end
+        end
+        
+        -- 레이팅 내림차순 정렬
+        table.sort(candidates, function(a, b) return a.rating > b.rating end)
+        
+        local previewHtml = ""
+        if #candidates > 0 then
+            local limit = 4
+            for i = 1, math.min(#candidates, limit) do
+                local c = candidates[i]
+                previewHtml = previewHtml .. string.format([[
+<div style="display:inline-block; background:#222; border:1px solid #aaa; padding:2px 6px; margin:2px; border-radius:4px; font-size:0.75rem;">
+%s (★%d)
+</div>
+]], c.name, c.rating)
+            end
+            
+            if #candidates > limit then
+                previewHtml = previewHtml .. '<span style="color:#888; font-size:0.8rem; margin-left:4px;">... 등 ' .. (#candidates) .. '종</span>'
+            else
+                previewHtml = previewHtml .. '<span style="color:#888; font-size:0.8rem; margin-left:4px;">총 ' .. (#candidates) .. '종</span>'
+            end
+        else
+            previewHtml = '<div style="color:#e57373; font-size:0.8rem;">소환 가능한 몬스터가 없습니다.</div>'
+        end
+        setChatVar(triggerId, "summonPreviewHtml", previewHtml)
+
+        -- 유닛 리스트 HTML 생성 (placement 탭일 때)
+        if getChatVar(triggerId, "category") == "place" then
+            local inventory = json.decode(getChatVar(triggerId, "inventory") or "{}")
+            local monsters = getDB(triggerId, "monsters.db")
+            local traps = getDB(triggerId, "trap.db")
+            local count = 0
+            
+            -- 몬스터 리스트
+            local monHtml = ""
+            for k, v in pairs(monsters) do
+                -- 인벤토리를 순회하는게 아니라 전체 DB를 순회하므로 인벤토리 확인 필요
+                -- inventory 키는 "monster:k"
+                local unitKey = "monster:"..k
+                local qty = tonumber(inventory[unitKey]) or 0
+                
+                if qty > 0 then
+                    count = count + 1
+                    local selectedClass = ""
+                    local btnAttr = string.format('risu-btn="dungeon.sys_selectUnit_%s"', unitKey)
+                    local opacityStyle = ""
+                    
+                    -- 배치 제한 체크 (함정은 무제한)
+                    local placed = funcs.countPlaced(triggerId, unitKey)
+                    local isFull = false
+                    
+                    if placed >= qty then
+                        selectedClass = selectedClass .. " disabled"
+                        isFull = true
+                        opacityStyle = "opacity:0.5; filter:grayscale(100%); cursor:not-allowed;"
+                        -- 클릭 이벤트는 유지하되 click 핸들러에서 처리
+                    else
+                     if getChatVar(triggerId, "selectedUnit") == unitKey then
+                        selectedClass = "selected"
+                        opacityStyle = opacityStyle .. " border:2px solid #60d9f7; box-shadow:0 0 5px rgba(96, 217, 247, 0.5);"
+                    end
+                    end
+                    
+                    monHtml = monHtml .. string.format([[
+<div class="unit-card %s" style="%s" %s>
+<div class="unit-img">
+<img src="{{raw::%s}}">
+</div>
+<div class="unit-name">%s</div>
+<div class="unit-rating">★%s</div>
+<div class="unit-count" style="font-size:0.6rem; color:#aaa;">%d/%d</div>
+</div>]], selectedClass, opacityStyle, btnAttr, k, v.name, v.rating, placed, qty)
+                end
+            end
+            
+            -- 함정 리스트
+            local trapHtml = ""
+            for k, v in pairs(traps) do
+                 -- 함정 보유 체크 (접두사 있거나 없거나)
+                 local hasTrap = false
+                 local qty = 0
+                 local unitKey = "trap:"..k
+                 
+                 -- 1. trap:접두사 체크
+                 if tonumber(inventory[unitKey]) and tonumber(inventory[unitKey]) > 0 then
+                     hasTrap = true
+                     qty = tonumber(inventory[unitKey])
+                 end
+                 -- 2. 접두사 없는 경우 체크 (우선순위 낮음 or 합산? 현재는 단순 체크)
+                 if not hasTrap and tonumber(inventory[k]) and tonumber(inventory[k]) > 0 then
+                     hasTrap = true
+                     qty = tonumber(inventory[k])
+                     -- 인벤토리 키 포맷 통일 필요할 수 있음. 일단 unitKey는 trap:k로 고정
+                 end
+                 
+                 if hasTrap then
+                    count = count + 1
+                    local selectedClass = ""
+                    local btnAttr = string.format('risu-btn="dungeon.sys_selectUnit_%s"', unitKey)
+                    local opacityStyle = ""
+                    
+                    -- 배치 제한 체크 (함정은 무제한)
+                    local placed = funcs.countPlaced(triggerId, unitKey)
+                    -- 함정은 예외이므로 제한 체크 없음
+                    if getChatVar(triggerId, "selectedUnit") == unitKey then
+                        selectedClass = "selected"
+                        opacityStyle = opacityStyle .. " border:2px solid #60d9f7; box-shadow:0 0 5px rgba(96, 217, 247, 0.5);"
+                    end
+                    
+                    trapHtml = trapHtml .. string.format([[
+<div class="unit-card %s" style="%s" %s>
+<div class="unit-img">
+<img src="{{raw::%s}}">
+</div><div class="unit-name">%s</div>
+<div class="unit-rating">★%s</div>
+<div class="unit-count" style="font-size:0.6rem; color:#aaa;">%d/%d</div>
+</div>]], selectedClass, opacityStyle, btnAttr, k, v.name, v.rating, placed, qty)
+                end
+            end
+            
+            setChatVar(triggerId, "monsterListHtml", monHtml)
+            setChatVar(triggerId, "trapListHtml", trapHtml)
+            setChatVar(triggerId, "unitCount", count)
+        end
+        
+        -- 커맨드 버튼 (뒤로가기)
+        setChatVar(triggerId, "cmds", "<div class='btn command-btn' risu-btn='199'>뒤로가기</div>")
+    end
+
+    ---------------------------------------
+    -- 메인 함수
+    ---------------------------------------
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        end
+    end
+end)()
