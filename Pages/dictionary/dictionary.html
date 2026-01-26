@@ -12,103 +12,130 @@ max-height: 500px;
 overflow-y: auto;
 }
 
-/* Detail Panel (Fixed at top or bottom) */
+/* Detail Panel */
 .dict-detail-panel {
-background-color: #1a1a1a;
-border: 1px solid #60d9f7;
-border-radius: 4px;
-padding: 1rem;
-margin-bottom: 1rem;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-min-height: 80px;
+    background-color: #1a1a1a;
+    border: 1px solid #60d9f7;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    min-height: 120px;
+    display: flex; /* Changed to flex for side-by-side layout */
+    gap: 1rem;
+}
+
+.dict-img-container {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #000;
+    border: 1px solid #333;
+    display: none; /* Hidden by default */
+}
+
+.dict-img-container:not(:empty) {
+    display: block; /* Show only when content exists */
+}
+
+.dict-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dict-text-container {
+    flex-grow: 1;
 }
 
 .dict-title {
-color: #60d9f7;
-font-size: 1.2rem;
-font-weight: bold;
-margin-bottom: 0.5rem;
-border-bottom: 1px solid #333;
-padding-bottom: 0.25rem;
+    color: #60d9f7;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.25rem;
 }
 
 .dict-desc {
-color: #ccc;
-font-size: 0.95rem;
-line-height: 1.5;
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 /* Item List Grid */
 .dict-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-gap: 0.5rem;
-max-height: 500px;
-overflow-y: auto;
-padding-right: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
 }
 
 /* Sub-category Header */
 .dict-sub-header {
-grid-column: 1 / -1;
-color: #fff;
-font-weight: bold;
-margin-top: 1rem;
-margin-bottom: 0.5rem;
-border-bottom: 1px solid #444;
-padding-bottom: 0.25rem;
+    grid-column: 1 / -1;
+    color: #fff;
+    font-weight: bold;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.25rem;
 }
 
 .dict-sub-header:first-child {
-margin-top: 0;
+    margin-top: 0;
 }
 
 .back-btn {
-grid-column: 1 / -1;
-background-color: #333;
-border: 1px solid #555;
-margin-bottom: 1rem;
-text-align: center;
-position: sticky;
-top: 0;
+    grid-column: 1 / -1;
+    background-color: #333;
+    border: 1px solid #555;
+    margin-bottom: 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
 }
 
 .monster-item {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-background-color: #222;
-padding: 0.2rem;
-border-radius: 4px;
-border: 1px solid #333;
-text-align: left;
-cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #222;
+    padding: 0.2rem;
+    border-radius: 4px;
+    border: 1px solid #333;
+    text-align: left;
+    cursor: pointer;
 }
 
 .monster-thumb {
-width: 64px;
-height: 64px;
-background-color: #000;
-border-radius: 2px;
-flex-shrink: 0;
-overflow: hidden;
+    width: 64px;
+    height: 64px;
+    background-color: #000;
+    border-radius: 2px;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .monster-thumb img {
-width: 100%;
-height: 100%;
-object-fit: cover;
-margin: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
 }
 
 .monster-info {
-font-weight: bold;
-color: #ccc;
-font-size: 0.9rem;
+    font-weight: bold;
+    color: #ccc;
+    font-size: 0.9rem;
 }
 
 details {
-grid-column: 1 / -1;
+    grid-column: 1 / -1;
 }
 </style>
 
@@ -271,8 +298,11 @@ grid-column: 1 / -1;
 </main>
 <!-- 상세 설명 패널 -->
 <section class="dict-detail-panel">
-<div class="dict-title">{{getvar::dictTitle}}</div>
-<div class="dict-desc">{{getvar::dictDesc}}</div>
+    <div class="dict-img-container">{{getvar::dictImg}}</div>
+    <div class="dict-text-container">
+        <div class="dict-title">{{getvar::dictTitle}}</div>
+        <div class="dict-desc">{{getvar::dictDesc}}</div>
+    </div>
 </section>
 
 <div class="line double"></div>

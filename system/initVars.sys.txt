@@ -21,6 +21,8 @@ function (triggerId)
         heroLvLimit = "5", --용사의 레벨 제한
         showLog = "none", --과거 조교기록 보기. 기본값 OFF
         debug = DEBUG, --콘솔 디버그 표시
+        minSummonInvest = 2500, --몬스터 소환비용 최소치
+        summonInvestChange = 500, --몬스터 소환비용 최소변동치
         king = '{"성별":"남성","페니스":"대물","음모":"무성함", "외형":"중년","헤어스타일":"날렵하게 세워올린 짧은 은발"}', --광왕 디폴트 설정
         models = '{"trainResponse":"0","trainLog":"1", "newChar":"0"}', --상황별 사용 모델 설정. 0:보조모델, 1:메인모델
     }
@@ -43,7 +45,6 @@ function (triggerId)
         inventory[k] = 0
     end
     stateToVar(triggerId, "inventory", inventory)
-
 
     --수정구 기록 초기화
     upsertLocalLoreBook(triggerId, "crystalRec", "{}", option)
@@ -128,8 +129,20 @@ function (triggerId)
     }
 
     for name, filename in pairs(keyListDBs) do
-        local list = createListFromDB(filename, false)
-        setChatVar(triggerId, name.."List", json.encode(list))
+        if name == "monsters" then
+             -- 몬스터는 DB 파일의 순서(Rating순)를 유지하기 위해 텍스트 파싱
+             local raw = getLoreBookContent(triggerId, filename)
+             local list = {}
+             -- JSON 키 패턴 매칭: "key": {
+             for key in raw:gmatch('"([%w_]+)"%s*:%s*{') do
+                 table.insert(list, key)
+             end
+             setChatVar(triggerId, "monstersList", json.encode(list))
+             debug("chatVar: monstersList 생성 (정렬 보존)")
+        else
+            local list = createListFromDB(filename, false)
+            setChatVar(triggerId, name.."List", json.encode(list))
+        end
     end
 
     -- 2. 단순 구조 DB - 이름(Name)을 사용하는 리스트
