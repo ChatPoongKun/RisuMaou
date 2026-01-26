@@ -58,6 +58,7 @@
         
         local title = name
         local desc = ""
+        local imgHtml = ""
     
         if data then
             title = data.name or name
@@ -74,10 +75,18 @@
                 desc = desc .. "<br><br>" ..
                        "Rating: " .. rating .. " | HP: " .. hp .. "<br>" ..
                        "ATK: " .. atkMin .. "~" .. atkMax .. " | DEF: " .. def
+                
+                -- 몬스터 이미지: 키.png
+                imgHtml = string.format('<img src="{{raw::%s.png}}">', name)
             end
     
-            if (category == "item") and data.price then
-                 desc = desc .. "<br>가격: " .. data.price .. " Spirit"
+            if category == "item" then
+                if data.price then
+                    desc = desc .. "<br>가격: " .. data.price .. " Spirit"
+                end
+                
+                -- 아이템 이미지: 이름.png
+                imgHtml = string.format('<img src="{{raw::%s.png}}">', title)
             end
     
         else
@@ -86,6 +95,7 @@
         
         setChatVar(triggerId, "dictTitle", title)
         setChatVar(triggerId, "dictDesc", desc)
+        setChatVar(triggerId, "dictImg", imgHtml)
     end
 
     -- 버튼 클릭 핸들러
