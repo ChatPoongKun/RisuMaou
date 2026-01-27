@@ -1,0 +1,287 @@
+-- battle.sys.txt
+-- Dungeon Battle System Module
+
+local battle = {}
+
+-- 의존성 로드 (dungeon.sys 등) 및 헬퍼
+local function getDB(triggerId, dbName)
+    local content = sys_load_file("DB/"..dbName..".txt")
+    if content then
+        return json.decode(content)
+    end
+    return {}
+end
+
+local function getState(triggerId, key)
+    local val = getChatVar(triggerId, key)
+    if val and val ~= "" then
+        return json.decode(val)
+    end
+    return nil
+end
+
+local function saveState(triggerId, key, data)
+    setChatVar(triggerId, key, json.encode(data))
+end
+
+-- 로깅 헬퍼
+local function addLog(battleState, msg)
+    table.insert(battleState.logs, msg)
+end
+
+-- 데미지 계산
+local function calcDamage(atkMin, atkMax, def)
+    local atk = math.random(atkMin, atkMax)
+    local defense = math.random(0, def)
+    local dmg = math.max(0, atk - defense)
+    
+    local isCrit = false
+    if dmg >= (atkMax * 0.9) then isCrit = true end
+    
+    return dmg, isCrit
+end
+
+-- 시너지 스냅샷 로드
+local function loadSynergyModifiers(triggerId)
+    local modsStr = getChatVar(triggerId, "dungeonModifiers")
+    if modsStr and modsStr ~= "" then
+        return json.decode(modsStr)
+    end
+    return {}
+end
+
+-- 전투 루프
+local function runCombatLoop(battleState, monster, slotId)
+    local hero = battleState.hero
+    local floor = battleState.currentFloor
+    local slotNum = battleState.currentSlot
+    local prefix = string.format("%dF-%d", floor, slotNum)
+    local logPrefix = string.format("[%s] ", prefix) -- 화면 표시용은 아니고 내부 구분용
+    
+    -- 몬스터 스탯 (시너지 적용)
+    local monBase = monster.data
+    local monMod = battleState.modifiers[slotId] or {}
+    
+    local monStats = {
+        name = monBase.name,
+        hp = monster.hp, 
+        maxHp = monster.maxHp,
+        atkMin = (monBase.atkMin or 0) + (monMod.atkMin or 0),
+        atkMax = (monBase.atkMax or 0) + (monMod.atkMax or 0),
+        def = (monBase.def or 0) + (monMod.def or 0),
+        rating = monBase.rating or 0
+    }
+    
+    addLog(battleState, string.format("%s%s와(과) 조우! (HP: %d/%d, Atk: %d~%d, Def: %d)", 
+        prefix, monStats.name, monStats.hp, monStats.maxHp, monStats.atkMin, monStats.atkMax, monStats.def))
+        
+    -- 전투 집계
+    while monStats.hp > 0 and hero.hp > 0 and hero.sp > 0 do
+        -- 선공 결정
+        local heroFirst = (math.random() < 0.5)
+        local first, second
+        if heroFirst then 
+            addLog(battleState, prefix .. " [선공: 용사]")
+            first = "hero"
+            second = "monster"
+        else
+            addLog(battleState, prefix .. " [선공: " .. monStats.name .. "]")
+            first = "monster"
+            second = "hero"
+        end
+        
+        local function executeTurn(attackerType)
+            if hero.hp <= 0 or hero.sp <= 0 or monStats.hp <= 0 then return end
+            
+            if attackerType == "hero" then
+                -- 용사 공격
+                local dmg, crit = calcDamage(hero.atk, hero.atk, monStats.def) -- 용사는 고정공격력? 일단 범위 없음 가정
+                -- 용사 공격력 범위를 위해선 hero.atkMin, hero.atkMax가 필요하나 단순화: atk +- 10%? or fixed.
+                -- 일단 atk를 max로 사용.
+                
+                local desc = "공격"
+                if crit then desc = "치명타 공격" end
+                if dmg == 0 then desc = "공격이 막힘" end
+                
+                monStats.hp = monStats.hp - dmg
+                addLog(battleState, string.format("%s 용사의 %s! %s에게 %d 피해. (남은 HP: %d)", 
+                    prefix, desc, monStats.name, dmg, math.max(0, monStats.hp)))
+                
+            else
+                -- 몬스터 공격
+                local dmg, crit = calcDamage(monStats.atkMin, monStats.atkMax, hero.def)
+                
+                local desc = "공격"
+                if crit then desc = "치명타 공격" end
+                if dmg == 0 then desc = "공격이 빗나감" end
+                
+                hero.hp = hero.hp - dmg
+                addLog(battleState, string.format("%s %s의 %s! 용사에게 %d 피해. (남은 HP: %d)", 
+                    prefix, monStats.name, desc, dmg, math.max(0, hero.hp)))
+                
+                -- 기력 피해
+                if dmg > 0 then -- 유효타시에만? 아니면 공격 시도마다? -> "피격될 때마다"
+                    local spDmg = math.max(10, monStats.rating - (hero.rating or 0)) -- 용사 레이팅 없으면 0 처리
+                    hero.sp = hero.sp - spDmg
+                    addLog(battleState, string.format("%s 용사의 정신이 흔들립니다! 기력 %d 감소. (남은 SP: %d)", 
+                        prefix, spDmg, math.max(0, hero.sp)))
+                end
+            end
+        end
+        
+        executeTurn(first)
+        executeTurn(second)
+        
+        -- 후퇴 체크
+        -- 조건: HP < 50% or SP < 30%
+        if hero.hp < (hero.maxHp * 0.5) or hero.sp < (hero.maxSp * 0.3) then
+             addLog(battleState, prefix .. " 용사가 공포에 질려 도망칩니다!")
+             return "Retreat" -- 후퇴
+        end
+    end
+    
+    if monStats.hp <= 0 then
+        local exp = math.floor(monStats.rating * 0.2)
+        addLog(battleState, string.format("%s %s 처치! 경험치 %d 획득.", prefix, monStats.name, exp))
+        return "Win"
+    elseif hero.hp <= 0 or hero.sp <= 0 then
+        return "Lose"
+    end
+end
+
+-- 전투 시작 진입점
+function battle.startInvasion(triggerId, heroData)
+    -- 초기화
+    local dungeon = getState(triggerId, "dungeon") or {}
+    local modifiers = loadSynergyModifiers(triggerId)
+    local monstersDB = getDB(triggerId, "monsters.db")
+    
+    -- BattleState 생성
+    local battleState = {
+        hero = heroData, -- {hp, maxHp, sp, maxSp, atk, def, rating, name...}
+        modifiers = modifiers,
+        logs = {},
+        currentFloor = 1,
+        currentSlot = 1,
+        monstersList = {} -- 도감용: { key=desc, ... }
+    }
+    
+    addLog(battleState, string.format("=== [%s]의 던전 침공이 시작됩니다! ===", heroData.name))
+    
+    -- 던전 순회
+    local result = "Clear" -- 기본 클리어 (끝까지 감)
+    
+    for f = 1, dungeon.floors do
+        battleState.currentFloor = f
+        for s = 1, 5 do
+            battleState.currentSlot = s
+            local slotId = string.format("%d_%d", f, s)
+            local node = dungeon.grid[slotId]
+            
+            if node then
+                if node.type == "monster" then
+                    -- 몬스터 데이터 준비
+                    local monData = monstersDB[node.key]
+                    if monData then
+                        local monster = {
+                            key = node.key,
+                            hp = monData.hp, -- 인스턴스 HP
+                            maxHp = monData.hp,
+                            data = monData
+                        }
+                        
+                        -- 도감 등록
+                        battleState.monstersList[monData.name] = monData.desc
+                        
+                        -- 전투 실행
+                        local outcome = runCombatLoop(battleState, monster, slotId)
+                        
+                        if outcome == "Lose" then
+                            result = "Capture" -- 용사 패배 -> 포획
+                            break
+                        elseif outcome == "Retreat" then
+                            result = "Defend" -- 용사 후퇴 -> 방어 성공
+                            break
+                        end
+                        -- Win 시 계속 진행
+                    end
+                    
+                elseif node.type == "trap" then
+                    -- 함정 로직 (간소화: 50 데미지)
+                    -- TODO: trap.db 로드해서 효과 적용 필요
+                    addLog(battleState, string.format("%dF-%d 함정 발동! 용사에게 50 피해.", f, s))
+                    battleState.hero.hp = battleState.hero.hp - 50
+                    if battleState.hero.hp <= 0 then
+                        result = "Capture"
+                        break
+                    end
+                end
+            end
+        end
+        if result ~= "Clear" then break end
+    end
+    
+    if result == "Clear" then
+        addLog(battleState, "용사가 던전을 정복했습니다! (방어 실패)")
+    elseif result == "Capture" then
+        addLog(battleState, "용사가 쓰러졌습니다! (나포 성공)")
+    elseif result == "Defend" then
+        addLog(battleState, "용사를 격퇴했습니다! (방어 성공)")
+    end
+    
+    -- 결과 처리 (LLM 프롬프트 준비 등)
+    -- 실제로는 여기서 바로 LLM 호출을 하거나, 결과를 리턴해서 메인 루프가 처리하도록 함.
+    -- 여기선 프롬프트 구성용 데이터를 리턴.
+    
+    return {
+        result = result,
+        logs = battleState.logs,
+        hero = battleState.hero,
+        monsters = battleState.monstersList
+    }
+end
+
+-- LLM 프롬프트 생성 헬퍼
+function battle.prepareLLMPrompt(resultData)
+    local logs = resultData.logs
+    local cleanLogs = {}
+    
+    -- 1F-1 제거 로직
+    for _, line in ipairs(logs) do
+        -- "1F-1 " 패턴 제거 (단, 상세 로그용엔 남겨야 하므로 여기선 LLM용 사본 생성)
+        local clean = line:gsub("^%d+F%-%d+%s+", "")
+        table.insert(cleanLogs, clean)
+    end
+    
+    local logText = table.concat(cleanLogs, "\n")
+    
+    -- 몬스터 도감 텍스트
+    local bestiary = {}
+    for name, desc in pairs(resultData.monsters) do
+        table.insert(bestiary, string.format("- %s: %s", name, desc))
+    end
+    local bestiaryText = table.concat(bestiary, "\n")
+    
+    local instructions = string.format([[
+[Roleplay Instructions]
+당신은 판타지 소설 작가입니다. 다음의 [전투 로그]와 [데이터]를 바탕으로, 용사가 던전을 탐험하며 겪는 치열한 전투를 박진감 넘치는 웹소설 스타일로 묘사해주세요.
+- 용사의 상태: %s (HP: %d/%d, SP: %d/%d)
+- 등장 몬스터 도감:
+%s
+
+[전투 로그]
+%s
+
+[결과]
+%s
+]], 
+    resultData.hero.name, resultData.hero.hp, resultData.hero.maxHp, resultData.hero.sp, resultData.hero.maxSp,
+    bestiaryText,
+    logText,
+    resultData.result
+    )
+
+    return instructions
+end
+
+return battle
