@@ -85,18 +85,53 @@ function (triggerId)
         
         -- 전투 시뮬레이션 실행
         local summary = sysFunction(triggerId, "battle.sys", "processInvasion")
+        debug("전투 결과 수신 완료")
         
-        if summary then
-            -- 결과 알림
-            if summary.result == "BadEnding" then
-                -- 배드엔딩 처리 (일단 알림만, 추후 엔딩 화면 이동)
-                alertNormal(triggerId, "⛔ [패배] 마왕성이 함락되었습니다...")
-            else
-                alertNormal(triggerId, "⚔️ [방어 성공] 침입자를 격퇴했습니다! (" .. summary.result .. ")")
+        if summary and summary.logs and #summary.logs > 0 then
+            debug("전투 로그 생성 시작: "..#summary.logs.."줄")
+            -- [No-JS] Dungeon Status HTML 가져오기 (ReadOnly)
+            local dungeonStatusHtml = sysFunction(triggerId, "dungeon.sys", "getGridHtml", true)
+            setChatVar(triggerId, "dungeonStatusHtml", dungeonStatusHtml)
+            debug("던전 상태 HTML 생성 완료")
+
+            -- [No-JS] HTML 로그 생성 (Batch 처리 + Shake Sync)
+            local logLines = {}
+            local batchSize = 4 -- 4줄씩 출력
+            local batchInterval = 1.0 -- 1초마다 배치 출력
+            
+            for i, line in ipairs(summary.logs) do
+                local batchIdx = math.floor((i - 1) / batchSize)
+                local delay = batchIdx * batchInterval
+                local class = "log-line"
+                
+                if string.find(line, "처치") or string.find(line, "승리") or string.find(line, "제압") then
+                    class = class .. " victory"
+                elseif string.find(line, "피해") or string.find(line, "쓰러졌") then
+                    class = class .. " danger"
+                elseif string.find(line, "Turn") then
+                    class = class .. " highlight"
+                end
+                
+                -- 같은 배치는 동시에 등장
+                table.insert(logLines, string.format('<div class="%s" style="animation-delay: %.2fs">%s</div>', class, delay, line))
             end
             
-            -- 로그 출력 (검증용)
-            print(summary.logText)
+            local fullHtml = table.concat(logLines, "\n")
+            local totalBatches = math.ceil(#summary.logs / batchSize)
+            local duration = totalBatches * batchInterval + 1.0 
+            
+            setChatVar(triggerId, "battleLogsHtml", fullHtml)
+            setChatVar(triggerId, "battleResult", summary.result)
+            setChatVar(triggerId, "currentHeroName", "침공 부대 ("..summary.heroCount.."명)")
+            setChatVar(triggerId, "animDuration", string.format("%.1fs", duration))
+            setChatVar(triggerId, "shakeCount", totalBatches) -- 애니메이션 반복 횟수
+            
+            -- UI 화면 전환
+            debug("전투 화면으로 전환 시도: battle")
+            screenChange(triggerId, "battle")
+        else
+            debug("⚠️ 전투 결과가 없거나 로그가 비어있습니다.")
+            alertNormal(triggerId, "던전 침입이 감지되었으나, 흔적을 찾을 수 없습니다.")
         end
     end
 end

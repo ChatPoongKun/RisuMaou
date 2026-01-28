@@ -244,6 +244,8 @@
             
             for f = battleState.currentFloor, dungeon.floors do
                 battleState.currentFloor = f
+                
+                local floorHasUnits = false
                 local startSlot = 1
                 if f == battleState.currentFloor then startSlot = battleState.currentSlot end
                 if startSlot > 5 then startSlot = 1 end
@@ -251,9 +253,10 @@
                 for s = startSlot, 5 do
                     battleState.currentSlot = s
                     local slotId = string.format("%d_%d", f, s)
-                    local node = dungeon.grid[slotId]
+                    local node = dungeon.grid and dungeon.grid[slotId]
                     
                     if node then
+                        floorHasUnits = true
                         if node.type == "monster" then
                             local monData = monstersDB[node.key]
                             if monData then
@@ -303,6 +306,10 @@
                             end
                         end
                     end
+                end
+                
+                if not floorHasUnits then
+                    addLog(battleState, string.format("%dF는 고요합니다... 용사가 발걸음을 재촉합니다.", f))
                 end
                 
                 if heroDefeated then break end

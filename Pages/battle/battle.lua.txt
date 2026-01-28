@@ -1,0 +1,9 @@
+[battle/close/확인] function(triggerId)
+    local result = getChatVar(triggerId, "battleResult")
+    
+    if result == "BadEnding" then
+        screenChange(triggerId, "ending")
+    else
+        screenChange(triggerId, "main")
+    end
+end!!

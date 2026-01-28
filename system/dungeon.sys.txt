@@ -194,34 +194,40 @@
         local richGrid = {}
         local totalRating = 0
         local floorRatings = {} -- 층별 레이팅 저장
-        for f=1, dungeon.floors do floorRatings[f] = 0 end
         
-        for k, v in pairs(grid) do
-            local data = (v.type == "monster" and monomerDB[v.key]) or (v.type == "trap" and trapDB[v.key])
-            if data then
-                richGrid[k] = {
-                    slot = k,
-                    type = v.type,
-                    key = v.key,
-                    tags = data.tags or {},
-                    rating = data.rating or 0,
-                    data = data,
-                    
-                    -- 편의 메서드
-                    hasTag = function(self_obj, t)
-                        for _, tag in ipairs(self_obj.tags) do
-                            if tag == t then return true end
+        local floorCount = dungeon.floors or 1
+        for f=1, floorCount do floorRatings[f] = 0 end
+        
+        if dungeon.grid then
+            for k, v in pairs(grid) do
+                local data = (v.type == "monster" and monomerDB[v.key]) or (v.type == "trap" and trapDB[v.key])
+                if data then
+                    richGrid[k] = {
+                        slot = k,
+                        type = v.type,
+                        key = v.key,
+                        tags = data.tags or {},
+                        rating = data.rating or 0,
+                        data = data,
+                        
+                        -- 편의 메서드
+                        hasTag = function(self_obj, t)
+                            for _, tag in ipairs(self_obj.tags) do
+                                if tag == t then return true end
+                            end
+                            return false
                         end
-                        return false
+                    }
+                    totalRating = totalRating + (data.rating or 0)
+                    
+                    -- 층별 합계 계산
+                    local f, s = k:match("^(%d+)_(%d+)$")
+                    if f then
+                        f = tonumber(f)
+                        if floorRatings[f] then
+                            floorRatings[f] = floorRatings[f] + (data.rating or 0)
+                        end
                     end
-                }
-                totalRating = totalRating + (data.rating or 0)
-                
-                -- 층별 합계 계산
-                local f, s = k:match("^(%d+)_(%d+)$")
-                if f then
-                    f = tonumber(f)
-                    floorRatings[f] = (floorRatings[f] or 0) + (data.rating or 0)
                 end
             end
         end
@@ -229,7 +235,7 @@
         -- 2. 시너지 패턴 매칭 엔진
         local activeSynergies = {}
         local floorSynergies = {} -- 층별 시너지 저장
-        for f = 1, dungeon.floors do floorSynergies[f] = {} end
+        for f = 1, floorCount do floorSynergies[f] = {} end
         
         -- 헬퍼 함수 정의 (_ENV for Lua Sandbox)
         local env = {
@@ -259,16 +265,11 @@
                 local condFunc = load("return " .. synData.condition, nil, "t", env)
                 if condFunc and condFunc() then
                     table.insert(activeSynergies, synData.name)
-                    -- 글로벌 시너지는 모든 층에 표시? or 상단에만? 
-                    -- 요청: "각 층에 귀속되게". 글로벌은 "전체 층" 귀속으로 1층 혹은 별도 표기가 맞으나,
-                    -- 편의상 'Global' 태그 달고 1층에 보이거나 별도 처리.
-                    -- 여기서는 activeSynergies(전체)에만 넣고 층별엔 안넣음 (혹은 모든 층에?)
-                    -- 일단 로컬 시너지가 중요하므로 로컬에 집중.
                 end
                 
             elseif synData.type == "local" then
                 -- 로컬(슬롯별) 조건 체크
-                for f = 1, dungeon.floors do
+                for f = 1, floorCount do
                     local matchCount = 0
                     for s = 1, 5 do
                         local slotId = string.format("%d_%d", f, s)
@@ -313,7 +314,7 @@
 
     -- (Helper) 던전 그리드 HTML 생성
     function funcs.getGridHtml(triggerId, readOnly)
-        local dungeon = getState(triggerId, "dungeon") or {}
+        local dungeon = getState(triggerId, "dungeon") or { floors = 1, grid = {} }
         local floorSyns, floorRatings = funcs.recalcStats(triggerId)
         
         -- 툴팁용 DB 로드
@@ -321,7 +322,8 @@
         local traps = getDB(triggerId, "trap.db")
         
         local floorHtml = ""
-        for f = 1, dungeon.floors do
+        local floorCount = dungeon.floors or 1
+        for f = 1, floorCount do
             -- 시너지 텍스트 생성
             local synText = ""
             if floorSyns[f] and #floorSyns[f] > 0 then
