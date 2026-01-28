@@ -333,6 +333,7 @@ onStart = async(function(triggerId)
     setChatVar(triggerId, "html", html)
     debug(screen .. ".html 화면을 갱신합니다.")
     processAndStoreLore(triggerId, screen .. ".lua")
+    return false
 end)
 
 onButtonClick = async(function(triggerId, data)
