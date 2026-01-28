@@ -77,4 +77,26 @@ function (triggerId)
     --갱신된 유저정보 변수저장
     local user = json.decode(getLoreBookContent(triggerId, "user"))
     stateToVar(triggerId, "user", user)
+
+    -- [침공 이벤트 트리거]
+    -- 조건: 3일차 이상, 밤(isNight=true), 50% 확률
+    if isNight and tonumber(day) >= 3 and math.random() < 0.5 then
+        alertNormal(triggerId, "⚠️ 전조가 좋지 않습니다... 던전에 침입자가 감지됩니다!")
+        
+        -- 전투 시뮬레이션 실행
+        local summary = sysFunction(triggerId, "battle.sys", "processInvasion")
+        
+        if summary then
+            -- 결과 알림
+            if summary.result == "BadEnding" then
+                -- 배드엔딩 처리 (일단 알림만, 추후 엔딩 화면 이동)
+                alertNormal(triggerId, "⛔ [패배] 마왕성이 함락되었습니다...")
+            else
+                alertNormal(triggerId, "⚔️ [방어 성공] 침입자를 격퇴했습니다! (" .. summary.result .. ")")
+            end
+            
+            -- 로그 출력 (검증용)
+            print(summary.logText)
+        end
+    end
 end
