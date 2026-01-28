@@ -140,7 +140,7 @@ function (triggerId, reason)
         
         ["자궁정액"]="0",
         ["애널정액"]="0",
-        ["condition"] = "조교가능",
+        ["condition"] = "공략준비",
 
         ["키"] = tostring(height),
         ["몸무게"] = tostring(weight),
