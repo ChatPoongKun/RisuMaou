@@ -10,6 +10,57 @@
         font-family: 'Noto Sans KR', sans-serif;
     }
 
+    /* Screen Entry Transition Sequence (Curtain Effect) */
+    .screen-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        display: flex;
+        justify-content: flex-end; /* Align right so we can slide it out or shrink it */
+    }
+
+    .curtain-panel {
+        width: 100%;
+        background-color: #000;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+        animation: curtain-slide 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+        animation-delay: 2.0s; /* Hold for ~2s */
+    }
+    
+    .battle-warning-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #d32f2f;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(211, 47, 47, 0.5);
+        z-index: 2;
+        width: 100%;
+        text-align: center;
+        animation: warning-pulse 1s infinite alternate, warning-fade-out 0.5s 1.8s forwards;
+    }
+
+    @keyframes curtain-slide {
+        to { transform: translateX(-100%); }
+    }
+    
+    @keyframes warning-pulse {
+        from { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    }
+    
+    @keyframes warning-fade-out {
+        to { opacity: 0; }
+    }
+
+    /* Reset previous animation */
+    /* @keyframes entry-sequence removed */
+
     .battle-container {
         display: flex;
         flex-direction: column;
@@ -97,6 +148,43 @@
         20%, 100% { transform: scale(1); }
     }
 
+    /* Active Marker (Dungeon Grid) */
+    .active-marker {
+        position: absolute;
+        inset: 0;
+        border: 2px solid #fff;
+        box-shadow: 0 0 5px #fff, inset 0 0 10px rgba(255, 255, 255, 0.5);
+        z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+        animation-name: active-flash;
+        /* Duration and Delay set inline */
+    }
+
+    @keyframes active-flash {
+        0% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    /* Cleared Slot Overlay */
+    .cleared-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(211, 47, 47, 0.4);
+        border: 2px solid #d32f2f;
+        z-index: 5;
+        opacity: 0; /* Hidden initially */
+        pointer-events: none;
+        animation: delayed-appear 0.5s forwards;
+    }
+
+    @keyframes delayed-appear {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Defender Stack Animations */
     .fighter-icon {
         width: 100px;
         height: 100px;
@@ -105,13 +193,31 @@
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        position: relative;
+        position: relative; /* Context for absolute images */
     }
     
-    .fighter-icon img {
+    .defender-img {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+    
+    .defender-img.base {
+        z-index: 1; /* Bottom layer */
+    }
+
+    .defender-img.timed {
+        z-index: 2;
+        opacity: 1; /* Start visible */
+        /* Animation controlled inline for precise timing */
+    }
+    
+    @keyframes peel-off {
+        from { opacity: 1; }
+        to { opacity: 0; }
     }
     
     /* Flash effect overlay inside icon */
@@ -123,6 +229,7 @@
         opacity: 0;
         animation: periodic-flash 1s {{getvar::shakeCount}};
         animation-fill-mode: forwards;
+        z-index: 20;
     }
     
     @keyframes periodic-flash {
@@ -157,6 +264,7 @@
         font-family: 'Consolas', monospace;
         font-size: 0.95rem;
         display: flex;
+        max-height: 30vh;
         flex-direction: column;
         gap: 2px; /* Close gap for batch feel */
         mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent); /* Fade edges */
@@ -176,6 +284,37 @@
     .log-line.danger { color: #ff8a80; text-shadow: 0 0 5px rgba(211, 47, 47, 0.3); }
     .log-line.highlight { color: #60d9f7; font-weight: bold; border-left: 3px solid #60d9f7; padding-left: 8px; margin-top: 8px; margin-bottom: 4px; background: rgba(96, 217, 247, 0.1); }
 
+    /* LLM Battle Narration */
+    .battle-narration {
+        opacity: 0;
+        animation: narration-fade-in 1s forwards;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(50, 30, 60, 0.9));
+        border-left: 4px solid #9c27b0;
+        border-radius: 8px;
+        font-family: 'Noto Serif KR', 'Batang', serif;
+        font-size: 1rem;
+        line-height: 1.8;
+        color: #e0e0e0;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .battle-narration p {
+        margin: 4px;
+    }
+    
+    .battle-narration.error {
+        background: rgba(211, 47, 47, 0.2);
+        border-left-color: #d32f2f;
+        color: #ff8a80;
+    }
+    
+    @keyframes narration-fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     @keyframes batch-slide-in {
         to { opacity: 1; transform: translateX(0); }
     }
@@ -185,6 +324,7 @@
         flex: 0 0 auto;
         text-align: center;
         padding: 1rem;
+        padding-bottom: 0;
         opacity: 0;
         transform: translateY(20px);
         animation: reveal-result 0.5s forwards;
@@ -213,15 +353,69 @@
         text-transform: uppercase;
     }
     .close-btn:hover { background: #333; border-color: #666; color: #fff; }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        gap: 1.5rem;
+    }
+    
+    .loading-title {
+        font-size: 1.8rem;
+        color: #ff5252;
+        text-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
+        animation: pulse-text 1.5s infinite;
+    }
+    
+    .loading-message {
+        font-size: 1.1rem;
+        color: #aaa;
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #333;
+        border-top: 4px solid #ff5252;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse-text {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
 </style>
 
 <div class="container">
-<div class="impact-layer"></div> <!-- Visual Shake Layer -->
+<!-- Show transition ONLY during initial identification phase to prevent replay -->
+{{#if {{equal::{{getvar::battleLoadingState}}::침공 용사 파악중...}}}}
+<div class="screen-transition">
+    <div class="curtain-panel"></div>
+    <div class="battle-warning-text">⚠️ 불길한 기운이 다가옵니다...</div>
+</div>
+{{/if}}
 
+<!-- Conditional rendering: battleLoadingState가 비어있으면 전투 컨텐츠, 아니면 로딩 오버레이 -->
+{{#when::battleLoadingState::vis::}}
+<!-- Battle content (shown when loading complete) -->
+<div class="impact-layer"></div> <!-- Visual Shake Layer -->
 <div class="battle-container">
 <!-- 1. Dungeon Status Strip -->
-<div class="dungeon-status-strip">
-{{getvar::dungeonStatusHtml}}
+<div class="dungeon-status-strip" style="width:100%; box-sizing:border-box;">
+{{getvar::battleDungeonHtml}}
 </div>
 
 <!-- 2. Battle Scene -->
@@ -230,11 +424,8 @@
 <div class="fighter-container">
 <div class="fighter-role">INVADER</div>
 <div class="fighter-icon">
-<img src="../../Pages/images/icon_sword.png" onerror="this.src='https://via.placeholder.com/100/333/fff?text=HERO'"> <!-- Fallback/Default -->
-<!-- Ideally we'd pass a hero image if available, but for now generic or first hero -->
+<img src="../../Pages/images/icon_sword.png" onerror="this.src='https://via.placeholder.com/100/333/fff?text=HERO'" style="width:100%; height:100%; object-fit:cover;"> <!-- Fallback/Default -->
 </div>
-<!-- <div class="fighter-name">{{getvar::currentHeroName}}</div> -->
-<!-- Removed Name to reduce clutter or keep simple -->
 </div>
 
 <div class="vs-badge">VS</div>
@@ -243,9 +434,8 @@
 <div class="fighter-container">
 <div class="fighter-role">DEFENDER</div>
 <div class="fighter-icon">
-<img src="{{source::user}}"> <!-- User's Portrait -->
+{{getvar::defenderImage}} <!-- Dynamic Stacked Images -->
 </div>
-<!-- <div class="fighter-name">{{getvar::userName}}</div> -->
 </div>
 </div>
 
@@ -259,9 +449,17 @@
 <!-- 4. Result/Close (Bottom, Inline) -->
 <div class="result-section">
 <div class="result-title {{#when {{equal::{{getvar::battleResult}}::BadEnding}}}}defeat{{:else}}victory{{/when}}">
-{{#if {{equal::{{getvar::battleResult}}::BadEnding}}}}DEFEAT...{{:else}}VICTORY!{{/if}}
+{{#when {{equal::{{getvar::battleResult}}::BadEnding}}}}DEFEAT...{{:else}}VICTORY!{{/when}}
 </div>
-<button class="close-btn" risu-btn="close">전투 종료 및 확인</button>
+<div><button class="close-btn" risu-btn="close">전투 종료 및 확인</button></div>
 </div>
 </div>
+{{:else}}
+<!-- Loading Overlay (shown when battleLoadingState is set) -->
+<div class="loading-overlay">
+<div class="loading-title">⚔️ 용사가 침공 중입니다!</div>
+<div class="loading-spinner"></div>
+<div class="loading-message">{{getvar::battleLoadingState}}</div>
+</div>
+{{/when}}
 </div>

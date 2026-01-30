@@ -438,6 +438,92 @@
         return floorHtml
     end
 
+    -- [NEW] 전투용 던전 현황 HTML (Compact, Red Highlights, Timed Animation)
+    function funcs.getBattleStatusHtml(triggerId, clearedSlots, timeline, turnInterval)
+        local dungeon = getState(triggerId, "dungeon") or { floors = 1, grid = {} }
+        
+        -- 타임라인을 검색에 용이하게 변환 (Visit Times for slots)
+        -- 여기서는 '언제' Active가 되어야 하는지, '얼마나' 유지되는지 계산
+        local slotEvents = {} 
+        for idx, event in ipairs(timeline or {}) do
+            if event.slotId then
+                local nextEvent = timeline[idx + 1]
+                local duration = turnInterval * 5 -- 기본 5턴분 지속
+                if nextEvent and nextEvent.startTurnIndex then
+                    duration = (nextEvent.startTurnIndex - event.startTurnIndex) * turnInterval
+                end
+                
+                if not slotEvents[event.slotId] then slotEvents[event.slotId] = {} end
+                table.insert(slotEvents[event.slotId], {
+                    delay = event.startTurnIndex * turnInterval,
+                    duration = duration
+                })
+            end
+        end
+        
+        local floorHtml = '<div style="display:flex; flex-direction:column; gap:4px; width:100%;">'
+        local floorCount = dungeon.floors or 1
+        
+        for f = 1, floorCount do
+            floorHtml = floorHtml .. string.format('<div style="display:flex; align-items:center; gap:4px;"><div style="font-size:0.7rem; color:#60d9f7; width:20px; text-align:right;">%dF</div>', f)
+            
+            floorHtml = floorHtml .. '<div style="display:flex; flex:1; gap:2px; height:30px;">'
+            
+            for s = 1, 5 do
+                local slotId = string.format("%d_%d", f, s)
+                local content = dungeon.grid[slotId]
+                local isCleared = clearedSlots[slotId]
+                
+                local inner = ''
+                local style = 'flex:1; background:#000; border:1px solid #333; display:flex; justify-content:center; align-items:center; position:relative; overflow:hidden;'
+                local imgStyle = 'width:100%; height:100%; object-fit:cover;'
+                
+                -- 돌파된 슬롯 처리 (붉은 배경) -> 애니메이션으로 처리
+                local maxEventTime = 0.0
+                if slotEvents[slotId] then
+                    for _, ev in ipairs(slotEvents[slotId]) do
+                        local endTime = ev.delay + ev.duration
+                        if endTime > maxEventTime then maxEventTime = endTime end
+                    end
+                end
+                
+                if isCleared then
+                    -- style = style .. 'background:rgba(211, 47, 47, 0.4); border-color:#d32f2f;' (기존 정적 스타일 제거)
+                    if not content then
+                        -- 컨텐츠가 없으면(함정 발동후 소멸 등) X 표시도 딜레이 적용
+                        inner = inner .. string.format('<div class="cleared-overlay" style="animation-delay:%.2fs; display:flex; justify-content:center; align-items:center;"><span style="color:#d32f2f; font-size:1.2rem;">/</span></div>', maxEventTime)
+                    else
+                         -- 컨텐츠가 있으면 오버레이만
+                        inner = inner .. string.format('<div class="cleared-overlay" style="animation-delay:%.2fs;"></div>', maxEventTime)
+                    end
+                end
+                
+                -- Timed Highlights
+                if slotEvents[slotId] then
+                    for _, ev in ipairs(slotEvents[slotId]) do
+                         -- ev = { delay = ..., duration = ... }
+                         inner = inner .. string.format('<div class="active-marker" style="animation-delay:%.2fs; animation-duration:%.2fs;"></div>', ev.delay, ev.duration)
+                    end
+                end
+                
+                if content then
+                    -- 몬스터/함정 아이콘
+                    if isCleared then imgStyle = imgStyle .. 'filter:grayscale(100%) opacity(0.7);' end
+                    if content.key then
+                        inner = inner .. string.format('<img src="{{raw::%s}}" style="%s">', content.key, imgStyle)
+                    end
+                end
+                
+                floorHtml = floorHtml .. string.format('<div style="%s">%s</div>', style, inner)
+            end
+            
+            floorHtml = floorHtml .. '</div></div>'
+        end
+        
+        floorHtml = floorHtml .. '</div>'
+        return floorHtml
+    end
+
     -- 던전 화면 렌더링 (HTML 생성 -> ChatVar 설정)
     function funcs.render(triggerId)
         local dungeon = getState(triggerId, "dungeon") or {}

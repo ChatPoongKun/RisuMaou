@@ -1,9 +1,40 @@
 [battle/close/확인] function(triggerId)
     local result = getChatVar(triggerId, "battleResult")
+    local battleLogsHtml = getChatVar(triggerId, "battleLogsOnly") or ""
+    local battleNarration = getChatVar(triggerId, "battleNarration") or ""
+    local day = getChatVar(triggerId, "day") or "?"
+    local ampm = getChatVar(triggerId, "ampm")
+    local ampmStr = (ampm == "0") and "낮" or "밤"
+    
+    -- 결과 텍스트
+    local resultText = ""
+    if result == "Win" then
+        resultText = "🛡️ 방어 성공"
+    elseif result == "BadEnding" then
+        resultText = "💀 방어 실패"
+    else
+        resultText = "⚔️ 전투 종료"
+    end
+    
+    -- 로그 저장 (details로 상세로그 숨김, 나레이션만 표시)
+    local battleLog = string.format(
+        "<div class='showLog'><p><b>%s일차 %s / %s</b></p>%s<details><summary>📜 상세 전투 로그</summary><div style='max-height:200px;overflow-y:auto;font-size:0.9em;'>%s</div></details></div>",
+        day,
+        ampmStr,
+        resultText,
+        battleNarration,
+        battleLogsHtml:gsub('style="animation%-delay:[^"]*"', '') -- 애니메이션 스타일 제거
+    )
+    
+    -- 현재 마지막 챗 인덱스에 로그 삽입, 새 인덱스에 html 추가
+    local lastIndex = getChatLength(triggerId) - 1
+    setChat(triggerId, lastIndex, battleLog)
+    addChat(triggerId, "user", "{{" .. "getvar::html" .. "}}")
     
     if result == "BadEnding" then
         screenChange(triggerId, "ending")
     else
+        setChatVar(triggerId, "mainTransition", "") -- 메인 화면 복귀 시 암전 해제
         screenChange(triggerId, "main")
     end
 end!!

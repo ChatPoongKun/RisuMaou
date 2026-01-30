@@ -437,6 +437,13 @@ end!!
     setChatVar(triggerId, "models", json.encode(models))
 end!!
 
+[config/battleNarration/hidden] function(triggerId)
+    local models = json.decode(getChatVar(triggerId, "models"))
+    local llmSelect = "battleNarration"
+    models[llmSelect] = tostring(math.abs(tonumber(models[llmSelect])-1))
+    setChatVar(triggerId, "models", json.encode(models))
+end!!
+
 [config/199/설정완료] function(triggerId)
     local screen = "main"
 
