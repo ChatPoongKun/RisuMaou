@@ -135,9 +135,11 @@ end!!
     end
     setChatVar(triggerId, "dungeonLv", dungeon.floors)
     
-    -- 초기화 (탭 및 소환 비용)
+    -- 초기화 (탭, 소환 비용, 선택 상태)
     setChatVar(triggerId, "category", "place")
     setChatVar(triggerId, "summonInvest", "2500")
+    setChatVar(triggerId, "selectedSlot", "")
+    setChatVar(triggerId, "selectedUnit", "")
     
     screenChange(triggerId, screen)
     sysFunction(triggerId, "dungeon.sys", "render") -- 초기화 로직 실행
