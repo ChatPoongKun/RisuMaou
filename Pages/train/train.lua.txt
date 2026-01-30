@@ -579,6 +579,7 @@ end!!
 [train/62/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::aphrodisiac}}}}>0}}}}
 {{#when::category::vis::소모품}}
 미약
+{{/when}}
 {{/when}}] function(triggerId)
     --소모품 사전 체크
     local inventory = json.decode(getChatVar(triggerId, "inventory"))
@@ -617,6 +618,7 @@ end!!
 [train/64/{{#when::{{? {{tonumber::{{dict_element::{{getvar::inventory}}::crystal_ball}}}}>0}}}}
 {{#when::category::vis::소모품}}
 수정구
+{{/when}}
 {{/when}}] function(triggerId)
     --녹화여부 사전 판단
     if TRAIN_REC > 0 then
