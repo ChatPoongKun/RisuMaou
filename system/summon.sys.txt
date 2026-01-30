@@ -102,8 +102,8 @@
             return
         end
         
-        -- 1. 소환 가능한 최대 레이팅 계산 (공식: sqrt(invest * 10))
-        local maxRating = math.floor(math.sqrt(invest * 10))
+        -- 1. 소환 가능한 최대 레이팅 계산 (공식: sqrt(invest * 5))
+        local maxRating = math.floor(math.sqrt(invest * 5))
         
         -- 2. 몬스터 풀 로드 및 필터링
         local monsterDB = getDB(triggerId, "monsters.db")
