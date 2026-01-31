@@ -75,6 +75,21 @@
         -- 캐릭터 정보를 로컬로어북에 저장
         local option = { alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false }
         upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
+
+        -- [신규] 특성 진화 체크 (Abl 레벨업 시점)
+        local traitTarget, traitLog = sysFunction(triggerId, "traitEvolution.sys", target)
+        if traitLog ~= "" then
+            -- 진화로 인해 target이 변경되었으므로 다시 저장
+            target = traitTarget
+            upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), option)
+            stateToVar(triggerId, "target", target)
+            
+            -- Screen Effect 연출 (HTML)
+            -- 기존 ScreenEffect가 있다면 덮어씌우거나 추가
+            local existEffect = getChatVar(triggerId, "screenEffect")
+            setChatVar(triggerId, "screenEffect", existEffect .. traitLog)
+            reloadDisplay(triggerId) -- 화면 갱신으로 이펙트 출력
+        end
     end
 
     -- 어빌리티 레벨업 조건 선택 UI 생성

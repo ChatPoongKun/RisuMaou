@@ -1,0 +1,147 @@
+-- traitRules.sys
+-- 특성 획득 조건 정의 파일
+-- 이 파일은 순수하게 규칙(Logic)만을 정의합니다.
+-- 각 함수는 (triggerId, target, stats, exps)를 인자로 받아 boolean을 반환해야 합니다.
+
+local rules = {}
+
+-- 헬퍼 함수
+local function add(key, fn)
+    rules[key] = fn
+end
+
+local function getExp(exps, key)
+    return tonumber(exps[key] or 0)
+end
+
+local function getStat(stats, key)
+    return tonumber(stats[key] or 0)
+end
+
+local function getAbl(target, key)
+    return tonumber(target[key] or 0)
+end
+
+local function hasTrait(target, traitName)
+    return tonumber(target[traitName]) and tonumber(target[traitName]) > 0
+end
+
+-- ==========================================
+-- 1. 감각/신체 개발 (Sensation)
+-- ==========================================
+-- stat 대신 abl(민감도/확장도)을 체크합니다. 
+-- abl DB에 따르면: C민감도, V민감도, A민감도, B민감도, M민감도, U민감도
+
+-- [C민감]: C경험 100 이상, C민감도 5 이상
+add("c_sensitive", function(tid, t, s, e)
+    return getExp(e, "C경험") >= 100 and getAbl(t, "C민감도") >= 5
+end)
+
+-- [V민감]: V경험 100 이상, V민감도 5 이상
+add("v_sensitive", function(tid, t, s, e)
+    return getExp(e, "V경험") >= 100 and getAbl(t, "V민감도") >= 5
+end)
+
+-- [A민감]: A경험 100 이상, A민감도 5 이상
+add("a_sensitive", function(tid, t, s, e)
+    return getExp(e, "A경험") >= 100 and getAbl(t, "A민감도") >= 5
+end)
+
+-- [B민감]: B경험 100 이상, B민감도 5 이상
+add("b_sensitive", function(tid, t, s, e)
+    return getExp(e, "B경험") >= 100 and getAbl(t, "B민감도") >= 5
+end)
+
+-- [인후성감]: 펠라경험 100 이상, M민감도 5 이상
+add("throat_pleasure", function(tid, t, s, e)
+    return getExp(e, "펠라경험") >= 100 and getAbl(t, "M민감도") >= 5
+end)
+
+-- [요도성감]: 요도경험 50 이상, U민감도 5 이상
+add("urethra_pleasure", function(tid, t, s, e)
+    return getExp(e, "요도경험") >= 50 and getAbl(t, "U민감도") >= 5
+end)
+
+-- [V명기]: V경험 300 이상, V민감도 9 이상, V민감 보유
+add("v_masterpiece", function(tid, t, s, e)
+    return getExp(e, "V경험") >= 300 and getAbl(t, "V민감도") >= 9 and hasTrait(t, "V민감")
+end)
+
+-- [A명기]: A경험 300 이상, A민감도 9 이상, A민감 보유
+add("a_masterpiece", function(tid, t, s, e)
+    return getExp(e, "A경험") >= 300 and getAbl(t, "A민감도") >= 9 and hasTrait(t, "A민감")
+end)
+
+
+-- ==========================================
+-- 2. 중독 (Addictions)
+-- ==========================================
+-- 욕정(stat) -> 성욕(abl: desire)
+-- 노출벽(stat) -> 노출벽(abl: exhibitionism)
+-- 봉사기술(stat) -> 봉사기술(abl: service)
+-- 마조끼(stat) -> 마조끼(abl: masochism)
+
+-- [성교중독]: 성교경험 100 이상, 성욕 6 이상
+add("sex_addict", function(tid, t, s, e)
+    return getExp(e, "성교경험") >= 100 and getAbl(t, "성욕") >= 6
+end)
+
+-- [자위중독]: 자위경험 50 이상, 노출벽 3 이상, 성욕 5 이상
+add("masturbation_addict", function(tid, t, s, e)
+    return getExp(e, "자위경험") >= 50 and getAbl(t, "노출벽") >= 3 and getAbl(t, "성욕") >= 5
+end)
+
+-- [정액중독]: 정액경험 100 이상, 성욕 5 이상, 봉사기술 3 이상
+add("semen_addict", function(tid, t, s, e)
+    return getExp(e, "정액경험") >= 100 and getAbl(t, "성욕") >= 5 and getAbl(t, "봉사기술") >= 3
+end)
+
+-- [방뇨중독]: 방뇨경험 30 이상, 수치 6 이상 (수치심은 stat 의존이 맞음 - Trait이나 Abl이 아님)
+-- 하지만 '노출벽' Abl이 수치 플레이와 연관되므로 대체 가능성 고려.
+-- 일단 수치 Stat은 조교 중 변동이 크므로, '노출벽' Abl이나 '방뇨경험' 비중을 높이는 게 안정적.
+-- 조건 수정: 방뇨경험 50 이상, 노출벽 3 이상
+add("urine_addict", function(tid, t, s, e)
+    return getExp(e, "방뇨경험") >= 50 and getAbl(t, "노출벽") >= 3
+end)
+
+-- [마조]: 피학경험 50 이상, 마조끼(Abl) 4 이상
+add("masochist", function(tid, t, s, e)
+    return getExp(e, "피학경험") >= 50 and getAbl(t, "마조끼") >= 4
+end)
+
+-- [촉수중독]: 촉수경험 50 이상, 성욕 6 이상
+add("tentacle_addict", function(tid, t, s, e)
+    return getExp(e, "촉수경험") >= 50 and getAbl(t, "성욕") >= 6
+end)
+
+-- [수간중독]: 수간경험 50 이상, 성욕 6 이상
+add("beast_addict", function(tid, t, s, e)
+    return getExp(e, "수간경험") >= 50 and getAbl(t, "성욕") >= 6
+end)
+
+
+-- ==========================================
+-- 3. 칭호 (Titles)
+-- ==========================================
+
+-- [음란]: (성교경험+자위경험) 300 이상, 성욕 8 이상, 노출벽 5 이상
+add("title_lewd", function(tid, t, s, e)
+    local totalSex = getExp(e, "성교경험") + getExp(e, "자위경험")
+    return totalSex >= 300 and getAbl(t, "성욕") >= 8 and getAbl(t, "노출벽") >= 5
+end)
+
+-- [암캐]: (수간경험+촉수경험) 100 이상, 복종각인 2 이상 (각인은 유지)
+add("title_bitch", function(tid, t, s, e)
+    local beastTotal = getExp(e, "수간경험") + getExp(e, "촉수경험")
+    local mark = tonumber(t["복종각인"]) or 0
+    return beastTotal >= 100 and mark >= 2
+end)
+
+-- [연모]: 애정경험 200 이상, 순응 8 이상, 반발각인 0
+-- (온순 Stat 대신 순응 Abl 사용)
+add("title_love", function(tid, t, s, e)
+    local resistMark = tonumber(t["반발각인"]) or 0
+    return getExp(e, "애정경험") >= 200 and getAbl(t, "순응") >= 8 and resistMark == 0
+end)
+
+return rules
