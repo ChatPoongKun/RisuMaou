@@ -117,21 +117,23 @@
         "category": "성격",
         "group": "egoism",
         "events": {
-            "onStatEXP": {
-                "hasTags": [
-                    "service"
-                ],
-                "func": "statEXP = statEXP * 1.3"
-            },
-            "onStatEXP_2": {
-                "hasTags": [
-                    "touch"
-                ],
-                "notTags": [
-                    "service"
-                ],
-                "func": "statEXP = statEXP * 0.7"
-            }
+            "onStatEXP": [
+                {
+                    "hasTags": [
+                        "service"
+                    ],
+                    "func": "statEXP = statEXP * 1.3"
+                },
+                {
+                    "hasTags": [
+                        "touch"
+                    ],
+                    "notTags": [
+                        "service"
+                    ],
+                    "func": "statEXP = statEXP * 0.7"
+                }
+            ]
         }
     },
     "selfish": {
@@ -140,18 +142,20 @@
         "category": "성격",
         "group": "egoism",
         "events": {
-            "onStatEXP": {
-                "hasTags": [
-                    "touch"
-                ],
-                "func": "statEXP = statEXP * 1.3"
-            },
-            "onStatEXP_2": {
-                "hasTags": [
-                    "service"
-                ],
-                "func": "statEXP = statEXP * 0.7"
-            }
+            "onStatEXP": [
+                {
+                    "hasTags": [
+                        "touch"
+                    ],
+                    "func": "statEXP = statEXP * 1.3"
+                },
+                {
+                    "hasTags": [
+                        "service"
+                    ],
+                    "func": "statEXP = statEXP * 0.7"
+                }
+            ]
         }
     },
     "simple": {
