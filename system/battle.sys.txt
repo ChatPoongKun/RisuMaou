@@ -132,14 +132,14 @@
     end
 
     -- 보스전 루프
-    local function runBossFight(battleState, hero)
+    local function runBossFight(battleState, hero, userStats)
         addLog(battleState, "=== [BOSS BATTLE] 던전 최심부, 마왕의 알현실 ===")
         addLog(battleState, string.format("마왕 %s(이)가 침입자 %s(을)를 맞이합니다!", battleState.userName, hero.name))
         
         local bossStats = {
             name = battleState.userName,
-            hp = 5000, maxHp = 5000,
-            atk = 150, def = 100
+            hp = userStats.hp, maxHp = userStats.maxHp,
+            atk = userStats.atk, def = userStats.def
         }
         
         local turn = 1
@@ -148,7 +148,7 @@
             hero.hp = hero.hp - dmg
             addLog(battleState, string.format("[Turn %d] 마왕의 강력한 일격! %s에게 %d 피해. (남은 HP: %d)", turn, hero.name, dmg, math.max(0, hero.hp)))
             
-            if hero.hp <= 0 then return "Win" end
+            if hero.hp <= 0 then return "Win", bossStats.hp end
             
             dmg, crit = calcDamage(hero.atk, hero.atk, bossStats.def)
             bossStats.hp = bossStats.hp - dmg
@@ -157,7 +157,7 @@
             turn = turn + 1
         end
         
-        if bossStats.hp <= 0 then return "Lose" else return "Win" end
+        if bossStats.hp <= 0 then return "Lose", 0 else return "Win", bossStats.hp end
     end
 
     -- 메인 침공 프로세스
@@ -366,7 +366,18 @@
                 })
                 
                 addLog(battleState, hero.name.."이(가) 마왕의 방에 도달했습니다!")
-                local bossResult = runBossFight(battleState, hero)
+                local userStats = {
+                    hp = tonumber(userJson["체력"]) or 1000,
+                    maxHp = tonumber(userJson["최대체력"]) or 1000,
+                    atk = tonumber(userJson["공격력"]) or 100,
+                    def = tonumber(userJson["방어력"]) or 100,
+                }
+                
+                local bossResult, remainingHp = runBossFight(battleState, hero, userStats)
+                
+                -- 유저 HP 업데이트 및 저장
+                userJson["체력"] = math.max(0, remainingHp)
+                upsertLocalLoreBook(triggerId, "user", json.encode(userJson), DEFAULT_LORE_OPTION)
                 
                 if bossResult == "Lose" then
                     finalResult = "BadEnding"
