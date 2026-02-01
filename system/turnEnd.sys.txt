@@ -61,12 +61,6 @@ function (triggerId)
     if isNight and tonumber(day) >= 3 and math.random() < 0.5 then
         invasionTriggered = true
         
-        -- 암전 효과 시작 (Main Fade Out) - 제거 (Battle 화면에서 처리)
-        -- setChatVar(triggerId, "mainTransition", "true")
-        -- reloadDisplay(triggerId)
-        
-        -- alertNormal(triggerId, "⚠️ 멀리서 불길한 기운이 다가옵니다...") - 제거
-        
         -- 즉시 배틀화면으로 전환 (로딩 상태 표시)
         setChatVar(triggerId, "battleLoadingState", "침공 용사 파악중...")
         setChatVar(triggerId, "battleLogsHtml", "") -- 초기화
