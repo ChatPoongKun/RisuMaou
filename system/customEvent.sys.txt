@@ -20,15 +20,22 @@ function(triggerId, eventName, context)
         -- Lua 5.2+ 호환: load 사용
         local func, err = load(funcStr, "eventFunc", "t", env)
         if func then
-            func()
-            -- 실행 후 변경된 환경 변수를 context에 반영
-            for k, _ in pairs(ctx) do
-                if env[k] ~= nil then
-                    ctx[k] = env[k]
+            -- pcall로 안전하게 실행
+            local status, result = pcall(func)
+            if status then
+                -- 실행 성공: 변경된 환경 변수를 context에 반영
+                for k, _ in pairs(ctx) do
+                    if env[k] ~= nil then
+                        ctx[k] = env[k]
+                    end
                 end
+            else
+                -- 실행 실패: 에러 로그 출력
+                debug("customEvent 실행 에러: " .. tostring(result))
+                -- 에러가 발생해도 ctx는 그대로 반환하여 게임이 멈추지 않게 함
             end
         else
-            debug("customEvent 함수 오류: " .. (err or "unknown"))
+            debug("customEvent 함수 로드 에러: " .. (err or "unknown"))
         end
         
         return ctx
@@ -66,7 +73,7 @@ function(triggerId, eventName, context)
     end
 
     --이벤트 리스트 처리 헬퍼
-    local function processEvents(tId, events, eName, tags, ctx, level)
+    local function processEvents(tId, events, eName, tags, ctx, level, sourceName)
         for evtKey, evt in pairs(events) do
             -- 이벤트명이 일치하거나 이벤트명_숫자 형태인 경우
             if evtKey == eName or evtKey:match("^"..eName.."_%d+$") then
@@ -99,7 +106,7 @@ function(triggerId, eventName, context)
                     end
 
                     if matched then
-                        debug(string.format("[Event:Trigger] Event: %s, Source: %s", eName, evtKey))
+                        debug(string.format("[Event:Trigger] Source: %s, Event: %s, Key: %s", sourceName, eName, evtKey))
                         ctx.level = level
                         ctx = executeEventFunc(action.func, ctx)
                     end
@@ -132,7 +139,7 @@ function(triggerId, eventName, context)
         local hasTrait = target[tName] ~= nil and target[tName] ~= "" 
         
         if hasTrait and traitDef.events then
-            context = processEvents(triggerId, traitDef.events, eventName, tags, context, nil)
+            context = processEvents(triggerId, traitDef.events, eventName, tags, context, nil, tName .. "(Trait)")
         end
     end
     
@@ -141,7 +148,7 @@ function(triggerId, eventName, context)
         local ablName = ablDef.name or ablKey
         local level = tonumber(target[ablName]) or 0
         if level > 0 and ablDef.events then
-            context = processEvents(triggerId, ablDef.events, eventName, tags, context, level)
+            context = processEvents(triggerId, ablDef.events, eventName, tags, context, level, ablName .. "(Abl)")
         end
     end
     
@@ -150,7 +157,7 @@ function(triggerId, eventName, context)
         local markName = markDef.name or markKey
         local level = tonumber(target[markName]) or 0
         if level > 0 and markDef.events then
-            context = processEvents(triggerId, markDef.events, eventName, tags, context, level)
+            context = processEvents(triggerId, markDef.events, eventName, tags, context, level, markName .. "(Mark)")
         end
     end
     
@@ -159,7 +166,7 @@ function(triggerId, eventName, context)
         local statName = statDef.name or statKey
         local level = tonumber(currentStat[statName]) or 0
         if level > 0 and statDef.events then
-            context = processEvents(triggerId, statDef.events, eventName, tags, context, level)
+            context = processEvents(triggerId, statDef.events, eventName, tags, context, level, statName .. "(Stat)")
         end
     end
     

@@ -52,7 +52,14 @@ function (triggerId)
     --시간 정보 호출
     local day = getChatVar(triggerId, "day")
     local ampm = getChatVar(triggerId, "ampm")
-    local chars = json.decode(getChatVar(triggerId, "chars"))
+    
+    local charsStr = getChatVar(triggerId, "chars")
+    local chars = {}
+    if charsStr and charsStr ~= "" then
+        local status, res = pcall(json.decode, charsStr)
+        if status then chars = res else debug("turnEnd: chars decoding failed") end
+    end
+    
     local isNight = (ampm == "1")
     
     -- [침공 이벤트 트리거] - 알림보다 먼저 체크
@@ -311,6 +318,12 @@ function (triggerId)
     setChatVar(triggerId, "ampm", ampm)
 
     --갱신된 유저정보 변수저장
-    local user = json.decode(getLoreBookContent(triggerId, "user"))
+    --갱신된 유저정보 변수저장
+    local userStr = getLoreBookContent(triggerId, "user")
+    local user = {}
+    if userStr and userStr ~= "" then
+        local status, res = pcall(json.decode, userStr)
+        if status then user = res end
+    end
     stateToVar(triggerId, "user", user)
 end

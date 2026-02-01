@@ -165,15 +165,34 @@
         local dungeon = getState(triggerId, "dungeon") or { floors=1, grid={} }
         local modifiers = loadSynergyModifiers(triggerId)
         local monstersDB = getDB(triggerId, "monsters.db")
-        local chars = json.decode(getChatVar(triggerId, "chars"))
-        local userJson = json.decode(getLoreBookContent(triggerId, "user") or "{}")
+        
+        -- Safe decode chars
+        local charsStr = getChatVar(triggerId, "chars")
+        local chars = {}
+        if charsStr and charsStr ~= "" then
+            local status, res = pcall(json.decode, charsStr)
+            if status then chars = res else debug("battle.sys: chars decode failed") end
+        end
+
+        -- Safe decode user
+        local userStr = getLoreBookContent(triggerId, "user") or "{}"
+        local userJson = {}
+        if userStr and userStr ~= "" then
+            local status, res = pcall(json.decode, userStr)
+            if status then userJson = res else debug("battle.sys: user decode failed") end
+        end
         local userName = userJson["이름"] or "마왕"
         
         local heroes = {}
         local waitingHeroes = {}
         
         for _, name in ipairs(chars) do
-            local charData = json.decode(getLoreBookContent(triggerId, name))
+            local charStr = getLoreBookContent(triggerId, name)
+            local charData = {}
+            if charStr and charStr ~= "" then
+                local status, res = pcall(json.decode, charStr)
+                if status then charData = res end
+            end
             
             local hp = tonumber(charData["체력"]) or 0
             local maxHp = tonumber(charData["최대체력"]) or 100
@@ -187,23 +206,49 @@
         end
         
         local requiredHeroes = 1
-        while #waitingHeroes < requiredHeroes do
+        local loopCount = 0
+        local MAX_LOOP = 5
+        
+        while #waitingHeroes < requiredHeroes and loopCount < MAX_LOOP do
+            loopCount = loopCount + 1
             sysFunction(triggerId, "newChar.sys", "invasion")
-            chars = json.decode(getChatVar(triggerId, "chars"))
+            
+            charsStr = getChatVar(triggerId, "chars")
+            chars = {}
+            if charsStr and charsStr ~= "" then
+                local status, res = pcall(json.decode, charsStr)
+                if status then chars = res end
+            end
+
             local newName = chars[#chars]
-            local newChar = json.decode(getLoreBookContent(triggerId, newName))
-            
-            local hp = tonumber(newChar["체력"]) or 0
-            local maxHp = tonumber(newChar["최대체력"]) or 100
-            local sp = tonumber(newChar["기력"]) or 0
-            local maxSp = tonumber(newChar["최대기력"]) or 100
-            
-            if newChar.condition == "휴식중" and hp >= (maxHp * 0.8) and sp >= (maxSp * 0.8) then
-               table.insert(waitingHeroes, newChar)
+            if newName then
+                local newCharStr = getLoreBookContent(triggerId, newName)
+                local newChar = {}
+                if newCharStr and newCharStr ~= "" then
+                     local status, res = pcall(json.decode, newCharStr)
+                     if status then newChar = res end
+                end
+                
+                local hp = tonumber(newChar["체력"]) or 0
+                local maxHp = tonumber(newChar["최대체력"]) or 100
+                local sp = tonumber(newChar["기력"]) or 0
+                local maxSp = tonumber(newChar["최대기력"]) or 100
+                
+                if newChar.condition == "휴식중" and hp >= (maxHp * 0.8) and sp >= (maxSp * 0.8) then
+                   table.insert(waitingHeroes, newChar)
+                end
+            else
+                debug("battle.sys: Failed to get new character name")
             end
         end
         
-        for i = 1, requiredHeroes do
+        -- If strictly required, pick whatever we have or duplicate
+        if #waitingHeroes == 0 then
+             -- Emergency fallback
+             table.insert(waitingHeroes, {이름="용사(임시)", Hp=100, strength=10, condition="휴식중"})
+        end
+
+        for i = 1, math.min(#waitingHeroes, requiredHeroes) do
             table.insert(heroes, waitingHeroes[i])
         end
         

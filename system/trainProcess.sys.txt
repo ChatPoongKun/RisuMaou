@@ -1,7 +1,7 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
 --조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
-    debug("trainProcess 실행")
+    debug("trainProcess 실행: DC="..tostring(dc))
 
     --[[초기화]]
     math.randomseed(os.time())
@@ -211,7 +211,9 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     promptBuild("system", "- training_command: "..command),
     promptBuild("system", "- command_result: "..rollMsg)
     }
+    debug("trainProcess: LLM (trainResponse) 호출 시작")
     local trainResponse = LLM(triggerId, prompt, "trainResponse")
+    debug("trainProcess: LLM (trainResponse) 호출 완료. Success="..tostring(trainResponse.success))
     if not trainResponse.success then --LLM응답 실패시 함수 종료
         alertNormal(triggerId, "trainResponse LLM응답 실패"..trainResponse.result)
         setChatVar(triggerId, "cmds", old_cmds)
@@ -307,9 +309,16 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         local lv = tostring(currentLv)
         local remainStat = remainStat
         local r = math.random()
-        debug(statName..": "..remainStat.."/"..EXPtbl[lv]..": "..remainStat/EXPtbl[lv] .. " > " .. r)
-        if remainStat/EXPtbl[lv] > r then
-            remainStat = math.max(remainStat - EXPtbl[lv], 0)
+        
+        -- 안전장치: 다음 레벨 테이블이 없으면 성장 중지 (Max Level)
+        local reqExp = EXPtbl[lv]
+        if not reqExp then
+            return lv
+        end
+        
+        debug(statName..": "..remainStat.."/"..reqExp..": "..remainStat/reqExp .. " > " .. r)
+        if remainStat/reqExp > r then
+            remainStat = math.max(remainStat - reqExp, 0)
             lv = lvUp(remainStat, lv+1, statName)
             return lv
         else
@@ -365,7 +374,9 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     promptBuild("assistant", oldLog) --기존 로그
     }
 
+    debug("trainProcess: LLM (trainLog) 호출 시작")
     local trainLog = LLM(triggerId, prompt, "trainLog") --LLM에 응답 요청
+    debug("trainProcess: LLM (trainLog) 호출 완료. Success="..tostring(trainLog.success))
     if not trainLog.success then --LLM응답 실패시 함수 종료
         alertNormal(triggerId, "trainLog LLM응답 실패".. trainLog.result)
         setChatVar(triggerId, "cmds", old_cmds)
@@ -417,5 +428,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     stateToVar(triggerId, "target", target)
 
     reloadDisplay(triggerId)
+    debug("trainProcess: 정상 종료, reloadDisplay 호출됨")
     return true
 end
