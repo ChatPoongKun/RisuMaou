@@ -94,7 +94,7 @@
         inset: 0;
         pointer-events: none;
         z-index: 50;
-        animation: periodic-impact 1s {{getvar::shakeCount}};
+        animation: periodic-impact {{getvar::battleTurnInterval}}s {{getvar::shakeCount}};
         animation-fill-mode: forwards;
     }
 
@@ -136,7 +136,7 @@
         gap: 0.5rem;
         position: relative;
         /* Icon Shake synced with periodic impact */
-        animation: icon-shock 1s {{getvar::shakeCount}};
+        animation: icon-shock {{getvar::battleTurnInterval}}s {{getvar::shakeCount}};
         animation-fill-mode: forwards;
     }
     
@@ -227,7 +227,7 @@
         inset: 0;
         background: white;
         opacity: 0;
-        animation: periodic-flash 1s {{getvar::shakeCount}};
+        animation: periodic-flash {{getvar::battleTurnInterval}}s {{getvar::shakeCount}};
         animation-fill-mode: forwards;
         z-index: 20;
     }

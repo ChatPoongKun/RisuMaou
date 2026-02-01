@@ -34,6 +34,8 @@
     if result == "BadEnding" then
         screenChange(triggerId, "ending")
     else
+        -- 전투 승리/종료 후 턴 종료 처리 (다음날로 진행)
+        sysFunction(triggerId, "turnEnd.sys", "nextDay")
         setChatVar(triggerId, "mainTransition", "") -- 메인 화면 복귀 시 암전 해제
         screenChange(triggerId, "main")
     end
