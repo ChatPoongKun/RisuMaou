@@ -331,11 +331,11 @@ function (triggerId, action)
     if not invasionTriggered then
         if isNight then
             alertNormal(triggerId, "하루가 지나갑니다...")
-            setChatVar(triggerId, "category", "items")
-            screenChange(triggerId, "main")
         else
             alertNormal(triggerId, "밤이 깊어옵니다...")
         end
+        setChatVar(triggerId, "category", "items")
+        screenChange(triggerId, "main")
     end
 
     --모든 캐릭터에 대해 회복 처리 (유틸리티 함수 사용)
