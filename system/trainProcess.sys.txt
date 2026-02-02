@@ -1,3 +1,24 @@
+---------------------------------------
+-- ★ 밸런싱 상수 정의 (Balancing Constants)
+-- 조교 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+---------------------------------------
+
+-- [보너스/페널티 계수]
+local MARK_BONUS_MULT       = 2     -- 각인 보너스 배율. 각인 1레벨당 보너스 값.
+local REBELLION_BASE        = 2     -- 반발각인 페널티 기준. 반발각인 레벨에 대해 (이 값)^레벨 만큼 페널티.
+
+-- [대성공 보상]
+local GREAT_SUCCESS_COST_MULT = 0.75 -- 대성공 시 HP/SP 소모 배율 (75%). 조교 대성공 시 체력/기력 소모가 이 비율로 감소.
+
+-- [기력 부족 페널티]
+local SP_SHORTAGE_HP_MULT   = 1.0     -- 기력 부족 시 추가 체력 소모 배율. 부족한 기력의 이 배수만큼 체력 추가 소모.
+
+-- [스탯 경험치 획득 제한]
+local STAT_EXP_DC_FACTOR    = 0.15  -- DC 기반 최대 레벨 계산 계수. (DC * 이 값)이 획득 가능한 최대 스탯 레벨.
+                                    -- 예: DC 60 → 최대 9렙, DC 67 → 최대 10렙 경험치까지 획득 가능.
+
+---------------------------------------
+
 --조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     debug("trainProcess 실행: DC="..tostring(dc))
@@ -59,9 +80,9 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     for k, v in pairs(markDB) do -- 각인 보너스 적용 (객체 순회)
         local markName = v.name or k
         if markName == "반발각인" then
-            rollBonus = rollBonus - 2^tonumber((target[markName] or 0))
+            rollBonus = rollBonus - REBELLION_BASE^tonumber((target[markName] or 0))
         else
-            rollBonus = rollBonus + (target[markName] or 0)*2
+            rollBonus = rollBonus + (target[markName] or 0)*MARK_BONUS_MULT
         end
     end
 
@@ -105,16 +126,16 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         costHP = costHP + dc - math.abs(roll + rollBonus)
         costSP = costSP + dc - math.abs(roll + rollBonus)
     elseif string.find(rollMsg, "대성공") then --조교가 대성공 하면 체력 기력 소모 감소
-        costHP = costHP *0.8
-        costSP = costSP *0.8
+        costHP = costHP * GREAT_SUCCESS_COST_MULT
+        costSP = costSP * GREAT_SUCCESS_COST_MULT
     end
     --비용 정수화
     costHP = math.floor(costHP)
     costSP = math.floor(costSP)
     --실제 HP,SP 차감처리
     local currentHP, currentSP = tonumber(target["체력"]), tonumber(target["기력"])
-    if currentSP < costSP then --기력이 부족한 경우 부족한 기력 소모의 두배만큼 체력소모
-        costHP = costHP + ((costSP-currentSP) *2)
+    if currentSP < costSP then --기력이 부족한 경우 부족한 기력의 배수만큼 체력소모
+        costHP = costHP + ((costSP-currentSP) * SP_SHORTAGE_HP_MULT)
     end
     debug("hp: "..currentHP, "cost: "..costHP)
     debug("sp: "..currentSP, "cost: "..costSP)
@@ -257,7 +278,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
 
     --dc에 따른 statEXP 획득 제어
     for k,v in pairs(statEXP) do
-        local maxLv = math.floor(dc*0.15) --난이도 60이면 9렙, 67이면 10렙 경험치까지 받을 수 있음
+        local maxLv = math.floor(dc * STAT_EXP_DC_FACTOR) --DC 기반 최대 레벨 계산
         local limit = EXPtbl[tostring(maxLv)]
         if limit then
             statEXP[k] = math.min(v, limit)

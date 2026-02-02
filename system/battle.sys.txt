@@ -3,12 +3,29 @@
 
 (function()
     ---------------------------------------
-    -- 로컬 함수 정의
+    -- ★ 밸런싱 상수 정의 (Balancing Constants)
+    -- 전투 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
     ---------------------------------------
     
-    -- 확률 상수 설정 (나포,도주 외의 경우에는 전투를 지속함)
-    local PROB_FLEE_SUCCESS = 0.1   -- 10% 도주 성공
-    local PROB_CAPTURE      = 0.1   -- 10% 나포
+    -- [확률 상수] 기력(SP) 0 이하 시 발생하는 이벤트 확률
+    local PROB_CAPTURE      = 0.1   -- 나포 확률 (10%). 용사가 기력 소진 시 사로잡힐 확률.
+    local PROB_FLEE_SUCCESS = 0.1   -- 도주 성공 확률 (10%). 용사가 기력 소진 시 도망칠 확률. (나머지 80%는 전투 지속)
+    
+    -- [전투 판정 상수]
+    local CRIT_THRESHOLD    = 0.9   -- 치명타 판정 기준. 공격 데미지가 (최대 공격력 * 이 값) 이상이면 치명타로 간주.
+    local SP_DMG_MIN        = 5     -- 최소 기력(SP) 피해량. 몬스터 공격 시 용사 기력 감소의 최솟값. (레이팅 차이보다 이 값이 클 경우 적용)
+    
+    -- [용사 퇴각 조건]
+    local RETREAT_HP_RATIO  = 0.3   -- HP 퇴각 기준. 용사 HP가 (최대 HP * 이 값) 미만이면 부상으로 도망.
+    local RETREAT_SP_RATIO  = 0.2   -- SP 퇴각 기준. 용사 SP가 (최대 SP * 이 값) 미만이면 공포로 도망.
+    
+    -- [침공 참여 조건]
+    local INVADER_HP_RATIO  = 0.8   -- 침공 참여 HP 조건. 용사 HP가 (최대 HP * 이 값) 이상이어야 침공에 참여.
+    local INVADER_SP_RATIO  = 0.8   -- 침공 참여 SP 조건. 용사 SP가 (최대 SP * 이 값) 이상이어야 침공에 참여.
+    
+    ---------------------------------------
+    -- 로컬 함수 정의
+    ---------------------------------------
 
     -- 로그 추가 헬퍼
     local function addLog(battleState, msg)
@@ -22,7 +39,7 @@
         local dmg = math.max(0, atk - defense)
         
         local isCrit = false
-        if dmg >= (atkMax * 0.9) then isCrit = true end
+        if dmg >= (atkMax * CRIT_THRESHOLD) then isCrit = true end
         return dmg, isCrit
     end
 
@@ -84,7 +101,7 @@
                     hero.hp = hero.hp - dmg
                     
                     if dmg > 0 then
-                        local spDmg = math.max(5, monStats.rating - (hero.rating or 0))
+                        local spDmg = math.max(SP_DMG_MIN, monStats.rating - (hero.rating or 0))
                         hero.sp = hero.sp - spDmg
                         addLog(battleState, string.format("[Turn %d] %s %s의 %s! 용사에게 %d 피해(기력 %d 감소). (남은 HP: %d, SP: %d)", 
                             turn, prefix, monStats.name, desc, dmg, spDmg, math.max(0, hero.hp), math.max(0, hero.sp)))
@@ -199,8 +216,8 @@
             local sp = tonumber(charData["기력"]) or 0
             local maxSp = tonumber(charData["최대기력"]) or 100
             
-            -- 침공 조건: 휴식중 + 체력/기력 80% 이상
-            if charData.condition == "휴식중" and hp >= (maxHp * 0.8) and sp >= (maxSp * 0.8) then
+            -- 침공 조건: 휴식중 + 체력/기력 조건 충족
+            if charData.condition == "휴식중" and hp >= (maxHp * INVADER_HP_RATIO) and sp >= (maxSp * INVADER_SP_RATIO) then
                 table.insert(waitingHeroes, charData)
             end
         end
@@ -234,7 +251,7 @@
                 local sp = tonumber(newChar["기력"]) or 0
                 local maxSp = tonumber(newChar["최대기력"]) or 100
                 
-                if newChar.condition == "휴식중" and hp >= (maxHp * 0.8) and sp >= (maxSp * 0.8) then
+                if newChar.condition == "휴식중" and hp >= (maxHp * INVADER_HP_RATIO) and sp >= (maxSp * INVADER_SP_RATIO) then
                    table.insert(waitingHeroes, newChar)
                 end
             else
@@ -352,11 +369,11 @@
                                 -- 승리
                                 clearedSlots[slotId] = true
                                 
-                                if hero.hp < (hero.maxHp * 0.3) then
+                                if hero.hp < (hero.maxHp * RETREAT_HP_RATIO) then
                                      addLog(battleState, hero.name.."이(가) 부상을 입고 도망칩니다...")
                                      heroDefeated = true
                                      break
-                                elseif hero.sp < (hero.maxSp * 0.2) then
+                                elseif hero.sp < (hero.maxSp * RETREAT_SP_RATIO) then
                                      addLog(battleState, hero.name.."이(가) 공포에 질려 도망칩니다...")
                                      heroDefeated = true
                                      break

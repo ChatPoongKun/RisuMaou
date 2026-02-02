@@ -1,3 +1,28 @@
+---------------------------------------
+-- ★ 밸런싱 상수 정의 (Balancing Constants)
+-- 신규 캐릭터 생성 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+---------------------------------------
+
+-- [HP/SP 랜덤 변동폭]
+local HP_SP_RANDOM_MIN      = 90    -- HP/SP 최종값 최소 배율 (%). 최종 HP/SP는 기본값의 이 % ~ MAX % 사이에서 결정.
+local HP_SP_RANDOM_MAX      = 110   -- HP/SP 최종값 최대 배율 (%).
+
+-- [전투력(레이팅) 계산]
+local RATING_FACTOR         = 0.5   -- 레이팅 계산 계수. (공격력 + 방어력) * 이 값 = 전투력.
+
+-- [신체특성 부여 확률] (순차 적용)
+local TRAIT_PROB_BODY_1     = 0.6   -- 첫 번째 신체특성 부여 확률 (60%).
+local TRAIT_PROB_BODY_2     = 0.3   -- 두 번째 신체특성 부여 확률 (30%). 첫 번째 획득 시에만 판정.
+local TRAIT_PROB_BODY_3     = 0.15  -- 세 번째 신체특성 부여 확률 (15%). 두 번째 획득 시에만 판정.
+
+-- [성적취향 부여 확률]
+local TRAIT_PROB_SEXUAL     = 0.1   -- 성적취향 특성 부여 확률 (10%). 10% 확률로 성적취향 1개 부여.
+
+-- [성격 부여 확률]
+local TRAIT_PROB_EXTRA_PERS = 0.5   -- 추가 성격 부여 확률 (50%). 기본 1개 + 이 확률로 1개 추가.
+
+---------------------------------------
+
 function (triggerId, reason)
     debug("newChar system initiated. Reason: " .. (reason or "unknown"))
     
@@ -78,14 +103,14 @@ function (triggerId, reason)
         atk = atk + math.random(atkMin, atkMax)
     end
     
-    local maxHP = math.floor((raceBaseHP + addedHP) * (math.random(90, 110)*0.01))
-    local maxSP = math.floor((raceBaseSP + addedSP) * (math.random(90, 110)*0.01))
+    local maxHP = math.floor((raceBaseHP + addedHP) * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX)*0.01))
+    local maxSP = math.floor((raceBaseSP + addedSP) * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX)*0.01))
     
     -- 종족 보정 (Flat Bonus)
     atk = atk + raceAtkBonus
     def = def + raceDefBonus
     
-    local combatRating = math.floor((atk + def) * 0.5)
+    local combatRating = math.floor((atk + def) * RATING_FACTOR)
 
     -- 신체 사이즈
     local heightBase = raceData.height or 160
@@ -134,22 +159,22 @@ function (triggerId, reason)
         if addTrait(personalityList) then pAdded = pAdded + 1 end
         retry = retry - 1
     end
-    if math.random() > 0.5 then addTrait(personalityList) end
+    if math.random() > TRAIT_PROB_EXTRA_PERS then addTrait(personalityList) end
     
-    -- 신체특성 추가 (60% -> 30% -> 15%, 최대 3개)
-    if math.random() <= 0.6 then
+    -- 신체특성 추가 (확률 순차 적용, 최대 3개)
+    if math.random() <= TRAIT_PROB_BODY_1 then
         addTrait(bodyTraitList)
-        if math.random() <= 0.3 then
+        if math.random() <= TRAIT_PROB_BODY_2 then
             addTrait(bodyTraitList)
-            if math.random() <= 0.15 then
+            if math.random() <= TRAIT_PROB_BODY_3 then
                 addTrait(bodyTraitList)
             end
         end
     end
 
-    -- 성적취향 추가 (10% 확률로 1개)
+    -- 성적취향 추가 (확률 기반 1개)
     local sexualPrefList = json.decode(getChatVar(triggerId, "성적취향List"))
-    if math.random() <= 0.1 then
+    if math.random() <= TRAIT_PROB_SEXUAL then
         addTrait(sexualPrefList)
     end
     
