@@ -10,8 +10,8 @@ function (triggerId)
         chars = '["user","마오"]', --리수배열 스타일에 맞게 저장
         trainDifficulty = "보통", --조교난이도 보통
         blockDeath = 1, --사망방지 O
-        ageLimit = "12", --등장 용사 나이제한 12세
-        ntrLimit = "1", --등장 용사 나이제한 12세
+        ageLimit = "13", --등장 용사 나이제한 13세
+        ntrLimit = "1", --ntr금지 On
         futaLimit = "0", --후타용사 등장 X
         maleLimit = "0", --남성용사 등장 X
         raceLimit = "1", --인외종족 등장 0:모두, 1:인간만

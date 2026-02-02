@@ -307,8 +307,8 @@ end!!
     local ageLimit = getChatVar(triggerId, "ageLimit")
 
     if ageLimit == "0" then
-        setChatVar(triggerId, "ageLimit", "12")
-    elseif ageLimit == "12" then
+        setChatVar(triggerId, "ageLimit", "13")
+    elseif ageLimit == "13" then
         setChatVar(triggerId, "ageLimit", "18")
     else
         setChatVar(triggerId, "ageLimit", "0")
