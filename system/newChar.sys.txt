@@ -107,38 +107,36 @@ function (triggerId, reason)
         penis = penisSizes[math.random(#penisSizes)]
     end
     
-    -- 4. 특성(Trait) 부여 (영문 키 선택 -> 한글 이름 매핑)
+    -- 4. 특성(Trait) 부여 (한글 이름 직접 선택)
     local personalityList = json.decode(getChatVar(triggerId, "성격List"))
     local bodyTraitList = json.decode(getChatVar(triggerId, "신체특성List"))
     
-    local assignedTraitsKey = {}
+    local assignedTraits = {} -- 한글 이름 저장
     
-    -- 성격 1~2개 (Group 충돌 방지 로직은 여기서 간단히 처리 - 같은 그룹이면 스킵)
+    -- 특성 추가 함수 (중복 체크)
     local function addTrait(list)
         if not list or #list == 0 then return false end
-        local key = list[math.random(#list)]
-        -- 이미 있는지, 그룹 충돌하는지 체크
-        -- 여기선 단순하게 중복만 체크
+        local name = list[math.random(#list)]
+        
         local dup = false
-        for _, k in ipairs(assignedTraitsKey) do if k == key then dup = true; break end end
+        for _, n in ipairs(assignedTraits) do if n == name then dup = true; break end end
         if not dup then 
-            table.insert(assignedTraitsKey, key) 
+            table.insert(assignedTraits, name) 
             return true
         end
         return false
     end
     
-    -- 최소 1개 보장
+    -- 성격 1~2개 
     local pAdded = 0
     local retry = 10
     while pAdded < 1 and retry > 0 do
         if addTrait(personalityList) then pAdded = pAdded + 1 end
         retry = retry - 1
     end
-
     if math.random() > 0.5 then addTrait(personalityList) end
     
-    -- 신체특성 추가 (60% -> 50% -> 50%, 최대 3개)
+    -- 신체특성 추가 (60% -> 30% -> 15%, 최대 3개)
     if math.random() <= 0.6 then
         addTrait(bodyTraitList)
         if math.random() <= 0.3 then
@@ -191,9 +189,6 @@ function (triggerId, reason)
         ["방어구"] = classData.armor,
         ["장신구"]="없음",
 
-        -- 특성 매핑: { "호기심": 1 } 형태
-        -- assignedTraitsKey(영문) -> traitDB[key].name(한글)
-        -- raceTraits(한글) -> 그대로 사용
         ["성격"] = {},
         ["신체특성"] = {},
         ["성적취향"] = {},
@@ -202,51 +197,9 @@ function (triggerId, reason)
         ["첫키스 상대"]="미경험", ["첫경험 상대"]="미경험", ["이상경험 기록"]={}
     }
 
-    -- 특성 데이터 주입 함수
-    local function injectTrait(korName)
-        -- trait.db 전체를 뒤져서 카테고리를 찾아야 함?
-        -- 아니면 assignedTraitsKey를 순회할 때 DB정보를 참조하므로 카테고리 알 수 있음.
-        -- 하지만 종족특성(raceTraits)은 한글 이름만 있음.
-        -- 역참조가 필요하거나, 그냥 모든 리스트를 다 뒤져야 함.
-        -- -> traitDB는 평탄화 되어있으므로, name이 일치하는 것을 찾으면 됨.
-        -- (효율성 문제: 매번 전체 순회? 캐시된 리스트 활용?)
-        
-        -- 개선안:
-        -- 1. 영문키로 할당된 것들(assignedTraitsKey)은 traitDB[key].category 로 바로 분류 가능.
-        -- 2. 한글키로 할당된 것들(raceTraits)은... 일단 '신체특성'이나 '성격' 중 하나일 텐데, DB 뒤져서 확인.
-        
-        for k, v in pairs(traitDB) do
-            if v.name == korName then
-                -- 카테고리에 맞게 삽입
-                if not skeleton[v.category] then skeleton[v.category] = {} end
-                --skeleton[v.category]는 객체가 아니라 배열이어야 하나? 
-                -- charInfo.html 보면 {{dict_element::target::호기심}} == 1 체크함.
-                -- 즉 target["호기심"] = 1 이어야 함? 
-                -- *중요*: charInfo.html의 316라인: {{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
-                -- 여기서 T는 '성격List'의 아이템(한글 이름).
-                -- 즉 target 객체 바로 아래에 target["호기심"] = 1 이 있어야 함! (중첩 아님)
-                -- 하지만 display용 리스트(skeleton["성격"])도 필요함?
-                -- charInfo.html 315라인: {{#each {{getvar::성격List}} T}} -- 이건 전체 리스트 순회
-                -- 그리고 target[T] == 1 인지 체크.
-                -- 따라서 skeleton["호기심"] = 1 로 저장해야 함.
-                -- skeleton["성격"] 필드는 사실상 필요 없을 수 있음 (HTML 로직상).
-                -- 그러나 나중을 위해 분류해두는게 좋음?
-                -- 일단 호환성을 위해 **최상위 레벨에 특성 키=1 저장** 필수.
-                
-                skeleton[korName] = 1
-                return
-            end
-        end
-        -- DB에 없으면(예: 오타) 그냥 최상위에 1로 저장
-        skeleton[korName] = 1
-    end
-
-    -- 1. 랜덤 선택된 특성 주입
-    for _, key in ipairs(assignedTraitsKey) do
-        local tData = traitDB[key]
-        if tData then
-            skeleton[tData.name] = 1
-        end
+    -- 특성 주입: UI 호환을 위해 최상위에 1로 저장
+    for _, traitName in ipairs(assignedTraits) do
+        skeleton[traitName] = 1
     end
     
     -- 2. 종족 특성 주입 로직 삭제됨
