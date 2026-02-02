@@ -1,5 +1,4 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
---조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     debug("trainProcess 실행: DC="..tostring(dc))
 
@@ -136,7 +135,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
             local newLog = getChatVar(triggerId, "newLog")
             newLog = newLog .. "<p>대상은 가혹한 조교를 견디지 못하고 실신했다.</p>"
             setChatVar(triggerId, "newLog", newLog)
-            executeFunction(triggerId, "train", "199") --조교종료 화면으로 넘어가 trace를 얻고 어빌처리는 할 수 있도록 함
+            sysFunction(triggerId, "train.sys", "post") --조교종료 화면으로 넘어가 trace를 얻고 어빌처리는 할 수 있도록 함
             alertNormal(triggerId, "대상은 가혹한 조교를 견디지 못하고 실신했습니다. 조교를 종료합니다.")
 
         else --사망처리.
@@ -215,7 +214,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     local trainResponse = LLM(triggerId, prompt, "trainResponse")
     debug("trainProcess: LLM (trainResponse) 호출 완료. Success="..tostring(trainResponse.success))
     if not trainResponse.success then --LLM응답 실패시 함수 종료
-        alertNormal(triggerId, "trainResponse LLM응답 실패"..trainResponse.result)
+        debug("[Train:Error] trainResponse LLM응답 실패: " .. tostring(trainResponse.result))
+        alertNormal(triggerId, "trainResponse LLM응답 실패: " .. tostring(trainResponse.result))
         setChatVar(triggerId, "cmds", old_cmds)
         reloadDisplay(triggerId)
         return false
@@ -225,8 +225,18 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     local content = trainResponse.result
     debug("stat계산: "..content)
     --statEXP 저장
-    local statEXP = content:match("({.*})")
-    statEXP = json.decode(statEXP)
+    local statEXPStr = content:match("({.*})")
+    local statEXP = {}
+    if statEXPStr then
+        local status, res = pcall(json.decode, statEXPStr)
+        if status then 
+            statEXP = res 
+        else
+            debug("[Train:Error] Failed to decode statEXP JSON: " .. tostring(res))
+        end
+    else
+        debug("[Train:Error] No JSON found in LLM response")
+    end
 
     -- customEvent: onStatEXP 처리
     tags = tags or {}
@@ -249,7 +259,11 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     for k,v in pairs(statEXP) do
         local maxLv = math.floor(dc*0.15) --난이도 60이면 9렙, 67이면 10렙 경험치까지 받을 수 있음
         local limit = EXPtbl[tostring(maxLv)]
-        statEXP[k] = math.min(v, limit)
+        if limit then
+            statEXP[k] = math.min(v, limit)
+        else
+             debug("[Train:Warn] No EXP limit found for level " .. tostring(maxLv))
+        end
     end
 
     --trait에 따른 statEXP 획득 제어
@@ -355,6 +369,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
 
     prompt = {
     promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
+    promptBuild("assistant", getLoreBookContent(triggerId, "jailBreak.pt")), --탈옥 프리필
     promptBuild("system", getLoreBookContent(triggerId, "trainLog.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "worldBriefing.pt")),
     promptBuild("system", "- STAT: "..json.encode(statDescDB)),
@@ -370,7 +385,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     promptBuild("system", "- training_command: "..command), --조교명령
     promptBuild("system", "- command_result: "..rollMsg), --성공여부
     promptBuild("system", "- orgasm: "..ejMsg), --절정여부
-    promptBuild("system", "## Train Log"), --로그 시작
+    promptBuild("assistant", "## Train Log"), --로그 시작
     promptBuild("assistant", oldLog) --기존 로그
     }
 
@@ -378,7 +393,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     local trainLog = LLM(triggerId, prompt, "trainLog") --LLM에 응답 요청
     debug("trainProcess: LLM (trainLog) 호출 완료. Success="..tostring(trainLog.success))
     if not trainLog.success then --LLM응답 실패시 함수 종료
-        alertNormal(triggerId, "trainLog LLM응답 실패".. trainLog.result)
+        debug("[Train:Error] trainLog LLM응답 실패: " .. tostring(trainLog.result))
+        alertNormal(triggerId, "trainLog LLM응답 실패: " .. tostring(trainLog.result))
         setChatVar(triggerId, "cmds", old_cmds)
         reloadDisplay(triggerId)
         return false
