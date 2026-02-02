@@ -804,6 +804,28 @@
         local traceCurrent = allTraces[target["이름"]] or {}
         local totalTrace = 0
 
+        -- [Migration] Trace Migration & UI Refresh
+        local traceDB = getDB(triggerId, "trace.db")
+        local traceList = {}
+        for k, v in pairs(traceDB) do
+            if v.name then table.insert(traceList, v.name) end
+        end
+        table.sort(traceList)
+        setChatVar(triggerId, "traceList", json.encode(traceList))
+
+        local oldToNew = {
+            ["C감각"] = "C감각의 흔적", ["B감각"] = "B감각의 흔적", ["V감각"] = "V감각의 흔적", ["A감각"] = "A감각의 흔적",
+            ["U감각"] = "U감각의 흔적", ["애정"] = "애정의 흔적", ["발정"] = "발정의 흔적", ["순종"] = "순종의 흔적",
+            ["복종"] = "복종의 흔적", ["기술"] = "기술의 흔적", ["굴욕"] = "굴욕의 흔적", ["상처"] = "상처의 흔적",
+            ["불안"] = "불안의 흔적", ["부정"] = "부정의 흔적"
+        }
+        for old, new in pairs(oldToNew) do
+            if traceCurrent[old] and (tonumber(traceCurrent[old]) or 0) > 0 then
+                traceCurrent[new] = (traceCurrent[new] or 0) + tonumber(traceCurrent[old])
+                traceCurrent[old] = nil -- Remove old key
+            end
+        end
+
         -- 1. 캐시 초기화 (한 번만 실행)
         if not cachedValidTraces then
             local traceDB = getDB(triggerId, "trace.db")
@@ -868,14 +890,14 @@
 
         -- 4. 부정 흔적에 의한 차감 로직 (Water-leveling deduction)
         local deductLevel = 0 -- 삭감 기준 높이 (이 높이 이상인 흔적은 잘려나감)
-        local deductTotal = traceSum["부정"] or 0 -- 삭감에 사용할 총 자원 (부정 흔적의 총량)
+        local deductTotal = traceSum["부정의 흔적"] or 0 -- 삭감에 사용할 총 자원 (부정 흔적의 총량)
         local deductUsed = 0 -- 실제로 사용된 삭감 자원
 
         if deductTotal > 0 then
             -- 차감 대상 흔적 수집 (부정 제외, 0보다 큰 것)
             local targets = {}
             for k, v in pairs(traceSum) do
-                if k ~= "부정" and v > 0 then
+                if k ~= "부정의 흔적" and v > 0 then
                     table.insert(targets, v)
                 end
             end
@@ -909,7 +931,7 @@
             local added = traceAdd[k] or 0
             local deducted = 0
 
-            if k == "부정" then
+            if k == "부정의 흔적" then
                 deducted = deductUsed -- 부정 흔적은 사용된 만큼 차감
             else
                 -- 일반 흔적은 deductLevel을 초과하는 부분을 잘라냄 (min(deductLevel, v) 만큼 차감하는 효과)
