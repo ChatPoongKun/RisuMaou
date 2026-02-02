@@ -84,7 +84,7 @@
                 if hero.hp <= 0 or monStats.hp <= 0 then break end
                 
                 if attackerType == "hero" then
-                    local dmg, crit = calcDamage(hero.atk, hero.atk, monStats.def)
+                    local dmg, crit = calcDamage(hero.atkMin, hero.atkMax, monStats.def)
                     local desc = "공격"
                     if crit then desc = "치명타 공격" end
                     if dmg == 0 then desc = "공격이 막힘" end
@@ -153,21 +153,32 @@
         addLog(battleState, "=== [BOSS BATTLE] 던전 최심부, 마왕의 알현실 ===")
         addLog(battleState, string.format("마왕 %s(이)가 침입자 %s(을)를 맞이합니다!", battleState.userName, hero.name))
         
+        -- 마왕 공격력 파싱
+        local bossAtkMin, bossAtkMax = 10, 10
+        if type(userStats.atk) == "string" then
+             local min, max = userStats.atk:match("(%d+)~(%d+)")
+             bossAtkMin = tonumber(min) or 10
+             bossAtkMax = tonumber(max) or 10
+        else
+             bossAtkMin = tonumber(userStats.atk) or 10
+             bossAtkMax = bossAtkMin
+        end
+
         local bossStats = {
             name = battleState.userName,
             hp = userStats.hp, maxHp = userStats.maxHp,
-            atk = userStats.atk, def = userStats.def
+            atkMin = bossAtkMin, atkMax = bossAtkMax, def = userStats.def
         }
         
         local turn = 1
         while bossStats.hp > 0 and hero.hp > 0 and hero.sp > 0 do
-            local dmg, crit = calcDamage(bossStats.atk, bossStats.atk, hero.def)
+            local dmg, crit = calcDamage(bossStats.atkMin, bossStats.atkMax, hero.def)
             hero.hp = hero.hp - dmg
             addLog(battleState, string.format("[Turn %d] 마왕의 강력한 일격! %s에게 %d 피해. (남은 HP: %d)", turn, hero.name, dmg, math.max(0, hero.hp)))
             
             if hero.hp <= 0 then return "Win", bossStats.hp end
             
-            dmg, crit = calcDamage(hero.atk, hero.atk, bossStats.def)
+            dmg, crit = calcDamage(hero.atkMin, hero.atkMax, bossStats.def)
             bossStats.hp = bossStats.hp - dmg
             addLog(battleState, string.format("[Turn %d] %s의 필사적인 공격! 마왕에게 %d 피해. (남은 HP: %d)", turn, hero.name, dmg, math.max(0, bossStats.hp)))
             
@@ -290,7 +301,13 @@
             h.maxHp = tonumber(h["최대체력"]) or 100
             h.sp = tonumber(h["기력"]) or 100
             h.maxSp = tonumber(h["최대기력"]) or 100
-            h.atk = tonumber(h["공격력"]) or 10
+            
+            -- 공격력 파싱 (min~max)
+            local atkStr = h["공격력"] or "10~10"
+            local atkMin, atkMax = atkStr:match("(%d+)~(%d+)")
+            h.atkMin = tonumber(atkMin) or 10
+            h.atkMax = tonumber(atkMax) or 10
+            
             h.def = tonumber(h["방어력"]) or 10
             h.rating = tonumber(h["레이팅"]) or 10
             h.name = h["이름"]

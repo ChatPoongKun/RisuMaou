@@ -512,6 +512,34 @@
         setState(triggerId, "trace", allTraces)
         setChatVar(triggerId, "traceText", traceText)
 
+        -- 6. 경험치 누적 및 레벨업 체크
+        -- 부정 차감 후 순수 트레이스 합계를 경험치로 환산
+        local netTrace = 0
+        for k, v in pairs(traceCurrent) do
+            if k ~= "부정의 흔적" then
+                local added = traceAdd[k] or 0
+                local deducted = math.min(deductLevel, traceSum[k] or 0)
+                netTrace = netTrace + math.max(added - deducted, 0)
+            end
+        end
+        
+        local oldEXP = tonumber(target["경험치"]) or 0
+        local newEXP = oldEXP + netTrace
+        target["경험치"] = tostring(newEXP)
+        debug(string.format("[Train:Post] EXP: %d -> %d (Gained: %d)", oldEXP, newEXP, netTrace))
+        
+        -- 레벨업 체크 및 실행
+        local lvUpEffect = ""
+        local canLevelUp, currentEXP, requiredEXP = sysFunction(triggerId, "LvUp.sys", "check", target)
+        debug(string.format("[Train:Post] EXP Progress: %d/%d (Level Up: %s)", 
+            currentEXP, requiredEXP or 0, canLevelUp and "YES" or "NO"))
+        if canLevelUp then
+            target, lvUpEffect, _ = sysFunction(triggerId, "LvUp.sys", "execute", target, 1, false)
+            -- 레벨업 후 화면 효과 저장
+            local existEffect = getChatVar(triggerId, "screenEffect") or ""
+            setChatVar(triggerId, "screenEffect", existEffect .. lvUpEffect)
+        end
+
         -- 로그 및 화면 갱신
         addChat(triggerId, "user", "{{" .. "getvar::html" .. "}}")
 

@@ -1,0 +1,140 @@
+-- LvUp.sys.txt
+-- 캐릭터 레벨업 처리 모듈
+
+(function()
+    ---------------------------------------
+    -- ★ 밸런싱 상수 정의 (Balancing Constants)
+    ---------------------------------------
+
+    -- [경험치 테이블 오프셋]
+    local EXP_LEVEL_OFFSET = 3          -- 레벨 N 도달에 필요한 경험치 = EXPtable[N + 이 값]
+
+    -- [레이팅 계산 계수]
+    local RATING_HP_FACTOR = 0.33       -- HP 1당 레이팅 기여도
+    local RATING_DEF_FACTOR = 3.33      -- 방어력 1당 레이팅 기여도
+    local RATING_ATK_MIN_FACTOR = 4     -- 공격력 최소 1당 레이팅 기여도
+    local RATING_ATK_MAX_FACTOR = 2.67  -- 공격력 최대 1당 레이팅 기여도
+
+    ---------------------------------------
+
+    local funcs = {}
+
+    local function getClassData(triggerId, className)
+        local classDB = getDB(triggerId, "class.db")
+        for key, data in pairs(classDB) do
+            if data.name == className then return data end
+        end
+        return { hp_inc=100, sp_inc=100, def_inc=5, atk_min=3, atk_max=6 }
+    end
+
+    function funcs.calcRating(triggerId, target)
+        local hp = tonumber(target["최대체력"]) or 0
+        local def = tonumber(target["방어력"]) or 0
+        local atkStr = target["공격력"] or "0~0"
+        local atkMin, atkMax = atkStr:match("(%d+)~(%d+)")
+        atkMin = tonumber(atkMin) or 0
+        atkMax = tonumber(atkMax) or 0
+        
+        local rating = math.floor(
+            hp * RATING_HP_FACTOR + 
+            def * RATING_DEF_FACTOR + 
+            atkMin * RATING_ATK_MIN_FACTOR +
+            atkMax * RATING_ATK_MAX_FACTOR
+        )
+        target["레이팅"] = rating
+        return target
+    end
+
+    function funcs.check(triggerId, target)
+        local expTable = getDB(triggerId, "EXPtable.db")
+        local currentLevel = tonumber(target["레벨"]) or 1
+        local currentEXP = tonumber(target["경험치"]) or 0
+        
+        local reqKey = tostring(currentLevel + EXP_LEVEL_OFFSET)
+        local reqEXP = expTable[reqKey]
+        
+        if not reqEXP then return false, 0, 0 end
+        return currentEXP >= reqEXP, currentEXP, reqEXP
+    end
+
+    function funcs.execute(triggerId, target, count, silent)
+        count = count or 1
+        silent = silent or false
+        
+        local classData = getClassData(triggerId, target["클래스"])
+        
+        local totalHPGain = 0
+        local totalSPGain = 0
+        local totalAtkMinGain = 0
+        local totalAtkMaxGain = 0
+        local totalDefGain = 0
+        local levelsGained = 0
+        
+        for i = 1, count do
+            local hpGain = math.random(1, classData.hp_inc or 100)
+            local spGain = math.random(1, classData.sp_inc or 100)
+            local defGain = math.random(1, classData.def_inc or 5)
+            local atkMinGain = math.random(1, classData.atk_min or 3)
+            local atkMaxGain = math.random(1, classData.atk_max or 6)
+            
+            local maxHP = tonumber(target["최대체력"]) or 100
+            local maxSP = tonumber(target["최대기력"]) or 100
+            local currentHP = tonumber(target["체력"]) or maxHP
+            local currentSP = tonumber(target["기력"]) or maxSP
+            local def = tonumber(target["방어력"]) or 0
+            
+            local atkStr = target["공격력"] or "0~0"
+            local atkMin, atkMax = atkStr:match("(%d+)~(%d+)")
+            atkMin = tonumber(atkMin) or 0
+            atkMax = tonumber(atkMax) or 0
+            
+            maxHP = maxHP + hpGain
+            maxSP = maxSP + spGain
+            currentHP = currentHP + hpGain
+            currentSP = currentSP + spGain
+            atkMin = atkMin + atkMinGain
+            atkMax = atkMax + atkMaxGain
+            def = def + defGain
+            
+            target["최대체력"] = tostring(maxHP)
+            target["최대기력"] = tostring(maxSP)
+            target["체력"] = tostring(math.min(currentHP, maxHP))
+            target["기력"] = tostring(math.min(currentSP, maxSP))
+            target["공격력"] = atkMin .. "~" .. atkMax
+            target["방어력"] = def
+            
+            local currentLevel = tonumber(target["레벨"]) or 1
+            target["레벨"] = tostring(currentLevel + 1)
+            
+            totalHPGain = totalHPGain + hpGain
+            totalSPGain = totalSPGain + spGain
+            totalAtkMinGain = totalAtkMinGain + atkMinGain
+            totalAtkMaxGain = totalAtkMaxGain + atkMaxGain
+            totalDefGain = totalDefGain + defGain
+            levelsGained = levelsGained + 1
+        end
+        
+        target = funcs.calcRating(triggerId, target)
+        
+        local screenEffect = ""
+        if not silent and levelsGained > 0 then
+            local name = target["이름"] or "대상"
+            local newLevel = target["레벨"]
+            
+            screenEffect = "<div class='success-animation'><div class='animation-text success'>" ..
+                name .. " 레벨 업! (Lv." .. newLevel .. ")<br>" ..
+                "HP+" .. totalHPGain .. " SP+" .. totalSPGain .. 
+                " ATK+" .. totalAtkMinGain .. "~" .. totalAtkMaxGain .. 
+                " DEF+" .. totalDefGain .. "</div></div>"
+            
+            debug("[LvUp] " .. name .. ": Lv " .. newLevel .. " HP+" .. totalHPGain)
+        end
+        
+        return target, screenEffect, levelsGained
+    end
+
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then return funcs[subFunc](triggerId, ...) end
+        debug("LvUp.sys: Unknown function " .. tostring(subFunc))
+    end
+end)()
