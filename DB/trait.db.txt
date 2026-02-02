@@ -437,13 +437,23 @@
         "name": "빠른회복",
         "desc": "낮에도 체력 및 기력을 조금 회복합니다.",
         "category": "신체특성",
-        "group": "recovery"
+        "group": "recovery",
+        "events": {
+            "onDayPass": {
+                "func": "hpGen = hpGen + 0.05; spGen = spGen + 0.05"
+            }
+        }
     },
     "slow_recovery": {
         "name": "느린회복",
         "desc": "체력 및 기력 회복속도가 느립니다.",
         "category": "신체특성",
-        "group": "recovery"
+        "group": "recovery",
+        "events": {
+            "onDayPass": {
+                "func": "hpGen = hpGen - 0.05; if not isNight then hpGen = 0 end"
+            }
+        }
     },
     "immature": {
         "name": "미숙",

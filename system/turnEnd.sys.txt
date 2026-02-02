@@ -1,6 +1,30 @@
+---------------------------------------
+-- ★ 밸런싱 상수 정의 (Balancing Constants)
+-- 턴 종료 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+---------------------------------------
+
+-- [침공 이벤트 상수]
+local BATTLE_PROB       = 0.5   -- 전투 이벤트 발생 확률 (50%). 밤에 이 확률로 용사 침공 발생.
+local INVASION_MIN_DAY  = 3     -- 침공 가능 최소 일수. 이 일수 이상부터 침공 이벤트 발생 가능.
+
+-- [밤 회복률] (수면/휴식 중)
+local HP_GEN_NIGHT      = 0.1   -- 밤 HP 회복률 (10%). 최대 HP의 이 비율만큼 회복.
+local SP_GEN_NIGHT      = 0.15  -- 밤 SP 회복률 (15%). 최대 SP의 이 비율만큼 회복.
+
+-- [낮 회복률] (일과 중)
+local HP_GEN_DAY        = 0.05  -- 낮 HP 회복률 (5%). 최대 HP의 이 비율만큼 회복.
+local SP_GEN_DAY        = 0.1   -- 낮 SP 회복률 (10%). 최대 SP의 이 비율만큼 회복.
+
+-- [회복 페널티]
+local RECOVERY_PENALTY_FAINT = 0.5   -- 실신 상태 시 HP 회복률 감소 배율 (50%).
+
+-- [상태 변경 조건]
+local TRAINABLE_SP_RATIO    = 0.9   -- 조교가능 전환 SP 조건. SP가 (최대 SP * 이 값) 이상이면 실신→조교가능 전환.
+
+---------------------------------------
+
 function (triggerId, action)
     debug("turnEnd 실행: " .. tostring(action))
-    local battleProb = 0.5 --전투 이벤트 발생확률
     
     --HP/SP 회복 처리 함수
     --isNight: true면 밤(높은 회복률), false면 낮(낮은 회복률)
@@ -10,24 +34,33 @@ function (triggerId, action)
         --기본 회복률 설정
         local hpGen, spGen
         if isNight then
-            hpGen = 0.1
-            spGen = 0.15
+            hpGen = HP_GEN_NIGHT
+            spGen = SP_GEN_NIGHT
         else
-            hpGen = 0.05
-            spGen = 0.1
+            hpGen = HP_GEN_DAY
+            spGen = SP_GEN_DAY
         end
         
-        --빠른회복 미보유 또는 실신 시 회복률 감소
-        if char["빠른회복"] == 0 or char["condition"] == "실신" then
-            hpGen = hpGen - 0.05
-            if not isNight then
-                hpGen = 0  --낮에는 회복 없음
-            end
-        end
+        --[[
+            customEvent: onDayPass
+            trait.db에서 정의된 회복 보너스/페널티를 적용
+            (예: 빠른회복, 느린회복 특성)
+        ]]
+        local recoveryCtx = {
+            target = char,
+            stat = {},
+            tags = {},
+            hpGen = hpGen,
+            spGen = spGen,
+            isNight = isNight
+        }
+        recoveryCtx = sysFunction(triggerId, "customEvent.sys", "onDayPass", recoveryCtx)
+        hpGen = recoveryCtx.hpGen
+        spGen = recoveryCtx.spGen
         
-        --실신 시 HP 회복 50% 감소
+        --실신 시 HP 회복 감소
         if char["condition"] == "실신" then
-            hpGen = hpGen * 0.5
+            hpGen = hpGen * RECOVERY_PENALTY_FAINT
         end
         
         --실제 회복 계산
@@ -39,8 +72,8 @@ function (triggerId, action)
         char["체력"] = intForm(math.min(currentHP + math.floor(maxHP * hpGen), maxHP))
         char["기력"] = intForm(math.min(currentSP + math.floor(maxSP * spGen), maxSP))
         
-        --기력이 90% 이상 회복되면 실신에서 조교가능으로 변경
-        if tonumber(char["기력"]) > maxSP * 0.9 and char["condition"] == "실신" then
+        --기력이 조건 충족 시 실신에서 조교가능으로 변경
+        if tonumber(char["기력"]) > maxSP * TRAINABLE_SP_RATIO and char["condition"] == "실신" then
             char["condition"] = "조교가능"
         end
         
@@ -67,7 +100,7 @@ function (triggerId, action)
     -- 조건: 3일차 이상, 밤(isNight=true), 50% 확률
     -- action이 "nextDay"인 경우(전투 후 복귀) 침공 체크 스킵
     local invasionTriggered = false
-    if action ~= "nextDay" and isNight and tonumber(day) >= 3 and math.random() < battleProb then
+    if action ~= "nextDay" and isNight and tonumber(day) >= INVASION_MIN_DAY and math.random() < BATTLE_PROB then
         invasionTriggered = true
         
         -- 즉시 배틀화면으로 전환 (로딩 상태 표시)
