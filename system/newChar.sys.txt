@@ -1,31 +1,32 @@
----------------------------------------
--- ★ 밸런싱 상수 정의 (Balancing Constants)
--- 신규 캐릭터 생성 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
----------------------------------------
-
--- [HP/SP 랜덤 변동폭]
-local HP_SP_RANDOM_MIN      = 90    -- HP/SP 최종값 최소 배율 (%). 최종 HP/SP는 기본값의 이 % ~ MAX % 사이에서 결정.
-local HP_SP_RANDOM_MAX      = 110   -- HP/SP 최종값 최대 배율 (%).
-
--- [전투력(레이팅) 계산]
-local RATING_FACTOR         = 0.5   -- 레이팅 계산 계수. (공격력 + 방어력) * 이 값 = 전투력.
-
--- [신체특성 부여 확률] (순차 적용)
-local TRAIT_PROB_BODY_1     = 0.6   -- 첫 번째 신체특성 부여 확률 (60%).
-local TRAIT_PROB_BODY_2     = 0.3   -- 두 번째 신체특성 부여 확률 (30%). 첫 번째 획득 시에만 판정.
-local TRAIT_PROB_BODY_3     = 0.15  -- 세 번째 신체특성 부여 확률 (15%). 두 번째 획득 시에만 판정.
-
--- [성적취향 부여 확률]
-local TRAIT_PROB_SEXUAL     = 0.1   -- 성적취향 특성 부여 확률 (10%). 10% 확률로 성적취향 1개 부여.
-
--- [성격 부여 확률]
-local TRAIT_PROB_EXTRA_PERS = 0.5   -- 추가 성격 부여 확률 (50%). 기본 1개 + 이 확률로 1개 추가.
-
----------------------------------------
-
 function (triggerId, reason)
     debug("newChar system initiated. Reason: " .. (reason or "unknown"))
     
+    ---------------------------------------
+    -- ★ 밸런싱 상수 정의 (Balancing Constants)
+    -- 신규 캐릭터 생성 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+    ---------------------------------------
+
+    -- [HP/SP 랜덤 변동폭]
+    local HP_SP_RANDOM_MIN      = 90    -- HP/SP 최종값 최소 배율 (%). 최종 HP/SP는 기본값의 이 % ~ MAX % 사이에서 결정.
+    local HP_SP_RANDOM_MAX      = 110   -- HP/SP 최종값 최대 배율 (%).
+
+    -- [전투력(레이팅) 계산]
+    local RATING_FACTOR         = 0.5   -- 레이팅 계산 계수. (공격력 + 방어력) * 이 값 = 전투력.
+
+    -- [신체특성 부여 확률] (순차 적용)
+    local TRAIT_PROB_BODY_1     = 0.6   -- 첫 번째 신체특성 부여 확률 (60%).
+    local TRAIT_PROB_BODY_2     = 0.3   -- 두 번째 신체특성 부여 확률 (30%). 첫 번째 획득 시에만 판정.
+    local TRAIT_PROB_BODY_3     = 0.15  -- 세 번째 신체특성 부여 확률 (15%). 두 번째 획득 시에만 판정.
+
+    -- [성적취향 부여 확률]
+    local TRAIT_PROB_SEXUAL     = 0.1   -- 성적취향 특성 부여 확률 (10%). 10% 확률로 성적취향 1개 부여.
+
+    -- [성격 부여 확률]
+    local TRAIT_PROB_EXTRA_PERS = 0.5   -- 추가 성격 부여 확률 (50%). 기본 1개 + 이 확률로 1개 추가.
+
+    ---------------------------------------
+
+
     -- 1. 설정 및 데이터 로드
     local raceDB = getDB(triggerId, "race.db")
     local classDB = getDB(triggerId, "class.db")
@@ -77,40 +78,19 @@ function (triggerId, reason)
     local age = math.floor((ageBase + math.random(0, 10)) * lifeSpanMult)
     if age < ageLimit then age = ageLimit end
     
-    -- 3. 스탯 계산
+    -- 3. 스탯 계산 (1레벨 기본 스탯 설정 후 LvUp.sys로 성장)
     local raceBaseHP = raceData.base_hp or 100
     local raceBaseSP = raceData.base_sp or 100
     
     local raceAtkBonus = raceData.bonus_atk or 0
     local raceDefBonus = raceData.bonus_def or 0
     
-    local hpInc = classData.hp_inc or 100
-    local spInc = classData.sp_inc or 100
-    local defInc = classData.def_inc or 5
-    local atkMin = classData.atk_min or 5
-    local atkMax = classData.atk_max or 5
-    
-    -- 레벨업 시뮬레이션
-    local addedHP = 0
-    local addedSP = 0
-    local atk = 0
-    local def = 0
-    
-    for i=1, level do
-        addedHP = addedHP + hpInc
-        addedSP = addedSP + spInc
-        def = def + defInc
-        atk = atk + math.random(atkMin, atkMax)
-    end
-    
-    local maxHP = math.floor((raceBaseHP + addedHP) * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX)*0.01))
-    local maxSP = math.floor((raceBaseSP + addedSP) * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX)*0.01))
-    
-    -- 종족 보정 (Flat Bonus)
-    atk = atk + raceAtkBonus
-    def = def + raceDefBonus
-    
-    local combatRating = math.floor((atk + def) * RATING_FACTOR)
+    -- 1레벨 기본 스탯 (종족 기본치 + 종족 보너스)
+    local maxHP = math.floor(raceBaseHP * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX) * 0.01))
+    local maxSP = math.floor(raceBaseSP * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX) * 0.01))
+    local atkMin = raceAtkBonus  -- 공격력 최소
+    local atkMax = raceAtkBonus  -- 공격력 최대
+    local def = raceDefBonus
 
     -- 신체 사이즈
     local heightBase = raceData.height or 160
@@ -180,22 +160,22 @@ function (triggerId, reason)
     
     -- 종족 특성 추가 로직 삭제됨 (사용자 요청)
     
-    -- 5. 스켈레톤 데이터 구성 (한글 키 매핑)
+    -- 5. 스켈레톤 데이터 구성 (1레벨 기본 스탯으로 시작)
     local skeleton = {
         ["종족"] = raceData.name, -- "인간"
         ["성별"] = gender,
         ["나이"] = tostring(age),
         ["클래스"] = classData.name, -- "기사"
-        ["레벨"] = tostring(level),
+        ["레벨"] = "1", -- 1레벨에서 시작하여 LvUp.sys로 성장
         ["경험치"] = "0",
         
         ["체력"] = tostring(maxHP),
         ["최대체력"] = tostring(maxHP),
         ["기력"] = tostring(maxSP),
         ["최대기력"] = tostring(maxSP),
-        ["공격력"] = atk,
+        ["공격력"] = atkMin .. "~" .. atkMax,
         ["방어력"] = def,
-        ["레이팅"] = combatRating,
+        ["레이팅"] = 0, -- LvUp.sys에서 계산
         
         ["자궁정액"]="0",
         ["애널정액"]="0",
@@ -229,6 +209,15 @@ function (triggerId, reason)
     
     -- 2. 종족 특성 주입 로직 삭제됨
     
+    -- 6. LvUp.sys를 사용하여 목표 레벨까지 성장 (1레벨에서 시작)
+    if level > 1 then
+        skeleton, _, _ = sysFunction(triggerId, "LvUp.sys", "execute", skeleton, level - 1, true)
+        debug(string.format("캐릭터 레벨업 완료: Lv.%s, ATK:%s, DEF:%s, Rating:%s", 
+            skeleton["레벨"], skeleton["공격력"], skeleton["방어력"], skeleton["레이팅"]))
+    else
+        -- 1레벨이면 Rating만 계산
+        skeleton = sysFunction(triggerId, "LvUp.sys", "calcRating", skeleton)
+    end
     
     debug("기초데이터", json.encode(skeleton))
     

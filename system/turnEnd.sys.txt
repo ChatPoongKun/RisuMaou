@@ -1,31 +1,32 @@
----------------------------------------
--- ★ 밸런싱 상수 정의 (Balancing Constants)
--- 턴 종료 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
----------------------------------------
 
--- [침공 이벤트 상수]
-local BATTLE_PROB       = 0.5   -- 전투 이벤트 발생 확률 (50%). 밤에 이 확률로 용사 침공 발생.
-local INVASION_MIN_DAY  = 3     -- 침공 가능 최소 일수. 이 일수 이상부터 침공 이벤트 발생 가능.
-
--- [밤 회복률] (수면/휴식 중)
-local HP_GEN_NIGHT      = 0.1   -- 밤 HP 회복률 (10%). 최대 HP의 이 비율만큼 회복.
-local SP_GEN_NIGHT      = 0.15  -- 밤 SP 회복률 (15%). 최대 SP의 이 비율만큼 회복.
-
--- [낮 회복률] (일과 중)
-local HP_GEN_DAY        = 0.05  -- 낮 HP 회복률 (5%). 최대 HP의 이 비율만큼 회복.
-local SP_GEN_DAY        = 0.1   -- 낮 SP 회복률 (10%). 최대 SP의 이 비율만큼 회복.
-
--- [회복 페널티]
-local RECOVERY_PENALTY_FAINT = 0.5   -- 실신 상태 시 HP 회복률 감소 배율 (50%).
-
--- [상태 변경 조건]
-local TRAINABLE_SP_RATIO    = 0.9   -- 조교가능 전환 SP 조건. SP가 (최대 SP * 이 값) 이상이면 실신→조교가능 전환.
-
----------------------------------------
 
 function (triggerId, action)
     debug("turnEnd 실행: " .. tostring(action))
-    
+    ---------------------------------------
+    -- ★ 밸런싱 상수 정의 (Balancing Constants)
+    -- 턴 종료 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+    ---------------------------------------
+
+    -- [침공 이벤트 상수]
+    local BATTLE_PROB       = 0.5   -- 전투 이벤트 발생 확률 (50%). 밤에 이 확률로 용사 침공 발생.
+    local INVASION_MIN_DAY  = 3     -- 침공 가능 최소 일수. 이 일수 이상부터 침공 이벤트 발생 가능.
+
+    -- [밤 회복률] (수면/휴식 중)
+    local HP_GEN_NIGHT      = 0.1   -- 밤 HP 회복률 (10%). 최대 HP의 이 비율만큼 회복.
+    local SP_GEN_NIGHT      = 0.15  -- 밤 SP 회복률 (15%). 최대 SP의 이 비율만큼 회복.
+
+    -- [낮 회복률] (일과 중)
+    local HP_GEN_DAY        = 0.05  -- 낮 HP 회복률 (5%). 최대 HP의 이 비율만큼 회복.
+    local SP_GEN_DAY        = 0.1   -- 낮 SP 회복률 (10%). 최대 SP의 이 비율만큼 회복.
+
+    -- [회복 페널티]
+    local RECOVERY_PENALTY_FAINT = 0.5   -- 실신 상태 시 HP 회복률 감소 배율 (50%).
+
+    -- [상태 변경 조건]
+    local TRAINABLE_SP_RATIO    = 0.9   -- 조교가능 전환 SP 조건. SP가 (최대 SP * 이 값) 이상이면 실신→조교가능 전환.
+
+    ---------------------------------------
+
     --HP/SP 회복 처리 함수
     --isNight: true면 밤(높은 회복률), false면 낮(낮은 회복률)
     local function processRecovery(triggerId, charName, isNight)
