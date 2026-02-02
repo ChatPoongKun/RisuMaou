@@ -245,7 +245,7 @@
         -- If strictly required, pick whatever we have or duplicate
         if #waitingHeroes == 0 then
              -- Emergency fallback
-             table.insert(waitingHeroes, {이름="용사(임시)", Hp=100, strength=10, condition="휴식중"})
+             table.insert(waitingHeroes, {["이름"]="용사(임시)", ["체력"]=100, ["최대체력"]=100, ["기력"]=100, ["최대기력"]=100, ["공격력"]=10, ["방어력"]=5, ["레이팅"]=10})
         end
 
         for i = 1, math.min(#waitingHeroes, requiredHeroes) do
@@ -447,7 +447,7 @@
             addLog(battleState, "마왕성이 함락되었습니다...")
         else
             addLog(battleState, "방어에 성공했습니다.")
-            finalResult = "Defend"
+            finalResult = "Win"
         end
         
         local bestiary = {}
@@ -479,6 +479,7 @@
             timeline = timeline -- [NEW]
         }
         
+        -- Final summary return
         return summary
     end
 

@@ -1,5 +1,6 @@
 function (triggerId, action)
     debug("turnEnd 실행: " .. tostring(action))
+    local battleProb = 0.5 --전투 이벤트 발생확률
     
     --HP/SP 회복 처리 함수
     --isNight: true면 밤(높은 회복률), false면 낮(낮은 회복률)
@@ -66,7 +67,7 @@ function (triggerId, action)
     -- 조건: 3일차 이상, 밤(isNight=true), 50% 확률
     -- action이 "nextDay"인 경우(전투 후 복귀) 침공 체크 스킵
     local invasionTriggered = false
-    if action ~= "nextDay" and isNight and tonumber(day) >= 3 and math.random() < 0.5 then
+    if action ~= "nextDay" and isNight and tonumber(day) >= 3 and math.random() < battleProb then
         invasionTriggered = true
         
         -- 즉시 배틀화면으로 전환 (로딩 상태 표시)
@@ -330,6 +331,8 @@ function (triggerId, action)
     if not invasionTriggered then
         if isNight then
             alertNormal(triggerId, "하루가 지나갑니다...")
+            setChatVar(triggerId, "category", "items")
+            screenChange(triggerId, "main")
         else
             alertNormal(triggerId, "밤이 깊어옵니다...")
         end

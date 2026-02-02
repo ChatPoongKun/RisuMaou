@@ -305,8 +305,6 @@ end!!
         setChatVar(triggerId, "targetTrace", "")
 
         sysFunction(triggerId, "turnEnd.sys")
-        setChatVar(triggerId, "category", "items")
-        screenChange(triggerId, "main")
     else
         screenChange(triggerId, getState(triggerId,"oldScreen"))
     end
