@@ -10,10 +10,10 @@
     local EXP_LEVEL_OFFSET = 3          -- 레벨 N 도달에 필요한 경험치 = EXPtable[N + 이 값]
 
     -- [레이팅 계산 계수]
-    local RATING_HP_FACTOR = 0.33       -- HP 1당 레이팅 기여도
-    local RATING_DEF_FACTOR = 3.33      -- 방어력 1당 레이팅 기여도
-    local RATING_ATK_MIN_FACTOR = 4     -- 공격력 최소 1당 레이팅 기여도
-    local RATING_ATK_MAX_FACTOR = 2.67  -- 공격력 최대 1당 레이팅 기여도
+    local RATING_HP_FACTOR = 0.3       -- HP 1당 레이팅 기여도
+    local RATING_DEF_FACTOR = 4.5      -- 방어력 1당 레이팅 기여도
+    local RATING_ATK_MIN_FACTOR = 4.0     -- 공격력 최소 1당 레이팅 기여도
+    local RATING_ATK_MAX_FACTOR = 2.7  -- 공격력 최대 1당 레이팅 기여도
 
     ---------------------------------------
 
@@ -94,6 +94,14 @@
             currentSP = currentSP + spGain
             atkMin = atkMin + atkMinGain
             atkMax = atkMax + atkMaxGain
+            
+            -- [안전장치] min > max 역전 시 스왑
+            if atkMax < atkMin then
+                local temp = atkMin
+                atkMin = atkMax
+                atkMax = temp
+            end
+            
             def = def + defGain
             
             target["최대체력"] = tostring(maxHP)

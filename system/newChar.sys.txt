@@ -10,9 +10,6 @@ function (triggerId, reason)
     local HP_SP_RANDOM_MIN      = 90    -- HP/SP 최종값 최소 배율 (%). 최종 HP/SP는 기본값의 이 % ~ MAX % 사이에서 결정.
     local HP_SP_RANDOM_MAX      = 110   -- HP/SP 최종값 최대 배율 (%).
 
-    -- [전투력(레이팅) 계산]
-    local RATING_FACTOR         = 0.5   -- 레이팅 계산 계수. (공격력 + 방어력) * 이 값 = 전투력.
-
     -- [신체특성 부여 확률] (순차 적용)
     local TRAIT_PROB_BODY_1     = 0.6   -- 첫 번째 신체특성 부여 확률 (60%).
     local TRAIT_PROB_BODY_2     = 0.3   -- 두 번째 신체특성 부여 확률 (30%). 첫 번째 획득 시에만 판정.
@@ -85,12 +82,27 @@ function (triggerId, reason)
     local raceAtkBonus = raceData.bonus_atk or 0
     local raceDefBonus = raceData.bonus_def or 0
     
-    -- 1레벨 기본 스탯 (종족 기본치 + 종족 보너스)
+    -- 1레벨 기본 스탯 (종족 기본치 + 종족 보너스 + 1레벨 클래스 성장치)
     local maxHP = math.floor(raceBaseHP * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX) * 0.01))
     local maxSP = math.floor(raceBaseSP * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX) * 0.01))
-    local atkMin = raceAtkBonus  -- 공격력 최소
-    local atkMax = raceAtkBonus  -- 공격력 최대
-    local def = raceDefBonus
+    
+    -- 클래스 초기 스탯 (1레벨분)
+    local classAtkMin = classData.atk_min or 3
+    local classAtkMax = classData.atk_max or 6
+    local classDef = classData.def_inc or 5
+    
+    local atkMin = raceAtkBonus + math.random(1, classAtkMin)
+    local atkMax = raceAtkBonus + math.random(1, classAtkMax)
+    
+    -- [안전장치] min > max 역전 시 스왑
+    if atkMax < atkMin then
+        local temp = atkMin
+        atkMin = atkMax
+        atkMax = temp
+    end
+    
+    local def = raceDefBonus + math.random(1, classDef)
+
 
     -- 신체 사이즈
     local heightBase = raceData.height or 160
