@@ -43,6 +43,17 @@
         return dmg, isCrit
     end
 
+    -- 공격력 파싱 헬퍼 (Min~Max or Single)
+    local function parseAtk(val)
+        if type(val) == "string" and string.find(val, "~") then
+            local min, max = val:match("(%d+)~(%d+)")
+            return tonumber(min), tonumber(max)
+        else
+            local v = tonumber(val) or 10
+            return v, v
+        end
+    end
+
     -- 시너지 로드 (placeholder)
     local function loadSynergyModifiers(triggerId)
         -- [TODO] 시너지 시스템 연동
@@ -154,15 +165,8 @@
         addLog(battleState, string.format("마왕 %s(이)가 침입자 %s(을)를 맞이합니다!", battleState.userName, hero.name))
         
         -- 마왕 공격력 파싱
-        local bossAtkMin, bossAtkMax = 10, 10
-        if type(userStats.atk) == "string" then
-             local min, max = userStats.atk:match("(%d+)~(%d+)")
-             bossAtkMin = tonumber(min) or 10
-             bossAtkMax = tonumber(max) or 10
-        else
-             bossAtkMin = tonumber(userStats.atk) or 10
-             bossAtkMax = bossAtkMin
-        end
+        -- 마왕 공격력 파싱
+        local bossAtkMin, bossAtkMax = parseAtk(userStats.atk)
 
         local bossStats = {
             name = battleState.userName,
@@ -303,10 +307,9 @@
             h.maxSp = tonumber(h["최대기력"]) or 100
             
             -- 공격력 파싱 (min~max)
-            local atkStr = h["공격력"] or "10~10"
-            local atkMin, atkMax = atkStr:match("(%d+)~(%d+)")
-            h.atkMin = tonumber(atkMin) or 10
-            h.atkMax = tonumber(atkMax) or 10
+            local amin, amax = parseAtk(h["공격력"])
+            h.atkMin = amin
+            h.atkMax = amax
             
             h.def = tonumber(h["방어력"]) or 10
             h.rating = tonumber(h["레이팅"]) or 10
