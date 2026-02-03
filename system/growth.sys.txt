@@ -1,0 +1,193 @@
+-- growth.sys.txt
+-- 유저(마왕) 성장 시스템 (Spirit 소모 -> 레벨업)
+
+(function()
+    local funcs = {}
+
+    -- [설정] 교환비 계산 (1 EXP당 필요 Spirit)
+    -- 초반(Lv1) 10 -> 후반(Lv15+) 3으로 점진적 감소
+    local function getExchangeRate(level)
+        local discount = math.floor((level - 1) / 2)
+        local rate = math.max(3, 10 - discount)
+        return rate
+    end
+
+    -- 레벨업 비용 계산
+    -- return: canLevelUp(bool), cost(int), nextLevel(int), currentEXP(int), requiredEXP(int)
+    function funcs.calcCost(triggerId)
+        local userStr = getChatVar(triggerId, "user") or "{}"
+        local user = json.decode(userStr)
+        local lv = tonumber(user["레벨"]) or 1
+        local exp = tonumber(user["경험치"]) or 0
+        
+        -- 다음 레벨 요구 경험치 조회 (LvUp.sys.check 로직 활용)
+        -- LvUp.sys의 check 함수는 (성공여부, 현재EXP, 필요EXP)를 반환
+        -- 하지만 여기서는 '다음 레벨이 되기 위해 필요한 EXP량'이 필요함.
+        -- LvUp.sys 내부 로직: requiredEXP = EXPtable[Lv + 3]
+        
+        local expTable = getDB(triggerId, "EXPtable.db")
+        local nextLv = lv + 1
+        local reqKey = tostring(lv + 3) -- EXP_LEVEL_OFFSET = 3 가정
+        local reqTotalEXP = expTable[reqKey]
+        
+        if not reqTotalEXP then
+            -- 만렙 도달
+            return false, 0, lv, exp, 0
+        end
+        
+        local neededEXP = reqTotalEXP - exp
+        if neededEXP < 0 then neededEXP = 0 end -- 이미 경험치가 넘치면 0
+        
+        local rate = getExchangeRate(lv)
+        local cost = neededEXP * rate
+        
+        -- 100 단위 반올림 (Round)
+        -- x + 50 / 100 * 100
+        cost = math.floor((cost + 50) / 100) * 100
+        
+        return true, cost, nextLv, exp, reqTotalEXP, rate
+    end
+
+    -- 레벨업 실행
+    function funcs.execute(triggerId)
+        local can, cost, nextLv, curExp, reqExp, rate = funcs.calcCost(triggerId)
+        
+        if not can then
+            alertNormal(triggerId, "이미 최고 레벨에 도달했습니다.")
+            return
+        end
+        
+        local spirit = tonumber((getChatVar(triggerId, "spirit"):gsub(",", ""))) or 0
+        
+        if spirit < cost then
+            alertNormal(triggerId, "영혼(Spirit)이 부족합니다. (필요: " .. intForm(cost) .. ")")
+            return
+        end
+        
+        -- 자원 소모
+        spirit = spirit - cost
+        setChatVar(triggerId, "spirit", intForm(spirit))
+        
+        -- 유저 데이터 업데이트 (EXP 채우기 & 레벨업)
+        local userStr = getChatVar(triggerId, "user") or "{}"
+        local user = json.decode(userStr)
+        
+        -- 경험치를 요구량만큼 채움 (혹은 그 이상)
+        user["경험치"] = tostring(reqExp)
+        
+        -- LvUp.sys.execute 호출하여 실제 스탯 상승 및 레벨 증가 처리
+        -- 주의: LvUp.sys는 target 테이블을 직접 수정함.
+        -- LvUp.sys는 "레벨"도 1 증가시킴.
+        local updatedUser, effectHtml, gained = sysFunction(triggerId, "LvUp.sys", "execute", user, 1, false) -- 1업, silent=false(효과텍스트 받음)
+        
+        -- 저장
+        setChatVar(triggerId, "user", json.encode(updatedUser))
+        
+        -- 효과 출력 (화면 갱신은 호출측에서 담당하거나 여기서 refresh)
+        -- 알현실 UI 갱신을 위해 render 호출 권장
+        funcs.render(triggerId)
+        
+        -- 시스템 메시지 (로그)
+        debug(string.format("마왕이 Lv.%d로 성장했습니다! (소모 Spirit: %s)", updatedUser["레벨"], intForm(cost), rate))
+        
+        -- 화면 효과 (LvUp.sys에서 생성된 HTML을 screenEffect 변수에 추가하여 메인화면 갱신시 표시)
+        -- 현재 구조상 즉시 표시하려면 별도 처리가 필요할 수 있음.
+        -- 여기서는 일단 메시지만 띄우고, render에서 UI가 갱신됨.
+        local existEffect = getChatVar(triggerId, "screenEffect") or ""
+        setChatVar(triggerId, "screenEffect", existEffect .. effectHtml)
+    end
+
+    -- 버튼 클릭 핸들러
+    function funcs.click(triggerId, data)
+        if data == "growth.sys_execute" then
+            funcs.execute(triggerId)
+        end
+    end
+
+    -- 알현실(Throne Room) UI 렌더링
+    -- dungeon.sys에서 호출됨 (category='throne'일 때)
+    function funcs.render(triggerId)
+        local userStr = getChatVar(triggerId, "user") or "{}"
+        local user = json.decode(userStr)
+        local spirit = tonumber((getChatVar(triggerId, "spirit"):gsub(",", ""))) or 0
+        
+        local lv = tonumber(user["레벨"]) or 1
+        local atk = user["공격력"] or "0" -- min~max
+        local def = user["방어력"] or 0
+        local hp = user["최대체력"] or 0
+        local sp = user["최대기력"] or 0
+        local rating = user["레이팅"] or 0
+        
+        local can, cost, nextLv, curExp, reqExp, rate = funcs.calcCost(triggerId)
+        
+        local btnClass = "btn command-btn"
+        local btnText = "성장 불가"
+        local btnAttr = ""
+        
+        if can then
+            btnText = string.format("레벨업!! (Lv.%d→%d)<span>필요 Spirit: %s</span>", lv, nextLv, intForm(cost))
+            if spirit >= cost then
+                btnAttr = "risu-btn='growth.sys_execute'" -- execute 호출
+            else
+                btnClass = btnClass .. " disabled"
+                btnText = btnText .. "<br><span style='color:#e57373'>(Spirit 부족)</span>"
+            end
+        else
+            btnClass = btnClass .. " disabled"
+            btnText = "최고 레벨 도달"
+        end
+        
+        -- HTML 조립
+        local html = string.format([[
+<div class="throne-container" style="display:flex; flex-direction:column; gap:10px; padding:10px; height:100%%; background:#111;">
+
+<!-- 상단: 마왕 스탯 -->
+<div class="throne-header" style="display:flex; gap:10px; align-items:center; background:rgba(0,0,0,0.6); padding:10px; border-radius:8px; border:1px solid #444;">
+<div style="flex:1;">
+<span style="font-size:1.2rem; font-weight:bold; color:#d4af37;">마왕 %s</span>
+<span style="color:#aaa;">Lv.%d %s</span>
+</div>
+<div style="text-align:right;">
+<div style="font-size:1.2rem; font-weight:bold; color:#60d9f7;">Rating %s</div>
+</div>
+</div>
+
+<!-- 중단: 스탯 상세 및 일러스트 자리 -->
+<div class="throne-body" style="flex:1; display:flex; gap:10px;">
+<!-- 스탯 패널 -->
+<div style="flex:1; background:rgba(0,0,0,0.4); padding:10px; border-radius:8px; display:flex; flex-direction:column; justify-content:center; gap:8px;">
+<div class="stat-row"><strong>ATK:</strong> %s</div>
+<div class="stat-row"><strong>DEF:</strong> %s</div>
+<div class="stat-row"><strong>HP:</strong> %s</div>
+<div class="stat-row"><strong>SP:</strong> %s</div>
+</div>
+
+<!-- 중앙 일러스트 (공간 확보) -->
+<div style="flex:1.5; display:flex; align-items:center; justify-content:center; opacity:0.8;">
+<!-- 마왕 이미지 or 상징 -->
+<div style="height:8rem; border-radius:50%%; background:#330000; border:2px solid #550000; display:flex; align-items:center; justify-content:center;">
+<img src="{{source::user}}">
+</div>
+</div>
+</div>
+
+<!-- 하단: 성장 버튼 -->
+<div class="throne-footer">
+<div class="%s" %s style="width:100%%; height:auto;">
+%s
+</div>
+</div>
+
+</div>
+]], user["이름"], lv, user["칭호"] or "", intForm(rating), atk, def, intForm(hp), intForm(sp), btnClass, btnAttr, btnText)
+
+        setChatVar(triggerId, "throneHtml", html)
+    end
+
+    -- 메인 함수
+    return function(triggerId, subFunc, ...)
+        if funcs[subFunc] then
+            return funcs[subFunc](triggerId, ...)
+        end
+    end
+end)()

@@ -24,8 +24,9 @@
 <!-- Management Panel -->
 <section class="management-panel">
 <div class="tabs-container">
-<div class="tabs {{#if {{equal::{{getvar::category}}::place}}}}active{{/if}}" risu-btn="tab_place">배치</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::summon}}}}active{{/if}}" risu-btn="tab_summon">소환</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::place}}}}active{{/if}}" risu-btn="dungeon.sys_tab_place">배치</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::summon}}}}active{{/if}}" risu-btn="dungeon.sys_tab_summon">소환</div>
+<div class="tabs {{#if {{equal::{{getvar::category}}::throne}}}}active{{/if}}" risu-btn="dungeon.sys_tab_throne">알현실</div>
 </div>
 
 <div class="tab-content">
@@ -50,7 +51,7 @@
 {{/when}}
 
 {{#when::category::vis::summon}}
-<div class="summon-panel">
+<div class="summon-panel" style="background:#111; padding:1rem;">
 <div style="margin-bottom: 1rem; color: #ccc; text-align: center;">
 몬스터를 소환합니다.<br>
 </div>
@@ -69,6 +70,12 @@
 <div class="btn command-btn" style="text-align:center;" risu-btn="summon">
 🔯 몬스터 소환 🔯
 </div>
+</div>
+{{/when}}
+
+{{#when::category::vis::throne}}
+<div class="throne-panel" style="background:#1a1a1a; border:1px solid #333;">
+    {{getvar::throneHtml}}
 </div>
 {{/when}}
 </div>

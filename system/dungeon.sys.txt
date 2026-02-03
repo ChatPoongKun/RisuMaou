@@ -33,12 +33,24 @@
 
     -- 버튼 클릭 핸들러 (Script.lua 연동)
     function funcs.click(triggerId, data)
+        -- growth.sys 관련 버튼 처리
+        if data == "growth.sys_execute" then
+            sysFunction(triggerId, "growth.sys", "execute")
+            return
+        end
+
         -- 접두사 제거 ("dungeon.sys_" 제거)
         local cmd = data:gsub("^dungeon%.sys_", "")
         
         if cmd == "expand" then
             funcs.expand(triggerId)
             funcs.render(triggerId) -- 화면 갱신
+            
+        elseif cmd:find("^tab_") then
+            -- 탭 전환 처리 (tab_place, tab_summon, tab_throne)
+            local category = cmd:gsub("^tab_", "")
+            setChatVar(triggerId, "category", category)
+            funcs.render(triggerId)
             
         elseif cmd:find("^selectSlot_") then
             local slotId = cmd:match("^selectSlot_(.+)")
@@ -589,7 +601,17 @@
         setChatVar(triggerId, "summonPreviewHtml", previewHtml)
 
         -- 유닛 리스트 HTML 생성 (placement 탭일 때)
-        if getChatVar(triggerId, "category") == "place" then
+        -- 유닛 리스트 HTML 생성
+        local category = getChatVar(triggerId, "category")
+        
+        if category == "throne" then
+            sysFunction(triggerId, "growth.sys", "render")
+            setChatVar(triggerId, "monsterListHtml", "")
+            setChatVar(triggerId, "trapListHtml", "")
+            setChatVar(triggerId, "unitCount", 0)
+            
+        elseif category == "place" then
+
             local inventory = json.decode(getChatVar(triggerId, "inventory") or "{}")
             local monsters = getDB(triggerId, "monsters.db")
             local traps = getDB(triggerId, "trap.db")

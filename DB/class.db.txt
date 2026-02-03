@@ -1,4 +1,15 @@
 { ///class
+    "demon_king": {
+        "name": "마왕",
+        "desc": "모든 마족의 정점에 선 절대자. 압도적인 힘을 자랑한다.",
+        "hp_inc": 225,
+        "sp_inc": 150,
+        "def_inc": 16,
+        "atk_min": 6,
+        "atk_max": 10,
+        "weapon": "마왕의 검",
+        "armor": "마왕의 갑주"
+    },
     "swordsman": {
         "name": "검사",
         "desc": "검을 다루는 전사. 공수 밸런스가 잡혀있다.",

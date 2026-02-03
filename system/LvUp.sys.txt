@@ -73,6 +73,14 @@
         for i = 1, count do
             local hpGain = math.random(1, classData.hp_inc or 100)
             local spGain = math.random(1, classData.sp_inc or 100)
+            
+            -- [Round] HP/SP 10단위 반올림
+            hpGain = math.floor((hpGain + 5) / 10) * 10
+            spGain = math.floor((spGain + 5) / 10) * 10
+            
+            -- 최소값 보정 (0이 되면 섭섭하니 10으로)
+            if hpGain < 10 then hpGain = 10 end
+            if spGain < 10 then spGain = 10 end
             local defGain = math.random(1, classData.def_inc or 5)
             local atkMinGain = math.random(1, classData.atk_min or 3)
             local atkMaxGain = math.random(1, classData.atk_max or 6)
@@ -129,11 +137,21 @@
             local name = target["이름"] or "대상"
             local newLevel = target["레벨"]
             
-            screenEffect = "<div class='success-animation'><div class='animation-text success'>" ..
-                name .. " 레벨 업! (Lv." .. newLevel .. ")<br>" ..
-                "HP+" .. totalHPGain .. " SP+" .. totalSPGain .. 
-                " ATK+" .. totalAtkMinGain .. "~" .. totalAtkMaxGain .. 
-                " DEF+" .. totalDefGain .. "</div></div>"
+            screenEffect = string.format([[
+<div style="position:fixed; top:50%%; left:50%%; transform:translate(-50%%, -50%%); z-index:9999; 
+background:rgba(0,0,0,0.8); border:2px solid #60d9f7; border-radius:10px; padding:20px; 
+color:#fff; text-align:center; min-width:300px; box-shadow:0 0 20px rgba(96,217,247,0.5);
+animation: fadeInOut 4s forwards;">
+    <div style="font-size:1.5rem; font-weight:bold; color:#60d9f7; margin-bottom:10px;">LEVEL UP!</div>
+    <div style="font-size:1.1rem; color:#d4af37; margin-bottom:15px;">%s (Lv.%s)</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left; font-size:0.9rem;">
+        <div>HP <span style="color:#d32f2f;">+%d</span></div>
+        <div>SP <span style="color:#1976d2;">+%d</span></div>
+        <div>ATK <span style="color:#e64a19;">+%d~%d</span></div>
+        <div>DEF <span style="color:#388e3c;">+%d</span></div>
+    </div>
+</div>
+]], name, newLevel, totalHPGain, totalSPGain, totalAtkMinGain, totalAtkMaxGain, totalDefGain)
             
             debug("[LvUp] " .. name .. ": Lv " .. newLevel .. " HP+" .. totalHPGain)
         end
