@@ -549,7 +549,7 @@
         setChatVar(triggerId, "summonInvestDisplay", investStr)
         
         local invest = tonumber(getChatVar(triggerId, "summonInvest")) or 2500
-        local maxRating = math.floor(math.sqrt(invest * 10))
+        local maxRating = math.floor(math.sqrt(invest * 5))
         setChatVar(triggerId, "summonMaxRating", maxRating)
         
         -- 소환 후보군 미리보기용 로직
