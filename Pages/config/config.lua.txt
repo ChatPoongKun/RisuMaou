@@ -49,13 +49,13 @@ end!!
     local user = json.decode(getChatVar(triggerId, "user"))
     local userAge = alertSelect(triggerId, {"어림", "청년", "중년", "노년"}):await()
     if userAge == "0" then
-        user["외형"] = "어림"
+        user["나이"] = "어림"
     elseif userAge == "1" then
-        user["외형"] = "청년"
+        user["나이"] = "청년"
     elseif userAge == "2" then
-        user["외형"] = "중년"
+        user["나이"] = "중년"
     elseif userAge == "3" then
-        user["외형"] = "노년"
+        user["나이"] = "노년"
     end
     user = json.encode(user)
     setChatVar(triggerId, "user", user)
