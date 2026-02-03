@@ -5,10 +5,10 @@
     local funcs = {}
 
     -- [설정] 교환비 계산 (1 EXP당 필요 Spirit)
-    -- 초반(Lv1) 10 -> 후반(Lv15+) 3으로 점진적 감소
+    -- 초반(Lv1) 15 -> 후반(Lv15+) 5으로 점진적 감소
     local function getExchangeRate(level)
         local discount = math.floor((level - 1) / 2)
-        local rate = math.max(3, 10 - discount)
+        local rate = math.max(5, 15 - discount)
         return rate
     end
 
