@@ -81,7 +81,7 @@
         "group": "resilience",
         "events": {
             "onDCCalc": {
-                "func": "dc = dc + 10"
+                "func": "dc = dc + 5"
             }
         }
     },
@@ -92,7 +92,7 @@
         "group": "resilience",
         "events": {
             "onDCCalc": {
-                "func": "dc = dc - 8"
+                "func": "dc = dc - 5"
             },
             "onCostCalc": {
                 "func": "costHP = costHP * 1.3; costSP = costSP * 1.3"
