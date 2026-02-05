@@ -60,7 +60,7 @@ function (triggerId, action)
         spGen = recoveryCtx.spGen
         
         --실신 시 HP 회복 감소
-        if char["condition"] == "실신" then
+        if char["condition"] == "FAINT" then
             hpGen = hpGen * RECOVERY_PENALTY_FAINT
         end
         
@@ -74,8 +74,8 @@ function (triggerId, action)
         char["기력"] = intForm(math.min(currentSP + math.floor(maxSP * spGen), maxSP))
         
         --기력이 조건 충족 시 실신에서 조교가능으로 변경
-        if tonumber(char["기력"]) > maxSP * TRAINABLE_SP_RATIO and char["condition"] == "실신" then
-            char["condition"] = "조교가능"
+        if tonumber(char["기력"]) > maxSP * TRAINABLE_SP_RATIO and char["condition"] == "FAINT" then
+            char["condition"] = "TRAINABLE"
         end
         
         --로어북에 저장

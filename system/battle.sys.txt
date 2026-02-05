@@ -249,8 +249,8 @@
             local sp = tonumber(charData["기력"]) or 0
             local maxSp = tonumber(charData["최대기력"]) or 100
             
-            -- 침공 조건: 휴식중 + 체력/기력 조건 충족
-            if charData.condition == "휴식중" and hp >= (maxHp * INVADER_HP_RATIO) and sp >= (maxSp * INVADER_SP_RATIO) then
+            -- 침공 조건: 정비중 + 체력/기력 조건 충족
+            if charData.condition == "REST" and hp >= (maxHp * INVADER_HP_RATIO) and sp >= (maxSp * INVADER_SP_RATIO) then
                 table.insert(waitingHeroes, charData)
             end
         end
@@ -284,7 +284,7 @@
                 local sp = tonumber(newChar["기력"]) or 0
                 local maxSp = tonumber(newChar["최대기력"]) or 100
                 
-                if newChar.condition == "휴식중" and hp >= (maxHp * INVADER_HP_RATIO) and sp >= (maxSp * INVADER_SP_RATIO) then
+                if newChar.condition == "REST" and hp >= (maxHp * INVADER_HP_RATIO) and sp >= (maxSp * INVADER_SP_RATIO) then
                    table.insert(waitingHeroes, newChar)
                 end
             else
@@ -390,12 +390,12 @@
                                 
                                 if outcome == "Lose" then
                                     addLog(battleState, hero.name.."이(가) 쓰러졌습니다!")
-                                    hero["condition"] = "실신"
+                                    hero["condition"] = "FAINT"
                                     heroDefeated = true
                                     break
                                 elseif outcome == "Captured" then
                                     addLog(battleState, hero.name.."이(가) 적에게 사로잡혔습니다!")
-                                    hero["condition"] = "조교가능"
+                                    hero["condition"] = "TRAINABLE"
                                     heroDefeated = true
                                     break
                                 elseif outcome == "Retreat" then
@@ -435,7 +435,7 @@
                             
                             if hero.hp <= 0 then
                                 addLog(battleState, hero.name.."이(가) 함정에 걸려 쓰러졌습니다!")
-                                hero["condition"] = "실신"
+                                hero["condition"] = "FAINT"
                                 heroDefeated = true
                                 break
                             end
@@ -484,7 +484,7 @@
                     break
                 else
                     addLog(battleState, "마왕이 용사를 직접 제압했습니다!")
-                    hero["condition"] = "실신"
+                    hero["condition"] = "FAINT"
                     heroDefeated = true
                 end
             end

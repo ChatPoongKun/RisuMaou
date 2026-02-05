@@ -191,7 +191,7 @@ function (triggerId, reason)
         
         ["자궁정액"]="0",
         ["애널정액"]="0",
-        ["condition"] = "휴식중",
+        ["condition"] = "REST",
 
         ["키"] = tostring(height),
         ["몸무게"] = tostring(weight),

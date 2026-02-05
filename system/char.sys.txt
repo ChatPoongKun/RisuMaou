@@ -64,6 +64,9 @@
             stateToVar(triggerId, "targetTrace", targetTrace)
             setChatVar(triggerId, "category", "appearance")
             screenChange(triggerId, "charInfo") --캐릭터 상세 정보 화면으로 이동
+        elseif screen == "disposal" then -- 포로 처분 화면
+            -- 처분 방식 선택 실행
+            sysFunction(triggerId, "disposal.sys", "selectMethod", name)
         elseif screen == "preTrain" then        --조교 대상 화면
             sysFunction(triggerId, "train.sys", "prepare", name)
             stateToVar(triggerId, "targetTrace", targetTrace)
@@ -95,7 +98,9 @@
         for i, name in ipairs(chars) do
             -- preTrain 화면에서는 user 제외
             local char = json.decode(getLoreBookContent(triggerId, name))
-            if not ((screen == "disposal" or screen == "preTrain") and char["condition"] ~= "조교가능") then
+            if not ((screen == "preTrain") and char["condition"] ~= "조교가능") then
+               -- disposal 화면이면 사망자도 표시, 그 외(preTrain 등)에는 필터링 로직 유지
+               if screen == "disposal" or char["condition"] ~= "사망" then
                 -- 정렬 및 표시에 필요한 데이터 미리 추출
                 local data = {
                     index = i,
@@ -113,6 +118,15 @@
                     title = char["칭호"] or ""
                 }
                 table.insert(charDataList, data)
+                
+                -- Condition DB Load (Lazy) (Cached outside or loaded every list call is fine for now)
+                local condDB = getDB(triggerId, "condition.db")
+                if condDB[data.condition] and condDB[data.condition].name then
+                   data.conditionDisplay = condDB[data.condition].name
+                else
+                   data.conditionDisplay = data.condition -- Fallback (e.g. if already Korean or unknown)
+                end
+               end
             end
         end
 
@@ -165,7 +179,7 @@
 
             -- 상태에 따른 클래스 추가 (사망 등)
             local cardClass = "character-card"
-            if data.condition == "사망" then cardClass = cardClass .. " 사망" end
+            if data.condition == "DEAD" or data.condition == "사망" then cardClass = cardClass .. " 사망" end
             if name == "user" then name = "{{" .. name .. "}}" end
 
             -- HTML 조립
@@ -174,7 +188,7 @@
 <div class="char-info">
 <p class="char-name-line">
 <span class="char-condition">[]] ..
-                data.condition .. [[] </span>]] .. name .. [[<span class="char-level"> Lv.]] .. data.lv .. [[ </span>
+                data.conditionDisplay .. [[] </span>]] .. name .. [[<span class="char-level"> Lv.]] .. data.lv .. [[ </span>
 ]] .. tagHtml .. [[
 </p>
 <span class="char-tags">

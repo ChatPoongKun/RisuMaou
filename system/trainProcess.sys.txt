@@ -141,7 +141,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         local blockDeath = tonumber(getChatVar(triggerId, "blockDeath"))
         if blockDeath == 1 then --실신처리
             target["조교실신경험"] = target["조교실신경험"] + 1
-            target["condition"] = "실신"
+            target["condition"] = "FAINT"
             setState(triggerId, "target", target)
             setChatVar(triggerId, "target", target)
             local newLog = getChatVar(triggerId, "newLog")
@@ -159,7 +159,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
             setChatVar(triggerId, "targetTrace", "")
             
             --캐릭터 정보 변경
-            target["condition"] = "사망"
+            target["condition"] = "DEAD"
             target["체력"] = 0
             target["기력"] = 0
             local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
