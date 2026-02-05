@@ -90,7 +90,7 @@ end!!
     sysFunction(triggerId, "char.sys", "list")
 end!!
 
-[main/102/포로 처분] function(triggerId)
+[main/102/{{#when::{{getvar::unlock_disposal}}==1}}포로 처분{{/when}}] function(triggerId)
     local screen = "disposal"
     alertNormal(triggerId, screen.." 미구현")
     --[[screenChange(triggerId, screen)
@@ -98,12 +98,13 @@ end!!
     sysFunction(triggerId, "char.sys", "list")]]
 end!!
 
-[main/103/노예 매각] function(triggerId)
+[main/103/{{#when::0==1}}노예 매각{{/when}}] function(triggerId)
+    --미구현 숨김처리
     local screen = "노예 매각"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/104/마계 상점] function(triggerId)
+[main/104/{{#when::{{getvar::unlock_shop}}==1}}마계 상점{{/when}}] function(triggerId)
     local screen = "shop"
     screenChange(triggerId, screen)
     local itemCat = "tools"
@@ -111,22 +112,25 @@ end!!
     sysFunction(triggerId, "item.sys", "category", itemCat)
 end!!
 
-[main/105/장비 관리] function(triggerId)
+[main/105/{{#when::0==1}}장비 관리{{/when}}] function(triggerId)
+    --미구현 숨김처리
     local screen = "장비 관리"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/106/격퇴] function(triggerId)
+[main/106/{{#when::0==1}}격퇴{{/when}}] function(triggerId)
+    --미구현 숨김처리
     local screen = "격퇴"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/107/침공] function(triggerId)
+[main/107/{{#when::0==1}}침공{{/when}}] function(triggerId)
+    --미구현 숨김처리
     local screen = "침공"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/108/던전 관리] function(triggerId)
+[main/108/{{#when::{{getvar::unlock_dungeon}}==1}}던전 관리{{/when}}] function(triggerId)
     local screen = "dungeon"
     local dungeon = getState(triggerId, "dungeon")
     if not dungeon then

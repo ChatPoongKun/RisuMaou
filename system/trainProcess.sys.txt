@@ -495,6 +495,17 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         setChatVar(triggerId, "screenEffect", screenEffect)
     end
 
+    -- [조건 해금] 마계 상점 (조교 1회 완료)
+    local trainCount = tonumber(getChatVar(triggerId, "trainCount")) or 0
+    trainCount = trainCount + 1
+    setChatVar(triggerId, "trainCount", trainCount)
+    
+    local unlockShop = tonumber(getChatVar(triggerId, "unlock_shop")) or 0
+    if trainCount >= 1 and unlockShop == 0 then
+        setChatVar(triggerId, "unlock_shop", 1)
+        alertNormal(triggerId, "마계 상점과의 연결이 복구되었습니다. 조교에 도움이 될만한 물건들을 살펴보세요.")
+    end
+
     --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.
     setState(triggerId, "target", target)
     stateToVar(triggerId, "target", target)
