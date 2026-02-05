@@ -134,8 +134,8 @@ function (triggerId)
              -- 몬스터는 DB 파일의 순서(Rating순)를 유지하기 위해 텍스트 파싱
              local raw = getLoreBookContent(triggerId, filename)
              local list = {}
-             -- JSON 키 패턴 매칭: "key": {
-             for key in raw:gmatch('"([%w_]+)"%s*:%s*{') do
+             -- Lua 키 패턴 매칭: key = {
+             for key in raw:gmatch('([%w_]+)%s*=%s*{') do
                  table.insert(list, key)
              end
              setChatVar(triggerId, "monstersList", json.encode(list))

@@ -21,6 +21,8 @@ overflow-y: auto;
     margin-bottom: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     min-height: 120px;
+    max-height: 20vh;
+    overflow-y: auto;
     display: flex; /* Changed to flex for side-by-side layout */
     gap: 1rem;
 }
@@ -33,7 +35,6 @@ overflow-y: auto;
     overflow: hidden;
     background-color: #000;
     border: 1px solid #333;
-    display: none; /* Hidden by default */
 }
 
 .dict-img-container:not(:empty) {
@@ -136,6 +137,39 @@ overflow-y: auto;
 
 details {
     grid-column: 1 / -1;
+}
+/* Image Popup Modal */
+#image-popup {
+    display: flex; /* Visible when rendered */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#image-popup img {
+    width: 90vmin;
+    height: 90vmin;
+    object-fit: contain;
+    border: 2px solid #60d9f7;
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(96, 217, 247, 0.3);
+    background-color: rgba(0, 0, 0, 0.5); /* Optional: distinct background for the square frame */
+}
+
+.dict-img-container img {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.dict-img-container img:hover {
+    transform: scale(1.05);
 }
 </style>
 
@@ -328,7 +362,7 @@ details {
 </main>
 <!-- 상세 설명 패널 -->
 <section class="dict-detail-panel">
-    <div class="dict-img-container">{{getvar::dictImg}}</div>
+    {{#when::dictImg::vis::}}{{:else}}<div class="dict-img-container">{{getvar::dictImg}}</div>{{/when}}
     <div class="dict-text-container">
         <div class="dict-title">{{getvar::dictTitle}}</div>
         <div class="dict-desc">{{getvar::dictDesc}}</div>
@@ -338,3 +372,10 @@ details {
 <div class="line double"></div>
 {{getVar::cmds}}
 </div>
+
+<!-- Image Popup Modal (Native) -->
+{{#when::dictPopupImg::vis::}}{{:else}}
+<div id="image-popup" risu-btn="dictSelect.sys_popup_close">
+    <img src="{{getvar::dictPopupImg}}">
+</div>
+{{/when}}

@@ -55,8 +55,14 @@
     end
 
     -- 시너지 로드 (placeholder)
+    -- 시너지 로드
     local function loadSynergyModifiers(triggerId)
-        -- [TODO] 시너지 시스템 연동
+        local jsonStr = getChatVar(triggerId, "dungeon_modifiers")
+        if jsonStr and jsonStr ~= "" then
+            -- json 라이브러리는 전역에 있다고 가정 (battle.sys 다른곳에서 씀)
+            local status, res = pcall(json.decode, jsonStr)
+            if status then return res end
+        end
         return {}
     end
 
@@ -70,13 +76,25 @@
         local monBase = monster.data
         local monMod = battleState.modifiers[slotId] or {}
         
+        local function applyMod(base, modVal)
+            if not modVal then return base end
+            if type(modVal) == "table" then
+                local add = modVal.add or 0
+                local mul = modVal.mul or 1.0
+                return math.floor((base + add) * mul)
+            elseif type(modVal) == "number" then
+                return base + modVal
+            end
+            return base
+        end
+
         local monStats = {
             name = monBase.name,
             hp = monster.hp, 
             maxHp = monster.maxHp,
-            atkMin = (monBase.atkMin or 0) + (monMod.atkMin or 0),
-            atkMax = (monBase.atkMax or 0) + (monMod.atkMax or 0),
-            def = (monBase.def or 0) + (monMod.def or 0),
+            atkMin = applyMod((monBase.atkMin or 0), monMod.atkMin),
+            atkMax = applyMod((monBase.atkMax or 0), monMod.atkMax),
+            def = applyMod((monBase.def or 0), monMod.def),
             rating = monBase.rating or 0
         }
         

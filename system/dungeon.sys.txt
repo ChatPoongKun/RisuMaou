@@ -3,6 +3,9 @@
 
 (function()
     local funcs = {}
+    
+    -- [NEW] 스킬 설명 매핑 (Loaded from skills.db)
+    local SKILL_DESCS = {}
 
     -- 던전 확장 로직
     function funcs.expand(triggerId)
@@ -244,82 +247,231 @@
             end
         end
         
-        -- 2. 시너지 패턴 매칭 엔진
+        
+        -- 2. 스킬 및 시너지 엔진 (New Skill Engine)
+        local skills = {}
+        
+        -- skills.sys 로드 (sysFunction 사용)
+        local skills = sysFunction(triggerId, "skills.sys", "load") or {}
+        
+        local buffDB = getDB(triggerId, "buff.db")
+        local buffQueue = {} -- {targetSlot, buffId, sourceSlot}
         local activeSynergies = {}
-        local floorSynergies = {} -- 층별 시너지 저장
+        local floorSynergies = {} 
         for f = 1, floorCount do floorSynergies[f] = {} end
         
-        -- 헬퍼 함수 정의 (_ENV for Lua Sandbox)
-        local env = {
-            pairs = pairs, ipairs = ipairs, tonumber = tonumber,
-            string = string, table = table, math = math,
-            count = function(field, val)
-                local c = 0
-                for _, node in pairs(richGrid) do
-                    if field == 'tag' then
-                        if node.hasTag(node, val) then c = c + 1 end
-                    end
-                end
-                return c
-            end,
-            sum = function(field)
-                local s = 0
-                for _, node in pairs(richGrid) do
-                    if field == 'rating' then s = s + node.rating end
-                end
-                return s
-            end
-        }
+        local modifiers = {} -- battle.sys에 넘길 스탯 보정치
         
-        for synKey, synData in pairs(synergyDB) do
-            if synData.type == "global" then
-                -- 글로벌 조건 체크
-                local condFunc = load("return " .. synData.condition, nil, "t", env)
-                if condFunc and condFunc() then
-                    table.insert(activeSynergies, synData.name)
-                end
-                
-            elseif synData.type == "local" then
-                -- 로컬(슬롯별) 조건 체크
-                for f = 1, floorCount do
-                    local matchCount = 0
-                    for s = 1, 5 do
-                        local slotId = string.format("%d_%d", f, s)
-                        local node = richGrid[slotId]
+        -- (A) 스킬 실행 (Buff Collection)
+        for slotId, unit in pairs(richGrid) do
+            if unit.data and unit.data.skills then
+                for _, skillId in ipairs(unit.data.skills) do
+                    local skillObj = skills[skillId]
+                    if skillObj and skillObj.active then
+                        -- 스킬 실행 (Lua Table DB 방식: skillObj.active(context))
+                        -- Context는 skills.sys 내부에서 생성하거나 여기서 넘겨줘야 함?
+                        -- skills.sys 설계상: active = function(ctx) ... end
+                        -- 호출 시: skillObj.active(ctx) 필요. 하지만 skills.sys는 Helper를 제공.
+                        -- 아까 작성한 skills.sys 내부는 Context.new를 사용함.
+                        -- 하지만 skills.db.txt 내부 함수는 `active = function(ctx)` 형태임.
+                        -- 즉, 호출하는 쪽(여기)에서 context가 아닌 arguments를 넘기면 안되고,
+                        -- skills.db 함수 내부에서 Context를 쓰는게 아니라, skills.sys의 래퍼가 없으므로
+                        -- 직접 ctx를 만들어 넘겨주거나, 인자를 맞워야 함.
                         
-                        if node then
-                            local left = richGrid[string.format("%d_%d", f, s-1)] or {hasTag=function() return false end, index="none"}
-                            local right = richGrid[string.format("%d_%d", f, s+1)] or {hasTag=function() return false end, index="none"}
-                            
-                            env.self = node
-                            env.left = left
-                            env.right = right
-                            env.index = slotId
-                            
-                            local condFunc = load("return " .. synData.condition, nil, "t", env)
-                            if condFunc and condFunc() then
-                                matchCount = matchCount + 1
+                        -- skills.sys가 래퍼 없이 DB를 리턴하므로,
+                        -- DB 함수는: function(ctx) ... end 
+                        -- 따라서 여기서 ctx를 만들어줘야 함? 
+                        -- 아까 skills.db 작성 시: `active = function(ctx)` 확인됨.
+                        -- 그리고 skills.sys에서 Context 클래스를 env에 주입함.
+                        
+                        -- 하지만 dungeon.sys는 Context 클래스를 모름!
+                        -- 해결책: 
+                        -- 1. dungeon.sys도 Context를 알게 한다? (비효율)
+                        -- 2. skills.sys가 'execute(skillId, ...)' 함수를 제공한다? (기존 방식 유지)
+                        -- 3. skills.db 함수를 `function(triggerId, slotId, grid, owner)` 형태로 바꾼다? -> 이미 ctx 사용으로 작성함.
+                        
+                        -- 아! skills.db 작성을 `function(ctx)`로 했음.
+                        -- 그럼 dungeon.sys가 호출할 때 ctx 객체를 넘겨야 함.
+                        -- 근데 dungeon.sys에는 Context 정의가 없음.
+                        
+                        -- **Miss-alignment Detected**:
+                        -- skills.db uses `ctx`.
+                        -- dungeon.sys doesn't have `Context` class.
+                        -- skills.sys has `Context` class.
+                        
+                        -- Correction:
+                        -- skills.sys should expose a `execute(skillId, args)` or `createContext(...)`.
+                        -- OR modifying dungeon.sys to use `sysFunction(..., "skills.sys", "execute", skillId, ...)`?
+                        -- But we wanted direct table access.
+                        
+                        -- Let's use `sysFunction` to delegate execution!
+                        -- "skills.sys" can have a "execute" subFunc.
+                        
+                        -- Revert dungeon.sys change plan? No, simple fix:
+                        -- Make skills.sys export `Context`? No.
+                        -- Make skills.sys having an `execute` function is best.
+                        
+                        -- Wait, I alrady edited skills.sys to ONLY return the table on "load".
+                        -- I should assume dungeon.sys calls `sysFunction(..., 'skills.sys', 'execute', skillId, slotId, richGrid, unit)`.
+                        -- But `recalcStats` loops deeply. `sysFunction` overhead might be high?
+                        -- No, `sysFunction` is just `load` + `pcall`. It compiles every time? YES. overhead is HUGE.
+                        
+                        -- Efficient way:
+                        -- Load skills.sys ONCE (it returns a table of functions).
+                        -- Included in that table should be a "run(skillId, ...)" or similar helper?
+                        -- Or `skills.sys` returns a module that contains `skills` AND `Context`.
+                        
+                        -- Let's fix `skills.sys` to return `{ db=skills, run=function(...) }`?
+                        -- Or just make `skills.sys` return a closure that accepts (triggerId, "execute", ...)
+                        
+                        -- Let's go with: `skills.sys` returns the DB table, AND that DB table has a metatable or helper?
+                        -- No, K.I.S.S.
+                        -- I will modify `skills.sys` to return a `ExecutionHelper` along with data?
+                        -- OR, `dungeon.sys` can just passing arguments `(triggerId, slotId, richGrid, unit)` and
+                        -- `skills.db` functions change to accept 4 args, then internally `Context.new`?
+                        -- BUT `Context` is not available in `skills.db` scope (unless injected).
+                        -- Pass: `Context` IS injected in `skills.sys` loader.
+                        -- So `skills.db` functions CAN use `Context`.
+                        -- BUT they are defined as `function(ctx)`.
+                        
+                        -- QUICK FIX:
+                        -- Update `skills.sys` to return an `execute` function that handles Context creation.
+                        -- `sysFunction(..., "skills.sys", "execute", skillId, slotId, grid, unit)`
+                        -- BUT performance...
+                        
+                        -- BETTER FIX:
+                        -- `skills.sys` "load" returns a table: containing `skills` (data) AND `execute` (function).
+                        -- `local skillEngine = sysFunction(..., "load")`
+                        -- `skillEngine.execute(skillId, slotId, grid, unit)`
+                        
+                        -- I need to update `skills.sys` first or assume I will update it.
+                        -- I'll likely update `skills.sys` again to export the helper.
+                        -- For now, let's write `dungeon.sys` code assuming `skills` variable has `execute` method.
+                        
+                        local resultBuffs = skills.execute(skillId, triggerId, slotId, richGrid, unit)
+                        
+                        if resultBuffs then
+                            for _, b in ipairs(resultBuffs) do
+                                table.insert(buffQueue, b)
                             end
                         end
-                    end
-                    
-                    if matchCount > 0 then
-                         local text = synData.name .. " x" .. matchCount
-                         table.insert(floorSynergies[f], text)
-                         table.insert(activeSynergies, text .. " ("..f.."F)")
+                        
+                        -- 활성 시너지 목록 (일단 생략 or resultBuffs 있을때만)
+                        if resultBuffs and #resultBuffs > 0 then
+                             -- activeSynergies[skillId] = true
+                        end
                     end
                 end
             end
         end
+        
+        -- (B) 버프 적용 (Stat Calculation Pipeline)
+        -- Pipeline: (Base + Add) * Mul
+        for _, request in ipairs(buffQueue) do
+            local targetUnit = richGrid[request.target]
+            local buffData = buffDB[request.buff]
+            
+            if targetUnit and buffData then
+                -- Modifier 초기화
+                if not modifiers[request.target] then modifiers[request.target] = {} end
+                local mod = modifiers[request.target]
+                
+                if buffData.type == "stat" then
+                    local statName = buffData.stat
+                    local method = buffData.method
+                    local val = tonumber(buffData.value) or 0
+                    
+                    if not mod[statName] then mod[statName] = {add=0, mul=1.0} end
+                    
+                    if method == "add" then
+                        mod[statName].add = mod[statName].add + val
+                    elseif method == "mul" then
+                        mod[statName].mul = mod[statName].mul * val
+                    end
+                    
+                    -- UI용 버프 텍스트 추가
+                    if not targetUnit.buffs then targetUnit.buffs = {} end
+                    table.insert(targetUnit.buffs, buffData.name)
+                    
+                    -- 시너지 텍스트 기록
+                    local fIdx = tonumber(request.target:match("^(%d+)_"))
+                    if fIdx then
+                         -- 중복 방지 로직이 없어서 단순 추가만 함
+                         -- table.insert(floorSynergies[fIdx], buffData.name)
+                    end
+                end
+            end
+        end
+        
+        -- (C) 최종 스탯 반영 및 레이팅 재계산
+        -- 기존 totalRating, floorRatings 초기화 (버프 후 재계산)
+        totalRating = 0
+        for f=1, floorCount do floorRatings[f] = 0 end
+        
+        for slotId, unit in pairs(richGrid) do
+            local mod = modifiers[slotId]
+            local ratingBonus = 0
+            
+            if mod then
+                for stat, values in pairs(mod) do
+                    if unit.data[stat] then
+                        local base = unit.data[stat]
+                        local final = (base + values.add) * values.mul
+                        unit.data[stat] = math.floor(final) -- 정수화
+                        
+                        -- 레이팅 보정 (임시 공식: 스탯 증가분만큼 레이팅 추가)
+                        -- 실제 공식이 있다면 여기에 적용
+                        local diff = unit.data[stat] - base
+                        ratingBonus = ratingBonus + diff
+                    end
+                end
+            end
+            
+            -- 레이팅 업데이트 (버프 반영)
+            if unit.data and unit.data.rating then
+                unit.data.baseRating = unit.data.rating -- 원본 저장
+                unit.data.rating = unit.data.rating + math.floor(ratingBonus)
+                
+                totalRating = totalRating + unit.data.rating
+                
+                -- 층별 합계
+                local f, s = slotId:match("^(%d+)_(%d+)$")
+                if f then
+                     f = tonumber(f)
+                     if floorRatings[f] then
+                         floorRatings[f] = floorRatings[f] + unit.data.rating
+                     end
+                end
+            end
+        end
+        
+        -- (D) 결과 포매팅 (UI용)
+        -- floorSynergies를 순회하며 텍스트 정리
+        -- modifiers를 ChatVar에 저장하여 battle.sys가 사용하도록 함
+        setChatVar(triggerId, "dungeon_modifiers", json.encode(modifiers))
+        
+        -- [UI Display] 버프 상태 저장 (Renderer용)
+        local uiBuffs = {}
+        for slotId, unit in pairs(richGrid) do
+            local info = {}
+            if unit.buffs and #unit.buffs > 0 then
+                info.buffs = unit.buffs
+            end
+            -- 변경된 레이팅 정보도 함께 저장
+            if unit.data.baseRating and unit.data.rating ~= unit.data.baseRating then
+                info.baseRating = unit.data.baseRating
+                info.newRating = unit.data.rating
+            end
+            
+            if next(info) then uiBuffs[slotId] = info end
+        end
+        setChatVar(triggerId, "dungeon_buff_UI", json.encode(uiBuffs))
         
         -- 결과 저장
         setChatVar(triggerId, "totalRating", intForm(totalRating))
         
-        if #activeSynergies > 0 then
-            setChatVar(triggerId, "activeSynergies", table.concat(activeSynergies, ", "))
-        else
-            setChatVar(triggerId, "activeSynergies", "없음")
-        end
+        -- activeSynergies 구성을 위해 버프 기반 텍스트 생성
+        -- (상세 구현은 생략, 필요시 추가)
         
         return floorSynergies, floorRatings
     end
@@ -362,6 +514,16 @@
                 local btnAttr = ""
                 local inlineStyle = ""
                 
+                local uiBuffs = json.decode(getChatVar(triggerId, "dungeon_buff_UI") or "{}")
+                local buffInfo = uiBuffs[slotId]
+                
+                -- Buff Visuals (Golden Glow from Bottom)
+                local buffEffectStyle = ""
+                if buffInfo and buffInfo.buffs and #buffInfo.buffs > 0 then
+                    -- 골드 하이라이트 (바닥 강조)
+                    buffEffectStyle = "box-shadow: inset 0 -10px 15px -5px rgba(255, 215, 0, 0.5); border-bottom: 3px solid #FFD700;"
+                end
+                
                 -- 툴팁 생성
                 local tooltipAttr = ""
                 if content then
@@ -376,7 +538,27 @@
                     end
                     
                     if name ~= "" then
-                        tooltipAttr = string.format('title="%s (★%d)"', name, rating)
+                        local ratingStr = string.format("★%d", rating)
+                        
+                        if buffInfo and buffInfo.newRating and buffInfo.newRating ~= rating then
+                            local diff = buffInfo.newRating - rating
+                            if diff > 0 then
+                                ratingStr = string.format("★%d ▲%d", rating, diff)
+                            else
+                                ratingStr = string.format("★%d ▼%d", rating, math.abs(diff))
+                            end
+                        end
+                        
+                        local tip = string.format("%s (%s)", name, ratingStr)
+                        
+                        if buffInfo and buffInfo.buffs and #buffInfo.buffs > 0 then
+                            tip = tip .. "\n[Active Buffs]"
+                            for _, bName in ipairs(buffInfo.buffs) do
+                                tip = tip .. "\n- " .. bName
+                            end
+                        end
+                         
+                        tooltipAttr = string.format('title="%s"', tip)
                     end
                 end
                 
@@ -385,7 +567,7 @@
                     if content then
                         inner = string.format('<img src="{{raw::%s}}" %s>', content.key, tooltipAttr)
                         selectedClass = "occupied"
-                        inlineStyle = "cursor:default;"
+                        inlineStyle = "cursor:default;" .. buffEffectStyle
                     else
                         inner = '<div class="slot-empty" style="opacity:0.3">+</div>' 
                     end
@@ -399,6 +581,7 @@
                     if content then
                         inner = string.format('<img src="{{raw::%s}}" %s>', content.key, tooltipAttr)
                         selectedClass = selectedClass .. "occupied"
+                        inlineStyle = buffEffectStyle
                     end
                     btnAttr = string.format('risu-btn="dungeon.sys_selectSlot_%s"', slotId)
                 end
@@ -498,8 +681,8 @@
                         if endTime > maxEventTime then maxEventTime = endTime end
                     end
                 end
-                
-                if isCleared then
+        
+        if isCleared then
                     -- style = style .. 'background:rgba(211, 47, 47, 0.4); border-color:#d32f2f;' (기존 정적 스타일 제거)
                     if not content then
                         -- 컨텐츠가 없으면(함정 발동후 소멸 등) X 표시도 딜레이 적용
@@ -615,6 +798,10 @@
             local inventory = json.decode(getChatVar(triggerId, "inventory") or "{}")
             local monsters = getDB(triggerId, "monsters.db")
             local traps = getDB(triggerId, "trap.db")
+            
+            -- [NEW] Lua 기반 스킬 DB 로드 (via getDB)
+            SKILL_DESCS = getDB(triggerId, "skills.db")
+            
             local count = 0
             
             -- 몬스터 리스트
@@ -647,15 +834,51 @@
                     end
                     end
                     
+                    -- [NEW] 스킬 툴팁 및 마커 생성
+                    local markerHtml = ""
+                    local tooltip = string.format("%s (★%d)", v.name, v.rating)
+                    
+                    if v.skills and #v.skills > 0 then
+                         local descList = {}
+                         local hasPlacementSkill = false
+                         
+                         for _, s in ipairs(v.skills) do
+                             if SKILL_DESCS[s] then
+                                 hasPlacementSkill = true
+                                 local sInfo = SKILL_DESCS[s]
+                                 -- sInfo is table {name="...", desc="..."} or nil
+                                 if sInfo and sInfo.name then
+                                     table.insert(descList, string.format("- %s: %s", sInfo.name, sInfo.desc))
+                                 else
+                                     table.insert(descList, "- " .. s)
+                                 end
+                             else
+                                 table.insert(descList, "- " .. s)
+                             end
+                         end
+                         
+                         if #descList > 0 then
+                             tooltip = tooltip .. "\n[보유 스킬]\n" .. table.concat(descList, "\n")
+                         end
+                         
+                         if hasPlacementSkill then
+                             -- 역삼각형 마커 (상단 중앙) - 크기 2배(1.1rem), 글로우 효과 추가
+                             markerHtml = '<div style="position:absolute; top:-5px; left:50%; transform:translateX(-50%); color:#FFD700; font-size:1.5rem; text-shadow:0 0 10px #FFD700, 0 0 10px #FFA500, 0 3px 5px yellow; z-index:10;">🔻</div>'
+                         end
+                    end
+                    
+                    local finalTooltip = string.format('title="%s"', tooltip)
+                    
                     monHtml = monHtml .. string.format([[
-<div class="unit-card %s" style="%s" %s>
+<div class="unit-card %s" style="%s" %s %s>
 <div class="unit-img">
 <img src="{{raw::%s}}">
 </div>
 <div class="unit-name">%s</div>
 <div class="unit-rating">★%s</div>
 <div class="unit-count" style="font-size:0.6rem; color:#aaa;">%d/%d</div>
-</div>]], selectedClass, opacityStyle, btnAttr, k, v.name, v.rating, placed, qty)
+%s
+</div>]], selectedClass, opacityStyle, finalTooltip, btnAttr, k, v.name, v.rating, placed, qty, markerHtml)
                 end
             end
             

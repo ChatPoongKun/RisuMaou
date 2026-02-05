@@ -12,9 +12,39 @@ DEFAULT_LORE_OPTION = { alwaysActive = false, insertOrder = 100, key = "", secon
 --====================================
 
 --로어북 DB 직접 로드 (캐싱 없음 - RisuAI 플랫폼에서 직접 호출이 더 빠름)
+--로어북 DB 로드 (Lua Config / Return 방식)
 function getDB(triggerId, dbName)
     local content = getLoreBookContent(triggerId, dbName)
-    return json.decode(content)
+    if not content or content == "" then 
+        debug("[DB] Empty Content: " .. dbName)
+        return {} 
+    end
+
+    -- Lua 로더 (Config Style / Return Style)
+    local env = {}
+    setmetatable(env, { __index = _G }) -- 전역 함수 사용 가능
+
+    local chunk, err = load(content, dbName, "t", env)
+    if not chunk then
+        debug("[DB] Load Syntax Error [" .. dbName .. "]: " .. tostring(err))
+        return {}
+    end
+
+    local ok, result = pcall(chunk)
+    if not ok then
+        debug("[DB] Runtime Error [" .. dbName .. "]: " .. tostring(result))
+        return {}
+    end
+
+    -- 결과 반환 (Return형 vs Env형)
+    local finalData = (type(result) == "table" and result) or env
+    
+    -- 간단한 아이템 개수 로깅 (디버그용)
+    local count = 0
+    for _ in pairs(finalData) do count = count + 1 end
+    
+    debug("[DB] Loaded Lua [" .. dbName .. "] - " .. count .. " items")
+    return finalData
 end
 
 --날짜/시간 문자열 생성 유틸리티

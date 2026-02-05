@@ -1,0 +1,295 @@
+return {
+    --다른 db파일과 달리 json이 아닌  lua테이블로 데이터가 정의 되었음
+   -- 1. Horde Tactic (군단 전술)
+horde_tactic = {
+    name = "군단 전술",
+    desc = "전체 아군 중 '인간형' 5기 이상 시, 모든 '인간형'에게 버프 부여",
+    active = function(ctx)
+        if ctx:dungeon():filter("인간형"):count() >= 5 then
+            return ctx:dungeon():filter("인간형"):buff("horde_mentality", ctx.slotId)
+        end
+        return {}
+    end
+}
+
+-- 2. Fire Resonance (화염 공명)
+fire_resonance = {
+    name = "화염 공명",
+    desc = "전체 아군 중 '화염' 3기 이상 시, 모든 '화염'에게 버프 부여",
+    active = function(ctx)
+        if ctx:dungeon():filter("화염"):count() >= 3 then
+            return ctx:dungeon():filter("화염"):buff("fire_empower", ctx.slotId)
+        end
+        return {}
+    end
+}
+
+-- 3. Beast Flank (야수의 호위)
+beast_flank = {
+    name = "야수의 호위",
+    desc = "양 옆이 '야수'일 경우 아군들 방어력 증가",
+    active = function(ctx)
+        if ctx:neighbors():filter("야수"):count() == 2 then
+            return ctx:neighbors():filter("야수"):buff("basic_def_up", ctx.slotId)
+        end
+        return {}
+    end
+}
+
+-- 4. Elite Squad (정예 부대)
+elite_squad = {
+    name = "정예 부대",
+    desc = "던전 총점 2000 이상 시, Rating 150 이상 유닛 방어력 증가",
+    active = function(ctx)
+        if ctx:dungeon():sum("rating") >= 2000 then
+            return ctx:dungeon():filter(function(u) 
+                return (u.data and u.data.rating and u.data.rating >= 150) 
+            end):buff("basic_def_up", ctx.slotId)
+        end
+        return {}
+    end
+}
+
+-- 5. Weak Link (약점 보완)
+weak_link = {
+    name = "약점 보완",
+    desc = "자신 방어력이 낮고(5↓) 주변 방어력이 높을 때(20↑) 방어력 증가",
+    active = function(ctx)
+        local selfUnit = ctx.grid[ctx.slotId]
+        if not selfUnit or not selfUnit.data then return {} end
+        
+        local selfDef = tonumber(selfUnit.data.def) or 0
+        if selfDef <= 5 then
+            local neighbors = ctx:neighbors()
+            if neighbors:count() == 2 then
+                local conditionMet = true
+                for _, item in ipairs(neighbors.units) do
+                     local def = (item.unit.data and tonumber(item.unit.data.def)) or 0
+                     if def < 20 then conditionMet = false break end
+                end
+                
+                if conditionMet then
+                    return {{ target = ctx.slotId, buff = "weak_link_boost", source = ctx.slotId }}
+                end
+            end
+        end
+        return {}
+    end
+}
+
+-- 6. Vanguard Tactic (선봉 전술)
+vanguard_tactic = {
+    name = "선봉 전술",
+    desc = "1번 슬롯 배치 시 방어력 증가",
+    active = function(ctx)
+        local s = ctx.slotId:match("_(%d+)$")
+        if s == "1" then
+            return {{ target = ctx.slotId, buff = "vanguard_def_up", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 7. Abyss Adaptation (심연 적응)
+abyss_adaptation = {
+    name = "심연 적응",
+    desc = "심연(5층 이상) 배치 시 공격력 증가",
+    active = function(ctx)
+        local f = ctx.slotId:match("^(%d+)_")
+        if f and tonumber(f) >= 5 then
+            return {{ target = ctx.slotId, buff = "abyss_power", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 8. Rear Guard Sniping (후방 저격)
+rear_guard_sniping = {
+    name = "후방 저격",
+    desc = "후방(4,5번) 슬롯 배치 시 공격력 증가",
+    active = function(ctx)
+        local s = ctx.slotId:match("_(%d+)$")
+        if s == "4" or s == "5" then
+            return {{ target = ctx.slotId, buff = "rear_snipe", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 9. Undead March (망자의 행진)
+undead_march = {
+    name = "망자의 행진",
+    desc = "앞 열에 언데드가 있을 경우 공격력 증가",
+    active = function(ctx)
+        local f, s = ctx.slotId:match("^(%d+)_(%d+)$")
+        s = tonumber(s)
+        
+        local count = 0
+        for i = 1, s-1 do
+            local prevKey = string.format("%d_%d", f, i)
+            local unit = ctx.grid[prevKey]
+            if unit and unit.hasTag and unit:hasTag("언데드") then count = count + 1 end
+        end
+        
+        if count > 0 then
+             return {{ target = ctx.slotId, buff = "undead_march_buff", source = ctx.slotId }} 
+        end
+        return {}
+    end
+}
+
+-- 10. Swarm Density (밀집 대형)
+swarm_density = {
+    name = "밀집 대형",
+    desc = "양 옆이 '무리'일 경우 방어력 증가",
+    active = function(ctx)
+        local neighbors = ctx:neighbors()
+        if neighbors:count() == 2 and neighbors:filter("무리"):count() == 2 then
+            return {{ target = ctx.slotId, buff = "swarm_def_up", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 11. Magical Resonance (마력 공명)
+magic_resonance = {
+    name = "마력 공명",
+    desc = "층 내 마법 유닛 3기 이상 시 공격력 증가",
+    active = function(ctx)
+        local floorMages = ctx:dungeon():filter(function(u) 
+            return (u:hasTag("마법") or u:hasTag("마법생물")) and u.slot:match("^(%d+)_") == ctx.slotId:match("^(%d+)_") -- Using string match for floor comparison if .floor prop is missing
+        end)
+        
+        if floorMages:count() >= 3 then
+            return {{ target = ctx.slotId, buff = "magic_resonance", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 12. Shadow Ambush (그림자 습격)
+shadow_ambush = {
+    name = "그림자 습격",
+    desc = "측면(1,5번) 배치 시 공격력 증가",
+    active = function(ctx)
+        local s = tonumber(ctx.slotId:match("_(%d+)$"))
+        if (s == 1 or s == 5) and ctx.owner:hasTag("기습") then
+            return {{ target = ctx.slotId, buff = "ambush_bonus", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 13. Lonely Predator (고독한 포식자)
+lonely_predator = {
+    name = "고독한 포식자",
+    desc = "양 옆이 비어있을 경우 공격력 대폭 증가",
+    active = function(ctx)
+        if ctx:neighbors():count() == 0 then
+            return {{ target = ctx.slotId, buff = "lonely_strength", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 14. Toxic Cloud (독성 구름)
+toxic_cloud = {
+    name = "독성 구름",
+    desc = "인접한 아군에게 독성 버프 부여",
+    active = function(ctx)
+        local neighbors = ctx:neighbors()
+        if neighbors:count() > 0 then
+            return neighbors:buff("poison_assist", ctx.slotId)
+        end
+        return {}
+    end
+}
+
+-- 15. Flying Squadron (비행 편대)
+flying_squadron = {
+    name = "비행 편대",
+    desc = "층 내 비행 유닛 3기 이상 시 방어력 증가 (전체)",
+    active = function(ctx)
+        local flyers = ctx:dungeon():filter(function(u) 
+            return u:hasTag("비행") and u.slot:match("^(%d+)_") == ctx.slotId:match("^(%d+)_") 
+        end)
+        
+        if flyers:count() >= 3 then
+            return flyers:buff("flying_squad_buff", ctx.slotId)
+        end
+        return {}
+    end
+}
+
+-- 16. Gatekeeper (문지기)
+gatekeeper = {
+    name = "문지기",
+    desc = "1번 슬롯에서 후방을 지키면 방어력 대폭 증가",
+    active = function(ctx)
+        local f, s = ctx.slotId:match("^(%d+)_(%d+)$")
+        s = tonumber(s)
+        
+        if s == 1 then
+            local count = 0
+            for i = 2, 5 do
+                if ctx.grid[string.format("%d_%d", f, i)] then count = count + 1 end
+            end
+            if count >= 2 then
+                return {{ target = ctx.slotId, buff = "gatekeeper_def", source = ctx.slotId }}
+            end
+        end
+        return {}
+    end
+}
+
+-- 17. Sacrificial Lamb (희생양)
+sacrificial_lamb = {
+    name = "희생양",
+    desc = "인접한 아군이 약할수록(Rating 50↓) 공격력 증가",
+    active = function(ctx)
+        local neighbors = ctx:neighbors()
+        local weaklings = neighbors:filter(function(u) return u.data.rating and u.data.rating <= 50 end)
+        
+        if weaklings:count() > 0 then
+            return {{ target = ctx.slotId, buff = "sacrifice_power", source = ctx.slotId }}
+        end
+        return {}
+    end
+}
+
+-- 18. Darkness Shroud (어둠의 장막)
+darkness_shroud = {
+    name = "어둠의 장막",
+    desc = "층 내 암흑 유닛 2기 이상 시 방어력 증가 (전체)",
+    active = function(ctx)
+        local darks = ctx:dungeon():filter(function(u) 
+            return u:hasTag("암흑") and u.slot:match("^(%d+)_") == ctx.slotId:match("^(%d+)_") 
+        end)
+        
+        if darks:count() >= 2 then
+            return darks:buff("dark_shroud", ctx.slotId)
+        end
+        return {}
+    end
+}
+
+-- 19. Beast Howl (야수의 포효)
+beast_howl = {
+    name = "야수의 포효",
+    desc = "중앙(3번) 배치 시 좌우 아군 강화",
+    active = function(ctx)
+        local f, s = ctx.slotId:match("^(%d+)_(%d+)$")
+        s = tonumber(s)
+        
+        if s == 3 and ctx.owner:hasTag("야수") then
+            local targets = {}
+            local left = ctx.grid[string.format("%d_%d", f, 2)]
+            local right = ctx.grid[string.format("%d_%d", f, 4)]
+            
+            if left then table.insert(targets, { target=string.format("%d_%d", f, 2), buff="beast_howl_buff", source=ctx.slotId }) end
+            if right then table.insert(targets, { target=string.format("%d_%d", f, 4), buff="beast_howl_buff", source=ctx.slotId }) end
+            return targets
+        end
+        return {}
+    end
+}

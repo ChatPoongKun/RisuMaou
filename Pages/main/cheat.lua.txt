@@ -24,18 +24,3 @@ end!!
 [cheat/199/돌아가기] function(triggerId)
     screenChange(triggerId, getState(triggerId, "oldScreen"))
 end!!
-
-[cheat/1004/침공 용사 생성] function(triggerId)
-    sysFunction(triggerId, "newChar.sys", "invasion")
-    alertNormal(triggerId, "침공 용사 (condition: 공략준비) 생성 완료")
-end!!
-
-[cheat/1005/전투 시뮬레이션] function(triggerId)
-    local summary = sysFunction(triggerId, "battle.sys", "processInvasion")
-    if not summary then
-        return -- battle.sys에서 에러 처리됨
-    end
-    
-    alertNormal(triggerId, "전투 종료: " .. summary.result .. " (로그 " .. #summary.logs .. "개)")
-    print(summary.logText)
-end!!

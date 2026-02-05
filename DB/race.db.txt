@@ -1,42 +1,41 @@
-{///race
-    "human": {
-        "name": "인간",
-        "desc": "가장 평균적인 종족. 적응력이 뛰어나다.",
-        "base_hp": 110,
-        "base_sp": 100,
-        "bonus_atk": 1,
-        "bonus_def": 0,
-        "height": 165,
-        "life_mod": 1.0
-    },
-    "elf": {
-        "name": "엘프",
-        "desc": "숲에 사는 고귀한 종족. 마력(기력)이 높고 수명이 길지만 체력이 약하다.",
-        "base_hp": 90,
-        "base_sp": 120,
-        "bonus_atk": 1,
-        "bonus_def": 2,
-        "height": 160,
-        "life_mod": 5.0
-    },
-    "dwarf": {
-        "name": "드워프",
-        "desc": "다부진 체격의 종족. 체력이 높고 손재주가 좋다.",
-        "base_hp": 130,
-        "base_sp": 80,
-        "bonus_atk": 0,
-        "bonus_def": 1,
-        "height": 135,
-        "life_mod": 3.0
-    },
-    "beastkin": {
-        "name": "수인",
-        "desc": "동물의 특징을 가진 종족. 신체 능력이 뛰어나고 야성적이다.",
-        "base_hp": 115,
-        "base_sp": 95,
-        "bonus_atk": 1,
-        "bonus_def": 0,
-        "height": 160,
-        "life_mod": 0.8
+-- (Lua Config Style)
+    human = {
+        name = "인간",
+        desc = "가장 평균적인 종족. 적응력이 뛰어나다.",
+        base_hp = 110,
+        base_sp = 100,
+        bonus_atk = 1,
+        bonus_def = 0,
+        height = 165,
+        life_mod = 1.0
     }
-}
+    elf = {
+        name = "엘프",
+        desc = "숲에 사는 고귀한 종족. 마력(기력)이 높고 수명이 길지만 체력이 약하다.",
+        base_hp = 90,
+        base_sp = 120,
+        bonus_atk = 1,
+        bonus_def = 2,
+        height = 160,
+        life_mod = 5.0
+    }
+    dwarf = {
+        name = "드워프",
+        desc = "다부진 체격의 종족. 체력이 높고 손재주가 좋다.",
+        base_hp = 130,
+        base_sp = 80,
+        bonus_atk = 0,
+        bonus_def = 1,
+        height = 135,
+        life_mod = 3.0
+    }
+    beastkin = {
+        name = "수인",
+        desc = "동물의 특징을 가진 종족. 신체 능력이 뛰어나고 야성적이다.",
+        base_hp = 115,
+        base_sp = 95,
+        bonus_atk = 1,
+        bonus_def = 0,
+        height = 160,
+        life_mod = 0.8
+    }

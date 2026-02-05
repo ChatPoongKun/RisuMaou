@@ -1,257 +1,257 @@
-{ ///stat. 대상의 현재 신체 혹은 심리상태를 나타낸다.
-    "c_pleasure": {
-        "name": "C쾌락",
-        "desc": "조교 대상이 음핵 자극으로 쾌락을 느낀 정도.",
-        "related": [
-            "C감각의 흔적",
-            "발정의 흔적",
-            "복종의 흔적",
-            "애정의 흔적"
-        ]
+-- (Lua Config Style)
+-- stat. 대상의 현재 신체 혹은 심리상태를 나타낸다.
+c_pleasure = {
+    name = "C쾌락",
+    desc = "조교 대상이 음핵 자극으로 쾌락을 느낀 정도.",
+    related = {
+        "C감각의 흔적",
+        "발정의 흔적",
+        "복종의 흔적",
+        "애정의 흔적"
+    }
+}
+b_pleasure = {
+    name = "B쾌락",
+    desc = "조교 대상이 유두 자극으로 쾌락을 느낀 정도.",
+    related = {
+        "B감각의 흔적",
+        "발정의 흔적",
+        "복종의 흔적",
+        "애정의 흔적"
+    }
+}
+v_pleasure = {
+    name = "V쾌락",
+    desc = "조교 대상이 질 삽입으로 쾌락을 느낀 정도.",
+    related = {
+        "V감각의 흔적",
+        "발정의 흔적",
+        "기술의 흔적",
+        "애정의 흔적"
+    }
+}
+a_pleasure = {
+    name = "A쾌락",
+    desc = "조교 대상이 애널 삽입으로 쾌락을 느낀 정도.",
+    related = {
+        "A감각의 흔적",
+        "발정의 흔적",
+        "굴욕의 흔적",
+        "기술의 흔적"
+    }
+}
+u_pleasure = {
+    name = "U쾌락",
+    desc = "조교 대상이 요도 자극으로 쾌락을 느낀 정도.",
+    related = {
+        "U감각의 흔적",
+        "굴욕의 흔적",
+        "발정의 흔적",
+        "C감각의 흔적"
+    }
+}
+m_pleasure = {
+    name = "M쾌락",
+    desc = "조교 대상이 구강 자극으로 쾌락을 느낀 정도.",
+    related = {
+        "발정의 흔적",
+        "기술의 흔적",
+        "복종의 흔적"
+    }
+}
+s_pleasure = {
+    name = "S쾌락",
+    desc = "조교 대상이 정신적인 자극으로 쾌락을 느낀 정도.",
+    related = {
+        "발정의 흔적",
+        "순종의 흔적",
+        "애정의 흔적",
+        "불안의 흔적"
+    }
+}
+v_wet = {
+    name = "V윤활",
+    desc = "조교 대상의 음부가 젖은 정도. 윤활이 부족한채로 삽입을 시도하면 성공확률이 감소한다.",
+    related = {
+        "발정의 흔적",
+        "굴욕의 흔적",
+        "순종의 흔적",
+        "애정의 흔적"
     },
-    "b_pleasure": {
-        "name": "B쾌락",
-        "desc": "조교 대상이 유두 자극으로 쾌락을 느낀 정도.",
-        "related": [
-            "B감각의 흔적",
-            "발정의 흔적",
-            "복종의 흔적",
-            "애정의 흔적"
-        ]
-    },
-    "v_pleasure": {
-        "name": "V쾌락",
-        "desc": "조교 대상이 질 삽입으로 쾌락을 느낀 정도.",
-        "related": [
-            "V감각의 흔적",
-            "발정의 흔적",
-            "기술의 흔적",
-            "애정의 흔적"
-        ]
-    },
-    "a_pleasure": {
-        "name": "A쾌락",
-        "desc": "조교 대상이 애널 삽입으로 쾌락을 느낀 정도.",
-        "related": [
-            "A감각의 흔적",
-            "발정의 흔적",
-            "굴욕의 흔적",
-            "기술의 흔적"
-        ]
-    },
-    "u_pleasure": {
-        "name": "U쾌락",
-        "desc": "조교 대상이 요도 자극으로 쾌락을 느낀 정도.",
-        "related": [
-            "U감각의 흔적",
-            "굴욕의 흔적",
-            "발정의 흔적",
-            "C감각의 흔적"
-        ]
-    },
-    "m_pleasure": {
-        "name": "M쾌락",
-        "desc": "조교 대상이 구강 자극으로 쾌락을 느낀 정도.",
-        "related": [
-            "발정의 흔적",
-            "기술의 흔적",
-            "복종의 흔적"
-        ]
-    },
-    "s_pleasure": {
-        "name": "S쾌락",
-        "desc": "조교 대상이 정신적인 자극으로 쾌락을 느낀 정도.",
-        "related": [
-            "발정의 흔적",
-            "순종의 흔적",
-            "애정의 흔적",
-            "불안의 흔적"
-        ]
-    },
-    "v_wet": {
-        "name": "V윤활",
-        "desc": "조교 대상의 음부가 젖은 정도. 윤활이 부족한채로 삽입을 시도하면 성공확률이 감소한다.",
-        "related": [
-            "발정의 흔적",
-            "굴욕의 흔적",
-            "순종의 흔적",
-            "애정의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "hasTags": [
-                    "insert_V"
-                ],
-                "func": "dc = dc - (level - 5) * 1.0"
-            }
-        }
-    },
-    "a_wet": {
-        "name": "A윤활",
-        "desc": "조교 대상의 애널이 젖은 정도. 윤활이 부족한채로 삽입을 시도하면 성공확률이 감소한다.",
-        "related": [
-            "발정의 흔적",
-            "굴욕의 흔적",
-            "불안의 흔적",
-            "복종의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "hasTags": [
-                    "insert_A"
-                ],
-                "func": "dc = dc - (level - 5) * 1.0"
-            }
-        }
-    },
-    "lust": {
-        "name": "욕정",
-        "desc": "조교 대상의 발정 정도. 욕정이 높을수록 조교의 성공확률이 증가한다.",
-        "related": [
-            "발정의 흔적",
-            "순종의 흔적",
-            "애정의 흔적",
-            "기술의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "hasTags": [
-                    "sex",
-                    "service"
-                ],
-                "func": "dc = dc - level * 0.5"
-            }
-        }
-    },
-    "obedient": {
-        "name": "온순",
-        "desc": "조교 대상이 순순히 명령을 따르는 정도. 온순이 낮은 상태에서는 조교 성공확률이 감소한다.",
-        "related": [
-            "순종의 흔적",
-            "복종의 흔적",
-            "애정의 흔적",
-            "발정의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "func": "dc = dc - level * 0.3"
-            }
-        }
-    },
-    "submission": {
-        "name": "굴복",
-        "desc": "조교 대상이 강제로 명령을 따르는 정도. 굴복이 높으면 조교의 성공확률이 증가한다.",
-        "related": [
-            "굴욕의 흔적",
-            "복종의 흔적",
-            "부정의 흔적",
-            "불안의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "func": "dc = dc - level * 0.2"
-            }
-        }
-    },
-    "shame": {
-        "name": "수치",
-        "desc": "조교 대상이 느끼는 수치심의 정도.",
-        "related": [
-            "굴욕의 흔적",
-            "불안의 흔적",
-            "부정의 흔적",
-            "순종의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "hasTags": [
-                    "shame"
-                ],
-                "func": "dc = dc + level * 0.5"
-            }
-        }
-    },
-    "pain": {
-        "name": "고통",
-        "desc": "조교 대상이 느끼는 고통의 정도.",
-        "related": [
-            "상처의 흔적",
-            "불안의 흔적",
-            "부정의 흔적",
-            "복종의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "hasTags": [
-                    "pain",
-                    "hard"
-                ],
-                "func": "dc = dc + level * 0.5"
-            }
-        }
-    },
-    "fear": {
-        "name": "공포",
-        "desc": "조교 대상이 느끼는 공포의 정도.",
-        "related": [
-            "불안의 흔적",
-            "부정의 흔적",
-            "굴욕의 흔적",
-            "복종의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "hasTags": [
-                    "hard",
-                    "beast",
-                    "tentacle"
-                ],
-                "func": "dc = dc + level * 0.5"
+    events = {
+        onDCCalc = {
+            hasTags = {
+                "insert_V"
             },
-            "onDCCalc_2": {
-                "hasTags": [
-                    "gentle",
-                    "love"
-                ],
-                "func": "dc = dc + level * 0.1"
-            }
+            func = function(e) e.dc = e.dc - (e.level - 5) * 1.0 end
         }
+    }
+}
+a_wet = {
+    name = "A윤활",
+    desc = "조교 대상의 애널이 젖은 정도. 윤활이 부족한채로 삽입을 시도하면 성공확률이 감소한다.",
+    related = {
+        "발정의 흔적",
+        "굴욕의 흔적",
+        "불안의 흔적",
+        "복종의 흔적"
     },
-    "disgust": {
-        "name": "불쾌",
-        "desc": "조교 대상이 느끼는 더러움의 정도.",
-        "related": [
-            "굴욕의 흔적",
-            "부정의 흔적",
-            "상처의 흔적",
-            "불안의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "hasTags": [
-                    "filth"
-                ],
-                "func": "dc = dc + level * 1.0"
+    events = {
+        onDCCalc = {
+            hasTags = {
+                "insert_A"
             },
-            "onDCCalc_2": {
-                "hasTags": [
-                    "oral",
-                    "A"
-                ],
-                "func": "dc = dc + level * 0.5"
-            }
+            func = function(e) e.dc = e.dc - (e.level - 5) * 1.0 end
         }
+    }
+}
+lust = {
+    name = "욕정",
+    desc = "조교 대상의 발정 정도. 욕정이 높을수록 조교의 성공확률이 증가한다.",
+    related = {
+        "발정의 흔적",
+        "순종의 흔적",
+        "애정의 흔적",
+        "기술의 흔적"
     },
-    "resistance": {
-        "name": "저항",
-        "desc": "조교 대상이 느끼는 부정적 감정의 정도.",
-        "related": [
-            "부정의 흔적"
-        ],
-        "events": {
-            "onDCCalc": {
-                "func": "dc = dc + level * 1.0"
-            }
+    events = {
+        onDCCalc = {
+            hasTags = {
+                "sex",
+                "service"
+            },
+            func = function(e) e.dc = e.dc - e.level * 0.5 end
+        }
+    }
+}
+obedient = {
+    name = "온순",
+    desc = "조교 대상이 순순히 명령을 따르는 정도. 온순이 낮은 상태에서는 조교 성공확률이 감소한다.",
+    related = {
+        "순종의 흔적",
+        "복종의 흔적",
+        "애정의 흔적",
+        "발정의 흔적"
+    },
+    events = {
+        onDCCalc = {
+            func = function(e) e.dc = e.dc - e.level * 0.3 end
+        }
+    }
+}
+submission = {
+    name = "굴복",
+    desc = "조교 대상이 강제로 명령을 따르는 정도. 굴복이 높으면 조교의 성공확률이 증가한다.",
+    related = {
+        "굴욕의 흔적",
+        "복종의 흔적",
+        "부정의 흔적",
+        "불안의 흔적"
+    },
+    events = {
+        onDCCalc = {
+            func = function(e) e.dc = e.dc - e.level * 0.2 end
+        }
+    }
+}
+shame = {
+    name = "수치",
+    desc = "조교 대상이 느끼는 수치심의 정도.",
+    related = {
+        "굴욕의 흔적",
+        "불안의 흔적",
+        "부정의 흔적",
+        "순종의 흔적"
+    },
+    events = {
+        onDCCalc = {
+            hasTags = {
+                "shame"
+            },
+            func = function(e) e.dc = e.dc + e.level * 0.5 end
+        }
+    }
+}
+pain = {
+    name = "고통",
+    desc = "조교 대상이 느끼는 고통의 정도.",
+    related = {
+        "상처의 흔적",
+        "불안의 흔적",
+        "부정의 흔적",
+        "복종의 흔적"
+    },
+    events = {
+        onDCCalc = {
+            hasTags = {
+                "pain",
+                "hard"
+            },
+            func = function(e) e.dc = e.dc + e.level * 0.5 end
+        }
+    }
+}
+fear = {
+    name = "공포",
+    desc = "조교 대상이 느끼는 공포의 정도.",
+    related = {
+        "불안의 흔적",
+        "부정의 흔적",
+        "굴욕의 흔적",
+        "복종의 흔적"
+    },
+    events = {
+        onDCCalc = {
+            hasTags = {
+                "hard",
+                "beast",
+                "tentacle"
+            },
+            func = function(e) e.dc = e.dc + e.level * 0.5 end
+        },
+        onDCCalc_2 = {
+            hasTags = {
+                "gentle",
+                "love"
+            },
+            func = function(e) e.dc = e.dc + e.level * 0.1 end
+        }
+    }
+}
+disgust = {
+    name = "불쾌",
+    desc = "조교 대상이 느끼는 더러움의 정도.",
+    related = {
+        "굴욕의 흔적",
+        "부정의 흔적",
+        "상처의 흔적",
+        "불안의 흔적"
+    },
+    events = {
+        onDCCalc = {
+            hasTags = {
+                "filth"
+            },
+            func = function(e) e.dc = e.dc + e.level * 1.0 end
+        },
+        onDCCalc_2 = {
+            hasTags = {
+                "oral",
+                "A"
+            },
+            func = function(e) e.dc = e.dc + e.level * 0.5 end
+        }
+    }
+}
+resistance = {
+    name = "저항",
+    desc = "조교 대상이 느끼는 부정적 감정의 정도.",
+    related = {
+        "부정의 흔적"
+    },
+    events = {
+        onDCCalc = {
+            func = function(e) e.dc = e.dc + e.level * 1.0 end
         }
     }
 }

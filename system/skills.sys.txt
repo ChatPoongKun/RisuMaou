@@ -1,0 +1,193 @@
+-- skills.sys.txt
+-- 몬스터 스킬 및 시너지 정의 (Skill Registry) with Fluent API
+
+(function()
+    local skills = {}
+
+    -----------------------------------------------------------
+    -- [DSL Engine] Context & Selector
+    -----------------------------------------------------------
+    local Selector = {}
+    Selector.__index = Selector
+
+    function Selector.new(grid, units, validIndices)
+        local self = setmetatable({}, Selector)
+        self.grid = grid
+        self.units = units or {} -- list of {slot, unit}
+        return self
+    end
+
+    function Selector:sum(field)
+        local total = 0
+        for _, item in ipairs(self.units) do
+            if item.unit.data and item.unit.data[field] then
+                total = total + (tonumber(item.unit.data[field]) or 0)
+            -- Support direct field access if needed (like rating directly on unit object in some contexts)
+            elseif item.unit[field] then
+                total = total + (tonumber(item.unit[field]) or 0)
+            end
+        end
+        return total
+    end
+
+    function Selector:filter(tagOrFunc)
+        local filtered = {}
+        for _, item in ipairs(self.units) do
+            local keep = false
+            if type(tagOrFunc) == "string" then
+                if item.unit.hasTag and item.unit:hasTag(tagOrFunc) then keep = true end
+            elseif type(tagOrFunc) == "function" then
+                if tagOrFunc(item.unit) then keep = true end
+            end
+            
+            if keep then table.insert(filtered, item) end
+        end
+        return Selector.new(self.grid, filtered)
+    end
+
+    function Selector:count()
+        return #self.units
+    end
+
+    function Selector:buff(buffId, sourceSlot)
+        local buffs = {}
+        for _, item in ipairs(self.units) do
+            table.insert(buffs, {
+                target = item.slot,
+                buff = buffId,
+                source = sourceSlot
+            })
+        end
+        return buffs
+    end
+
+    local Context = {}
+    Context.__index = Context
+
+    function Context.new(triggerId, slotId, grid, ownerUnit)
+        local self = setmetatable({}, Context)
+        self.triggerId = triggerId
+        self.slotId = slotId
+        self.grid = grid
+        self.owner = ownerUnit
+        return self
+    end
+
+    function Context:dungeon()
+        local units = {}
+        for k, v in pairs(self.grid) do
+            table.insert(units, {slot=k, unit=v})
+        end
+        return Selector.new(self.grid, units)
+    end
+    
+    function Context:neighbors()
+        local f, s = self.slotId:match("^(%d+)_(%d+)$")
+        local units = {}
+        if f then
+            f = tonumber(f)
+            s = tonumber(s)
+            local leftKey = string.format("%d_%d", f, s-1)
+            local rightKey = string.format("%d_%d", f, s+1)
+            
+            if self.grid[leftKey] then table.insert(units, {slot=leftKey, unit=self.grid[leftKey]}) end
+            if self.grid[rightKey] then table.insert(units, {slot=rightKey, unit=self.grid[rightKey]}) end
+        end
+        return Selector.new(self.grid, units)
+    end
+
+    -----------------------------------------------------------
+    -- [Engine] DB Loader & Executor
+    -----------------------------------------------------------
+    local skills = {}
+    local loaded = false
+
+    local funcs = {}
+
+    function funcs.load(triggerId)
+        if loaded then return skills end
+        
+        -- Load Lua Table DB
+        local dbContent = getLoreBookContent(triggerId, "skills.db")
+        if not dbContent or dbContent == "" then
+            return {}
+        end
+        
+        -- Safe Load with Sandbox Environment
+        -- We provide Context and Selector classes to the DB environment
+        local env = {
+            pairs = pairs,
+            ipairs = ipairs,
+            table = table,
+            math = math,
+            tonumber = tonumber,
+            string = string,
+            print = print, -- debug
+            Context = Context,
+            Selector = Selector
+        }
+        
+        local loader, err = load(dbContent, "skills.db", "t", env)
+        if not loader then
+            -- debug("Skill DB Compile Error: " .. tostring(err))
+            return {}
+        end
+        
+        local success, result = pcall(loader)
+        if success then
+            -- Hybrid Load: If result is table, use it. Else, usage env (Config Style).
+            if type(result) == "table" then
+                skills = result
+            else
+                skills = env
+            end
+            
+            -- [Helper] Execute Wrapper
+            -- Allows dungeon.sys to call: skills.execute(skillId, ...)
+            skills.execute = function(skillId, triggerId, slotId, grid, ownerUnit)
+                local skill = skills[skillId]
+                if skill and skill.active then
+                    -- Create Context using the Class defined in this scope
+                    local ctx = Context.new(triggerId, slotId, grid, ownerUnit)
+                    -- Call the embedded function
+                    return skill.active(ctx)
+                end
+                return nil
+            end
+            
+            loaded = true
+            return skills
+        else
+            -- debug("Skill DB Execution Error: " .. tostring(result))
+            return {}
+        end
+    end
+
+    -- Main Execution Entry Point
+    -- subFunc here is the skillId (e.g. "horde_tactic") being called as a function?
+    -- No, dungeon.sys calls `skills[skillId](triggerId, ...)`
+    -- So we need to emulate that structure if possible, OR return the table directly.
+    -- Current structure returns a dispatcher: return function(triggerId, subFunc, ...)
+    
+    -- We want: skills.sys("load") -> returns dict { skillId = { active = func, ... } }
+    -- But dungeon.sys expects: skillFunc = skills[skillId] -> skillFunc() ??
+    -- Previously: skills[skillId] was a function.
+    -- Now: skills[skillId] is a table { active = function }.
+    
+    -- So we need an adapter or change dungeon.sys.
+    -- Let's change this module to return the raw DB table, 
+    -- BUT we wrap the 'active' function to be compatible?
+    -- Easier: dungeon.sys logic: local skillFunc = skills[skillId]; result = skillFunc(...)
+    -- We can make skills[skillId] be a callable table (metatable __call) or wrapper.
+    -- Or just return the raw table and let dungeon.sys handle it: `skills[skillId].active(...)`
+    
+    -- Decision: Let's create a wrapper here so dungeon.sys changes are minimal or cleaner.
+    -- Wait, dungeon.sys refactor is part of the plan. Let's make dungeon.sys aware of the new structure.
+    -- So here we just return the loaded DB table.
+    
+    return function(triggerId, subFunc, ...)
+        if subFunc == "load" then
+            return funcs.load(triggerId)
+        end
+    end
+end)()

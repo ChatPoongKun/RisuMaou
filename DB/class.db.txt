@@ -1,134 +1,134 @@
-{ ///class
-    "demon_king": {
-        "name": "마왕",
-        "desc": "모든 마족의 정점에 선 절대자. 압도적인 힘을 자랑한다.",
-        "hp_inc": 225,
-        "sp_inc": 150,
-        "def_inc": 16,
-        "atk_min": 6,
-        "atk_max": 10,
-        "weapon": "마왕의 검",
-        "armor": "마왕의 갑주"
-    },
-    "swordsman": {
-        "name": "검사",
-        "desc": "검을 다루는 전사. 공수 밸런스가 잡혀있다.",
-        "hp_inc": 130,
-        "sp_inc": 100,
-        "def_inc": 8,
-        "atk_min": 2,
-        "atk_max": 10,
-        "weapon": "롱소드",
-        "armor": "가죽 갑옷"
-    },
-    "knight": {
-        "name": "기사",
-        "desc": "갑옷으로 무장한 전사. 방어력이 뛰어나다.",
-        "hp_inc": 150,
-        "sp_inc": 80,
-        "def_inc": 11,
-        "atk_min": 1,
-        "atk_max": 6,
-        "weapon": "랜스",
-        "armor": "플레이트 메일"
-    },
-    "mage": {
-        "name": "마법사",
-        "desc": "마나를 다룰 줄 아는 마법사. 체력은 약하지만 기력이 높다.",
-        "hp_inc": 90,
-        "sp_inc": 200,
-        "def_inc": 3,
-        "atk_min": 4,
-        "atk_max": 18,
-        "weapon": "지팡이",
-        "armor": "로브"
-    },
-    "priest": {
-        "name": "성직자",
-        "desc": "신을 섬기는 사제. 회복 능력과 굳건한 정신력을 가졌다.",
-        "hp_inc": 180,
-        "sp_inc": 150,
-        "def_inc": 6,
-        "atk_min": 1,
-        "atk_max": 8,
-        "weapon": "메이스",
-        "armor": "사제복"
-    },
-    "thief": {
-        "name": "도적",
-        "desc": "민첩한 몸놀림을 가진 무법자. 공격력이 높지만 맷집이 약하다.",
-        "hp_inc": 100,
-        "sp_inc": 120,
-        "def_inc": 4,
-        "atk_min": 4,
-        "atk_max": 15,
-        "weapon": "단검",
-        "armor": "천옷"
-    },
-    "archer": {
-        "name": "궁수",
-        "desc": "원거리 공격에 능한 사수.",
-        "hp_inc": 110,
-        "sp_inc": 120,
-        "def_inc": 4,
-        "atk_min": 3,
-        "atk_max": 16,
-        "weapon": "활",
-        "armor": "가죽 조끼"
-    },
-    "berserker": {
-        "name": "광전사",
-        "desc": "분노를 힘으로 바꾸는 전사. 방어를 도외시하고 공격에 치중한다.",
-        "hp_inc": 150,
-        "sp_inc": 60,
-        "def_inc": 2,
-        "atk_min": 2,
-        "atk_max": 16,
-        "weapon": "대검",
-        "armor": "경갑"
-    },
-    "paladin": {
-        "name": "성기사",
-        "desc": "신성한 힘으로 아군을 보호하는 기사.",
-        "hp_inc": 130,
-        "sp_inc": 100,
-        "def_inc": 10,
-        "atk_min": 1,
-        "atk_max": 9,
-        "weapon": "워해머",
-        "armor": "전신 판금 갑옷"
-    },
-    "assassin": {
-        "name": "암살자",
-        "desc": "어둠 속에 숨어 적의 급소를 노리는 살수.",
-        "hp_inc": 90,
-        "sp_inc": 130,
-        "def_inc": 3,
-        "atk_min": 4,
-        "atk_max": 17,
-        "weapon": "카타르",
-        "armor": "검은 타이즈"
-    },
-    "hunter": {
-        "name": "사냥꾼",
-        "desc": "야생의 짐승을 사냥하는 전문가.",
-        "hp_inc": 140,
-        "sp_inc": 100,
-        "def_inc": 5,
-        "atk_min": 2,
-        "atk_max": 13,
-        "weapon": "장궁",
-        "armor": "가죽 갑옷"
-    },
-    "monk": {
-        "name": "무도가",
-        "desc": "극한의 신체를 단련한 격투가.",
-        "hp_inc": 160,
-        "sp_inc": 100,
-        "def_inc": 5,
-        "atk_min": 2,
-        "atk_max": 10,
-        "weapon": "너클",
-        "armor": "도복"
-    }
+-- (Lua Config Style)
+-- class
+demon_king = {
+    name = "마왕",
+    desc = "모든 마족의 정점에 선 절대자. 압도적인 힘을 자랑한다.",
+    hp_inc = 225,
+    sp_inc = 150,
+    def_inc = 16,
+    atk_min = 6,
+    atk_max = 10,
+    weapon = "마왕의 검",
+    armor = "마왕의 갑주"
+}
+swordsman = {
+    name = "검사",
+    desc = "검을 다루는 전사. 공수 밸런스가 잡혀있다.",
+    hp_inc = 130,
+    sp_inc = 100,
+    def_inc = 8,
+    atk_min = 2,
+    atk_max = 10,
+    weapon = "롱소드",
+    armor = "가죽 갑옷"
+}
+knight = {
+    name = "기사",
+    desc = "갑옷으로 무장한 전사. 방어력이 뛰어나다.",
+    hp_inc = 150,
+    sp_inc = 80,
+    def_inc = 11,
+    atk_min = 1,
+    atk_max = 6,
+    weapon = "랜스",
+    armor = "플레이트 메일"
+}
+mage = {
+    name = "마법사",
+    desc = "마나를 다룰 줄 아는 마법사. 체력은 약하지만 기력이 높다.",
+    hp_inc = 90,
+    sp_inc = 200,
+    def_inc = 3,
+    atk_min = 4,
+    atk_max = 18,
+    weapon = "지팡이",
+    armor = "로브"
+}
+priest = {
+    name = "성직자",
+    desc = "신을 섬기는 사제. 회복 능력과 굳건한 정신력을 가졌다.",
+    hp_inc = 180,
+    sp_inc = 150,
+    def_inc = 6,
+    atk_min = 1,
+    atk_max = 8,
+    weapon = "메이스",
+    armor = "사제복"
+}
+thief = {
+    name = "도적",
+    desc = "민첩한 몸놀림을 가진 무법자. 공격력이 높지만 맷집이 약하다.",
+    hp_inc = 100,
+    sp_inc = 120,
+    def_inc = 4,
+    atk_min = 4,
+    atk_max = 15,
+    weapon = "단검",
+    armor = "천옷"
+}
+archer = {
+    name = "궁수",
+    desc = "원거리 공격에 능한 사수.",
+    hp_inc = 110,
+    sp_inc = 120,
+    def_inc = 4,
+    atk_min = 3,
+    atk_max = 16,
+    weapon = "활",
+    armor = "가죽 조끼"
+}
+berserker = {
+    name = "광전사",
+    desc = "분노를 힘으로 바꾸는 전사. 방어를 도외시하고 공격에 치중한다.",
+    hp_inc = 150,
+    sp_inc = 60,
+    def_inc = 2,
+    atk_min = 2,
+    atk_max = 16,
+    weapon = "대검",
+    armor = "경갑"
+}
+paladin = {
+    name = "성기사",
+    desc = "신성한 힘으로 아군을 보호하는 기사.",
+    hp_inc = 130,
+    sp_inc = 100,
+    def_inc = 10,
+    atk_min = 1,
+    atk_max = 9,
+    weapon = "워해머",
+    armor = "전신 판금 갑옷"
+}
+assassin = {
+    name = "암살자",
+    desc = "어둠 속에 숨어 적의 급소를 노리는 살수.",
+    hp_inc = 90,
+    sp_inc = 130,
+    def_inc = 3,
+    atk_min = 4,
+    atk_max = 17,
+    weapon = "카타르",
+    armor = "검은 타이즈"
+}
+hunter = {
+    name = "사냥꾼",
+    desc = "야생의 짐승을 사냥하는 전문가.",
+    hp_inc = 140,
+    sp_inc = 100,
+    def_inc = 5,
+    atk_min = 2,
+    atk_max = 13,
+    weapon = "장궁",
+    armor = "가죽 갑옷"
+}
+monk = {
+    name = "무도가",
+    desc = "극한의 신체를 단련한 격투가.",
+    hp_inc = 160,
+    sp_inc = 100,
+    def_inc = 5,
+    atk_min = 2,
+    atk_max = 10,
+    weapon = "너클",
+    armor = "도복"
 }

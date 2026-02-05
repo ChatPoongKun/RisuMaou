@@ -20,7 +20,7 @@
         setChatVar(triggerId, "itemQuantity", 1)
 
         -- trap.db에서 먼저 검색
-        local trapDB = json.decode(getLoreBookContent(triggerId, "trap.db"))
+        local trapDB = getDB(triggerId, "trap.db")
         if trapDB[itemKey] then
             local trap = trapDB[itemKey]
             setChatVar(triggerId, "itemName", trap.name)
@@ -31,7 +31,7 @@
         end
 
         -- items.db에서 검색 (새 객체 구조)
-        local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+        local items = getDB(triggerId, "items.db")
         for _, category in pairs(items) do
             if category[itemKey] then
                 local item = category[itemKey]
@@ -52,10 +52,10 @@
 
         -- traps는 별도의 trap.db에서 로드
         if itemCat == "traps" then
-            itemList = json.decode(getLoreBookContent(triggerId, "trap.db"))
+            itemList = getDB(triggerId, "trap.db")
             orderedKeys = json.decode(getChatVar(triggerId, "trapsList"))
         else
-            itemList = json.decode(getLoreBookContent(triggerId, "items.db"))[itemCat]
+            itemList = getDB(triggerId, "items.db")[itemCat]
             orderedKeys = json.decode(getChatVar(triggerId, itemCat .. "List"))
         end
 
@@ -108,8 +108,8 @@
                         "<div class='shop-item btn' risu-btn='" ..
                         k ..
                         "'><div class='item-image'><img src='{{raw::" ..
-                        itemName ..
-                        ".png}}'></div><div class='item-info'><span class='item-name'>" ..
+                        k ..
+                        ".webp}}'></div><div class='item-info'><span class='item-name'>" ..
                         itemName .. "</span><span class='item-price'>" .. price .. " spirit</span></div></div>"
                 end
             end

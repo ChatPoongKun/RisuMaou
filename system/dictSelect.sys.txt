@@ -76,8 +76,9 @@
                        "Rating: " .. rating .. " | HP: " .. hp .. "<br>" ..
                        "ATK: " .. atkMin .. "~" .. atkMax .. " | DEF: " .. def
                 
-                -- 몬스터 이미지: 키.png
-                imgHtml = string.format('<img src="{{raw::%s.png}}">', name)
+                -- 몬스터 이미지: 키.webp
+                -- 팝업 트리거 버튼 추가
+                imgHtml = string.format('<div style="width:100%%;height:100%%;cursor:pointer;" risu-btn="dictSelect.sys_popup_%s"><img src="{{raw::%s.webp}}"></div>', name, name)
             end
     
             if category == "item" then
@@ -85,8 +86,9 @@
                     desc = desc .. "<br>가격: " .. data.price .. " Spirit"
                 end
                 
-                -- 아이템 이미지: 이름.png
-                imgHtml = string.format('<img src="{{raw::%s.png}}">', title)
+                -- 아이템 이미지: 키.webp (영문 키 사용)
+                -- 팝업 트리거 버튼 추가
+                imgHtml = string.format('<div style="width:100%%;height:100%%;cursor:pointer;" risu-btn="dictSelect.sys_popup_%s"><img src="{{raw::%s.webp}}"></div>', name, name)
             end
     
         else
@@ -102,6 +104,18 @@
     -- data format: "dictSelect.sys_category_name"
     function funcs.click(triggerId, data)
         local category, name = string.match(data, "dictSelect%.sys_([^_]+)_(.*)")
+        
+        if category == "popup" then
+            if name == "close" then
+                setChatVar(triggerId, "dictPopupImg", "")
+            else
+                -- 팝업 이미지 설정 (raw 태그 사용)
+                local imgTag = string.format("{{raw::%s.webp}}", name)
+                setChatVar(triggerId, "dictPopupImg", imgTag)
+            end
+            return
+        end
+
         if category and name then
             funcs.select(triggerId, category, name)
         else

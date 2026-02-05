@@ -1,5 +1,3 @@
-
-
 --조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     debug("trainProcess 실행: DC="..tostring(dc))
@@ -78,15 +76,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     --페널티 요소: 대상의 2^반발각인, 저항 stat당 1
     local rollBonus = 0
     rollBonus = rollBonus + json.decode(user)["레벨"] - 1 --유저 레벨당 1, 1레벨부터 시작이므로 1을 차감
-    rollBonus = rollBonus - currentStat["저항"] --저항 stat 1레벨당 1만큼 페널티
-    for k, v in pairs(markDB) do -- 각인 보너스 적용 (객체 순회)
-        local markName = v.name or k
-        if markName == "반발각인" then
-            rollBonus = rollBonus - REBELLION_BASE^tonumber((target[markName] or 0))
-        else
-            rollBonus = rollBonus + (target[markName] or 0)*MARK_BONUS_MULT
-        end
-    end
 
     --최종 주사위굴림
     local roll = math.random()*MAXROLL
@@ -94,13 +83,13 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     if roll > MAXROLL - 1 then
         rollMsg = "조교 대성공!"
         screenEffect = [[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
-        debug(roll..">="..dc, rollMsg)
+        debug(string.format("Roll: %.0f (Total: %.0f) vs DC: %.0f", roll, roll+rollBonus, dc), rollMsg)
     elseif roll + rollBonus <= dc then
         rollMsg = "조교 실패"
         screenEffect = [[<div class="success-animation"><div class="animation-text fail">]]..rollMsg..[[</div></div>]]
-        debug(roll..">="..dc, rollMsg)
+        debug(string.format("Roll: %.0f (Total: %.0f) vs DC: %.0f", roll, roll+rollBonus, dc), rollMsg)
     else
-        debug(roll..">="..dc, "성공")
+        debug(string.format("Roll: %.0f (Total: %.0f) vs DC: %.0f", roll, roll+rollBonus, dc), "성공")
     end
 
     --성공한 경우에만 경험 추가
@@ -207,7 +196,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     for k,v in pairs(currentStat) do
         statProm[k] = v.."/10"
     end
-
+    --statdb에서 설명파트만 추출 (shallow copy로 원본 캐시 보호 done at lines 42-50)
+    
     --target가 보유한 trait에 대한 설명만 추출
     local traitProm = {}
     for k, v in pairs(traitDB) do
@@ -217,21 +207,64 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
             traitProm[tName] = v.desc --target한테 있는 trait 설명만 입력
         end
     end
-    traitProm = json.encode(traitProm)
+    -- traitProm is now a table, will be encoded later
 
-    --trainResponse (stat 계산) 프롬프트
+    debug("trainProcess: Prompt building started")
+
+    local p_base = getLoreBookContent(triggerId, "trainResponse.pt")
+    local json_stat = json.encode(statDescDB)
+    debug("trainProcess: JSON stat encoded")
+
+    -- markDB sanitization
+    local markDescDB = {}
+    for k, v in pairs(markDB) do
+        markDescDB[v.name or k] = v.desc
+    end
+    local json_mark = json.encode(markDescDB)
+    debug("trainProcess: JSON mark encoded")
+
+    -- ablDB sanitization
+    local ablDescDB = {}
+    for k, v in pairs(ablDB) do
+        ablDescDB[v.name or k] = v.desc
+    end
+    local json_abl = json.encode(ablDescDB)
+    debug("trainProcess: JSON abl encoded")
+    
+    local json_trait = json.encode(traitProm)
+    debug("trainProcess: JSON trait encoded")
+
+    -- itemDB sanitization (handling categories)
+    local itemDescDB = {}
+    if itemDB then
+        for cat, items in pairs(itemDB) do
+            itemDescDB[cat] = {}
+            for k, v in pairs(items) do
+                itemDescDB[cat][v.name or k] = v.desc
+            end
+        end
+    end
+    local json_items = json.encode(itemDescDB)
+    debug("trainProcess: JSON items encoded")
+
+    local json_exp = json.encode(EXPtbl)
+    debug("trainProcess: JSON exp encoded")
+    
+    local json_stat_lv = json.encode(statProm)
+    debug("trainProcess: JSON stat_lv encoded")
+
     prompt = {
-    promptBuild("system", getLoreBookContent(triggerId, "trainResponse.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
-    promptBuild("system", "- MARK: "..json.encode(markDB)),
-    promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
-    promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
-    promptBuild("system", "- ITEMS: "..json.encode(itemDB)),
-    promptBuild("system", "- EXP_TABLE: "..json.encode(EXPtbl)),
-    promptBuild("system", "- character_sheet: "..target_c),
-    promptBuild("system", "- character_stats_Lv: "..json.encode(statProm)),
-    promptBuild("system", "- training_command: "..command),
-    promptBuild("system", "- command_result: "..rollMsg)
+        promptBuild("system", p_base or ""),
+        promptBuild("system", "- STAT: "..json_stat),
+        promptBuild("system", "- MARK: "..json_mark),
+        promptBuild("system", "- ABILITY: "..json_abl),
+        promptBuild("system", "- TRAIT: "..json_trait),
+        promptBuild("system", "- ITEMS: "..json_items),
+        promptBuild("system", "- EXP_TABLE: "..json_exp),
+        promptBuild("system", "- character_sheet: "..(target_c or "")),
+        promptBuild("system", "- character_stats_Lv: "..json_stat_lv),
+        promptBuild("system", "- training_command: "..command),
+        promptBuild("system", "- command_result: "..rollMsg)
     }
     debug("trainProcess: LLM (trainResponse) 호출 시작")
     local trainResponse = LLM(triggerId, prompt, "trainResponse")
@@ -395,11 +428,11 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     promptBuild("assistant", getLoreBookContent(triggerId, "jailBreak.pt")), --탈옥 프리필
     promptBuild("system", getLoreBookContent(triggerId, "trainLog.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "worldBriefing.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
-    promptBuild("system", "- MARK: "..json.encode(markDB)),
-    promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
-    promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
-    promptBuild("system", "- ITEMS: "..json.encode(itemDB)),
+    promptBuild("system", "- STAT: "..json_stat),
+    promptBuild("system", "- MARK: "..json_mark),
+    promptBuild("system", "- ABILITY: "..json_abl),
+    promptBuild("system", "- TRAIT: "..json_trait),
+    promptBuild("system", "- ITEMS: "..json_items),
     promptBuild("system", "- character_sheet: "..target_c),
     promptBuild("system", "- character_stats_Lv: "..json.encode(statResult)),
     promptBuild("system", "- character_stats_Lv: "..equipments),
