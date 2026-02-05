@@ -92,10 +92,8 @@ end!!
 
 [main/102/{{#when::{{getvar::unlock_disposal}}==1}}포로 처분{{/when}}] function(triggerId)
     local screen = "disposal"
-    alertNormal(triggerId, screen.." 미구현")
-    --[[screenChange(triggerId, screen)
-    setChatVar(triggerId, "category", "index")
-    sysFunction(triggerId, "char.sys", "list")]]
+    -- sysFunction(triggerId, "disposal.sys", "main") 내부에서 스크린 변경 및 char.sys 호출함
+    sysFunction(triggerId, "disposal.sys", "main")
 end!!
 
 [main/103/{{#when::0==1}}노예 매각{{/when}}] function(triggerId)
@@ -173,6 +171,8 @@ end!!
     setChatVar(triggerId, "category", "d_abl")
     setChatVar(triggerId, "dictTitle", "마계사전")
     setChatVar(triggerId, "dictDesc", "카테고리를 선택해 마계사전을 펼쳐보세요.")
+    setChatVar(triggerId, "dictPopupImg", "")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [main/666/cheat] function(triggerId)

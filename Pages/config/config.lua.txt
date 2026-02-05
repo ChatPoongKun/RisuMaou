@@ -444,6 +444,13 @@ end!!
     setChatVar(triggerId, "models", json.encode(models))
 end!!
 
+[config/disposal/hidden] function(triggerId)
+    local models = json.decode(getChatVar(triggerId, "models"))
+    local llmSelect = "disposal"
+    models[llmSelect] = tostring(math.abs(tonumber(models[llmSelect])-1))
+    setChatVar(triggerId, "models", json.encode(models))
+end!!
+
 [config/199/설정완료] function(triggerId)
     local screen = "main"
 
