@@ -66,14 +66,14 @@ function(triggerId, target)
                     
                     -- 멋진 연출을 위한 HTML 구조
                     logs = logs .. [[
-                    <div class='getTrait-overlay' style='position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events:none;'>
-                        <div class='getTrait-box' style='background: rgba(0,0,0,0.8); padding: 20px; border: 2px solid gold; border-radius: 10px; color: white; text-align: center; box-shadow: 0 0 20px gold;'>
-                            <div style='font-size: 1.2em; color: gold; margin-bottom: 5px;'>✨ 특성 개화 ✨</div>
-                            <div style='font-size: 1.5em; font-weight: bold;'>]] .. traitName .. [[</div>
-                            <div style='font-size: 0.8em; color: #ccc; margin-top: 5px;'>조건 충족으로 인해 새로운 특성을 획득했습니다.</div>
-                        </div>
-                    </div>
-                    ]]
+<div class='getTrait-overlay' style='position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events:none;'>
+<div class='getTrait-box' style='background: rgba(0,0,0,0.8); padding: 20px; border: 2px solid gold; border-radius: 10px; color: white; text-align: center; box-shadow: 0 0 20px gold;'>
+<div style='font-size: 1.2em; color: gold; margin-bottom: 5px;'>✨ 특성 개화 ✨</div>
+<div style='font-size: 1.5em; font-weight: bold;'>]] .. traitName .. [[</div>
+<div style='font-size: 0.8em; color: #ccc; margin-top: 5px;'>조건 충족으로 인해 새로운 특성을 획득했습니다.</div>
+</div>
+</div>
+]]
                 elseif not success then
                     debug("Rule Check Error [" .. key .. "]: " .. tostring(result))
                 end
