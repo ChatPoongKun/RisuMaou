@@ -156,9 +156,9 @@
         if pick.data.rating >= 2000 then color = "#ffd700" end
 
         local effectHtml = string.format([[
-<div style="position:fixed; top:0; left:0; width:100%%; height:100%%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; animation:fadeInOut 1.0s forwards; pointer-events:none;">
+<div style="position:fixed; top:0; left:0; width:100%%; height:100%%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; animation:fadeInOut 1.0s forwards; pointer-events:auto;">
 <h1 style="color:%s; text-shadow:0 0 10px %s; font-size:2rem; margin-bottom:1rem;">SUMMON SUCCESS!</h1>
-<div style="background:#222; border:2px solid %s; padding:1rem; border-radius:10px; text-align:center;">
+<div style="background:#222; border:2px solid %s; padding:1rem; border-radius:10px; text-align:center; display:flex; flex-direction:column; align-items:center;">
 <img src="{{raw::%s}}" style="width:100px; height:100px; object-fit:contain; margin-bottom:0.5rem;">
 <div style="color:#fff; font-size:1.2rem; font-weight:bold;">%s</div>
 <div style="color:#aaa;">Rating: ★%d</div>
@@ -166,10 +166,10 @@
 </div>
 <style>
 @keyframes fadeInOut {
-0%% { opacity: 0; transform: scale(0.8); }
-10%% { opacity: 1; transform: scale(1); }
-80%% { opacity: 1; }
-100%% { opacity: 0; }
+0%% { opacity: 0; transform: scale(0.8); pointer-events: auto; visibility: visible; }
+10%% { opacity: 1; transform: scale(1); pointer-events: auto; visibility: visible; }
+80%% { opacity: 1; pointer-events: auto; visibility: visible; }
+100%% { opacity: 0; pointer-events: none; visibility: hidden; }
 }
 </style>
 ]], color, color, color, pick.key, pick.data.name, pick.data.rating)
