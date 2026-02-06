@@ -133,6 +133,9 @@
         inventory["monster:"..pick.key] = 1
         setChatVar(triggerId, "inventory", json.encode(inventory))
         
+        -- 관리 패널 가시성 변수 설정
+        setChatVar(triggerId, "has_assets", "1")
+        
         -- Screen Effect로 성공 알림
         local color = "#ffffff" -- 기본: 하급 (흰색)
         

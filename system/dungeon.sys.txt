@@ -163,6 +163,10 @@
         
         setState(triggerId, "dungeon", dungeon)
         funcs.recalcStats(triggerId) -- 스탯 재계산
+        
+        -- 메인 화면 던전 현황 탭 표시
+        setChatVar(triggerId, "show_dungeon", "1")
+        
         return true
     end
 
