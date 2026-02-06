@@ -493,6 +493,7 @@
             hero["체력"] = math.max(0, hero.hp)
             hero["기력"] = math.max(0, hero.sp)
             
+            debug(string.format("[battle.sys] Save Hero State: %s (HP:%d, SP:%d)", hero.name, hero["체력"], hero["기력"]))
             upsertLocalLoreBook(triggerId, hero.name, json.encode(hero), DEFAULT_LORE_OPTION)
             
             battleState.currentHeroIdx = battleState.currentHeroIdx + 1
@@ -531,7 +532,8 @@
             dungeonLv = dungeon.floors,
             userName = userName,
             clearedSlots = clearedSlots,
-            timeline = timeline -- [NEW]
+            timeline = timeline, -- [NEW]
+            heroes = heroes -- [NEW] For image generation
         }
         
         -- Final summary return

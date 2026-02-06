@@ -101,6 +101,7 @@ function (triggerId, action)
     -- 조건: 3일차 이상, 밤(isNight=true), 50% 확률
     -- action이 "nextDay"인 경우(전투 후 복귀) 침공 체크 스킵
     local invasionTriggered = false
+    local battleParticipants = {} -- [NEW] 전투 참여 인원 추적
     if action ~= "nextDay" and isNight and tonumber(day) >= INVASION_MIN_DAY and math.random() < BATTLE_PROB then
         invasionTriggered = true
         
@@ -137,6 +138,42 @@ function (triggerId, action)
                 dungeonStatusHtml = "Dungeon Status Error"
             end
             setChatVar(triggerId, "battleDungeonHtml", dungeonStatusHtml)
+
+            -- [Attacker Image Generation]
+            local attackerHtml = ""
+            if summary.heroes and #summary.heroes > 0 then
+                -- [NEW] 전투 참여자 기록 (회복 건너뛰기용)
+                for _, h in ipairs(summary.heroes) do
+                    if h.name then
+                        battleParticipants[h.name] = true
+                        debug("[turnEnd] 전투 참여자: " .. h.name .. " (이번 턴 회복 제외)")
+                    end
+                end
+
+                local leader = summary.heroes[1]
+                local portraitContent = ""
+                
+                if leader.portrait_pre and leader.portrait_append then
+                     portraitContent = leader.portrait_pre .. leader.portrait_append
+                elseif leader.portrait then
+                     local val = leader.portrait
+                     if not val:match("^{{") and not val:match("^<img") then
+                          val = "{{raw::" .. val .. "}}"
+                     end
+                     if val:match("{{inlay") or val:match("^<div") or val:match("^<img") then
+                          portraitContent = val
+                     else
+                          portraitContent = [[<img src="]] .. val .. [[" style="width:100%; height:100%; object-fit:cover;">]]
+                     end
+                else
+                     -- Fallback Default
+                     portraitContent = [[<img src="../../Pages/images/icon_sword.png" style="width:100%; height:100%; object-fit:cover;">]]
+                end
+                attackerHtml = portraitContent
+            else
+                attackerHtml = [[<img src="../../Pages/images/icon_sword.png" style="width:100%; height:100%; object-fit:cover;">]]
+            end
+            setChatVar(triggerId, "attackerImage", attackerHtml)
 
             -- [No-JS] HTML 로그 생성 (Turn-based Batch 처리) & Defender Image Stack 생성
             local logLines = {}
@@ -390,7 +427,12 @@ function (triggerId, action)
 
     --모든 캐릭터에 대해 회복 처리 (유틸리티 함수 사용)
     for _, charName in ipairs(chars) do
-        processRecovery(triggerId, charName, isNight)
+        if battleParticipants[charName] then
+            -- 전투 참여자는 이번 턴 회복 스킵
+            -- (이미 전투 중 소모/변동이 있었고, 휴식을 취하지 못했음)
+        else
+            processRecovery(triggerId, charName, isNight)
+        end
     end
 
     --시간흐름 처리
