@@ -7,7 +7,8 @@ function (triggerId, reason)
     ---------------------------------------
 
     -- [초상화 생성 프롬프트 CONSTANT]
-    local PORTRAIT_PROMPT_PREFIX = "a hero portraiticon of a dark fantasy game, portrait, face focus, high quality, detailed, 8k, dark fantasy mood"
+    local PORTRAIT_PROMPT_PREFIX = "a hero portrait of a dark fantasy game, face focus, portrait, anime style, simple white background"
+    local negPrompt = "3D, photo realistic"
 
     -- [HP/SP 랜덤 변동폭]
     local HP_SP_RANDOM_MIN      = 90    -- HP/SP 최종값 최소 배율 (%). 최종 HP/SP는 기본값의 이 % ~ MAX % 사이에서 결정.
@@ -257,17 +258,35 @@ function (triggerId, reason)
     end
 
     -- [초상화 생성 로직]
-    local appearanceDesc = skeleton["외형"] or skeleton["appearance"] or (skeleton["머리스타일"] and (skeleton["머리스타일"].." hair")) or ""
+
+    local appearanceParts = {}
+    if skeleton["헤어스타일"] then table.insert(appearanceParts, skeleton["헤어스타일"]) end
+    if skeleton["복장"] then table.insert(appearanceParts, skeleton["복장"]) end
+    
+    local appearanceDesc = table.concat(appearanceParts, ", ")
+    if appearanceDesc == "" then
+        appearanceDesc = skeleton["appearance"] or ""
+    end
     
     -- 간단한 번역/매핑
     local genderStr = (skeleton["성별"] == "남성" and "male") or (skeleton["성별"] == "후타나리" and "futanari") or "female"
     local raceStr = skeleton["종족"] or "human"
     
-    local fullPrompt = PORTRAIT_PROMPT_PREFIX .. ", " .. genderStr .. ", " .. raceStr .. ", " .. appearanceDesc
+    local posPrompt = PORTRAIT_PROMPT_PREFIX .. ", " .. genderStr .. ", " .. raceStr .. ", " .. appearanceDesc
 
-    debug("초상화 생성 시도: " .. fullPrompt)
-    local imgResult = generateImage(triggerId, fullPrompt):await()
-    
+    local imgResult = nil
+    for i = 1, 3 do
+        debug("초상화 생성 시도 (" .. i .. "/3): " .. posPrompt)
+        imgResult = generateImage(triggerId, posPrompt, negPrompt):await()
+        
+        if imgResult and string.find(imgResult, "inlay") then
+            break
+        end
+        
+        debug("초상화 생성 실패 또는 inlay 누락. 재시도 중...")
+        imgResult = nil
+    end
+
     if imgResult then
         local cleanImg = imgResult:gsub("{{inlay:", "")
         -- [JSON Parsing Fix] Split ':' into two fields
@@ -276,7 +295,7 @@ function (triggerId, reason)
         skeleton["portrait"] = nil -- 기존 필드 제거
         debug("초상화 저장 완료")
     else
-        debug("초상화 생성 실패")
+        debug("초상화 생성 실패 (최대 재시도 횟수 초과)")
     end
 
 
