@@ -96,8 +96,7 @@
             "언데드",
             "물리",
             "무리"
-        },
-        skills = {"rear_guard_sniping", "undead_march"}
+        }
     }
     goblin = {
         name = "고블린",
@@ -210,7 +209,8 @@
             "하급",
             "언데드",
             "물리"
-        }
+        },
+        skills = {"rear_guard_sniping", "undead_march"}
     }
     troglodyte = {
         name = "트로그로다이트",
