@@ -38,12 +38,12 @@ function getDB(triggerId, dbName)
 
     -- 결과 반환 (Return형 vs Env형)
     local finalData = (type(result) == "table" and result) or env
-    
+
     -- 간단한 아이템 개수 로깅 (디버그용)
     local count = 0
     for _ in pairs(finalData) do count = count + 1 end
-    
-    debug("[DB] Loaded Lua [" .. dbName .. "] - " .. count .. " items")
+
+    --debug("[DB] Loaded Lua [" .. dbName .. "] - " .. count .. " items")
     return finalData
 end
 
@@ -353,7 +353,7 @@ onStart = async(function(triggerId)
     debug(success, command)
     
     if command == nil then -- null checks
-        print("리퀘 차단")
+        debug("리퀘 차단")
         return -- pcall 내부에서 return하면 pcall 종료
     end
     
@@ -376,7 +376,7 @@ onButtonClick = async(function(triggerId, data)
     setChatVar(triggerId, "screenEffect", "") --버튼 누를때마다 screenEffect 초기화
     if data == "gameStart" then
         initialize(triggerId)
-        print("게임 시작")
+        debug("게임 시작")
     else
         -- .sys 호출 패턴인지 확인 (단순히 .sys가 포함되어 있으면 해당 파일을 호출)
         local sysFile = string.match(data, "^(.-%.sys)")

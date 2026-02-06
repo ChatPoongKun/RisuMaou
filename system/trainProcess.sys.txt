@@ -209,11 +209,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     end
     -- traitProm is now a table, will be encoded later
 
-    debug("trainProcess: Prompt building started")
-
     local p_base = getLoreBookContent(triggerId, "trainResponse.pt")
     local json_stat = json.encode(statDescDB)
-    debug("trainProcess: JSON stat encoded")
 
     -- markDB sanitization
     local markDescDB = {}
@@ -221,7 +218,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         markDescDB[v.name or k] = v.desc
     end
     local json_mark = json.encode(markDescDB)
-    debug("trainProcess: JSON mark encoded")
 
     -- ablDB sanitization
     local ablDescDB = {}
@@ -229,10 +225,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         ablDescDB[v.name or k] = v.desc
     end
     local json_abl = json.encode(ablDescDB)
-    debug("trainProcess: JSON abl encoded")
-    
+
     local json_trait = json.encode(traitProm)
-    debug("trainProcess: JSON trait encoded")
 
     -- itemDB sanitization (handling categories)
     local itemDescDB = {}
@@ -245,13 +239,10 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         end
     end
     local json_items = json.encode(itemDescDB)
-    debug("trainProcess: JSON items encoded")
 
     local json_exp = json.encode(EXPtbl)
-    debug("trainProcess: JSON exp encoded")
-    
+
     local json_stat_lv = json.encode(statProm)
-    debug("trainProcess: JSON stat_lv encoded")
 
     prompt = {
         promptBuild("system", p_base or ""),
@@ -493,17 +484,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     --실패/대성공 전역화면 효과 저장. getMark에서 챗변수가 입력되지 않았다면 현재 조교 성공실패 html을 입력
     if getChatVar(triggerId, "screenEffect") == "" then
         setChatVar(triggerId, "screenEffect", screenEffect)
-    end
-
-    -- [조건 해금] 마계 상점 (조교 1회 완료)
-    local trainCount = tonumber(getChatVar(triggerId, "trainCount")) or 0
-    trainCount = trainCount + 1
-    setChatVar(triggerId, "trainCount", trainCount)
-    
-    local unlockShop = tonumber(getChatVar(triggerId, "unlock_shop")) or 0
-    if trainCount >= 1 and unlockShop == 0 then
-        setChatVar(triggerId, "unlock_shop", 1)
-        alertNormal(triggerId, "마계 상점과의 연결이 복구되었습니다. 조교에 도움이 될만한 물건들을 살펴보세요.")
     end
 
     --조교간에 변경된 유저 또는 대상의 정보(hp, sp 절정경험 등)은 state와 챗변수에 쌓아뒀다가 조교 종료시에 로어북으로 반영.

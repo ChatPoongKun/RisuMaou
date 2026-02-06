@@ -112,8 +112,7 @@ function (triggerId)
 
     --유저 정보를 user변수에 테이블로 할당
     local user = json.decode(getLoreBookContent(triggerId, "user"))
-    print(json.encode(user))
-    print(1111)
+
     stateToVar(triggerId, "user", user)
 
 
