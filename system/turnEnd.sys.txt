@@ -405,7 +405,7 @@ function (triggerId, action)
     local unlockDungeon = tonumber(getChatVar(triggerId, "unlock_dungeon")) or 0
     if tonumber(day) >= 2 and unlockDungeon == 0 then
         setChatVar(triggerId, "unlock_dungeon", 1)
-        alertNormal(triggerId, "마왕의 부활이 알려졌습니다. 몬스터를 소환해 던전을 강화하세요!")
+        alertNormal(triggerId, "마왕의 부활이 알려졌습니다. 몬스터를 소환해 인간들로부터 던전을 방어하세요!")
     end
 
     -- [가시성 업데이트] 던전 현황 탭 (배치된 유닛이 있을 때만 표시)
