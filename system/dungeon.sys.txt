@@ -272,86 +272,7 @@
                 for _, skillId in ipairs(unit.data.skills) do
                     local skillObj = skills[skillId]
                     if skillObj and skillObj.active then
-                        -- 스킬 실행 (Lua Table DB 방식: skillObj.active(context))
-                        -- Context는 skills.sys 내부에서 생성하거나 여기서 넘겨줘야 함?
-                        -- skills.sys 설계상: active = function(ctx) ... end
-                        -- 호출 시: skillObj.active(ctx) 필요. 하지만 skills.sys는 Helper를 제공.
-                        -- 아까 작성한 skills.sys 내부는 Context.new를 사용함.
-                        -- 하지만 skills.db.txt 내부 함수는 `active = function(ctx)` 형태임.
-                        -- 즉, 호출하는 쪽(여기)에서 context가 아닌 arguments를 넘기면 안되고,
-                        -- skills.db 함수 내부에서 Context를 쓰는게 아니라, skills.sys의 래퍼가 없으므로
-                        -- 직접 ctx를 만들어 넘겨주거나, 인자를 맞워야 함.
-                        
-                        -- skills.sys가 래퍼 없이 DB를 리턴하므로,
-                        -- DB 함수는: function(ctx) ... end 
-                        -- 따라서 여기서 ctx를 만들어줘야 함? 
-                        -- 아까 skills.db 작성 시: `active = function(ctx)` 확인됨.
-                        -- 그리고 skills.sys에서 Context 클래스를 env에 주입함.
-                        
-                        -- 하지만 dungeon.sys는 Context 클래스를 모름!
-                        -- 해결책: 
-                        -- 1. dungeon.sys도 Context를 알게 한다? (비효율)
-                        -- 2. skills.sys가 'execute(skillId, ...)' 함수를 제공한다? (기존 방식 유지)
-                        -- 3. skills.db 함수를 `function(triggerId, slotId, grid, owner)` 형태로 바꾼다? -> 이미 ctx 사용으로 작성함.
-                        
-                        -- 아! skills.db 작성을 `function(ctx)`로 했음.
-                        -- 그럼 dungeon.sys가 호출할 때 ctx 객체를 넘겨야 함.
-                        -- 근데 dungeon.sys에는 Context 정의가 없음.
-                        
-                        -- **Miss-alignment Detected**:
-                        -- skills.db uses `ctx`.
-                        -- dungeon.sys doesn't have `Context` class.
-                        -- skills.sys has `Context` class.
-                        
-                        -- Correction:
-                        -- skills.sys should expose a `execute(skillId, args)` or `createContext(...)`.
-                        -- OR modifying dungeon.sys to use `sysFunction(..., "skills.sys", "execute", skillId, ...)`?
-                        -- But we wanted direct table access.
-                        
-                        -- Let's use `sysFunction` to delegate execution!
-                        -- "skills.sys" can have a "execute" subFunc.
-                        
-                        -- Revert dungeon.sys change plan? No, simple fix:
-                        -- Make skills.sys export `Context`? No.
-                        -- Make skills.sys having an `execute` function is best.
-                        
-                        -- Wait, I alrady edited skills.sys to ONLY return the table on "load".
-                        -- I should assume dungeon.sys calls `sysFunction(..., 'skills.sys', 'execute', skillId, slotId, richGrid, unit)`.
-                        -- But `recalcStats` loops deeply. `sysFunction` overhead might be high?
-                        -- No, `sysFunction` is just `load` + `pcall`. It compiles every time? YES. overhead is HUGE.
-                        
-                        -- Efficient way:
-                        -- Load skills.sys ONCE (it returns a table of functions).
-                        -- Included in that table should be a "run(skillId, ...)" or similar helper?
-                        -- Or `skills.sys` returns a module that contains `skills` AND `Context`.
-                        
-                        -- Let's fix `skills.sys` to return `{ db=skills, run=function(...) }`?
-                        -- Or just make `skills.sys` return a closure that accepts (triggerId, "execute", ...)
-                        
-                        -- Let's go with: `skills.sys` returns the DB table, AND that DB table has a metatable or helper?
-                        -- No, K.I.S.S.
-                        -- I will modify `skills.sys` to return a `ExecutionHelper` along with data?
-                        -- OR, `dungeon.sys` can just passing arguments `(triggerId, slotId, richGrid, unit)` and
-                        -- `skills.db` functions change to accept 4 args, then internally `Context.new`?
-                        -- BUT `Context` is not available in `skills.db` scope (unless injected).
-                        -- Pass: `Context` IS injected in `skills.sys` loader.
-                        -- So `skills.db` functions CAN use `Context`.
-                        -- BUT they are defined as `function(ctx)`.
-                        
-                        -- QUICK FIX:
-                        -- Update `skills.sys` to return an `execute` function that handles Context creation.
-                        -- `sysFunction(..., "skills.sys", "execute", skillId, slotId, grid, unit)`
-                        -- BUT performance...
-                        
-                        -- BETTER FIX:
-                        -- `skills.sys` "load" returns a table: containing `skills` (data) AND `execute` (function).
-                        -- `local skillEngine = sysFunction(..., "load")`
-                        -- `skillEngine.execute(skillId, slotId, grid, unit)`
-                        
-                        -- I need to update `skills.sys` first or assume I will update it.
-                        -- I'll likely update `skills.sys` again to export the helper.
-                        -- For now, let's write `dungeon.sys` code assuming `skills` variable has `execute` method.
-                        
+                        -- 스킬 실행 (skills.sys의 execute로 위임)
                         local resultBuffs = skills.execute(skillId, triggerId, slotId, richGrid, unit)
                         
                         if resultBuffs then
@@ -380,29 +301,50 @@
                 if not modifiers[request.target] then modifiers[request.target] = {} end
                 local mod = modifiers[request.target]
                 
-                if buffData.type == "stat" then
-                    local statName = buffData.stat
-                    local method = buffData.method
-                    local val = tonumber(buffData.value) or 0
-                    
-                    if not mod[statName] then mod[statName] = {add=0, mul=1.0} end
-                    
-                    if method == "add" then
-                        mod[statName].add = mod[statName].add + val
-                    elseif method == "mul" then
-                        mod[statName].mul = mod[statName].mul * val
+                -- Buff Normalization: Convert legacy single-stat buff to effects list
+                local effects = {}
+                if buffData.effects then
+                    effects = buffData.effects
+                else
+                    -- Legacy or Single (with support for multiple stats in 'stat' field from previous patch)
+                    effects = { buffData }
+                end
+
+                for _, eff in ipairs(effects) do
+                    if eff.type == "stat" then
+                        -- Handle 'stat' potentially being a table (from previous multi-stat patch) or string
+                        local targetStats = {}
+                        if type(eff.stat) == "table" then
+                            targetStats = eff.stat
+                        else
+                            targetStats = { eff.stat }
+                        end
+                        
+                        local method = eff.method
+                        local val = tonumber(eff.value) or 0
+                        
+                        -- Modifier Apply
+                        for _, statName in ipairs(targetStats) do
+                            if not mod[statName] then mod[statName] = {add=0, mul=1.0} end
+                            
+                            if method == "add" then
+                                mod[statName].add = mod[statName].add + val
+                            elseif method == "mul" then
+                                mod[statName].mul = mod[statName].mul * val
+                            end
+                        end
                     end
-                    
-                    -- UI용 버프 텍스트 추가
-                    if not targetUnit.buffs then targetUnit.buffs = {} end
-                    table.insert(targetUnit.buffs, buffData.name)
-                    
-                    -- 시너지 텍스트 기록
-                    local fIdx = tonumber(request.target:match("^(%d+)_"))
-                    if fIdx then
-                         -- 중복 방지 로직이 없어서 단순 추가만 함
-                         -- table.insert(floorSynergies[fIdx], buffData.name)
-                    end
+                end
+                
+                -- UI용 버프 텍스트 추가 (Only once per buff, not per effect)
+                if not targetUnit.buffs then targetUnit.buffs = {} end
+                table.insert(targetUnit.buffs, buffData.name)
+                
+                -- 시너지 텍스트 기록
+                local fIdx = tonumber(request.target:match("^(%d+)_"))
+                if fIdx then
+                     -- 중복 방지 로직이 없어서 단순 추가만 함
+                     -- table.insert(floorSynergies[fIdx], buffData.name)
                 end
             end
         end
@@ -423,10 +365,22 @@
                         local final = (base + values.add) * values.mul
                         unit.data[stat] = math.floor(final) -- 정수화
                         
-                        -- 레이팅 보정 (임시 공식: 스탯 증가분만큼 레이팅 추가)
-                        -- 실제 공식이 있다면 여기에 적용
+                        -- 레이팅 보정 (LvUp.sys 공식 적용)
                         local diff = unit.data[stat] - base
-                        ratingBonus = ratingBonus + diff
+                        
+                        -- Rating Factors (Synced with LvUp.sys.txt -> balancing.db)
+                        -- [Load Balancing DB] - Optimization: Load once outside loop if possible, but safe here
+                        local balanceDB = getDB(triggerId, "balancing.db")
+                        local rConfig = balanceDB.rating or { hp=0.3, def=4.5, atkMin=4.0, atkMax=2.7 }
+
+                        local factor = 0
+                        if stat == "maxHp" then factor = (rConfig.hp or 0.3)
+                        elseif stat == "def" then factor = (rConfig.def or 4.5)
+                        elseif stat == "atkMin" then factor = (rConfig.atkMin or 4.0)
+                        elseif stat == "atkMax" then factor = (rConfig.atkMax or 2.7)
+                        end
+                        
+                        ratingBonus = ratingBonus + (diff * factor)
                     end
                 end
             end

@@ -2,189 +2,169 @@
 
 basic_atk_up = {
     name = "공격력 증가",
-    type = "stat",
-    stat = "atkMin", 
-    value = 1, 
-    method = "add",
-    desc = "공격력이 1 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=1, method="add" }
+    },
+    desc = "최소 공격력이 1 증가합니다."
 }
 
 basic_def_up = {
     name = "방어력 증가",
-    type = "stat",
-    stat = "def", 
-    value = 1, 
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=1, method="add" }
+    },
     desc = "방어력이 1 증가합니다."
 }
 
 horde_mentality = {
     name = "군단 본능",
-    type = "stat",
-    stat = "atkMin",
-    value = 2,
-    method = "add",
-    desc = "공격력이 2 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=2, method="add" }
+    },
+    desc = "최소 공격력이 2 증가합니다."
 }
 
 fire_empower = {
     name = "화염 강화",
-    type = "stat",
-    stat = "atkMin",
-    value = 3,
-    method = "add",
-    desc = "공격력이 3 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=3, method="add" }
+    },
+    desc = "최소 공격력이 3 증가합니다."
 }
 
 rage_mode = {
     name = "광폭화",
-    type = "stat",
-    stat = "atkMin",
-    value = 1.5,
-    method = "mul",
-    desc = "공격력이 50% 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=1.5, method="mul" }
+    },
+    desc = "최소 공격력이 50% 증가합니다."
 }
 
 elite_def_boost = {
     name = "정예 방어",
-    type = "stat",
-    stat = "def",
-    value = 10,
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=10, method="add" }
+    },
     desc = "방어력이 10 증가합니다."
 }
 
 weak_link_boost = {
     name = "약점 보완",
-    type = "stat",
-    stat = "def",
-    value = 15,
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=15, method="add" }
+    },
     desc = "방어력이 15 증가합니다."
 }
 
 vanguard_def_up = {
     name = "선봉 방어",
-    type = "stat",
-    stat = "def",
-    value = 5,
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=5, method="add" }
+    },
     desc = "방어력이 5 증가합니다."
 }
 
 abyss_power = {
     name = "심연의 힘",
-    type = "stat",
-    stat = "atkMin",
-    value = 2,
-    method = "add",
+    effects = {
+        { type="stat", stat="atkMin", value=2, method="add" }
+    },
     desc = "최소 공격력이 2 증가합니다."
 }
 
 rear_snipe = {
     name = "후방 지원",
-    type = "stat",
-    stat = "atkMax",
-    value = 4,
-    method = "add",
+    effects = {
+        { type="stat", stat="atkMax", value=4, method="add" }
+    },
     desc = "최대 공격력이 4 증가합니다."
 }
 
 undead_march_buff = {
     name = "망자의 행진",
-    type = "stat",
-    stat = "atkMin",
-    value = 2,
-    method = "add",
-    desc = "공격력이 2 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=2, method="add" }
+    },
+    desc = "최소 공격력이 2 증가합니다."
 }
 
 swarm_def_up = {
     name = "밀집 대형",
-    type = "stat",
-    stat = "def",
-    value = 3,
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=3, method="add" }
+    },
     desc = "방어력이 3 증가합니다."
 }
 
 magic_resonance = {
     name = "마력 공명",
-    type = "stat",
-    stat = "atkMax",
-    value = 5,
-    method = "add",
+    effects = {
+        { type="stat", stat="atkMax", value=5, method="add" }
+    },
     desc = "최대 공격력이 5 증가합니다."
 }
 
 ambush_bonus = {
     name = "기습 우위",
-    type = "stat",
-    stat = "atkMin",
-    value = 4,
-    method = "add",
-    desc = "공격력이 4 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=4, method="add" }
+    },
+    desc = "최소 공격력이 4 증가합니다."
 }
 
 lonely_strength = {
     name = "고독한 힘",
-    type = "stat",
-    stat = "atkMin",
-    value = 10,
-    method = "add",
-    desc = "공격력이 10 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=10, method="add" },
+        { type="stat", stat="atkMax", value=15, method="add" }
+    },
+    desc = "최소 공격력이 10, 최대 공격력이 15 증가합니다."
 }
 
 poison_assist = {
     name = "독성 지원",
-    type = "stat",
-    stat = "atkMin",
-    value = 2,
-    method = "add",
-    desc = "공격력이 2 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=2, method="add" }
+    },
+    desc = "최소 공격력이 2 증가합니다."
 }
 
 flying_squad_buff = {
     name = "비행 편대",
-    type = "stat",
-    stat = "def",
-    value = 2,
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=2, method="add" }
+    },
     desc = "방어력이 2 증가합니다."
 }
 
 gatekeeper_def = {
     name = "철벽 수비",
-    type = "stat",
-    stat = "def",
-    value = 8,
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=8, method="add" }
+    },
     desc = "방어력이 8 증가합니다."
 }
 
 sacrifice_power = {
     name = "희생의 힘",
-    type = "stat",
-    stat = "atkMin",
-    value = 5,
-    method = "add",
-    desc = "공격력이 5 증가합니다."
+    effects = {
+        { type="stat", stat="atkMin", value=5, method="add" }
+    },
+    desc = "최소 공격력이 5 증가합니다."
 }
 
 dark_shroud = {
     name = "어둠의 장막",
-    type = "stat",
-    stat = "def",
-    value = 2,
-    method = "add",
+    effects = {
+        { type="stat", stat="def", value=2, method="add" }
+    },
     desc = "방어력이 2 증가합니다."
 }
 
 beast_howl_buff = {
     name = "야수의 포효",
-    type = "stat",
-    stat = "atkMax",
-    value = 3,
-    method = "add",
+    effects = {
+        { type="stat", stat="atkMax", value=3, method="add" }
+    },
     desc = "최대 공격력이 3 증가합니다."
 }

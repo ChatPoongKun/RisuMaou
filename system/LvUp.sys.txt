@@ -9,11 +9,8 @@
     -- [경험치 테이블 오프셋]
     local EXP_LEVEL_OFFSET = 3          -- 레벨 N 도달에 필요한 경험치 = EXPtable[N + 이 값]
 
-    -- [레이팅 계산 계수]
-    local RATING_HP_FACTOR = 0.3       -- HP 1당 레이팅 기여도
-    local RATING_DEF_FACTOR = 4.5      -- 방어력 1당 레이팅 기여도
-    local RATING_ATK_MIN_FACTOR = 4.0     -- 공격력 최소 1당 레이팅 기여도
-    local RATING_ATK_MAX_FACTOR = 2.7  -- 공격력 최대 1당 레이팅 기여도
+    -- [경험치 테이블 오프셋]
+    local EXP_LEVEL_OFFSET = 3          -- 레벨 N 도달에 필요한 경험치 = EXPtable[N + 이 값]
 
     ---------------------------------------
 
@@ -35,11 +32,15 @@
         atkMin = tonumber(atkMin) or 0
         atkMax = tonumber(atkMax) or 0
         
+        -- [밸런싱 DB 로드]
+        local balanceDB = getDB(triggerId, "balancing.db")
+        local rConfig = balanceDB.rating or { hp=0.3, def=4.5, atkMin=4.0, atkMax=2.7 }
+        
         local rating = math.floor(
-            hp * RATING_HP_FACTOR + 
-            def * RATING_DEF_FACTOR + 
-            atkMin * RATING_ATK_MIN_FACTOR +
-            atkMax * RATING_ATK_MAX_FACTOR
+            hp * (rConfig.hp or 0.3) + 
+            def * (rConfig.def or 4.5) + 
+            atkMin * (rConfig.atkMin or 4.0) +
+            atkMax * (rConfig.atkMax or 2.7)
         )
         target["레이팅"] = rating
         return target
