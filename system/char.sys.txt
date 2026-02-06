@@ -14,7 +14,6 @@
     local funcs = {}
 
     -- 캐릭터 카드 선택 처리
-    -- 캐릭터 카드 선택 처리
     function funcs.card(triggerId, name)
         debug(string.format("[Char:Select] Target: %s, Screen: %s", name, getState(triggerId, "screen")))
         local screen = getState(triggerId, "screen")
@@ -95,12 +94,26 @@
 
         -- 1. 데이터 수집 및 전처리
         local charDataList = {}
+        -- [Refactoring] 필터링 로직 함수화 (확장성을 위해)
+        local function checkFilter(scr, c)
+            local cond = c["condition"]
+            if scr == "preTrain" then
+                -- preTrain: 오직 '조교가능' 상태인 캐릭터만 표시
+                return cond == "TRAINABLE"
+            elseif scr == "charInfo" then
+                -- charInfo: 사망한 캐릭터도 포함하여 모두 표시
+                return true
+            else
+                -- 기본값: 사망하지 않은 캐릭터만 표시
+                return cond ~= "DEAD"
+            end
+        end
+
         for i, name in ipairs(chars) do
-            -- preTrain 화면에서는 user 제외
+            -- preTrain 화면에서는 user 제외 (user는 chars 리스트에 보통 없지만 체크 필요시 추가)
             local char = json.decode(getLoreBookContent(triggerId, name))
-            if not ((screen == "preTrain") and char["condition"] ~= "조교가능") then
-               -- disposal 화면이면 사망자도 표시, 그 외(preTrain 등)에는 필터링 로직 유지
-               if screen == "disposal" or char["condition"] ~= "사망" then
+
+            if checkFilter(screen, char) then
                 -- 정렬 및 표시에 필요한 데이터 미리 추출
                 local data = {
                     index = i,
@@ -126,7 +139,6 @@
                 else
                    data.conditionDisplay = data.condition -- Fallback (e.g. if already Korean or unknown)
                 end
-               end
             end
         end
 
@@ -183,9 +195,39 @@
             if name == "user" then name = "{{" .. name .. "}}" end
 
             -- HTML 조립
+            -- HTML 조립
+            local portraitHtml = ""
+            local p_pre = data.raw.portrait_pre
+            local p_app = data.raw.portrait_append
+            local portraitContent = ""
+
+            if p_pre and p_app then
+                portraitContent = p_pre .. p_app
+            elseif data.raw.portrait and data.raw.portrait ~= "" then
+                -- 기존 방식 (Fallback)
+                local val = data.raw.portrait
+                -- 일반 경로 텍스트면 {{raw::...}} 로 감싸고 img 태그 추가
+                if not val:match("^{{") and not val:match("^<img") then
+                     val = "{{raw::" .. val .. "}}"
+                end
+                
+                -- 이미지가 아니라 inlay등의 매크로라면 그대로, 아니면 img 태그로
+                if val:match("{{inlay") or val:match("^<div") or val:match("^<img") then
+                     portraitContent = val
+                else
+                     portraitContent = [[<img src="]] .. val .. [[" style="width:100%; height:100%; object-fit:cover;">]]
+                end
+            end
+            
+            if portraitContent ~= "" then
+                 portraitHtml = [[<div style="width:50px; height:50px; overflow:hidden; border-radius:4px; margin-right:8px; flex-shrink:0;">]] .. portraitContent .. [[</div>]]
+            end
+
             local card = [[
 <div class="]] .. cardClass .. [[" risu-btn="char.sys_card_]] .. name .. [[">
 <div class="char-info">
+]] .. portraitHtml .. [[
+<div style="flex:1;">
 <p class="char-name-line">
 <span class="char-condition">[]] ..
                 data.conditionDisplay .. [[] </span>]] .. name .. [[<span class="char-level"> Lv.]] .. data.lv .. [[ </span>
@@ -194,6 +236,7 @@
 <span class="char-tags">
 AT ]] .. data.atk .. [[ / ]] .. data.def .. [[ / RT ]] .. data.rating .. [[
 </span>
+</div>
 </div>
 <div class="char-status-bars">
 <div class="x-risu-bar-container">

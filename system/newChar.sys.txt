@@ -6,6 +6,9 @@ function (triggerId, reason)
     -- 신규 캐릭터 생성 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
     ---------------------------------------
 
+    -- [초상화 생성 프롬프트 CONSTANT]
+    local PORTRAIT_PROMPT_PREFIX = "a hero portraiticon of a dark fantasy game, portrait, face focus, high quality, detailed, 8k, dark fantasy mood"
+
     -- [HP/SP 랜덤 변동폭]
     local HP_SP_RANDOM_MIN      = 90    -- HP/SP 최종값 최소 배율 (%). 최종 HP/SP는 기본값의 이 % ~ MAX % 사이에서 결정.
     local HP_SP_RANDOM_MAX      = 110   -- HP/SP 최종값 최대 배율 (%).
@@ -28,8 +31,7 @@ function (triggerId, reason)
     local raceDB = getDB(triggerId, "race.db")
     local classDB = getDB(triggerId, "class.db")
     local traitDB = getDB(triggerId, "trait.db")
-    local expTable = getDB(triggerId, "EXPtable.db") -- EXPtable은 아직 변환 안했을 수 있음. 확인 필요하나 일단 진행.
-    -- EXPtable.db 파일은 언급된 적 없으므로 패스하거나 기존대로. (오류나면 수정)
+    local expTable = getDB(triggerId, "EXPtable.db") 
     
     local dungeonLv = tonumber(getChatVar(triggerId, "dungeonLv") or 1)
     local ageLimit = tonumber(getChatVar(triggerId, "ageLimit") or 12)
@@ -170,7 +172,6 @@ function (triggerId, reason)
         addTrait(sexualPrefList)
     end
     
-    -- 종족 특성 추가 로직 삭제됨 (사용자 요청)
     
     -- 5. 스켈레톤 데이터 구성 (1레벨 기본 스탯으로 시작)
     local skeleton = {
@@ -219,8 +220,6 @@ function (triggerId, reason)
         skeleton[traitName] = 1
     end
     
-    -- 2. 종족 특성 주입 로직 삭제됨
-    
     -- 6. LvUp.sys를 사용하여 목표 레벨까지 성장 (1레벨에서 시작)
     if level > 1 then
         skeleton, _, _ = sysFunction(triggerId, "LvUp.sys", "execute", skeleton, level - 1, true)
@@ -233,7 +232,7 @@ function (triggerId, reason)
     
     debug("기초데이터", json.encode(skeleton))
     
-    -- 6. LLM 요청
+    -- 7. LLM 요청 (설정 생성)
     local prompt = {
         promptBuild("system", getLoreBookContent(triggerId, "newChar.pt")),
         promptBuild("system", "existing names: "..getChatVar(triggerId, "chars")),
@@ -252,19 +251,41 @@ function (triggerId, reason)
     content = content:gsub("<Thoughts>.-</Thoughts>", "") 
     local narrative = json.decode(content:match("({.*})"))
     
-    -- 7. 데이터 병합
+    -- 8. 데이터 병합 & 이미지 생성
     for k, v in pairs(narrative) do
         skeleton[k] = v
     end
 
-    -- DB에 없는 필드 0으로 초기화 (abl, mark, exp, stat 등)
-    -- stat.db도 초기화해야 함
+    -- [초상화 생성 로직]
+    local appearanceDesc = skeleton["외형"] or skeleton["appearance"] or (skeleton["머리스타일"] and (skeleton["머리스타일"].." hair")) or ""
+    
+    -- 간단한 번역/매핑
+    local genderStr = (skeleton["성별"] == "남성" and "male") or (skeleton["성별"] == "후타나리" and "futanari") or "female"
+    local raceStr = skeleton["종족"] or "human"
+    
+    local fullPrompt = PORTRAIT_PROMPT_PREFIX .. ", " .. genderStr .. ", " .. raceStr .. ", " .. appearanceDesc
+
+    debug("초상화 생성 시도: " .. fullPrompt)
+    local imgResult = generateImage(triggerId, fullPrompt):await()
+    
+    if imgResult then
+        local cleanImg = imgResult:gsub("{{inlay:", "")
+        -- [JSON Parsing Fix] Split ':' into two fields
+        skeleton["portrait_pre"] = "{{inlay:"
+        skeleton["portrait_append"] = cleanImg
+        skeleton["portrait"] = nil -- 기존 필드 제거
+        debug("초상화 저장 완료")
+    else
+        debug("초상화 생성 실패")
+    end
+
+
+    -- DB에 없는 필드 0으로 초기화
     local extraDBs = {"mark.db", "abl.db", "exp.db", "stat.db"}
     for _, dbName in ipairs(extraDBs) do
         local dbContent = getDB(triggerId, dbName) -- 객체
         for key, val in pairs(dbContent) do
             -- 여기서도 한글 매핑 필요. charInfo.html 등에서 한글 키로 접근할 것임.
-            -- 예: target["C쾌락"]
             if val.name then
                 if not skeleton[val.name] then skeleton[val.name] = "0" end
             else
