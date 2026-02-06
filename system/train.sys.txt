@@ -556,6 +556,17 @@
         )
         setChat(triggerId, getChatLength(triggerId) - 2, lastTrainLog)
 
+        -- [조건 해금] 마계 상점 (조교 1회 완료)
+        local trainCount = tonumber(getChatVar(triggerId, "trainCount")) or 0
+        trainCount = trainCount + 1
+        setChatVar(triggerId, "trainCount", trainCount)
+        
+        local unlockShop = tonumber(getChatVar(triggerId, "unlock_shop")) or 0
+        if trainCount >= 1 and unlockShop == 0 then
+            setChatVar(triggerId, "unlock_shop", 1)
+            alertNormal(triggerId, "마계 상점과의 연결이 복구되었습니다. 조교에 도움이 될만한 물건들을 살펴보세요.")
+        end
+
         -- 초기화 및 화면 이동
         setChatVar(triggerId, "selectedAbl", "none")
         screenChange(triggerId, "ablUp")
