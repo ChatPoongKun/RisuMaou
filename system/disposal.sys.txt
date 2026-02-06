@@ -93,7 +93,7 @@
         
         -- Condition Penalty
         local conditionMult = 1.0
-        if target["condition"] == "사망" then
+        if target["condition"] == "DEAD" then
             conditionMult = 0.5
         end
         
@@ -133,7 +133,7 @@
         setChatVar(triggerId, "spirit", tostring(currentSpirit))
         
         -- Character
-        target["condition"] = "사망"
+        target["condition"] = "DEAD"
         target["처분"] = description
         local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
         upsertLocalLoreBook(triggerId, charName, json.encode(target), option)
