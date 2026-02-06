@@ -157,3 +157,37 @@ end!!
     setChatVar(triggerId, "category", "index")
     setChatVar(triggerId, "charSubCat", "")
 end!!
+
+[charInfo/popup_portrait/hidden] function(triggerId)
+    local targetVar = getChatVar(triggerId, "target")
+    local target = json.decode(targetVar)
+    
+    -- target이 이름만 있는 경우와 전체 객체인 경우 구분 필요할 수 있음
+    -- 하지만 charInfo 진입 시점에 target은 전체 객체로 설정되는 것으로 보임 (Script 참조 필요하지만 일단 진행)
+    -- 만약 target이 이름이라면 LoreBook에서 읽어와야 함
+    
+    if type(target) == "string" then
+       -- 혹시 문자열 그대로라면 (이름)
+       local content = getLoreBookContent(triggerId, target)
+       if content and content ~= "" then
+           target = json.decode(content)
+       end
+    elseif target["이름"] then
+        -- 이미 객체라면 최신 정보를 위해 로어북에서 다시 읽는 것이 안전할 수 있음
+        local content = getLoreBookContent(triggerId, target["이름"])
+        if content and content ~= "" then
+            target = json.decode(content)
+        end
+    end
+
+    if target then
+        local pre = target["portrait_pre"] or ""
+        local append = target["portrait_append"] or ""
+        local imgTag = pre .. append
+        setChatVar(triggerId, "charPopupImg", imgTag)
+    end
+end!!
+
+[charInfo/popup_close/hidden] function(triggerId)
+    setChatVar(triggerId, "charPopupImg", "")
+end!!

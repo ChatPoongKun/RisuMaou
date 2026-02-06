@@ -16,6 +16,32 @@
         flex-grow: 1;
     }
 
+
+    /* Image Popup Modal */
+    #image-popup {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    #image-popup img {
+        width: 90vmin;
+        height: 90vmin;
+        object-fit: contain;
+        border: 2px solid #60d9f7;
+        border-radius: 4px;
+        box-shadow: 0 0 20px rgba(96, 217, 247, 0.3);
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
     .character-portrait {
         width: 128px;
         height: 128px;
@@ -24,6 +50,12 @@
         flex-shrink: 0;
         border-radius: 8px;
         overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .character-portrait:hover {
+        transform: scale(1.05);
     }
 
     .profile-details h2 {
@@ -265,7 +297,8 @@
 <main>
 <section class="character-profile">
 <div class="profile-main">
-<div class="character-portrait">{{dict_element::{{getvar::target}}::portrait_pre}}{{dict_element::{{getvar::target}}::portrait_append}}</div>
+<div class="character-portrait" risu-btn="popup_portrait">{{dict_element::{{getvar::target}}::portrait_pre}}{{dict_element::{{getvar::target}}::portrait_append}}</div>
+
 <div class="profile-details">
 <h2>{{dict_element::{{getvar::target}}::이름}} Lv.{{dict_element::{{getvar::target}}::레벨}}</h2>
 <p><strong>종족:</strong> {{dict_element::{{getvar::target}}::종족}}</p>
@@ -481,4 +514,9 @@
 
 <div class="line double"></div>
 <div class="btn command-btn" risu-btn="199">[199] 돌아가기</div>
+
+<!-- Image Popup Modal -->
+{{#when::charPopupImg::visnot::}}
+<div id="image-popup" risu-btn="popup_close">{{getvar::charPopupImg}}</div>
+{{/when}}
 </div>

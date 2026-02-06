@@ -87,6 +87,7 @@ end!!
     local screen = "charList"
     screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "index")
+    setChatVar(triggerId, "charPopupImg", "") -- 팝업 모드 초기화
     sysFunction(triggerId, "char.sys", "list")
 end!!
 
