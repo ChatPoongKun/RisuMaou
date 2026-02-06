@@ -269,7 +269,8 @@ box-shadow: 0px 0px 20px -2px #a00606;
 <div class="tabs-container">
 <div class="tabs {{#if {{equal::{{getvar::category}}::tools}}}}active{{/if}}" risu-btn="tools">조교도구</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::consumables}}}}active{{/if}}" risu-btn="consumables">소모품</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">함정</div>
+<!-- <div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">함정</div> -->
+<div class="tabs" style="opacity:0.5; cursor:not-allowed; border-color:#555; color:#777;">함정 (미구현)</div>
 <div class="tabs {{#if {{equal::{{getvar::category}}::unlock}}}}active{{/if}}" risu-btn="unlock">마계지식</div>
 </div>
 
