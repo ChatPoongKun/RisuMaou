@@ -416,6 +416,12 @@ end!!
     setChatVar(triggerId, "debug", debug)
 end!!
 
+[config/use_dictionary/hidden] function(triggerId)
+    local use_dictionary = getChatVar(triggerId, "use_dictionary")
+    use_dictionary = math.abs(use_dictionary-1)
+    setChatVar(triggerId, "use_dictionary", use_dictionary)
+end!!
+
 [config/trainResponse/hidden] function(triggerId)
     local models = json.decode(getChatVar(triggerId, "models"))
     local llmSelect = "trainResponse"

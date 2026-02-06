@@ -408,6 +408,17 @@ function (triggerId, action)
         alertNormal(triggerId, "마왕의 부활이 알려졌습니다. 몬스터를 소환해 던전을 강화하세요!")
     end
 
+    -- [가시성 업데이트] 던전 현황 탭 (배치된 유닛이 있을 때만 표시)
+    local dungeon = getState(triggerId, "dungeon")
+    local showDungeon = 0
+    if dungeon and dungeon.grid then
+        for k, v in pairs(dungeon.grid) do
+            showDungeon = 1 
+            break 
+        end
+    end
+    setChatVar(triggerId, "show_dungeon", showDungeon)
+
     -- [조건 해금] 포로 처분 (용사 10명 이상)
     local unlockDisposal = tonumber(getChatVar(triggerId, "unlock_disposal")) or 0
     if unlockDisposal == 0 and #chars >= 10 then

@@ -21,6 +21,19 @@ end!!
     alertNormal(triggerId, "Spirit이 "..intForm(newSpirit).."로 설정되었습니다.")
 end!!
 
+[cheat/2/모든 메뉴 해금] function(triggerId)
+    setChatVar(triggerId, "unlock_shop", "1")
+    setChatVar(triggerId, "unlock_dungeon", "1")
+    setChatVar(triggerId, "unlock_disposal", "1")
+    setChatVar(triggerId, "unlock_invasion", "1")
+    setChatVar(triggerId, "use_dictionary", "1")
+    setChatVar(triggerId, "show_dungeon", "1")
+    setChatVar(triggerId, "has_assets", "1")
+    setChatVar(triggerId, "has_items", "1")
+    
+    alertNormal(triggerId, "모든 메뉴가 해금되었습니다.")
+end!!
+
 [cheat/199/돌아가기] function(triggerId)
     screenChange(triggerId, getState(triggerId, "oldScreen"))
 end!!

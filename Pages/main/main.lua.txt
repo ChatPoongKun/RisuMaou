@@ -90,7 +90,7 @@ end!!
     sysFunction(triggerId, "char.sys", "list")
 end!!
 
-[main/102/{{#when::{{getvar::unlock_disposal}}==1}}포로 처분{{/when}}] function(triggerId)
+[main/102/{{#when::unlock_disposal::vis::1}}포로 처분{{/when}}] function(triggerId)
     local screen = "disposal"
     -- sysFunction(triggerId, "disposal.sys", "main") 내부에서 스크린 변경 및 char.sys 호출함
     sysFunction(triggerId, "disposal.sys", "main")
@@ -102,7 +102,7 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/104/{{#when::{{getvar::unlock_shop}}==1}}마계 상점{{/when}}] function(triggerId)
+[main/104/{{#when::unlock_shop::vis::1}}마계 상점{{/when}}] function(triggerId)
     local screen = "shop"
     screenChange(triggerId, screen)
     local itemCat = "tools"
@@ -122,13 +122,13 @@ end!!
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/107/{{#when::0==1}}침공{{/when}}] function(triggerId)
+[main/107/{{#when::unlock_invasion::vis::1}}침공{{/when}}] function(triggerId)
     --미구현 숨김처리
     local screen = "침공"
     alertNormal(triggerId, screen.." 미구현")
 end!!
 
-[main/108/{{#when::{{getvar::unlock_dungeon}}==1}}던전 관리{{/when}}] function(triggerId)
+[main/108/{{#when::unlock_dungeon::vis::1}}던전 관리{{/when}}] function(triggerId)
     local screen = "dungeon"
     local dungeon = getState(triggerId, "dungeon")
     if not dungeon then
@@ -165,7 +165,7 @@ end!!
     screenChange(triggerId, screen)
 end!!
 
-[main/999/마계사전] function(triggerId)
+[main/999/{{#when::use_dictionary::vis::1}}마계사전{{/when}}] function(triggerId)
     local screen = "dictionary"
     screenChange(triggerId, screen)
     setChatVar(triggerId, "category", "d_abl")
@@ -175,7 +175,7 @@ end!!
     setChatVar(triggerId, "dictImg", "")
 end!!
 
-[main/666/cheat] function(triggerId)
+[main/666/{{#when::unlock_cheat_menu::vis::1}}cheat{{/when}}] function(triggerId)
     local screen = "cheat"
     screenChange(triggerId, screen)
 end!!

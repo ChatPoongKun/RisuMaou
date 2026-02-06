@@ -176,14 +176,50 @@ style="color:#fbc02d">《만월》</span>{{/when}} {{#when::ampm::vis::0}}☀️
 </section>
 
 <!-- Management Panel -->
+{{#when::0==0}}
+    <!-- Calculate Visibility -->
+    {{settempvar::has_items::0}}
+    {{settempvar::has_assets::0}}
+    
+    <!-- Check Items (Tools/Consumables/Unlock) -->
+    {{#each {{getvar::toolsList}} tool}}
+        {{#when::{{dict_element::{{getvar::inventory}}::{{slot::tool}}}}==1}}{{settempvar::has_items::1}}{{/when}}
+    {{/each}}
+    {{#each {{getvar::consumablesList}} item}}
+        {{#when::{{tonumber::{{dict_element::{{getvar::inventory}}::{{slot::item}}}}}}>::0}}{{settempvar::has_items::1}}{{/when}}
+    {{/each}}
+    {{#each {{getvar::unlockList}} item}}
+        {{#when::{{dict_element::{{getvar::inventory}}::{{slot::item}}}}==1}}{{settempvar::has_items::1}}{{/when}}
+    {{/each}}
+
+    <!-- Check Assets (Monsters/Traps) -->
+    {{#each {{getvar::inventory}} val key}}
+        {{#when::{{startswith::{{slot::key}}::monster:}}::or::{{startswith::{{slot::key}}::trap:}}}}
+            {{#when::{{tonumber::{{slot::val}}}}>::0}}{{settempvar::has_assets::1}}{{/when}}
+        {{/when}}
+        {{#when::{{dict_element::{{getvar::trapsList}}::{{slot::key}}}}}}
+             <!-- trap.db item check fallback -->
+             {{#when::{{tonumber::{{slot::val}}}}>::0}}{{settempvar::has_assets::1}}{{/when}}
+        {{/when}}
+    {{/each}}
+{{/when}}
+
+{{#when::{{gettempvar::has_items}}==1::or::{{gettempvar::has_assets}}==1::or::{{getvar::show_dungeon}}==1}}
 <section class="management-panel">
 <div class="tabs-container">
+{{#when::{{gettempvar::has_items}}==1}}
 <div class="tabs {{#if {{equal::{{getvar::category}}::items}}}}active{{/if}}" risu-btn="items">아이템</div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">보유 전력
+{{/when}}
+{{#when::{{gettempvar::has_assets}}==1}}
+<div class="tabs {{#if {{equal::{{getvar::category}}::traps}}}}active{{/if}}" risu-btn="traps">보유 전력</div>
+{{/when}}
+{{#when::{{getvar::show_dungeon}}==1}}
+<div class="tabs {{#if {{equal::{{getvar::category}}::dungeon}}}}active{{/if}}" risu-btn="dungeon">던전 현황</div>
+{{/when}}
 </div>
-<div class="tabs {{#if {{equal::{{getvar::category}}::dungeon}}}}active{{/if}}" risu-btn="dungeon">던전 현황
-</div>
-</div>
+{{:else}}
+<section class="management-panel" style="display:none;">
+{{/when}}
 
 <div class="tab-content">
 {{#when::category::vis::items}}
