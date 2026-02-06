@@ -1,0 +1,8 @@
+-- balancing.db (Lua Game Balance Constants)
+
+rating = {
+    hp = 0.3,
+    def = 4.5,
+    atkMin = 4.0,
+    atkMax = 2.7
+}

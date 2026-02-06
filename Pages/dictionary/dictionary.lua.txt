@@ -4,6 +4,7 @@
     setChatVar(triggerId, "category", dictCat)
     setChatVar(triggerId, "dictTitle", "능력 (Ability)")
     setChatVar(triggerId, "dictDesc", "대상이 조교를 통해 습득한 능력.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_trait/hidden] function(triggerId)
@@ -12,6 +13,7 @@ end!!
     setChatVar(triggerId, "dictSub", "")
     setChatVar(triggerId, "dictTitle", "특성 (Trait)")
     setChatVar(triggerId, "dictDesc", "캐릭터가 가진 특징. 대부분 후천적으로 획득할 수 없다.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_mark/hidden] function(triggerId)
@@ -19,6 +21,7 @@ end!!
     setChatVar(triggerId, "category", dictCat)
     setChatVar(triggerId, "dictTitle", "각인 (Mark)")
     setChatVar(triggerId, "dictDesc", "잊을 수 없이 강렬한 경험을 통해 캐릭터의 마음 깊숙히 새겨진 본능.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_trace/hidden] function(triggerId)
@@ -26,6 +29,7 @@ end!!
     setChatVar(triggerId, "category", dictCat)
     setChatVar(triggerId, "dictTitle", "흔적 (Trace)")
     setChatVar(triggerId, "dictDesc", "캐릭터의 능력 레벨업에 필요한 조교의 흔적. 플레이어는 조교로 흔적을 새김에 따라 영혼(spirit)을 얻을 수 있다.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_stat/hidden] function(triggerId)
@@ -33,6 +37,7 @@ end!!
     setChatVar(triggerId, "category", dictCat)
     setChatVar(triggerId, "dictTitle", "상태 (Stat)")
     setChatVar(triggerId, "dictDesc", "조교중 캐릭터의 상태를 나타내는 수치. 능력 또는 각인수치에 따라 조교 시작시 상태의 레벨이 증가한다.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_item/hidden] function(triggerId)
@@ -41,6 +46,7 @@ end!!
     setChatVar(triggerId, "dictSub", "")
     setChatVar(triggerId, "dictTitle", "아이템 (Item)")
     setChatVar(triggerId, "dictDesc", "상점에서 구매할 수 있는 다양한 아이템")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_monster/hidden] function(triggerId)
@@ -49,6 +55,7 @@ end!!
     setChatVar(triggerId, "dictSub", "")
     setChatVar(triggerId, "dictTitle", "몬스터 (Monster)")
     setChatVar(triggerId, "dictDesc", "던전에 서식하거나 침입해오는 몬스터들의 정보.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_patch/hidden] function(triggerId)
@@ -57,46 +64,57 @@ end!!
     setChatVar(triggerId, "dictSub", "")
     setChatVar(triggerId, "dictTitle", "패치노트")
     setChatVar(triggerId, "dictDesc", "버전별 주요 수정사항에 대한 안내")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_sub_personality/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "성격")
     setChatVar(triggerId, "dictTitle", "성격")
     setChatVar(triggerId, "dictDesc", "캐릭터의 타고난 기질과 성격.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 [dictionary/d_sub_body/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "신체특성")
     setChatVar(triggerId, "dictTitle", "신체특성")
     setChatVar(triggerId, "dictDesc", "캐릭터의 성감대 및 특별한 신체특징.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 [dictionary/d_sub_sexual/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "성적취향")
     setChatVar(triggerId, "dictTitle", "성적취향")
     setChatVar(triggerId, "dictDesc", "캐릭터가 선호 또는 비선호하는 취향과 관련한 특성")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 [dictionary/d_sub_constitution/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "체질")
     setChatVar(triggerId, "dictTitle", "체질")
     setChatVar(triggerId, "dictDesc", "후천적으로 획득한 체질적 특성")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 [dictionary/d_sub_title/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "칭호")
     setChatVar(triggerId, "dictTitle", "칭호")
     setChatVar(triggerId, "dictDesc", "대상 캐릭터의 상태를 표현하는 대표적인 타이틀. 단 하나만 가질 수 있다.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_sub_tools/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "tools")
     setChatVar(triggerId, "dictTitle", "tools")
     setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+    setChatVar(triggerId, "dictImg", "")
 
-    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local items = getDB(triggerId, "items.db")
     local list = json.decode(getChatVar(triggerId, "toolsList"))
     local html = ""
     for _, k in ipairs(list) do
         if items["tools"][k] then
             local name = items["tools"][k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. [[
+            <div class="monster-item" risu-btn="dictSelect.sys_item_]]..k..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..k..[[.webp}}"></div>
+            <div class="monster-info">]]..name..[[</div>
+            </div>]]
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -105,14 +123,19 @@ end!!
     setChatVar(triggerId, "dictSub", "consumables")
     setChatVar(triggerId, "dictTitle", "consumables")
     setChatVar(triggerId, "dictDesc", "다양한 효과를 지닌 일회성 소모품")
+    setChatVar(triggerId, "dictImg", "")
 
-    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local items = getDB(triggerId, "items.db")
     local list = json.decode(getChatVar(triggerId, "consumablesList"))
     local html = ""
     for _, k in ipairs(list) do
         if items["consumables"][k] then
             local name = items["consumables"][k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. [[
+            <div class="monster-item" risu-btn="dictSelect.sys_item_]]..k..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..k..[[.webp}}"></div>
+            <div class="monster-info">]]..name..[[</div>
+            </div>]]
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -121,14 +144,19 @@ end!!
     setChatVar(triggerId, "dictSub", "traps")
     setChatVar(triggerId, "dictTitle", "traps")
     setChatVar(triggerId, "dictDesc", "던전에 설치할 수 있는 함정들")
+    setChatVar(triggerId, "dictImg", "")
 
-    local items = json.decode(getLoreBookContent(triggerId, "trap.db"))
+    local items = getDB(triggerId, "trap.db")
     local list = json.decode(getChatVar(triggerId, "trapsList"))
     local html = ""
     for _, k in ipairs(list) do
         if items[k] then
             local name = items[k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. [[
+            <div class="monster-item" risu-btn="dictSelect.sys_item_]]..k..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..k..[[.webp}}"></div>
+            <div class="monster-info">]]..name..[[</div>
+            </div>]]
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -137,14 +165,19 @@ end!!
     setChatVar(triggerId, "dictSub", "unlock")
     setChatVar(triggerId, "dictTitle", "unlock")
     setChatVar(triggerId, "dictDesc", "조교에 사용할 수 있는 다양한 도구들")
+    setChatVar(triggerId, "dictImg", "")
 
-    local items = json.decode(getLoreBookContent(triggerId, "items.db"))
+    local items = getDB(triggerId, "items.db")
     local list = json.decode(getChatVar(triggerId, "unlockList"))
     local html = ""
     for _, k in ipairs(list) do
         if items["unlock"][k] then
             local name = items["unlock"][k].name
-            html = html .. '<div class="btn command-btn" risu-btn="dict_item_'..k..'">'..name..'</div>'
+            html = html .. [[
+            <div class="monster-item" risu-btn="dictSelect.sys_item_]]..k..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..k..[[.webp}}"></div>
+            <div class="monster-info">]]..name..[[</div>
+            </div>]]
         end
     end
     setChatVar(triggerId, "dict_items_html", html)
@@ -154,9 +187,10 @@ end!!
     setChatVar(triggerId, "dictSub", "low_monster")
     setChatVar(triggerId, "dictTitle", "하급 몬스터")
     setChatVar(triggerId, "dictDesc", "레이팅 300 이하의 하급 몬스터들.")
+    setChatVar(triggerId, "dictImg", "")
 
     -- 몬스터 리스트 생성
-    local monsters = json.decode(getLoreBookContent(triggerId, "monsters.db"))
+    local monsters = getDB(triggerId, "monsters.db")
     local monstersList = json.decode(getChatVar(triggerId, "monstersList"))
     local contents = "" --화면에서 보여줄 html 조립 텍스트
     local ratingMin = 0 --출력할 몬스터 레이팅 하한
@@ -164,10 +198,10 @@ end!!
 
     for _, m in ipairs(monstersList) do
         -- m은 이제 영문 키
-        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
+        if monsters[m] and monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
-            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
+            <div class="monster-item" risu-btn="dictSelect.sys_monster_]]..m..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.webp}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
@@ -182,19 +216,20 @@ end!!
     setChatVar(triggerId, "dictSub", "mid_monster")
     setChatVar(triggerId, "dictTitle", "중급 몬스터")
     setChatVar(triggerId, "dictDesc", "레이팅 1000 이하의 중급 몬스터들.")
+    setChatVar(triggerId, "dictImg", "")
 
     -- 몬스터 리스트 생성
-    local monsters = json.decode(getLoreBookContent(triggerId, "monsters.db"))
+    local monsters = getDB(triggerId, "monsters.db")
     local monstersList = json.decode(getChatVar(triggerId, "monstersList"))
     local contents = "" --화면에서 보여줄 html 조립 텍스트
     local ratingMin = 300 --출력할 몬스터 레이팅 하한
     local ratingMax = 1000 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
+        if monsters[m] and monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
-            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
+            <div class="monster-item" risu-btn="dictSelect.sys_monster_]]..m..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.webp}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
@@ -209,18 +244,19 @@ end!!
     setChatVar(triggerId, "dictSub", "high_monster")
     setChatVar(triggerId, "dictTitle", "상급 몬스터")
     setChatVar(triggerId, "dictDesc", "레이팅 1000 초과의 상급 몬스터들.")
+    setChatVar(triggerId, "dictImg", "")
     -- 몬스터 리스트 생성
-    local monsters = json.decode(getLoreBookContent(triggerId, "monsters.db"))
+    local monsters = getDB(triggerId, "monsters.db")
     local monstersList = json.decode(getChatVar(triggerId, "monstersList"))
     local contents = "" --화면에서 보여줄 html 조립 텍스트
     local ratingMin = 1000 --출력할 몬스터 레이팅 하한
     local ratingMax = 9999 --출력할 몬스터 레이팅 상항
 
     for _, m in ipairs(monstersList) do
-        if monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
+        if monsters[m] and monsters[m].rating <= ratingMax and monsters[m].rating > ratingMin then
             local add = [[
-            <div class="monster-item" risu-btn="dict_monster_]]..m..[[">
-            <div class="monster-thumb"><img src="{{raw::]]..m..[[.png}}"></div>
+            <div class="monster-item" risu-btn="dictSelect.sys_monster_]]..m..[[">
+            <div class="monster-thumb"><img src="{{raw::]]..m..[[.webp}}"></div>
             <div class="monster-info">]]..monsters[m].name..[[</div>
             </div>
             ]]
@@ -235,18 +271,21 @@ end!!
     setChatVar(triggerId, "dictSub", "")
     setChatVar(triggerId, "dictTitle", "특성 (Trait)")
     setChatVar(triggerId, "dictDesc", "캐릭터가 가진 특징. 대부분 후천적으로 획득할 수 없다.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_back_item/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "")
     setChatVar(triggerId, "dictTitle", "아이템 (Item)")
     setChatVar(triggerId, "dictDesc", "상점에서 구매할 수 있는 다양한 아이템")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 [dictionary/d_back_monster/hidden] function(triggerId)
     setChatVar(triggerId, "dictSub", "")
     setChatVar(triggerId, "dictTitle", "몬스터 (Monster)")
     setChatVar(triggerId, "dictDesc", "던전에 서식하거나 침입해오는 몬스터들의 정보.")
+    setChatVar(triggerId, "dictImg", "")
 end!!
 
 
@@ -254,5 +293,6 @@ end!!
     setChatVar(triggerId, "category", "items")
     setChatVar(triggerId, "dictTitle", "")
     setChatVar(triggerId, "dictDesc", "")
+    setChatVar(triggerId, "dictImg", "")
     screenChange(triggerId, getState(triggerId, "oldScreen"))
 end!!

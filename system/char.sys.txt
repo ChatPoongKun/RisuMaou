@@ -17,6 +17,42 @@
     function funcs.card(triggerId, name)
         debug(string.format("[Char:Select] Target: %s, Screen: %s", name, getState(triggerId, "screen")))
         local screen = getState(triggerId, "screen")
+        
+        -- [Migration] Trace Migration & UI Refresh (Shared Logic)
+        local traceDB = getDB(triggerId, "trace.db")
+        local traceList = {}
+        for k, v in pairs(traceDB) do
+            if v.name then table.insert(traceList, v.name) end
+        end
+        table.sort(traceList)
+        setChatVar(triggerId, "traceList", json.encode(traceList))
+
+        -- 데이터 로드 및 마이그레이션
+        local allTraces = getState(triggerId, "trace")
+        if not allTraces[name] then allTraces[name] = {} end
+        local targetTrace = allTraces[name]
+        
+        local oldToNew = {
+            ["C감각"] = "C감각의 흔적", ["B감각"] = "B감각의 흔적", ["V감각"] = "V감각의 흔적", ["A감각"] = "A감각의 흔적",
+            ["U감각"] = "U감각의 흔적", ["애정"] = "애정의 흔적", ["발정"] = "발정의 흔적", ["순종"] = "순종의 흔적",
+            ["복종"] = "복종의 흔적", ["기술"] = "기술의 흔적", ["굴욕"] = "굴욕의 흔적", ["상처"] = "상처의 흔적",
+            ["불안"] = "불안의 흔적", ["부정"] = "부정의 흔적"
+        }
+        local migrated = false
+        for old, new in pairs(oldToNew) do
+            if targetTrace[old] and (tonumber(targetTrace[old]) or 0) > 0 then
+                targetTrace[new] = (targetTrace[new] or 0) + tonumber(targetTrace[old])
+                targetTrace[old] = nil -- Remove old key
+                migrated = true
+            end
+        end
+        
+        if migrated then
+            allTraces[name] = targetTrace
+            setState(triggerId, "trace", allTraces)
+            debug("Trace Migrated in char.sys for " .. name)
+        end
+
         if screen == "charList" then --캐릭터 조회화면
             if name == getPersonaName(triggerId) then
                 name = "user"
@@ -24,15 +60,28 @@
             local target = json.decode(getLoreBookContent(triggerId, name))
             setState(triggerId, "target", target)
             stateToVar(triggerId, "target", target)
-            local targetTrace = getState(triggerId, "trace")[name]
             stateToVar(triggerId, "targetTrace", targetTrace)
             setChatVar(triggerId, "category", "appearance")
             screenChange(triggerId, "charInfo") --캐릭터 상세 정보 화면으로 이동
+        elseif screen == "disposal" then -- 포로 처분 화면
+            -- 처분 방식 선택 실행
+            sysFunction(triggerId, "disposal.sys", "selectMethod", name)
         elseif screen == "preTrain" then        --조교 대상 화면
             sysFunction(triggerId, "train.sys", "prepare", name)
-            local targetTrace = getState(triggerId, "trace")[name]
             stateToVar(triggerId, "targetTrace", targetTrace)
             screenChange(triggerId, "train") --조교 화면으로 이동
+        end
+    end
+
+    -- 버튼 클릭 핸들러
+    -- data format: "char.sys_card_name"
+    function funcs.click(triggerId, data)
+        -- sys파일명_card_name 형태에서 name 추출
+        local name = string.match(data, "card_(.*)")
+        if name then
+            funcs.card(triggerId, name)
+        else
+            debug("char.sys: 잘못된 데이터 포맷 - " .. tostring(data))
         end
     end
 
@@ -45,10 +94,26 @@
 
         -- 1. 데이터 수집 및 전처리
         local charDataList = {}
+        -- [Refactoring] 필터링 로직 함수화 (확장성을 위해)
+        local function checkFilter(scr, c)
+            local cond = c["condition"]
+            if scr == "preTrain" then
+                -- preTrain: 오직 '조교가능' 상태인 캐릭터만 표시
+                return cond == "TRAINABLE"
+            elseif scr == "charInfo" then
+                -- charInfo: 사망한 캐릭터도 포함하여 모두 표시
+                return true
+            else
+                -- 기본값: 사망하지 않은 캐릭터만 표시
+                return cond ~= "DEAD"
+            end
+        end
+
         for i, name in ipairs(chars) do
-            -- preTrain 화면에서는 user 제외
+            -- preTrain 화면에서는 user 제외 (user는 chars 리스트에 보통 없지만 체크 필요시 추가)
             local char = json.decode(getLoreBookContent(triggerId, name))
-            if not ((screen == "disposal" or screen == "preTrain") and char["condition"] ~= "조교가능") then
+
+            if checkFilter(screen, char) then
                 -- 정렬 및 표시에 필요한 데이터 미리 추출
                 local data = {
                     index = i,
@@ -66,6 +131,14 @@
                     title = char["칭호"] or ""
                 }
                 table.insert(charDataList, data)
+                
+                -- Condition DB Load (Lazy) (Cached outside or loaded every list call is fine for now)
+                local condDB = getDB(triggerId, "condition.db")
+                if condDB[data.condition] and condDB[data.condition].name then
+                   data.conditionDisplay = condDB[data.condition].name
+                else
+                   data.conditionDisplay = data.condition -- Fallback (e.g. if already Korean or unknown)
+                end
             end
         end
 
@@ -118,21 +191,52 @@
 
             -- 상태에 따른 클래스 추가 (사망 등)
             local cardClass = "character-card"
-            if data.condition == "사망" then cardClass = cardClass .. " 사망" end
+            if data.condition == "DEAD" or data.condition == "사망" then cardClass = cardClass .. " 사망" end
             if name == "user" then name = "{{" .. name .. "}}" end
 
             -- HTML 조립
+            -- HTML 조립
+            local portraitHtml = ""
+            local p_pre = data.raw.portrait_pre
+            local p_app = data.raw.portrait_append
+            local portraitContent = ""
+
+            if p_pre and p_app then
+                portraitContent = p_pre .. p_app
+            elseif data.raw.portrait and data.raw.portrait ~= "" then
+                -- 기존 방식 (Fallback)
+                local val = data.raw.portrait
+                -- 일반 경로 텍스트면 {{raw::...}} 로 감싸고 img 태그 추가
+                if not val:match("^{{") and not val:match("^<img") then
+                     val = "{{raw::" .. val .. "}}"
+                end
+                
+                -- 이미지가 아니라 inlay등의 매크로라면 그대로, 아니면 img 태그로
+                if val:match("{{inlay") or val:match("^<div") or val:match("^<img") then
+                     portraitContent = val
+                else
+                     portraitContent = [[<img src="]] .. val .. [[" style="width:100%; height:100%; object-fit:cover;">]]
+                end
+            end
+            
+            if portraitContent ~= "" then
+                 portraitHtml = [[<div style="width:50px; height:50px; overflow:hidden; border-radius:4px; margin-right:8px; flex-shrink:0;">]] .. portraitContent .. [[</div>]]
+            end
+
             local card = [[
-<div class="]] .. cardClass .. [[" risu-btn="charInfo_]] .. name .. [[">
+<div class="]] .. cardClass .. [[" risu-btn="char.sys_card_]] .. name .. [[">
 <div class="char-info">
+]] .. portraitHtml .. [[
+<div style="flex:1;">
 <p class="char-name-line">
 <span class="char-condition">[]] ..
-                data.condition .. [[] </span>]] .. name .. [[<span class="char-level"> Lv.]] .. data.lv .. [[ </span>
+                data.conditionDisplay .. [[] </span>]] .. name .. [[<span class="char-level"> Lv.]] .. data.lv .. [[ </span>
 ]] .. tagHtml .. [[
 </p>
 <span class="char-tags">
 AT ]] .. data.atk .. [[ / ]] .. data.def .. [[ / RT ]] .. data.rating .. [[
 </span>
+</div>
 </div>
 <div class="char-status-bars">
 <div class="x-risu-bar-container">

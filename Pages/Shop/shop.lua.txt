@@ -105,6 +105,13 @@ end!!
     
     debug(string.format("[Item:Buy] Item: %s, Price: %d, Result: Success", itemKey, itemTotalPrice))
     
+    -- 관리 패널 가시성 변수 설정
+    if itemCat == "traps" then
+        setChatVar(triggerId, "has_assets", "1")
+    else
+        setChatVar(triggerId, "has_items", "1")
+    end
+    
     setChatVar(triggerId, "itemKey", "") -- 초기화
 end!!
 

@@ -1,155 +1,165 @@
 --커스텀 이벤트 실행 엔진
---캐릭터가 보유한 trait/abl/mark/stat의 해당 이벤트를 실행
+--캐릭터가 보유한 trait/abl/mark/stat/skills/buff의 해당 이벤트를 실행
 --@param eventName: 이벤트 이름 (onDCCalc, onStatEXP 등)
 --@param context: 이벤트에 전달할 변수 테이블 (must include: tags, target, stat)
 --@return context: 수정된 변수 테이블
 function(triggerId, eventName, context)
     
     -------------------------------------------------------
-    -- Helper Functions (내부 로컬 함수로 정의)
+    -- Helper Functions
     -------------------------------------------------------
     
-    --이벤트 함수 문자열 실행
-    local function executeEventFunc(funcStr, ctx)
-        local env = {}
-        for k, v in pairs(ctx) do
-            env[k] = v
+    --이벤트 함수 실행 (문자열 or 함수)
+    local function executeEventFunc(funcOrStr, ctx)
+        if type(funcOrStr) == "function" then
+            local status, result = pcall(funcOrStr, ctx)
+            if not status then debug("customEvent V2 실행 에러: " .. tostring(result)) end
+            return ctx
         end
+
+        local funcStr = funcOrStr
+        local env = {}
+        for k, v in pairs(ctx) do env[k] = v end
         setmetatable(env, {__index = _G})
         
-        -- Lua 5.2+ 호환: load 사용
         local func, err = load(funcStr, "eventFunc", "t", env)
         if func then
-            func()
-            -- 실행 후 변경된 환경 변수를 context에 반영
-            for k, _ in pairs(ctx) do
-                if env[k] ~= nil then
-                    ctx[k] = env[k]
-                end
+            local status, result = pcall(func)
+            if status then
+                for k, _ in pairs(ctx) do if env[k] ~= nil then ctx[k] = env[k] end end
+            else
+                debug("customEvent 레거시 실행 에러: " .. tostring(result))
             end
         else
-            debug("customEvent 함수 오류: " .. (err or "unknown"))
+            debug("customEvent 레거시 함수 로드 에러: " .. (err or "unknown"))
         end
-        
         return ctx
     end
 
     --태그 매칭 로직
     local function tagMatch(tags, hasTags, notTags)
-        -- hasTags 검사: 모두 있어야 함
         if hasTags then
             for _, requiredTag in ipairs(hasTags) do
                 local found = false
                 for _, tag in ipairs(tags) do
-                    if tag == requiredTag then
-                        found = true
-                        break
-                    end
+                    if tag == requiredTag then found = true; break end
                 end
-                if not found then
-                    return false
-                end
+                if not found then return false end
             end
         end
-
-        -- notTags 검사: 하나라도 있으면 실패
         if notTags then
             for _, excludeTag in ipairs(notTags) do
                 for _, tag in ipairs(tags) do
-                    if tag == excludeTag then
-                        return false
-                    end
+                    if tag == excludeTag then return false end
                 end
             end
         end
         return true
     end
 
-    --이벤트 리스트 처리 헬퍼
-    local function processEvents(tId, events, eName, tags, ctx, level)
-        for evtKey, evt in pairs(events) do
-            -- 이벤트명이 일치하거나 이벤트명_숫자 형태인 경우
-            if evtKey == eName or evtKey:match("^"..eName.."_%d+$") then
-                -- 태그 조건 확인 (로컬 함수 사용)
-                local matched = tagMatch(tags, evt.hasTags, evt.notTags)
-                
-                -- 타겟 스탯 조건 확인 (targetStat 필드가 있는 경우)
-                if matched and evt.targetStat then
-                    if ctx.statName then
-                        local statMatched = false
-                        for _, tStat in ipairs(evt.targetStat) do
-                            if tStat == ctx.statName then
-                                statMatched = true
-                                break
-                            end
-                        end
-                        if not statMatched then matched = false end
-                    end
-                end
+    -------------------------------------------------------
+    -- Global Cache Logic (Lazy Init)
+    -------------------------------------------------------
+    if not _G.CustomEventCache then
+        debug("[CustomEvent] 캐시 초기화 시작...")
+        _G.CustomEventCache = {}
+        
+        -- 등록할 DB 목록
+        local dbList = {
+            {name="trait", file="trait.db"},
+            {name="abl", file="abl.db"},
+            {name="mark", file="mark.db"},
+            {name="stat", file="stat.db"},
+            {name="skill", file="skills.db"},
+            {name="buff", file="buff.db"}
+        }
 
-                if matched then
-                    debug(string.format("[Event:Trigger] Event: %s, Source: %s", eName, evtKey))
-                    ctx.level = level
-                    ctx = executeEventFunc(evt.func, ctx)
+        for _, dbInfo in ipairs(dbList) do
+            local dbData = getDB(triggerId, dbInfo.file)
+            if dbData then
+                for key, def in pairs(dbData) do
+                    -- events 필드가 있는 경우에만 등록
+                    if def.events then
+                        local entryName = def.name or key
+                        for evtKey, evtDef in pairs(def.events) do
+                            -- 이벤트 이름 추출 (onDCCalc_1 -> onDCCalc)
+                            local realEventName = evtKey:match("^([^_]+)") or evtKey
+                            
+                            if not _G.CustomEventCache[realEventName] then
+                                _G.CustomEventCache[realEventName] = {}
+                            end
+
+                            table.insert(_G.CustomEventCache[realEventName], {
+                                type = dbInfo.name,
+                                key = entryName, -- 한글 이름 or 키
+                                rawKey = evtKey, -- 실제 이벤트 키 (onDCCalc_2 등)
+                                def = evtDef,
+                                sourceName = entryName .. "(" .. dbInfo.name .. ")"
+                            })
+                        end
+                    end
                 end
             end
         end
-        return ctx
+        debug("[CustomEvent] 캐시 초기화 완료.")
     end
 
-
     -------------------------------------------------------
-    -- Main Logic
+    -- Main Logic (Cache Based)
     -------------------------------------------------------
+    local listeners = _G.CustomEventCache[eventName]
+    if not listeners then return context end -- 해당 이벤트 리스너가 없으면 바로 종료
 
-    -- DB 로드 (캐싱 없이 매번 로드)
-    local traitDB = getDB(triggerId, "trait.db")
-    local ablDB = getDB(triggerId, "abl.db")
-    local markDB = getDB(triggerId, "mark.db")
-    local statDB = getDB(triggerId, "stat.db")
-    
     local target = context.target or getState(triggerId, "target")
     local currentStat = context.stat or getState(triggerId, "stat")
     local tags = context.tags or {}
-    
-    -- trait 이벤트 처리
-    for traitKey, traitDef in pairs(traitDB) do
-        local tName = traitDef.name or traitKey
-        -- 평탄화된 타겟 테이블에서 트레이트 보유 여부 확인 (hasVal 로직 대체)
-        -- 보통 target["트레이트명"]에 값이 있거나 "1" 등으로 저장됨
-        local hasTrait = target[tName] ~= nil and target[tName] ~= "" 
+
+    for _, listener in ipairs(listeners) do
+        -- 보유 여부 확인
+        local level = 0
+        local hasItem = false
         
-        if hasTrait and traitDef.events then
-            context = processEvents(triggerId, traitDef.events, eventName, tags, context, nil)
+        if listener.type == "stat" then
+            -- stat은 currentStat 테이블에서 확인
+            local val = currentStat[listener.key]
+            level = tonumber(val) or 0
+            if level > 0 then hasItem = true end
+        else
+            -- trait, abl, mark, skill, buff는 target 테이블에서 확인
+            local val = target[listener.key]
+            if val then
+                level = tonumber(val) or 1 -- 숫자가 아니면 1 취급 (trait 등)
+                if level > 0 then hasItem = true end
+            end
+        end
+
+        if hasItem then
+            -- 정의된 이벤트 실행 (배열 지원)
+            local evt = listener.def
+            local actionList = {}
+            if evt[1] then actionList = evt else table.insert(actionList, evt) end
+
+            for _, action in ipairs(actionList) do
+                -- 태그 조건
+                local matched = tagMatch(tags, action.hasTags, action.notTags)
+                
+                -- 타겟 스탯 조건
+                if matched and action.targetStat and context.statName then
+                    local statMatched = false
+                    for _, tStat in ipairs(action.targetStat) do
+                        if tStat == context.statName then statMatched = true; break end
+                    end
+                    if not statMatched then matched = false end
+                end
+
+                if matched then
+                    -- debug(string.format("[Event:Trigger] %s -> %s", listener.sourceName, eventName))
+                    context.level = level
+                    context = executeEventFunc(action.func, context)
+                end
+            end
         end
     end
-    
-    -- abl 이벤트 처리 (레벨 전달)
-    for ablKey, ablDef in pairs(ablDB) do
-        local ablName = ablDef.name or ablKey
-        local level = tonumber(target[ablName]) or 0
-        if level > 0 and ablDef.events then
-            context = processEvents(triggerId, ablDef.events, eventName, tags, context, level)
-        end
-    end
-    
-    -- mark 이벤트 처리 (레벨 전달)
-    for markKey, markDef in pairs(markDB) do
-        local markName = markDef.name or markKey
-        local level = tonumber(target[markName]) or 0
-        if level > 0 and markDef.events then
-            context = processEvents(triggerId, markDef.events, eventName, tags, context, level)
-        end
-    end
-    
-    -- stat 이벤트 처리 (현재 stat 레벨 전달)
-    for statKey, statDef in pairs(statDB) do
-        local statName = statDef.name or statKey
-        local level = tonumber(currentStat[statName]) or 0
-        if level > 0 and statDef.events then
-            context = processEvents(triggerId, statDef.events, eventName, tags, context, level)
-        end
-    end
-    
+
     return context
 end

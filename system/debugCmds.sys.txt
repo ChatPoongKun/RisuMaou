@@ -35,6 +35,18 @@ function (triggerId)
     addChat(triggerId, "user", "")
     end]]
     funcs[key] = functionBody
+    
+    --치트 메뉴 활성화
+    key = "https://arca.live/b/characterai"
+    functionBody = [[
+    function(triggerId)
+    setChatVar(triggerId, "unlock_cheat_menu", "1")
+    alertNormal(triggerId, "치트 메뉴가 해금되었습니다! 메인 화면을 확인하세요.")
+    setChatVar(triggerId, "category", "items")
+    screenChange(triggerId, "main")
+    setChat(triggerId, getChatLength(triggerId)-1, "{{".."getvar::html".."}}")
+    end]]
+    funcs[key] = functionBody
 
     setState(triggerId, "funcs", funcs)
 end

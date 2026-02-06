@@ -1,12 +1,37 @@
 function (triggerId, reason)
     debug("newChar system initiated. Reason: " .. (reason or "unknown"))
     
+    ---------------------------------------
+    -- ★ 밸런싱 상수 정의 (Balancing Constants)
+    -- 신규 캐릭터 생성 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+    ---------------------------------------
+
+    -- [초상화 생성 프롬프트 CONSTANT]
+    local PORTRAIT_PROMPT_PREFIX = "a hero portraiticon of a dark fantasy game, portrait, face focus, high quality, detailed, 8k, dark fantasy mood"
+
+    -- [HP/SP 랜덤 변동폭]
+    local HP_SP_RANDOM_MIN      = 90    -- HP/SP 최종값 최소 배율 (%). 최종 HP/SP는 기본값의 이 % ~ MAX % 사이에서 결정.
+    local HP_SP_RANDOM_MAX      = 110   -- HP/SP 최종값 최대 배율 (%).
+
+    -- [신체특성 부여 확률] (순차 적용)
+    local TRAIT_PROB_BODY_1     = 0.6   -- 첫 번째 신체특성 부여 확률 (60%).
+    local TRAIT_PROB_BODY_2     = 0.3   -- 두 번째 신체특성 부여 확률 (30%). 첫 번째 획득 시에만 판정.
+    local TRAIT_PROB_BODY_3     = 0.15  -- 세 번째 신체특성 부여 확률 (15%). 두 번째 획득 시에만 판정.
+
+    -- [성적취향 부여 확률]
+    local TRAIT_PROB_SEXUAL     = 0.1   -- 성적취향 특성 부여 확률 (10%). 10% 확률로 성적취향 1개 부여.
+
+    -- [성격 부여 확률]
+    local TRAIT_PROB_EXTRA_PERS = 0.5   -- 추가 성격 부여 확률 (50%). 기본 1개 + 이 확률로 1개 추가.
+
+    ---------------------------------------
+
+
     -- 1. 설정 및 데이터 로드
     local raceDB = getDB(triggerId, "race.db")
     local classDB = getDB(triggerId, "class.db")
     local traitDB = getDB(triggerId, "trait.db")
-    local expTable = getDB(triggerId, "EXPtable.db") -- EXPtable은 아직 변환 안했을 수 있음. 확인 필요하나 일단 진행.
-    -- EXPtable.db 파일은 언급된 적 없으므로 패스하거나 기존대로. (오류나면 수정)
+    local expTable = getDB(triggerId, "EXPtable.db") 
     
     local dungeonLv = tonumber(getChatVar(triggerId, "dungeonLv") or 1)
     local ageLimit = tonumber(getChatVar(triggerId, "ageLimit") or 12)
@@ -52,21 +77,34 @@ function (triggerId, reason)
     local age = math.floor((ageBase + math.random(0, 10)) * lifeSpanMult)
     if age < ageLimit then age = ageLimit end
     
-    -- 3. 스탯 계산
-    local baseHP = 100
-    local baseSP = 100
+    -- 3. 스탯 계산 (1레벨 기본 스탯 설정 후 LvUp.sys로 성장)
+    local raceBaseHP = raceData.base_hp or 100
+    local raceBaseSP = raceData.base_sp or 100
     
-    local hpMult = (raceData.hp_mod or 1.0) * (classData.hp_growth or 1.0)
-    local spMult = (raceData.sp_mod or 1.0) * (classData.sp_growth or 1.0)
-    -- atk, def 모드는 classData에 있음
+    local raceAtkBonus = raceData.bonus_atk or 0
+    local raceDefBonus = raceData.bonus_def or 0
     
-    local maxHP = math.floor((baseHP + (level * 15)) * hpMult * (math.random(90, 110)*0.01))
-    local maxSP = math.floor((baseSP + (level * 10)) * spMult * (math.random(90, 110)*0.01))
+    -- 1레벨 기본 스탯 (종족 기본치 + 종족 보너스 + 1레벨 클래스 성장치)
+    local maxHP = math.floor(raceBaseHP * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX) * 0.01))
+    local maxSP = math.floor(raceBaseSP * (math.random(HP_SP_RANDOM_MIN, HP_SP_RANDOM_MAX) * 0.01))
     
-    -- 초기 전투 스탯 (임시)
-    local atk = math.floor(10 * level * (classData.atk_mod or 1.0))
-    local def = math.floor(10 * level * (classData.def_mod or 1.0))
-    local combatRating = math.floor((atk + def) * 0.5)
+    -- 클래스 초기 스탯 (1레벨분)
+    local classAtkMin = classData.atk_min or 3
+    local classAtkMax = classData.atk_max or 6
+    local classDef = classData.def_inc or 5
+    
+    local atkMin = raceAtkBonus + math.random(1, classAtkMin)
+    local atkMax = raceAtkBonus + math.random(1, classAtkMax)
+    
+    -- [안전장치] min > max 역전 시 스왑
+    if atkMax < atkMin then
+        local temp = atkMin
+        atkMin = atkMax
+        atkMax = temp
+    end
+    
+    local def = raceDefBonus + math.random(1, classDef)
+
 
     -- 신체 사이즈
     local heightBase = raceData.height or 160
@@ -88,59 +126,73 @@ function (triggerId, reason)
         penis = penisSizes[math.random(#penisSizes)]
     end
     
-    -- 4. 특성(Trait) 부여 (영문 키 선택 -> 한글 이름 매핑)
+    -- 4. 특성(Trait) 부여 (한글 이름 직접 선택)
     local personalityList = json.decode(getChatVar(triggerId, "성격List"))
     local bodyTraitList = json.decode(getChatVar(triggerId, "신체특성List"))
     
-    local assignedTraitsKey = {}
+    local assignedTraits = {} -- 한글 이름 저장
     
-    -- 성격 1~2개 (Group 충돌 방지 로직은 여기서 간단히 처리 - 같은 그룹이면 스킵)
+    -- 특성 추가 함수 (중복 체크)
     local function addTrait(list)
-        local key = list[math.random(#list)]
-        -- 이미 있는지, 그룹 충돌하는지 체크
-        -- 여기선 단순하게 중복만 체크
+        if not list or #list == 0 then return false end
+        local name = list[math.random(#list)]
+        
         local dup = false
-        for _, k in ipairs(assignedTraitsKey) do if k == key then dup = true; break end end
-        if not dup then table.insert(assignedTraitsKey, key) end
+        for _, n in ipairs(assignedTraits) do if n == name then dup = true; break end end
+        if not dup then 
+            table.insert(assignedTraits, name) 
+            return true
+        end
+        return false
     end
     
-    addTrait(personalityList)
-    if math.random() > 0.5 then addTrait(personalityList) end
+    -- 성격 1~2개 
+    local pAdded = 0
+    local retry = 10
+    while pAdded < 1 and retry > 0 do
+        if addTrait(personalityList) then pAdded = pAdded + 1 end
+        retry = retry - 1
+    end
+    if math.random() > TRAIT_PROB_EXTRA_PERS then addTrait(personalityList) end
     
-    -- 신체특성 추가
-    if math.random() > 0.7 then addTrait(bodyTraitList) end
-    
-    -- 종족 특성 추가 (raceDB의 traits필드는 한글 이름으로 되어있음... DB구조 확인필요)
-    -- 아까 race.db 변환할 때: "traits": {"V명기": 2, ...} 로 한글 키 유지했음!
-    -- 따라서 종족 특성은 별도 처리 필요.
-    local raceTraits = raceData.traits or {}
-    local raceTraitKeys = {} --한글임
-    for k, v in pairs(raceTraits) do
-        table.insert(raceTraitKeys, k)
+    -- 신체특성 추가 (확률 순차 적용, 최대 3개)
+    if math.random() <= TRAIT_PROB_BODY_1 then
+        addTrait(bodyTraitList)
+        if math.random() <= TRAIT_PROB_BODY_2 then
+            addTrait(bodyTraitList)
+            if math.random() <= TRAIT_PROB_BODY_3 then
+                addTrait(bodyTraitList)
+            end
+        end
+    end
+
+    -- 성적취향 추가 (확률 기반 1개)
+    local sexualPrefList = json.decode(getChatVar(triggerId, "성적취향List"))
+    if math.random() <= TRAIT_PROB_SEXUAL then
+        addTrait(sexualPrefList)
     end
     
     
-    
-    -- 5. 스켈레톤 데이터 구성 (한글 키 매핑)
+    -- 5. 스켈레톤 데이터 구성 (1레벨 기본 스탯으로 시작)
     local skeleton = {
         ["종족"] = raceData.name, -- "인간"
         ["성별"] = gender,
         ["나이"] = tostring(age),
         ["클래스"] = classData.name, -- "기사"
-        ["레벨"] = tostring(level),
+        ["레벨"] = "1", -- 1레벨에서 시작하여 LvUp.sys로 성장
         ["경험치"] = "0",
         
         ["체력"] = tostring(maxHP),
         ["최대체력"] = tostring(maxHP),
         ["기력"] = tostring(maxSP),
         ["최대기력"] = tostring(maxSP),
-        ["공격력"] = atk,
+        ["공격력"] = atkMin .. "~" .. atkMax,
         ["방어력"] = def,
-        ["레이팅"] = combatRating,
+        ["레이팅"] = 0, -- LvUp.sys에서 계산
         
         ["자궁정액"]="0",
         ["애널정액"]="0",
-        ["condition"] = "조교가능",
+        ["condition"] = "REST",
 
         ["키"] = tostring(height),
         ["몸무게"] = tostring(weight),
@@ -155,9 +207,6 @@ function (triggerId, reason)
         ["방어구"] = classData.armor,
         ["장신구"]="없음",
 
-        -- 특성 매핑: { "호기심": 1 } 형태
-        -- assignedTraitsKey(영문) -> traitDB[key].name(한글)
-        -- raceTraits(한글) -> 그대로 사용
         ["성격"] = {},
         ["신체특성"] = {},
         ["성적취향"] = {},
@@ -166,62 +215,24 @@ function (triggerId, reason)
         ["첫키스 상대"]="미경험", ["첫경험 상대"]="미경험", ["이상경험 기록"]={}
     }
 
-    -- 특성 데이터 주입 함수
-    local function injectTrait(korName)
-        -- trait.db 전체를 뒤져서 카테고리를 찾아야 함?
-        -- 아니면 assignedTraitsKey를 순회할 때 DB정보를 참조하므로 카테고리 알 수 있음.
-        -- 하지만 종족특성(raceTraits)은 한글 이름만 있음.
-        -- 역참조가 필요하거나, 그냥 모든 리스트를 다 뒤져야 함.
-        -- -> traitDB는 평탄화 되어있으므로, name이 일치하는 것을 찾으면 됨.
-        -- (효율성 문제: 매번 전체 순회? 캐시된 리스트 활용?)
-        
-        -- 개선안:
-        -- 1. 영문키로 할당된 것들(assignedTraitsKey)은 traitDB[key].category 로 바로 분류 가능.
-        -- 2. 한글키로 할당된 것들(raceTraits)은... 일단 '신체특성'이나 '성격' 중 하나일 텐데, DB 뒤져서 확인.
-        
-        for k, v in pairs(traitDB) do
-            if v.name == korName then
-                -- 카테고리에 맞게 삽입
-                if not skeleton[v.category] then skeleton[v.category] = {} end
-                --skeleton[v.category]는 객체가 아니라 배열이어야 하나? 
-                -- charInfo.html 보면 {{dict_element::target::호기심}} == 1 체크함.
-                -- 즉 target["호기심"] = 1 이어야 함? 
-                -- *중요*: charInfo.html의 316라인: {{#if {{? {{dict_element::{{getvar::target}}::{{slot::T}}}} == 1}}}}
-                -- 여기서 T는 '성격List'의 아이템(한글 이름).
-                -- 즉 target 객체 바로 아래에 target["호기심"] = 1 이 있어야 함! (중첩 아님)
-                -- 하지만 display용 리스트(skeleton["성격"])도 필요함?
-                -- charInfo.html 315라인: {{#each {{getvar::성격List}} T}} -- 이건 전체 리스트 순회
-                -- 그리고 target[T] == 1 인지 체크.
-                -- 따라서 skeleton["호기심"] = 1 로 저장해야 함.
-                -- skeleton["성격"] 필드는 사실상 필요 없을 수 있음 (HTML 로직상).
-                -- 그러나 나중을 위해 분류해두는게 좋음?
-                -- 일단 호환성을 위해 **최상위 레벨에 특성 키=1 저장** 필수.
-                
-                skeleton[korName] = 1
-                return
-            end
-        end
-        -- DB에 없으면(예: 오타) 그냥 최상위에 1로 저장
-        skeleton[korName] = 1
-    end
-
-    -- 1. 랜덤 선택된 특성 주입
-    for _, key in ipairs(assignedTraitsKey) do
-        local tData = traitDB[key]
-        if tData then
-            skeleton[tData.name] = 1
-        end
+    -- 특성 주입: UI 호환을 위해 최상위에 1로 저장
+    for _, traitName in ipairs(assignedTraits) do
+        skeleton[traitName] = 1
     end
     
-    -- 2. 종족 특성 주입
-    for _, korName in ipairs(raceTraitKeys) do
-        injectTrait(korName)
+    -- 6. LvUp.sys를 사용하여 목표 레벨까지 성장 (1레벨에서 시작)
+    if level > 1 then
+        skeleton, _, _ = sysFunction(triggerId, "LvUp.sys", "execute", skeleton, level - 1, true)
+        debug(string.format("캐릭터 레벨업 완료: Lv.%s, ATK:%s, DEF:%s, Rating:%s", 
+            skeleton["레벨"], skeleton["공격력"], skeleton["방어력"], skeleton["레이팅"]))
+    else
+        -- 1레벨이면 Rating만 계산
+        skeleton = sysFunction(triggerId, "LvUp.sys", "calcRating", skeleton)
     end
-    
     
     debug("기초데이터", json.encode(skeleton))
     
-    -- 6. LLM 요청
+    -- 7. LLM 요청 (설정 생성)
     local prompt = {
         promptBuild("system", getLoreBookContent(triggerId, "newChar.pt")),
         promptBuild("system", "existing names: "..getChatVar(triggerId, "chars")),
@@ -240,19 +251,41 @@ function (triggerId, reason)
     content = content:gsub("<Thoughts>.-</Thoughts>", "") 
     local narrative = json.decode(content:match("({.*})"))
     
-    -- 7. 데이터 병합
+    -- 8. 데이터 병합 & 이미지 생성
     for k, v in pairs(narrative) do
         skeleton[k] = v
     end
 
-    -- DB에 없는 필드 0으로 초기화 (abl, mark, exp, stat 등)
-    -- stat.db도 초기화해야 함
+    -- [초상화 생성 로직]
+    local appearanceDesc = skeleton["외형"] or skeleton["appearance"] or (skeleton["머리스타일"] and (skeleton["머리스타일"].." hair")) or ""
+    
+    -- 간단한 번역/매핑
+    local genderStr = (skeleton["성별"] == "남성" and "male") or (skeleton["성별"] == "후타나리" and "futanari") or "female"
+    local raceStr = skeleton["종족"] or "human"
+    
+    local fullPrompt = PORTRAIT_PROMPT_PREFIX .. ", " .. genderStr .. ", " .. raceStr .. ", " .. appearanceDesc
+
+    debug("초상화 생성 시도: " .. fullPrompt)
+    local imgResult = generateImage(triggerId, fullPrompt):await()
+    
+    if imgResult then
+        local cleanImg = imgResult:gsub("{{inlay:", "")
+        -- [JSON Parsing Fix] Split ':' into two fields
+        skeleton["portrait_pre"] = "{{inlay:"
+        skeleton["portrait_append"] = cleanImg
+        skeleton["portrait"] = nil -- 기존 필드 제거
+        debug("초상화 저장 완료")
+    else
+        debug("초상화 생성 실패")
+    end
+
+
+    -- DB에 없는 필드 0으로 초기화
     local extraDBs = {"mark.db", "abl.db", "exp.db", "stat.db"}
     for _, dbName in ipairs(extraDBs) do
         local dbContent = getDB(triggerId, dbName) -- 객체
         for key, val in pairs(dbContent) do
             -- 여기서도 한글 매핑 필요. charInfo.html 등에서 한글 키로 접근할 것임.
-            -- 예: target["C쾌락"]
             if val.name then
                 if not skeleton[val.name] then skeleton[val.name] = "0" end
             else

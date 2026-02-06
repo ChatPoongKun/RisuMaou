@@ -153,13 +153,35 @@ local hasTraitLevel = char.traits["호기심"]
 ### 2. 파일 확장자 규칙
 | 파일 타입 | 확장자 | 설명 |
 |----------|--------|------|
-| DB 파일 | `.db.txt` | JSON 형식, 주석은 `///` 사용 |
+| DB 파일 | `.db.txt` | JSON 형식 또는 Lua Table. Config Style(`key=val`) 권장 |
 | 페이지 Lua | `.lua.txt` | 화면별 Lua 스크립트 |
-| 시스템 Lua | `.sys.txt` | 공용 시스템 함수 |
+| 시스템 Lua | `.sys.txt` | 공용 시스템 함수 (Dispatcher 패턴) |
 | HTML 템플릿 | `.html` | CBS 문법 사용 |
 | 프롬프트 | `.pt.txt` | LLM 프롬프트 템플릿 |
 
-### 3. 이벤트 시스템 구조
+### 3. DB 문법 스타일 (Config vs Return)
+프로젝트 내에는 두 가지 스타일의 Lua DB 파일이 공존하지만, **가급적 Config Style을 권장**합니다.
+
+**Config Style (권장)**:
+```lua
+-- 변수에 할당하는 방식 (암시적 전역 환경 사용)
+key = {
+    name = "이름",
+    ...
+}
+```
+
+**Return Style (일부 파일)**:
+```lua
+-- 명시적으로 테이블을 반환 (key가 숫자 혹은 한글(비권장)인 경우)
+return {
+    key = { ... }
+}
+```
+> **주의**: 새 DB 파일을 생성할 때는 `Script.lua`의 `getDB` 함수가 두 방식을 모두 지원하도록 되어있으나, 유지보수 일관성을 위해 Config Style을 사용하세요.
+
+
+### 4. 이벤트 시스템 구조
 ```json
 "trait_key": {
     "name": "특성 이름",
@@ -176,7 +198,7 @@ local hasTraitLevel = char.traits["호기심"]
 }
 ```
 
-### 4. 태그 시스템
+### 5. 태그 시스템
 조교 커맨드에 부여되는 태그들:
 
 | 태그 카테고리 | 태그 예시 |
@@ -188,14 +210,14 @@ local hasTraitLevel = char.traits["호기심"]
 | 강도 | `gentle`, `safe`, `pain`, `hard` |
 | 기타 | `shame`, `bondage`, `filth`, `tool` |
 
-### 5. HTML 내 CBS 변수 접근
+### 6. HTML 내 CBS 변수 접근
 ```html
 <!-- 변수 표시 -->
 {{getvar::char_name}}
 {{getvar::char_hp}}
 
 <!-- 조건부 렌더링 -->
-{{#when::{{getvar::char_hp}}::>::::0}}
+{{#when::{{getvar::char_hp}}::>::0}}
     HP 있음
 {{/when}}
 
@@ -203,7 +225,7 @@ local hasTraitLevel = char.traits["호기심"]
 {{button::버튼텍스트::functionName}}
 ```
 
-### 6. 상태(state) vs 챗변수(chatVar)
+### 7. 상태(state) vs 챗변수(chatVar)
 ```lua
 -- state: 복잡한 객체 저장, 성능 좋음 (권장), CBS에서 __state명 형식으로 접근 가능하나 테이블로 저장된 정보는 {{dict_element}} 또는 {{array_element}}로 호출 불가
 setState(triggerId, "chars", charTable)
@@ -214,7 +236,7 @@ setChatVar(triggerId, "char_name", char.name)
 -- HTML에서: {{getvar::char_name}}
 ```
 
-### 7. 로어북 직접 로딩 (캐싱 없음)
+### 8. 로어북 직접 로딩 (캐싱 없음)
 ```lua
 -- RisuAI 플랫폼 특성상 getLoreBooks 직접 호출이 캐싱보다 빠름
 -- 따라서 모든 DB/로어북 접근은 매번 직접 호출
@@ -227,7 +249,7 @@ local content = getLoreBookContent(triggerId, "some.lua")
 
 > ⚠️ **중요**: RisuAI 플랫폼 테스트 결과, 전역변수나 state에 캐싱하는 것보다 `getLoreBooks`를 직접 호출하는 것이 **훨씬 빠름**. 불필요한 캐싱 로직을 추가하지 마세요.
 
-### 8. 시스템 파일 패턴 (Dispatcher Pattern)
+### 9. 시스템 파일 패턴 (Dispatcher Pattern)
 여러 기능을 포함하는 `.sys` 파일은 확장성을 위해 디스패처 패턴을 사용합니다:
 ```lua
 (function()
@@ -246,6 +268,56 @@ end)()
 - `sysFunction(id, "file.sys", "funcA", args...)` 형태로 호출합니다.
 - 단일 기능 파일(예: `initVars.sys`)은 이 패턴을 따르지 않습니다.
 
+### 10. 밸런싱 및 상수 위치
+게임 밸런스에 영향을 주는 주요 상수들은 관련 파일 상단에 배치하고자 했습니다.
+- `trainProcess.sys.txt`: 조교 성공률 보정, 경험치 획득 제한, HP/SP 소모 배율 등
+- `Script.lua.txt`: `MAXROLL`(성공굴림 최댓값), `DC_PENALTY`(전역 난이도)
+- `initVars.sys.txt`: 초기 자금, 기본 스탯 등
+
+
+### 11. CustomEvent 시스템 상세
+`customEvent.sys.txt`는 게임 내의 유연한 이벤트 처리를 담당합니다. `trait`, `abl`, `mark`, `stat` DB에 정의된 이벤트들을 조건에 따라 실행합니다.
+
+#### 기본 구조
+```lua
+-- 호출 예시 (Lua)
+local ctx = {
+    tags = {"sex", "hard"},     -- 현재 상황 태그
+    target = targetTable,       -- 대상 캐릭터 데이터
+    stat = statTable,           -- 현재 스탯 데이터
+    ...                         -- 기타 문맥 데이터
+}
+ctx = sysFunction(triggerId, "customEvent.sys", "onEventName", ctx)
+```
+
+#### 이벤트 정의 (DB 파일)
+```lua
+events = {
+    onEventName = {
+        -- [조건] 태그 매칭 (AND)
+        hasTags = {"tag1", "tag2"}, 
+        -- [조건] 태그 제외 (NAND)
+        notTags = {"tag3"},
+        -- [조건] 특정 스탯 관련일 때만 (옵션)
+        targetStat = {"C쾌락", "V쾌락"},
+        
+        -- [실행] Lua 코드 (문자열 또는 함수)
+        -- 환경 변수: ctx 테이블의 모든 키, level (abl/mark/stat 레벨)
+        func = function(e) 
+            e.val = e.val + (level * 10) 
+        end
+    }
+}
+```
+
+#### 처리 로직 (`processEvents`)
+1. **소스 순회**: `trait`, `abl`, `mark`, `stat` DB를 순회하며 대상 캐릭터가 보유한 항목 찾기.
+2. **이벤트 매칭**: 요청된 `eventName`과 일치하는 이벤트 정의 확인.
+3. **조건 검사**:
+    - `tagMatch`: `hasTags`가 모두 포함되고 `notTags`가 하나도 포함되지 않아야 함.
+    - `targetStat`: `ctx.statName`이 `targetStat` 목록에 포함되어야 함 (정의된 경우).
+4. **실행**: 조건 만족 시 `func` 실행. `ctx` 테이블은 `sysFunction`을 통해 계속 전달되어 누적 변경됨.
+
 ## 🔧 주요 시스템 파일
 
 | 파일 | 역할 |
@@ -261,22 +333,20 @@ end)()
 
 - [ ] DB 파일 수정 시 영어 키 사용 확인
 - [ ] 캐릭터 데이터 접근 시 한국어 키 사용 확인
-- [ ] 이벤트 추가 시 `customEvent.md` 문서 참조
-- [ ] 새 태그 추가 시 기존 태그와 충돌 여부 확인
-- [ ] 비동기 함수 `:await()` 사용 규칙 준수
+- [ ] 이벤트 추가 시 본 문서의 '이벤트 시스템 구조' 및 `customEvent.sys.txt` 참조
 - [ ] CBS 문법 사용 시 `CBS Guide.md` 참조
 - [ ] **로어북 캐싱 금지**: 직접 호출이 더 빠름
+- [ ] **DB 문법 확인**: Config Style (`key = val`) 권장
 
 ## 🐛 알려진 제한사항
 
 1. **Lua 성능**: JavaScript 위에서 실행되므로 반복문 최소화 필요
-2. **setDescription() 버그**: 현재 작동하지 않음 (RisuAI 소스코드 버그)
-3. **HTML 내 setvar 불가**: CBS 변수 설정은 Lua에서만 가능
-4. **os.clock() 제한**: 35분 후 오버플로우 발생
+2. **HTML 내 setvar 불가**: CBS 변수 설정은 Lua에서만 가능
+3. **os.clock() 제한**: 35분 후 오버플로우 발생
+4. **HTML 들여쓰기 금지**: .html파일을 작성하거나 Lua 스크립트 내에서 HTML 문자열을 생성할 때, **들여쓰기(Tab/Space)**를 포함하면 RisuAI 플랫폼에서 파싱 에러가 발생할 수 있습니다.
 
 ## 📚 참고 자료
 
 - [RisuAI 공식 사이트](https://risuai.net)
 - [CBS Guide.md](CBS%20Guide.md) - CBS 문법 완전 가이드
 - [LUA Guide.md](LUA%20Guide.md) - Lua 트리거 가이드
-- [customEvent.md](customEvent.md) - 이벤트 시스템 문서

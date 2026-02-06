@@ -1,0 +1,46 @@
+-- (Lua Config Style)
+    humanoid_horde = {
+        name = "인간형 군단",
+        desc = "던전 전체 인간형 5기 이상 시, 모든 인간형 공격력 +2",
+        scope = "dungeon",
+        condition = "count('tag', '인간형') >= 5",
+        target = "dungeon",
+        targetFilter = "tag == '인간형'",
+        effect = "atkMin + 2"
+    }
+    beast_flank = {
+        name = "야수의 호위",
+        desc = "인간형 좌우에 야수가 있으면, 해당 야수들의 방어력 +5",
+        scope = "lr",
+        condition = "self.hasTag('인간형') and left.hasTag('야수') and right.hasTag('야수')",
+        target = "lr",
+        targetFilter = "tag == '야수'",
+        effect = "def + 5"
+    }
+    fire_resonance = {
+        name = "화염 공명",
+        desc = "같은 층에 화염 속성 3기 이상 시, 층 전체 화염 속성 유닛 공격력 +3",
+        scope = "floor",
+        condition = "count('tag', '화염') >= 3",
+        target = "floor",
+        targetFilter = "tag == '화염'",
+        effect = "atkMin + 3"
+    }
+    elite_squad = {
+        name = "정예 부대",
+        desc = "던전 전체 레이팅 2000 이상 시, 레이팅 150 이상인 유닛 방어력 +10",
+        scope = "dungeon",
+        condition = "sum('rating') >= 2000",
+        target = "dungeon",
+        targetFilter = "rating >= 150",
+        effect = "def + 10"
+    }
+    weak_link = {
+        name = "약점 보완",
+        desc = "자신이 방어력 5 이하이고 좌우 아군이 방어력 20 이상이면, 자신의 방어력 +15",
+        scope = "lr", 
+        condition = "self.def <= 5 and left.def >= 20 and right.def >= 20",
+        target = "self",
+        targetFilter = "",
+        effect = "def + 15"
+    }

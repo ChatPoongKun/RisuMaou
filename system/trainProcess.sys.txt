@@ -1,7 +1,27 @@
 --조교 커맨드에 따른 LLM의 출력을 처리
---조교 커맨드에 따른 LLM의 출력을 처리
 function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
-    debug("trainProcess 실행")
+    debug("trainProcess 실행: DC="..tostring(dc))
+
+    ---------------------------------------
+    -- ★ 밸런싱 상수 정의 (Balancing Constants)
+    -- 조교 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+    ---------------------------------------
+
+    -- [보너스/페널티 계수]
+    local MARK_BONUS_MULT       = 2     -- 각인 보너스 배율. 각인 1레벨당 보너스 값.
+    local REBELLION_BASE        = 2     -- 반발각인 페널티 기준. 반발각인 레벨에 대해 (이 값)^레벨 만큼 페널티.
+
+    -- [대성공 보상]
+    local GREAT_SUCCESS_COST_MULT = 0.75 -- 대성공 시 HP/SP 소모 배율 (75%). 조교 대성공 시 체력/기력 소모가 이 비율로 감소.
+
+    -- [기력 부족 페널티]
+    local SP_SHORTAGE_HP_MULT   = 1.0     -- 기력 부족 시 추가 체력 소모 배율. 부족한 기력의 이 배수만큼 체력 추가 소모.
+
+    -- [스탯 경험치 획득 제한]
+    local STAT_EXP_DC_FACTOR    = 0.15  -- DC 기반 최대 레벨 계산 계수. (DC * 이 값)이 획득 가능한 최대 스탯 레벨.
+                                        -- 예: DC 60 → 최대 9렙, DC 67 → 최대 10렙 경험치까지 획득 가능.
+
+    ---------------------------------------
 
     --[[초기화]]
     math.randomseed(os.time())
@@ -56,15 +76,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     --페널티 요소: 대상의 2^반발각인, 저항 stat당 1
     local rollBonus = 0
     rollBonus = rollBonus + json.decode(user)["레벨"] - 1 --유저 레벨당 1, 1레벨부터 시작이므로 1을 차감
-    rollBonus = rollBonus - currentStat["저항"] --저항 stat 1레벨당 1만큼 페널티
-    for k, v in pairs(markDB) do -- 각인 보너스 적용 (객체 순회)
-        local markName = v.name or k
-        if markName == "반발각인" then
-            rollBonus = rollBonus - 2^tonumber((target[markName] or 0))
-        else
-            rollBonus = rollBonus + (target[markName] or 0)*2
-        end
-    end
 
     --최종 주사위굴림
     local roll = math.random()*MAXROLL
@@ -72,13 +83,13 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     if roll > MAXROLL - 1 then
         rollMsg = "조교 대성공!"
         screenEffect = [[<div class="success-animation"><div class="animation-text success">]]..rollMsg..[[</div></div>]]
-        debug(roll..">="..dc, rollMsg)
+        debug(string.format("Roll: %.0f (Total: %.0f) vs DC: %.0f", roll, roll+rollBonus, dc), rollMsg)
     elseif roll + rollBonus <= dc then
         rollMsg = "조교 실패"
         screenEffect = [[<div class="success-animation"><div class="animation-text fail">]]..rollMsg..[[</div></div>]]
-        debug(roll..">="..dc, rollMsg)
+        debug(string.format("Roll: %.0f (Total: %.0f) vs DC: %.0f", roll, roll+rollBonus, dc), rollMsg)
     else
-        debug(roll..">="..dc, "성공")
+        debug(string.format("Roll: %.0f (Total: %.0f) vs DC: %.0f", roll, roll+rollBonus, dc), "성공")
     end
 
     --성공한 경우에만 경험 추가
@@ -106,16 +117,16 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         costHP = costHP + dc - math.abs(roll + rollBonus)
         costSP = costSP + dc - math.abs(roll + rollBonus)
     elseif string.find(rollMsg, "대성공") then --조교가 대성공 하면 체력 기력 소모 감소
-        costHP = costHP *0.8
-        costSP = costSP *0.8
+        costHP = costHP * GREAT_SUCCESS_COST_MULT
+        costSP = costSP * GREAT_SUCCESS_COST_MULT
     end
     --비용 정수화
     costHP = math.floor(costHP)
     costSP = math.floor(costSP)
     --실제 HP,SP 차감처리
     local currentHP, currentSP = tonumber(target["체력"]), tonumber(target["기력"])
-    if currentSP < costSP then --기력이 부족한 경우 부족한 기력 소모의 두배만큼 체력소모
-        costHP = costHP + ((costSP-currentSP) *2)
+    if currentSP < costSP then --기력이 부족한 경우 부족한 기력의 배수만큼 체력소모
+        costHP = costHP + ((costSP-currentSP) * SP_SHORTAGE_HP_MULT)
     end
     debug("hp: "..currentHP, "cost: "..costHP)
     debug("sp: "..currentSP, "cost: "..costSP)
@@ -130,13 +141,13 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         local blockDeath = tonumber(getChatVar(triggerId, "blockDeath"))
         if blockDeath == 1 then --실신처리
             target["조교실신경험"] = target["조교실신경험"] + 1
-            target["condition"] = "실신"
+            target["condition"] = "FAINT"
             setState(triggerId, "target", target)
             setChatVar(triggerId, "target", target)
             local newLog = getChatVar(triggerId, "newLog")
             newLog = newLog .. "<p>대상은 가혹한 조교를 견디지 못하고 실신했다.</p>"
             setChatVar(triggerId, "newLog", newLog)
-            executeFunction(triggerId, "train", "199") --조교종료 화면으로 넘어가 trace를 얻고 어빌처리는 할 수 있도록 함
+            sysFunction(triggerId, "train.sys", "post") --조교종료 화면으로 넘어가 trace를 얻고 어빌처리는 할 수 있도록 함
             alertNormal(triggerId, "대상은 가혹한 조교를 견디지 못하고 실신했습니다. 조교를 종료합니다.")
 
         else --사망처리.
@@ -148,7 +159,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
             setChatVar(triggerId, "targetTrace", "")
             
             --캐릭터 정보 변경
-            target["condition"] = "사망"
+            target["condition"] = "DEAD"
             target["체력"] = 0
             target["기력"] = 0
             local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
@@ -185,7 +196,8 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     for k,v in pairs(currentStat) do
         statProm[k] = v.."/10"
     end
-
+    --statdb에서 설명파트만 추출 (shallow copy로 원본 캐시 보호 done at lines 42-50)
+    
     --target가 보유한 trait에 대한 설명만 추출
     local traitProm = {}
     for k, v in pairs(traitDB) do
@@ -195,25 +207,62 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
             traitProm[tName] = v.desc --target한테 있는 trait 설명만 입력
         end
     end
-    traitProm = json.encode(traitProm)
+    -- traitProm is now a table, will be encoded later
 
-    --trainResponse (stat 계산) 프롬프트
+    local p_base = getLoreBookContent(triggerId, "trainResponse.pt")
+    local json_stat = json.encode(statDescDB)
+
+    -- markDB sanitization
+    local markDescDB = {}
+    for k, v in pairs(markDB) do
+        markDescDB[v.name or k] = v.desc
+    end
+    local json_mark = json.encode(markDescDB)
+
+    -- ablDB sanitization
+    local ablDescDB = {}
+    for k, v in pairs(ablDB) do
+        ablDescDB[v.name or k] = v.desc
+    end
+    local json_abl = json.encode(ablDescDB)
+
+    local json_trait = json.encode(traitProm)
+
+    -- itemDB sanitization (handling categories)
+    local itemDescDB = {}
+    if itemDB then
+        for cat, items in pairs(itemDB) do
+            itemDescDB[cat] = {}
+            for k, v in pairs(items) do
+                itemDescDB[cat][v.name or k] = v.desc
+            end
+        end
+    end
+    local json_items = json.encode(itemDescDB)
+
+    local json_exp = json.encode(EXPtbl)
+
+    local json_stat_lv = json.encode(statProm)
+
     prompt = {
-    promptBuild("system", getLoreBookContent(triggerId, "trainResponse.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
-    promptBuild("system", "- MARK: "..json.encode(markDB)),
-    promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
-    promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
-    promptBuild("system", "- ITEMS: "..json.encode(itemDB)),
-    promptBuild("system", "- EXP_TABLE: "..json.encode(EXPtbl)),
-    promptBuild("system", "- character_sheet: "..target_c),
-    promptBuild("system", "- character_stats_Lv: "..json.encode(statProm)),
-    promptBuild("system", "- training_command: "..command),
-    promptBuild("system", "- command_result: "..rollMsg)
+        promptBuild("system", p_base or ""),
+        promptBuild("system", "- STAT: "..json_stat),
+        promptBuild("system", "- MARK: "..json_mark),
+        promptBuild("system", "- ABILITY: "..json_abl),
+        promptBuild("system", "- TRAIT: "..json_trait),
+        promptBuild("system", "- ITEMS: "..json_items),
+        promptBuild("system", "- EXP_TABLE: "..json_exp),
+        promptBuild("system", "- character_sheet: "..(target_c or "")),
+        promptBuild("system", "- character_stats_Lv: "..json_stat_lv),
+        promptBuild("system", "- training_command: "..command),
+        promptBuild("system", "- command_result: "..rollMsg)
     }
+    debug("trainProcess: LLM (trainResponse) 호출 시작")
     local trainResponse = LLM(triggerId, prompt, "trainResponse")
+    debug("trainProcess: LLM (trainResponse) 호출 완료. Success="..tostring(trainResponse.success))
     if not trainResponse.success then --LLM응답 실패시 함수 종료
-        alertNormal(triggerId, "trainResponse LLM응답 실패"..trainResponse.result)
+        debug("[Train:Error] trainResponse LLM응답 실패: " .. tostring(trainResponse.result))
+        alertNormal(triggerId, "trainResponse LLM응답 실패: " .. tostring(trainResponse.result))
         setChatVar(triggerId, "cmds", old_cmds)
         reloadDisplay(triggerId)
         return false
@@ -223,8 +272,18 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     local content = trainResponse.result
     debug("stat계산: "..content)
     --statEXP 저장
-    local statEXP = content:match("({.*})")
-    statEXP = json.decode(statEXP)
+    local statEXPStr = content:match("({.*})")
+    local statEXP = {}
+    if statEXPStr then
+        local status, res = pcall(json.decode, statEXPStr)
+        if status then 
+            statEXP = res 
+        else
+            debug("[Train:Error] Failed to decode statEXP JSON: " .. tostring(res))
+        end
+    else
+        debug("[Train:Error] No JSON found in LLM response")
+    end
 
     -- customEvent: onStatEXP 처리
     tags = tags or {}
@@ -245,9 +304,13 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
 
     --dc에 따른 statEXP 획득 제어
     for k,v in pairs(statEXP) do
-        local maxLv = math.floor(dc*0.15) --난이도 60이면 9렙, 67이면 10렙 경험치까지 받을 수 있음
+        local maxLv = math.floor(dc * STAT_EXP_DC_FACTOR) --DC 기반 최대 레벨 계산
         local limit = EXPtbl[tostring(maxLv)]
-        statEXP[k] = math.min(v, limit)
+        if limit then
+            statEXP[k] = math.min(v, limit)
+        else
+             debug("[Train:Warn] No EXP limit found for level " .. tostring(maxLv))
+        end
     end
 
     --trait에 따른 statEXP 획득 제어
@@ -307,9 +370,16 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
         local lv = tostring(currentLv)
         local remainStat = remainStat
         local r = math.random()
-        debug(statName..": "..remainStat.."/"..EXPtbl[lv]..": "..remainStat/EXPtbl[lv] .. " > " .. r)
-        if remainStat/EXPtbl[lv] > r then
-            remainStat = math.max(remainStat - EXPtbl[lv], 0)
+        
+        -- 안전장치: 다음 레벨 테이블이 없으면 성장 중지 (Max Level)
+        local reqExp = EXPtbl[lv]
+        if not reqExp then
+            return lv
+        end
+        
+        debug(statName..": "..remainStat.."/"..reqExp..": "..remainStat/reqExp .. " > " .. r)
+        if remainStat/reqExp > r then
+            remainStat = math.max(remainStat - reqExp, 0)
             lv = lvUp(remainStat, lv+1, statName)
             return lv
         else
@@ -346,13 +416,14 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
 
     prompt = {
     promptBuild("system", getLoreBookContent(triggerId, "system.pt")),
+    promptBuild("assistant", getLoreBookContent(triggerId, "jailBreak.pt")), --탈옥 프리필
     promptBuild("system", getLoreBookContent(triggerId, "trainLog.pt")),
     promptBuild("system", getLoreBookContent(triggerId, "worldBriefing.pt")),
-    promptBuild("system", "- STAT: "..json.encode(statDescDB)),
-    promptBuild("system", "- MARK: "..json.encode(markDB)),
-    promptBuild("system", "- ABILITY: "..json.encode(ablDB)),
-    promptBuild("system", "- TRAIT: "..json.encode(traitProm)),
-    promptBuild("system", "- ITEMS: "..json.encode(itemDB)),
+    promptBuild("system", "- STAT: "..json_stat),
+    promptBuild("system", "- MARK: "..json_mark),
+    promptBuild("system", "- ABILITY: "..json_abl),
+    promptBuild("system", "- TRAIT: "..json_trait),
+    promptBuild("system", "- ITEMS: "..json_items),
     promptBuild("system", "- character_sheet: "..target_c),
     promptBuild("system", "- character_stats_Lv: "..json.encode(statResult)),
     promptBuild("system", "- character_stats_Lv: "..equipments),
@@ -361,13 +432,16 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     promptBuild("system", "- training_command: "..command), --조교명령
     promptBuild("system", "- command_result: "..rollMsg), --성공여부
     promptBuild("system", "- orgasm: "..ejMsg), --절정여부
-    promptBuild("system", "## Train Log"), --로그 시작
+    promptBuild("assistant", "## Train Log"), --로그 시작
     promptBuild("assistant", oldLog) --기존 로그
     }
 
+    debug("trainProcess: LLM (trainLog) 호출 시작")
     local trainLog = LLM(triggerId, prompt, "trainLog") --LLM에 응답 요청
+    debug("trainProcess: LLM (trainLog) 호출 완료. Success="..tostring(trainLog.success))
     if not trainLog.success then --LLM응답 실패시 함수 종료
-        alertNormal(triggerId, "trainLog LLM응답 실패".. trainLog.result)
+        debug("[Train:Error] trainLog LLM응답 실패: " .. tostring(trainLog.result))
+        alertNormal(triggerId, "trainLog LLM응답 실패: " .. tostring(trainLog.result))
         setChatVar(triggerId, "cmds", old_cmds)
         reloadDisplay(triggerId)
         return false
@@ -417,5 +491,6 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
     stateToVar(triggerId, "target", target)
 
     reloadDisplay(triggerId)
+    debug("trainProcess: 정상 종료, reloadDisplay 호출됨")
     return true
 end

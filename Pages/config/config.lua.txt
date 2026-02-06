@@ -49,13 +49,13 @@ end!!
     local user = json.decode(getChatVar(triggerId, "user"))
     local userAge = alertSelect(triggerId, {"어림", "청년", "중년", "노년"}):await()
     if userAge == "0" then
-        user["외형"] = "어림"
+        user["나이"] = "어림"
     elseif userAge == "1" then
-        user["외형"] = "청년"
+        user["나이"] = "청년"
     elseif userAge == "2" then
-        user["외형"] = "중년"
+        user["나이"] = "중년"
     elseif userAge == "3" then
-        user["외형"] = "노년"
+        user["나이"] = "노년"
     end
     user = json.encode(user)
     setChatVar(triggerId, "user", user)
@@ -307,8 +307,8 @@ end!!
     local ageLimit = getChatVar(triggerId, "ageLimit")
 
     if ageLimit == "0" then
-        setChatVar(triggerId, "ageLimit", "12")
-    elseif ageLimit == "12" then
+        setChatVar(triggerId, "ageLimit", "13")
+    elseif ageLimit == "13" then
         setChatVar(triggerId, "ageLimit", "18")
     else
         setChatVar(triggerId, "ageLimit", "0")
@@ -406,7 +406,7 @@ end!!
 
 [config/showLog/hidden] function(triggerId)
     local showLog = getChatVar(triggerId, "showLog")
-    if showLog == "visible" then showLog = "hidden" else showLog = "visible" end
+    if showLog == "block" then showLog = "none" else showLog = "block" end
     setChatVar(triggerId, "showLog", showLog)
 end!!
 
@@ -414,6 +414,12 @@ end!!
     local debug = getChatVar(triggerId, "debug")
     debug = math.abs(debug-1)
     setChatVar(triggerId, "debug", debug)
+end!!
+
+[config/use_dictionary/hidden] function(triggerId)
+    local use_dictionary = getChatVar(triggerId, "use_dictionary")
+    use_dictionary = math.abs(use_dictionary-1)
+    setChatVar(triggerId, "use_dictionary", use_dictionary)
 end!!
 
 [config/trainResponse/hidden] function(triggerId)
@@ -433,6 +439,20 @@ end!!
 [config/newChar/hidden] function(triggerId)
     local models = json.decode(getChatVar(triggerId, "models"))
     local llmSelect = "newChar"
+    models[llmSelect] = tostring(math.abs(tonumber(models[llmSelect])-1))
+    setChatVar(triggerId, "models", json.encode(models))
+end!!
+
+[config/battleNarration/hidden] function(triggerId)
+    local models = json.decode(getChatVar(triggerId, "models"))
+    local llmSelect = "battleNarration"
+    models[llmSelect] = tostring(math.abs(tonumber(models[llmSelect])-1))
+    setChatVar(triggerId, "models", json.encode(models))
+end!!
+
+[config/disposal/hidden] function(triggerId)
+    local models = json.decode(getChatVar(triggerId, "models"))
+    local llmSelect = "disposal"
     models[llmSelect] = tostring(math.abs(tonumber(models[llmSelect])-1))
     setChatVar(triggerId, "models", json.encode(models))
 end!!

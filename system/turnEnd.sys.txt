@@ -1,6 +1,32 @@
-function (triggerId)
-    debug("turnEnd 실행")
-    
+
+
+function (triggerId, action)
+    debug("turnEnd 실행: " .. tostring(action))
+    ---------------------------------------
+    -- ★ 밸런싱 상수 정의 (Balancing Constants)
+    -- 턴 종료 시스템의 핵심 수치를 조정하려면 이 섹션의 값을 수정하세요.
+    ---------------------------------------
+
+    -- [침공 이벤트 상수]
+    local BATTLE_PROB       = 0.5   -- 전투 이벤트 발생 확률 (50%). 밤에 이 확률로 용사 침공 발생.
+    local INVASION_MIN_DAY  = 3     -- 침공 가능 최소 일수. 이 일수 이상부터 침공 이벤트 발생 가능.
+
+    -- [밤 회복률] (수면/휴식 중)
+    local HP_GEN_NIGHT      = 0.1   -- 밤 HP 회복률 (10%). 최대 HP의 이 비율만큼 회복.
+    local SP_GEN_NIGHT      = 0.15  -- 밤 SP 회복률 (15%). 최대 SP의 이 비율만큼 회복.
+
+    -- [낮 회복률] (일과 중)
+    local HP_GEN_DAY        = 0.05  -- 낮 HP 회복률 (5%). 최대 HP의 이 비율만큼 회복.
+    local SP_GEN_DAY        = 0.1   -- 낮 SP 회복률 (10%). 최대 SP의 이 비율만큼 회복.
+
+    -- [회복 페널티]
+    local RECOVERY_PENALTY_FAINT = 0.5   -- 실신 상태 시 HP 회복률 감소 배율 (50%).
+
+    -- [상태 변경 조건]
+    local TRAINABLE_SP_RATIO    = 0.9   -- 조교가능 전환 SP 조건. SP가 (최대 SP * 이 값) 이상이면 실신→조교가능 전환.
+
+    ---------------------------------------
+
     --HP/SP 회복 처리 함수
     --isNight: true면 밤(높은 회복률), false면 낮(낮은 회복률)
     local function processRecovery(triggerId, charName, isNight)
@@ -9,24 +35,33 @@ function (triggerId)
         --기본 회복률 설정
         local hpGen, spGen
         if isNight then
-            hpGen = 0.1
-            spGen = 0.15
+            hpGen = HP_GEN_NIGHT
+            spGen = SP_GEN_NIGHT
         else
-            hpGen = 0.05
-            spGen = 0.1
+            hpGen = HP_GEN_DAY
+            spGen = SP_GEN_DAY
         end
         
-        --빠른회복 미보유 또는 실신 시 회복률 감소
-        if char["빠른회복"] == 0 or char["condition"] == "실신" then
-            hpGen = hpGen - 0.05
-            if not isNight then
-                hpGen = 0  --낮에는 회복 없음
-            end
-        end
+        --[[
+            customEvent: onDayPass
+            trait.db에서 정의된 회복 보너스/페널티를 적용
+            (예: 빠른회복, 느린회복 특성)
+        ]]
+        local recoveryCtx = {
+            target = char,
+            stat = {},
+            tags = {},
+            hpGen = hpGen,
+            spGen = spGen,
+            isNight = isNight
+        }
+        recoveryCtx = sysFunction(triggerId, "customEvent.sys", "onDayPass", recoveryCtx)
+        hpGen = recoveryCtx.hpGen
+        spGen = recoveryCtx.spGen
         
-        --실신 시 HP 회복 50% 감소
-        if char["condition"] == "실신" then
-            hpGen = hpGen * 0.5
+        --실신 시 HP 회복 감소
+        if char["condition"] == "FAINT" then
+            hpGen = hpGen * RECOVERY_PENALTY_FAINT
         end
         
         --실제 회복 계산
@@ -38,9 +73,9 @@ function (triggerId)
         char["체력"] = intForm(math.min(currentHP + math.floor(maxHP * hpGen), maxHP))
         char["기력"] = intForm(math.min(currentSP + math.floor(maxSP * spGen), maxSP))
         
-        --기력이 90% 이상 회복되면 실신에서 조교가능으로 변경
-        if tonumber(char["기력"]) > maxSP * 0.9 and char["condition"] == "실신" then
-            char["condition"] = "조교가능"
+        --기력이 조건 충족 시 실신에서 조교가능으로 변경
+        if tonumber(char["기력"]) > maxSP * TRAINABLE_SP_RATIO and char["condition"] == "FAINT" then
+            char["condition"] = "TRAINABLE"
         end
         
         --로어북에 저장
@@ -52,14 +87,305 @@ function (triggerId)
     --시간 정보 호출
     local day = getChatVar(triggerId, "day")
     local ampm = getChatVar(triggerId, "ampm")
-    local chars = json.decode(getChatVar(triggerId, "chars"))
+    
+    local charsStr = getChatVar(triggerId, "chars")
+    local chars = {}
+    if charsStr and charsStr ~= "" then
+        local status, res = pcall(json.decode, charsStr)
+        if status then chars = res else debug("turnEnd: chars decoding failed") end
+    end
+    
     local isNight = (ampm == "1")
     
-    --알림 메시지
-    if isNight then
-        alertNormal(triggerId, "하루가 지나갑니다...")
-    else
-        alertNormal(triggerId, "밤이 깊어옵니다...")
+    -- [침공 이벤트 트리거] - 알림보다 먼저 체크
+    -- 조건: 3일차 이상, 밤(isNight=true), 50% 확률
+    -- action이 "nextDay"인 경우(전투 후 복귀) 침공 체크 스킵
+    local invasionTriggered = false
+    if action ~= "nextDay" and isNight and tonumber(day) >= INVASION_MIN_DAY and math.random() < BATTLE_PROB then
+        invasionTriggered = true
+        
+        -- 즉시 배틀화면으로 전환 (로딩 상태 표시)
+        setChatVar(triggerId, "battleLoadingState", "침공 용사 파악중...")
+        setChatVar(triggerId, "battleLogsHtml", "") -- 초기화
+        setChatVar(triggerId, "battleNarration", "")
+        setChatVar(triggerId, "defenderImage", "")
+        setChatVar(triggerId, "battleDungeonHtml", "")
+        screenChange(triggerId, "battle")
+        reloadDisplay(triggerId) -- 화면 갱신
+        
+        -- 즉시 배틀화면으로 전환 (로딩 상태 표시)
+        -- 전투 시뮬레이션 실행 (pcall로 감싸서 오류시에도 계속 진행)
+        local ok, summary = pcall(sysFunction, triggerId, "battle.sys", "processInvasion")
+        
+        if not ok then
+            debug("[turnEnd] battle.sys 호출 실패: " .. tostring(summary))
+            setChatVar(triggerId, "battleLoadingState", "")
+            reloadDisplay(triggerId)
+            alertNormal(triggerId, "전투 시스템 로딩 중 오류가 발생했습니다.")
+            invasionTriggered = false -- 전투 실패시 일반 알림으로 돌아감
+        else
+            -- battle.sys 호출 성공
+        end
+        
+        if ok and summary and summary.logs and #summary.logs > 0 then
+            local turnInterval = 1.0 -- CSS 애니메이션(1s)과 싱크를 맞춤
+            
+            setChatVar(triggerId, "battleTurnInterval", turnInterval)
+            local okD, dungeonStatusHtml = pcall(sysFunction, triggerId, "dungeon.sys", "getBattleStatusHtml", summary.clearedSlots, summary.timeline, turnInterval)
+            if not okD then
+                debug("[turnEnd] dungeon.sys 호출 실패: " .. tostring(dungeonStatusHtml))
+                dungeonStatusHtml = "Dungeon Status Error"
+            end
+            setChatVar(triggerId, "battleDungeonHtml", dungeonStatusHtml)
+
+            -- [No-JS] HTML 로그 생성 (Turn-based Batch 처리) & Defender Image Stack 생성
+            local logLines = {}
+            local currentTurnLines = {}
+            local turnDelay = 0.0
+            
+            local lastTurnNum = -1
+            
+            -- Defender Stack Logic
+            local defenderStack = {}
+            -- 기본 이미지 (마왕) 삭제 - 몬스터만 표시하거나 비워둠
+            
+            -- 타임라인 기반 Defender Image 생성
+            -- summary.timeline: { {startTurnIndex=0, defender={type="monster", key="..."}}, ... }
+            -- 타임라인 기반 Defender Image 생성 (역순 적재: 나중 턴이 아래깔림, 앞 턴이 위에 덮임)
+            -- [Boss(Base), ..., Mon2(Timed), Mon1(Timed)] 순서로 DOM에 추가됨 -> Mon1이 맨 위
+            if summary.timeline then
+                -- 역순 순회
+                for i = #summary.timeline, 1, -1 do
+                    local event = summary.timeline[i]
+                    local dKey = event.defender and event.defender.key
+                    local dType = event.defender and event.defender.type
+                    
+                    if dKey and dType ~= "none" then
+                        -- Duration 계산 (다음 이벤트까지의 시간)
+                        -- 현재 i번째 이벤트의 duration은 정순일 때의 [i+1] - [i]
+                        -- 정순 인덱스 i 기준으로 nextEvent는 timeline[i+1]
+                        local duration = turnInterval * 5 -- 기본값
+                        local nextEvent = summary.timeline[i + 1]
+                        if nextEvent and nextEvent.startTurnIndex then
+                            duration = (nextEvent.startTurnIndex - event.startTurnIndex) * turnInterval
+                        end
+                        
+                        -- 퇴장 시간(Delay) = (시작 턴 + 지속 턴) * 턴시간
+                        local exitTime = (event.startTurnIndex * turnInterval) + (duration * 0.9) -- 겹침 방지 위해 살짝 일찍 컷
+                        
+                        local src = ""
+                        if dType == "monster" then
+                            src = "{{raw::" .. dKey .. "}}"
+                        elseif dType == "boss" or dKey == "user" then
+                             src = "{{source::user}}"
+                        else
+                             src = "{{raw::" .. dKey .. "}}" 
+                        end
+                        
+                        -- 마지막 요소(타임라인상 가장 뒤 = 보스)는 사라지지 않는 Base
+                        if i == #summary.timeline then
+                            table.insert(defenderStack, string.format('<img src="%s" class="defender-img base">', src))
+                        else
+                            -- 그 외 요소는 시간이 되면 사라짐 (Fade Out)
+                            -- animation: name duration timing-function delay fill-mode
+                            table.insert(defenderStack, string.format(
+                                '<img src="%s" class="defender-img timed" style="animation: peel-off 0.5s ease-out %.2fs forwards;">', 
+                                src, exitTime
+                            ))
+                        end
+                    end
+                end
+            end
+            
+            local defenderHtml = table.concat(defenderStack, "\n")
+            setChatVar(triggerId, "defenderImage", defenderHtml) -- 변수명 재사용 (HTML 삽입)
+
+            -- 로그 처리: 턴 번호가 바뀔 때마다 딜레이를 누적하여 순차 출력
+            -- (예: 몬스터1의 Turn1,2,3 -> 몬스터2의 Turn1,2,3 순서로)
+            for i, line in ipairs(summary.logs) do
+                local turnNum = tonumber(line:match("%[Turn (%d+)%]")) or lastTurnNum
+                
+                if turnNum ~= lastTurnNum then
+                    -- 이전 턴의 로그들을 현재 딜레이로 출력
+                    if #currentTurnLines > 0 then
+                        for _, l in ipairs(currentTurnLines) do
+                            table.insert(logLines, string.format('<div class="%s" style="animation-delay: %.2fs">%s</div>', l.class, turnDelay, l.text))
+                        end
+                        -- 중요: 누적 딜레이 사용 (절대값 X)
+                        turnDelay = turnDelay + turnInterval
+                        currentTurnLines = {}
+                    end
+                    lastTurnNum = turnNum
+                end
+                
+                local class = "log-line"
+                if string.find(line, "처치") or string.find(line, "승리") or string.find(line, "제압") then
+                    class = class .. " victory"
+                elseif string.find(line, "피해") or string.find(line, "쓰러졌") then
+                    class = class .. " danger"
+                elseif string.find(line, "Turn") then
+                    class = class .. " highlight"
+                end
+                
+                table.insert(currentTurnLines, {text=line, class=class})
+            end
+            
+            if #currentTurnLines > 0 then
+                 -- 마지막 턴 로그 처리
+                 -- turnDelay는 위 루프에서 갱신됨
+                for _, l in ipairs(currentTurnLines) do
+                    table.insert(logLines, string.format('<div class="%s" style="animation-delay: %.2fs">%s</div>', l.class, turnDelay, l.text))
+                end
+                turnDelay = turnDelay + turnInterval
+            end
+            
+            -- 전체 애니메이션 시간 계산 (마지막 턴 기준)
+            local totalAnimTime = turnDelay
+            
+            -- ========== LLM 나레이션 요청 ==========
+            local narrationDelay = turnDelay -- 로그 끝난 후에 나레이션 표시
+            local narrationHtml = ""
+            
+            -- 프롬프트 데이터 준비
+            local userJson = getLoreBookContent(triggerId, "user") or "{}"
+            local userName = json.decode(userJson)["이름"] or summary.userName or "마왕"
+            local dungeonLv = summary.dungeonLv or getChatVar(triggerId, "dungeonLv") or "1"
+            
+            -- summary에서 직접 가져옴 (battle.sys에서 이미 생성됨)
+            local bestiaryText = summary.bestiary or "(없음)"
+            local heroListText = summary.heroList or (summary.heroCount .. "명의 용사 침공")
+            local logText = summary.logText or table.concat(summary.logs, "\n")
+            
+            -- 결과 요약
+            local resultSummary = ""
+            if summary.result == "Win" then
+                resultSummary = "방어 성공 - 침입자 격퇴"
+            elseif summary.result == "BadEnding" then
+                resultSummary = "방어 실패 - 마왕 패배"
+            else
+                resultSummary = summary.result or "미정"
+            end
+            
+            -- 보스전 도달 여부 확인 및 User 정보 포함
+            local bossReached = false
+            if summary.timeline then
+                for _, event in ipairs(summary.timeline) do
+                    if event.defender and event.defender.type == "boss" then
+                        bossReached = true
+                        break
+                    end
+                end
+            end
+            
+            -- 프롬프트 빌딩
+            local battlePtTemplate = getLoreBookContent(triggerId, "battle.pt") or ""
+            -- 템플릿 변수 치환 (gsub 특수기호 % 우회 처리)
+            local function safeGsub(s, pattern, repl)
+                -- 리터럴 대체를 위해 %를 %%로 이스케이프
+                local escapedRepl = tostring(repl):gsub("%%", "%%%%")
+                return s:gsub(pattern, escapedRepl)
+            end
+
+            battlePtTemplate = safeGsub(battlePtTemplate, "{{heroCount}}", summary.heroCount or 1)
+            battlePtTemplate = safeGsub(battlePtTemplate, "{{dungeonLv}}", dungeonLv)
+            battlePtTemplate = safeGsub(battlePtTemplate, "{{userName}}", userName)
+            battlePtTemplate = safeGsub(battlePtTemplate, "{{heroList}}", heroListText)
+            battlePtTemplate = safeGsub(battlePtTemplate, "{{bestiary}}", bestiaryText)
+            battlePtTemplate = safeGsub(battlePtTemplate, "{{logText}}", logText)
+            battlePtTemplate = safeGsub(battlePtTemplate, "{{resultSummary}}", resultSummary)
+            
+            local prompt = {
+                promptBuild("system", getLoreBookContent(triggerId, "worldBriefing.pt") or ""),
+                promptBuild("system", battlePtTemplate)
+            }
+            
+            -- 보스전 도달 시 User 정보 추가
+            if bossReached then
+                table.insert(prompt, promptBuild("system", "- [마왕 정보] " .. userJson))
+            end
+            
+            -- LLM 호출
+            -- setChatVar(triggerId, "battleLoadingState", "전투보고서 작성중...")
+            -- reloadDisplay(triggerId)
+            -- LLM 호출
+            local narrationResponse = LLM(triggerId, prompt, "battleNarration")
+            
+            local narration = ""
+            local success = false
+            local errorMsg = "알 수 없는 오류"
+
+            if type(narrationResponse) == "table" then
+                success = narrationResponse.success
+                narration = narrationResponse.result or ""
+                if not success then errorMsg = narration or "API 오류" end
+            elseif type(narrationResponse) == "string" then
+                success = true
+                narration = narrationResponse
+            end
+            
+            if success then
+                narration = narration:gsub("<Thoughts>.-</Thoughts>", "") -- CoT 제거
+                narrationHtml = string.format('<div class="battle-narration" style="animation-delay: %.2fs">%s</div>', narrationDelay, narration)
+                totalAnimTime = narrationDelay + 0.2 -- 나레이션 표시 시간 최적화 (1s fade + 0.2s buffer)
+            else
+                narrationHtml = string.format('<div class="battle-narration error" style="animation-delay: %.2fs">⚠️ 나레이션 생성 실패: %s</div>', narrationDelay, errorMsg)
+            end
+            
+            -- 저장용 순수 로그 (나레이션 제외)
+            setChatVar(triggerId, "battleLogsOnly", table.concat(logLines, "\n"))
+            
+            table.insert(logLines, narrationHtml)
+            
+            -- 전체 애니메이션 시간 (로그 + 나레이션)
+            local duration = totalAnimTime + 0.3 -- 여유 시간을 1.0s에서 0.3s로 단축
+            
+            setChatVar(triggerId, "battleLogsHtml", table.concat(logLines, "\n"))
+            setChatVar(triggerId, "battleNarration", narrationHtml:gsub('style="animation%-delay:[^"]*"', '')) -- 애니메이션 제거한 버전
+            setChatVar(triggerId, "battleResult", summary.result)
+            setChatVar(triggerId, "currentHeroName", "침공 부대 (" .. summary.heroCount .. "명)")
+            setChatVar(triggerId, "animDuration", string.format("%.1fs", duration))
+            -- 흔들림 효과는 로그 출력 중에만 발생 (나레이션 시간 제외)
+            -- turnDelay(narrationDelay)가 마지막 로그의 시작 시간 + interval이므로, 이를 기준으로 설정
+            setChatVar(triggerId, "shakeCount", math.ceil(narrationDelay)) 
+            
+            -- 로딩 완료 - 오버레이 숨김
+            setChatVar(triggerId, "battleLoadingState", "")
+            reloadDisplay(triggerId)
+            -- 전투 화면 로딩 완료
+            reloadDisplay(triggerId)
+            -- 전투 화면 로딩 완료
+
+             -- [조건 해금] 침공 (방어 3회 성공)
+            if summary.result == "Win" then
+                local defCount = tonumber(getChatVar(triggerId, "defenseCount")) or 0
+                defCount = defCount + 1
+                setChatVar(triggerId, "defenseCount", defCount)
+                
+                local unlockInv = tonumber(getChatVar(triggerId, "unlock_invasion")) or 0
+                if defCount >= 3 and unlockInv == 0 then
+                    setChatVar(triggerId, "unlock_invasion", 1)
+                    alertNormal(triggerId, "이제 인간 마을을 직접 침공할 수 있습니다!")
+                end
+            end
+
+            return true -- 침공 발생 시 메인화면 전환 방지
+        else
+            -- 전투 결과가 없거나 로그가 비어있음
+            setChatVar(triggerId, "battleLoadingState", "")
+            reloadDisplay(triggerId)
+            alertNormal(triggerId, "던전 침입이 감지되었으나, 흔적을 찾을 수 없습니다.")
+        end
+    end
+    
+    -- 침공이 없을 때만 알림 메시지 표시
+    if not invasionTriggered then
+        if isNight then
+            alertNormal(triggerId, "하루가 지나갑니다...")
+        else
+            alertNormal(triggerId, "밤이 깊어옵니다...")
+        end
+        setChatVar(triggerId, "category", "items")
+        screenChange(triggerId, "main")
     end
 
     --모든 캐릭터에 대해 회복 처리 (유틸리티 함수 사용)
@@ -72,9 +398,41 @@ function (triggerId)
     ampm = math.abs(ampm - 1)
     debug(day.."일 "..ampm)
     setChatVar(triggerId, "day", day)
+    setChatVar(triggerId, "day", day)
     setChatVar(triggerId, "ampm", ampm)
 
+    -- [조건 해금] 던전 관리 (2일차 이상)
+    local unlockDungeon = tonumber(getChatVar(triggerId, "unlock_dungeon")) or 0
+    if tonumber(day) >= 2 and unlockDungeon == 0 then
+        setChatVar(triggerId, "unlock_dungeon", 1)
+        alertNormal(triggerId, "마왕의 부활이 알려졌습니다. 몬스터를 소환해 인간들로부터 던전을 방어하세요!")
+    end
+
+    -- [가시성 업데이트] 던전 현황 탭 (배치된 유닛이 있을 때만 표시)
+    local dungeon = getState(triggerId, "dungeon")
+    local showDungeon = 0
+    if dungeon and dungeon.grid then
+        for k, v in pairs(dungeon.grid) do
+            showDungeon = 1 
+            break 
+        end
+    end
+    setChatVar(triggerId, "show_dungeon", showDungeon)
+
+    -- [조건 해금] 포로 처분 (용사 10명 이상)
+    local unlockDisposal = tonumber(getChatVar(triggerId, "unlock_disposal")) or 0
+    if unlockDisposal == 0 and #chars >= 10 then
+        setChatVar(triggerId, "unlock_disposal", 1)
+        -- alertNormal(triggerId, "포로 처분 기능이 해금되었습니다.") -- Silent unlock as per plan
+    end
+
     --갱신된 유저정보 변수저장
-    local user = json.decode(getLoreBookContent(triggerId, "user"))
+    --갱신된 유저정보 변수저장
+    local userStr = getLoreBookContent(triggerId, "user")
+    local user = {}
+    if userStr and userStr ~= "" then
+        local status, res = pcall(json.decode, userStr)
+        if status then user = res end
+    end
     stateToVar(triggerId, "user", user)
 end

@@ -59,7 +59,13 @@
         end
 
         -- actor 데이터 로드
-        local actorData = json.decode(getChatVar(triggerId, actor))
+        -- actor 데이터 로드
+        local actorStr = getChatVar(triggerId, actor)
+        local actorData = {}
+        if actorStr and actorStr ~= "" then
+            local status, res = pcall(json.decode, actorStr)
+            if status then actorData = res end
+        end
         local target = getState(triggerId, "target")
         local penis = actorData["페니스"]
 
@@ -155,12 +161,15 @@
         local costSP = trainData.costSP
 
         -- customEvent: onCostCalc 발동
-        ctx = { costHP = costHP, costSP = costSP, tags = tags, stat = stat, target = target }
+        local ctx = { costHP = costHP, costSP = costSP, tags = tags, stat = stat, category = trainData.category, target = target }
+        debug("[Train:Debug] Pre-CostCalc")
         ctx = sysFunction(triggerId, "customEvent.sys", "onCostCalc", ctx)
+        debug("[Train:Debug] Post-CostCalc")
         costHP = ctx.costHP
         costSP = ctx.costSP
 
         --[[3. 경험치 및 커맨드]]
+        debug("[Train:Debug] Step 3: EXP/Command")
         local exps = {}
         for _, v in ipairs(trainData.exps or {}) do
             table.insert(exps, v)
@@ -170,6 +179,7 @@
 
         --[[4. 삽입 로직 처리]]
         if trainData.insertion then
+            debug("[Train:Debug] Step 4: Insertion")
             local difficulty = trainData.insertion.difficulty or 1
             -- 내부 로컬 함수 호출
             local insertResult = funcs.insertionLogic(triggerId, trainData, actor, difficulty)
@@ -181,16 +191,35 @@
 
         --[[5. 장비 토글 커맨드 처리]]
         if trainData.equipment then
-            local equipments = json.decode(getChatVar(triggerId, "equipments"))
-            if equipments[trainData.equipment] == "착용" then
-                command = trainData.commands.unequip or command
+            debug("[Train:Debug] Step 5: Equipment logic for " .. tostring(trainData.equipment))
+            local eqStr = getChatVar(triggerId, "equipments")
+            local equipments = {}
+            if eqStr and eqStr ~= "" then
+                local status, res = pcall(json.decode, eqStr)
+                if status then 
+                    equipments = res 
+                else
+                    debug("[Train:Error] Failed to decode equipments JSON: " .. tostring(res))
+                end
             else
-                command = trainData.commands.equip or command
+                debug("[Train:Warn] 'equipments' chatVar is empty or nil.")
+            end
+
+            -- trainData.commands가 nil일 경우를 대비
+            local cmds = trainData.commands or {}
+
+            if equipments[trainData.equipment] == "착용" then
+                command = cmds.unequip or command
+            else
+                command = cmds.equip or command
             end
         end
 
         -- 커맨드에서 {target} 치환
-        command = command:gsub("{target}", target["이름"])
+        debug(string.format("[Train:Debug] Step 6: Gsub (Cmd: %s, Target: %s)", tostring(command), tostring(target["이름"])))
+        if command then
+            command = command:gsub("{target}", target["이름"] or "Target")
+        end
 
         --[[6. DC_PENALTY 수정 (장비 착탈 등)]]
         if trainData.dcPenaltyMod then
@@ -199,12 +228,10 @@
         end
 
         --[[7. trainProcess.sys 호출]]
-        local abbrCmd = command:sub(1, 20) .. "..."
-        debug(string.format("[Train:Result] FinalDC: %d, Feeling: %d, Command: %s", dc, feeling, abbrCmd))
+        local abbrCmd = (command or ""):sub(1, 20) .. "..."
         return sysFunction(triggerId, "trainProcess.sys", dc, costHP, costSP, exps, feeling, command, trainData.equipment, tags)
     end
 
-    -- 절정치 계산 (orgasmCalc.sys 통합)
     function funcs.orgasm(triggerId, who, statEXP, feeling, tags)
         local ORGASM_MAX_DEFAULT = 10000
         local ORGASM_MULTIPLIER = 1.2
@@ -221,6 +248,10 @@
 
         if who == "target" then
             local target = getState(triggerId, "target")
+            if not target then
+                debug("[Train:Error] Target state is nil in orgasm function")
+                return { isOrgasm = false, count = count, ratio = newRatio or ratio }
+            end
 
             -- 쾌락 stat으로 증가
             local plusStats = { "C쾌락", "V쾌락", "A쾌락", "B쾌락", "U쾌락", "M쾌락", "S쾌락" }
@@ -304,10 +335,36 @@
 
     function funcs.post(triggerId)
         local target = getState(triggerId, "target")
+        if not target or not target["이름"] then
+             debug("[Train:Error] Target state invalid in post function")
+             return
+        end
         local exp = getDB(triggerId, "EXPtable.db")
         local allTraces = getState(triggerId, "trace")
         local traceCurrent = allTraces[target["이름"]] or {}
         local totalTrace = 0
+
+        -- [Migration] Trace Migration & UI Refresh
+        local traceDB = getDB(triggerId, "trace.db")
+        local traceList = {}
+        for k, v in pairs(traceDB) do
+            if v.name then table.insert(traceList, v.name) end
+        end
+        table.sort(traceList)
+        setChatVar(triggerId, "traceList", json.encode(traceList))
+
+        local oldToNew = {
+            ["C감각"] = "C감각의 흔적", ["B감각"] = "B감각의 흔적", ["V감각"] = "V감각의 흔적", ["A감각"] = "A감각의 흔적",
+            ["U감각"] = "U감각의 흔적", ["애정"] = "애정의 흔적", ["발정"] = "발정의 흔적", ["순종"] = "순종의 흔적",
+            ["복종"] = "복종의 흔적", ["기술"] = "기술의 흔적", ["굴욕"] = "굴욕의 흔적", ["상처"] = "상처의 흔적",
+            ["불안"] = "불안의 흔적", ["부정"] = "부정의 흔적"
+        }
+        for old, new in pairs(oldToNew) do
+            if traceCurrent[old] and (tonumber(traceCurrent[old]) or 0) > 0 then
+                traceCurrent[new] = (traceCurrent[new] or 0) + tonumber(traceCurrent[old])
+                traceCurrent[old] = nil -- Remove old key
+            end
+        end
 
         -- 1. 캐시 초기화 (한 번만 실행)
         if not cachedValidTraces then
@@ -373,14 +430,14 @@
 
         -- 4. 부정 흔적에 의한 차감 로직 (Water-leveling deduction)
         local deductLevel = 0 -- 삭감 기준 높이 (이 높이 이상인 흔적은 잘려나감)
-        local deductTotal = traceSum["부정"] or 0 -- 삭감에 사용할 총 자원 (부정 흔적의 총량)
+        local deductTotal = traceSum["부정의 흔적"] or 0 -- 삭감에 사용할 총 자원 (부정 흔적의 총량)
         local deductUsed = 0 -- 실제로 사용된 삭감 자원
 
         if deductTotal > 0 then
             -- 차감 대상 흔적 수집 (부정 제외, 0보다 큰 것)
             local targets = {}
             for k, v in pairs(traceSum) do
-                if k ~= "부정" and v > 0 then
+                if k ~= "부정의 흔적" and v > 0 then
                     table.insert(targets, v)
                 end
             end
@@ -414,7 +471,7 @@
             local added = traceAdd[k] or 0
             local deducted = 0
 
-            if k == "부정" then
+            if k == "부정의 흔적" then
                 deducted = deductUsed -- 부정 흔적은 사용된 만큼 차감
             else
                 -- 일반 흔적은 deductLevel을 초과하는 부분을 잘라냄 (min(deductLevel, v) 만큼 차감하는 효과)
@@ -455,6 +512,34 @@
         setState(triggerId, "trace", allTraces)
         setChatVar(triggerId, "traceText", traceText)
 
+        -- 6. 경험치 누적 및 레벨업 체크
+        -- 부정 차감 후 순수 트레이스 합계를 경험치로 환산
+        local netTrace = 0
+        for k, v in pairs(traceCurrent) do
+            if k ~= "부정의 흔적" then
+                local added = traceAdd[k] or 0
+                local deducted = math.min(deductLevel, traceSum[k] or 0)
+                netTrace = netTrace + math.max(added - deducted, 0)
+            end
+        end
+        
+        local oldEXP = tonumber(target["경험치"]) or 0
+        local newEXP = oldEXP + netTrace
+        target["경험치"] = tostring(newEXP)
+        debug(string.format("[Train:Post] EXP: %d -> %d (Gained: %d)", oldEXP, newEXP, netTrace))
+        
+        -- 레벨업 체크 및 실행
+        local lvUpEffect = ""
+        local canLevelUp, currentEXP, requiredEXP = sysFunction(triggerId, "LvUp.sys", "check", target)
+        debug(string.format("[Train:Post] EXP Progress: %d/%d (Level Up: %s)", 
+            currentEXP, requiredEXP or 0, canLevelUp and "YES" or "NO"))
+        if canLevelUp then
+            target, lvUpEffect, _ = sysFunction(triggerId, "LvUp.sys", "execute", target, 1, false)
+            -- 레벨업 후 화면 효과 저장
+            local existEffect = getChatVar(triggerId, "screenEffect") or ""
+            setChatVar(triggerId, "screenEffect", existEffect .. lvUpEffect)
+        end
+
         -- 로그 및 화면 갱신
         addChat(triggerId, "user", "{{" .. "getvar::html" .. "}}")
 
@@ -470,6 +555,17 @@
             getChatVar(triggerId, "newLog")
         )
         setChat(triggerId, getChatLength(triggerId) - 2, lastTrainLog)
+
+        -- [조건 해금] 마계 상점 (조교 1회 완료)
+        local trainCount = tonumber(getChatVar(triggerId, "trainCount")) or 0
+        trainCount = trainCount + 1
+        setChatVar(triggerId, "trainCount", trainCount)
+        
+        local unlockShop = tonumber(getChatVar(triggerId, "unlock_shop")) or 0
+        if trainCount >= 1 and unlockShop == 0 then
+            setChatVar(triggerId, "unlock_shop", 1)
+            alertNormal(triggerId, "마계 상점과의 연결이 복구되었습니다. 조교에 도움이 될만한 물건들을 살펴보세요.")
+        end
 
         -- 초기화 및 화면 이동
         setChatVar(triggerId, "selectedAbl", "none")
@@ -505,7 +601,7 @@
         setChatVar(triggerId, "ej_target_count", 0) --조교대상 절정 회수 초기화
         setChatVar(triggerId, "ej_user_count", 0) --유저 절정 회수 초기화
         setChatVar(triggerId, "statFold", "0") --stat 세부 내역이 보이도록 초기화
-        setChatVar(triggerId, "equipments", getLoreBookContent(triggerId, "equipments.db")) --착용품 모두 미착용으로 초기화
+        setChatVar(triggerId, "equipments", json.encode(getDB(triggerId, "equipments.db"))) --착용품 모두 미착용으로 초기화
 
         --수정구 영상 초기화
         TRAIN_REC = 0

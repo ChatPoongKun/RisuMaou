@@ -1,0 +1,465 @@
+<style>
+    /* Global & Layout */
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #050505;
+        color: #ccc;
+        height: 100vh;
+        overflow: hidden;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* Screen Entry Transition Sequence (Curtain Effect) */
+    .screen-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        pointer-events: none;
+        display: flex;
+        justify-content: flex-end; /* Align right so we can slide it out or shrink it */
+    }
+
+    .curtain-panel {
+        width: 100%;
+        background-color: #000;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+        animation: curtain-slide 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+        animation-delay: 2.0s; /* Hold for ~2s */
+    }
+    
+    .battle-warning-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #d32f2f;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(211, 47, 47, 0.5);
+        z-index: 2;
+        width: 100%;
+        text-align: center;
+        animation: warning-pulse 1s infinite alternate, warning-fade-out 0.5s 1.8s forwards;
+    }
+
+    @keyframes curtain-slide {
+        to { transform: translateX(-100%); }
+    }
+    
+    @keyframes warning-pulse {
+        from { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    }
+    
+    @keyframes warning-fade-out {
+        to { opacity: 0; }
+    }
+
+    /* Reset previous animation */
+    /* @keyframes entry-sequence removed */
+
+    .battle-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        position: relative;
+        /* Container Shake Animation triggered periodically */
+        animation: container-shock 4s infinite; /* Base subtle movement */
+    }
+    
+    /* 
+        Simulate impact on log batch arrival.
+        Each batch arrives every 1.0s. 
+        We use a CSS animation on the container or a overlay to shake.
+        Since we can't trigger JS, we use a looped animation.
+        If batch interval is 1.0s, we set animation duration to 1.0s.
+        We limit iterations using {{getvar::shakeCount}} so it stops after logs finish.
+    */
+    @keyframes periodic-impact {
+        0% { transform: translate(0, 0); filter: brightness(1); }
+        5% { transform: translate(-2px, 1px); filter: brightness(1.2); }
+        10% { transform: translate(2px, -1px); filter: brightness(1.5); }
+        15% { transform: translate(-2px, 2px); filter: brightness(1.2); }
+        20% { transform: translate(2px, -2px); filter: brightness(1.1); }
+        25%, 100% { transform: translate(0, 0); filter: brightness(1); }
+    }
+    
+    .impact-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        animation: periodic-impact {{getvar::battleTurnInterval}}s {{getvar::shakeCount}};
+        animation-fill-mode: forwards;
+    }
+
+    /* Top: Dungeon Status (Compact) */
+    .dungeon-status-strip {
+        flex: 0 0 auto;
+        background: #111;
+        border: 1px solid #333;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        /* Reuse dungeon styles */
+    }
+    
+    /* Reuse styles from Dungeon.html for the grid strip */
+    .dungeon-status-strip .floor-wrapper { display: inline-flex; margin-right: 1rem; vertical-align: top; background: #1a1a1a; padding: 4px; border: 1px solid #333; }
+    .dungeon-status-strip .floor-header { font-size: 0.8rem; font-weight: bold; color: #60d9f7; margin-bottom: 2px; text-align: center;}
+    .dungeon-status-strip .floor-slots { display: flex; gap: 2px; }
+    .dungeon-status-strip .d-slot { width: 30px; height: 30px; background: #000; border: 1px solid #333; position: relative; display: flex; justify-content: center; align-items: center; }
+    .dungeon-status-strip .d-slot img { width: 100%; height: 100%; object-fit: cover; }
+    .dungeon-status-strip .floor-right { display: none; } /* Hide synergy text for compact view */
+
+    /* Middle: Battle Scene */
+    .battle-scene {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        padding: 1rem 0;
+        position: relative;
+    }
+    
+    .fighter-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        /* Icon Shake synced with periodic impact */
+        animation: icon-shock {{getvar::battleTurnInterval}}s {{getvar::shakeCount}};
+        animation-fill-mode: forwards;
+    }
+    
+    @keyframes icon-shock {
+        0% { transform: scale(1); }
+        5% { transform: scale(1.1) rotate(-3deg); }
+        10% { transform: scale(0.95) rotate(3deg); }
+        15% { transform: scale(1.05); }
+        20%, 100% { transform: scale(1); }
+    }
+
+    /* Active Marker (Dungeon Grid) */
+    .active-marker {
+        position: absolute;
+        inset: 0;
+        border: 2px solid #fff;
+        box-shadow: 0 0 5px #fff, inset 0 0 10px rgba(255, 255, 255, 0.5);
+        z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+        animation-name: active-flash;
+        /* Duration and Delay set inline */
+    }
+
+    @keyframes active-flash {
+        0% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    /* Cleared Slot Overlay */
+    .cleared-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(211, 47, 47, 0.4);
+        border: 2px solid #d32f2f;
+        z-index: 5;
+        opacity: 0; /* Hidden initially */
+        pointer-events: none;
+        animation: delayed-appear 0.5s forwards;
+    }
+
+    @keyframes delayed-appear {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Defender Stack Animations */
+    .fighter-icon {
+        width: 100px;
+        height: 100px;
+        background-color: #222;
+        border: 3px solid #444;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        position: relative; /* Context for absolute images */
+    }
+    
+    .defender-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .defender-img.base {
+        z-index: 1; /* Bottom layer */
+    }
+
+    .defender-img.timed {
+        z-index: 2;
+        opacity: 1; /* Start visible */
+        /* Animation controlled inline for precise timing */
+    }
+    
+    @keyframes peel-off {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    
+    /* Flash effect overlay inside icon */
+    .fighter-icon::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: white;
+        opacity: 0;
+        animation: periodic-flash {{getvar::battleTurnInterval}}s {{getvar::shakeCount}};
+        animation-fill-mode: forwards;
+        z-index: 20;
+    }
+    
+    @keyframes periodic-flash {
+        0% { opacity: 0; }
+        5% { opacity: 0.8; }
+        20%, 100% { opacity: 0; }
+    }
+
+    .fighter-name { font-weight: bold; font-size: 1rem; color: #ddd; text-shadow: 1px 1px 2px black; }
+    .fighter-role { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+    .vs-badge {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #d32f2f; /* Red for aggressive feel */
+        text-shadow: 0 0 10px #d32f2f;
+        animation: pulse-vs 0.5s infinite alternate;
+    }
+    
+    @keyframes pulse-vs {
+        from { transform: scale(1); text-shadow: 0 0 10px #d32f2f; }
+        to { transform: scale(1.2); text-shadow: 0 0 20px #ff5252; }
+    }
+
+    /* Bottom: Logs */
+    .log-container {
+        flex: 1;
+        background-color: rgba(0,0,0,0.6);
+        border: 1px solid #333;
+        padding: 1rem;
+        overflow-y: auto;
+        font-family: 'Consolas', monospace;
+        font-size: 0.95rem;
+        display: flex;
+        max-height: 30vh;
+        flex-direction: column;
+        gap: 2px; /* Close gap for batch feel */
+        mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent); /* Fade edges */
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    }
+
+    .log-line {
+        opacity: 0;
+        transform: translateX(-20px);
+        animation: batch-slide-in 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        line-height: 1.5;
+        padding: 2px 0;
+        border-bottom: 1px solid #111;
+    }
+    
+    .log-line.victory { color: #81c784; text-shadow: 0 0 5px rgba(76, 175, 80, 0.3); }
+    .log-line.danger { color: #ff8a80; text-shadow: 0 0 5px rgba(211, 47, 47, 0.3); }
+    .log-line.highlight { color: #60d9f7; font-weight: bold; border-left: 3px solid #60d9f7; padding-left: 8px; margin-top: 8px; margin-bottom: 4px; background: rgba(96, 217, 247, 0.1); }
+
+    /* LLM Battle Narration */
+    .battle-narration {
+        opacity: 0;
+        animation: narration-fade-in 1s forwards;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(50, 30, 60, 0.9));
+        border-left: 4px solid #9c27b0;
+        border-radius: 8px;
+        font-family: 'Noto Serif KR', 'Batang', serif;
+        font-size: 1rem;
+        line-height: 1.8;
+        color: #e0e0e0;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .battle-narration p {
+        margin: 4px;
+    }
+    
+    .battle-narration.error {
+        background: rgba(211, 47, 47, 0.2);
+        border-left-color: #d32f2f;
+        color: #ff8a80;
+    }
+    
+    @keyframes narration-fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes batch-slide-in {
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* Result & Close Button Section */
+    .result-section {
+        flex: 0 0 auto;
+        text-align: center;
+        padding: 1rem;
+        padding-bottom: 0;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: reveal-result 0.5s forwards;
+        animation-delay: {{getvar::animDuration}}; 
+        /* Hidden initially, distinct from overlay approach */
+        background: #111;
+        border-top: 1px solid #333;
+    }
+    
+    @keyframes reveal-result {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
+    .result-title.victory { color: #60d9f7; }
+    .result-title.defeat { color: #d32f2f; }
+
+    .close-btn {
+        background: #222;
+        color: #ddd;
+        border: 1px solid #444;
+        padding: 0.8rem 3rem;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+    }
+    .close-btn:hover { background: #333; border-color: #666; color: #fff; }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 18;
+        gap: 1.5rem;
+    }
+    
+    .loading-title {
+        font-size: 1.8rem;
+        color: #ff5252;
+        text-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
+        animation: pulse-text 1.5s infinite;
+    }
+    
+    .loading-message {
+        font-size: 1.1rem;
+        color: #aaa;
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #333;
+        border-top: 4px solid #ff5252;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse-text {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+</style>
+
+<div class="container">
+<!-- Show transition ONLY during initial identification phase to prevent replay -->
+{{#if {{equal::{{getvar::battleLoadingState}}::침공 용사 파악중...}}}}
+<div class="screen-transition">
+    <div class="curtain-panel"></div>
+    <div class="battle-warning-text">⚠️ 누군가 던전에 침입했습니다..!</div>
+</div>
+{{/if}}
+
+<!-- Conditional rendering: battleLoadingState가 비어있으면 전투 컨텐츠, 아니면 로딩 오버레이 -->
+{{#when::battleLoadingState::vis::}}
+<!-- Battle content (shown when loading complete) -->
+<div class="impact-layer"></div> <!-- Visual Shake Layer -->
+<div class="battle-container">
+<!-- 1. Dungeon Status Strip -->
+<div class="dungeon-status-strip" style="width:100%; box-sizing:border-box;">
+{{getvar::battleDungeonHtml}}
+</div>
+
+<!-- 2. Battle Scene -->
+<div class="battle-scene">
+<!-- Hero (Invader) -->
+<div class="fighter-container">
+<div class="fighter-role">INVADER</div>
+<div class="fighter-icon">
+<img src="../../Pages/images/icon_sword.png" onerror="this.src='https://via.placeholder.com/100/333/fff?text=HERO'" style="width:100%; height:100%; object-fit:cover;"> <!-- Fallback/Default -->
+</div>
+</div>
+
+<div class="vs-badge">VS</div>
+
+<!-- Monster (Defender/User) -->
+<div class="fighter-container">
+<div class="fighter-role">DEFENDER</div>
+<div class="fighter-icon">
+{{getvar::defenderImage}} <!-- Dynamic Stacked Images -->
+</div>
+</div>
+</div>
+
+<!-- 3. Logs -->
+<div class="line single"></div>
+<div class="log-container">
+{{getvar::battleLogsHtml}}
+<div style="height: 50px;"></div> <!-- Spacer -->
+</div>
+
+<!-- 4. Result/Close (Bottom, Inline) -->
+<div class="result-section">
+<div class="result-title {{#when {{equal::{{getvar::battleResult}}::BadEnding}}}}defeat{{:else}}victory{{/when}}">
+{{#when {{equal::{{getvar::battleResult}}::BadEnding}}}}DEFEAT...{{:else}}VICTORY!{{/when}}
+</div>
+<div><button class="close-btn" risu-btn="close">전투 종료 및 확인</button></div>
+</div>
+</div>
+{{:else}}
+<!-- Loading Overlay (shown when battleLoadingState is set) -->
+<div class="loading-overlay">
+<div class="loading-title">⚔️ 용사가 침공 중입니다!</div>
+<div class="loading-spinner"></div>
+<div class="loading-message">{{getvar::battleLoadingState}}</div>
+</div>
+{{/when}}
+</div>
