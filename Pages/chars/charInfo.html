@@ -463,6 +463,7 @@
 
 <div class="line single"></div>
 
+{{#if {{equal::{{dict_element::{{getvar::target}}::condition}}::DEAD}}::is::0}}
 <section class="trace-section">
 <h2>* 흔적</h2>
 <div class="info-grid">
@@ -475,6 +476,7 @@
 </section>
 
 <div class="line single"></div>
+{{/if}}
 {{/when}}
 
 <section class="equipment-section">
@@ -492,6 +494,7 @@
 </div>
 </section>
 
+{{#if {{equal::{{dict_element::{{getvar::target}}::condition}}::DEAD}}::is::0}}
 <div class="line single"></div>
 <div class="consumable-container" style="display:{{#when::charSubCat::vis::item}}grid{{:else}}none{{/when}}">
 {{settempvar::count::0}}
@@ -508,6 +511,7 @@
 <div class="command-container">
 {{getvar::cmds}}
 </div>
+{{/if}}
 
 </section>
 </main>

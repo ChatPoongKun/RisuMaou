@@ -57,7 +57,14 @@
             if name == getPersonaName(triggerId) then
                 name = "user"
             end
-            local target = json.decode(getLoreBookContent(triggerId, name))
+            debug("[CharSys:Card] Loading charInfo for: " .. tostring(name))
+            local rawContent = getLoreBookContent(triggerId, name)
+            debug("[CharSys:Card] Raw content length: " .. tostring(rawContent and #rawContent or "nil"))
+            local target = json.decode(rawContent)
+            debug("[CharSys:Card] Decoded target: " .. tostring(target and "OK" or "nil"))
+            if target then
+                debug("[CharSys:Card] Target condition: " .. tostring(target.condition or target["condition"]))
+            end
             setState(triggerId, "target", target)
             stateToVar(triggerId, "target", target)
             stateToVar(triggerId, "targetTrace", targetTrace)
@@ -100,7 +107,7 @@
             if scr == "preTrain" then
                 -- preTrain: 오직 '조교가능' 상태인 캐릭터만 표시
                 return cond == "TRAINABLE"
-            elseif scr == "charInfo" then
+            elseif scr == "charList" then
                 -- charInfo: 사망한 캐릭터도 포함하여 모두 표시
                 return true
             elseif scr == "disposal" then
@@ -134,7 +141,8 @@
                     def = char["방어력"] or "0",
                     rating = tonumber(char["레이팅"] or 0),
                     condition = char["condition"] or "",
-                    title = char["칭호"] or ""
+                    title = char["칭호"] or "",
+                    disposed = char["처분"] ~= nil
                 }
                 table.insert(charDataList, data)
                 
@@ -226,7 +234,11 @@
             end
             
             if portraitContent ~= "" then
-                 portraitHtml = [[<div style="width:50px; height:50px; overflow:hidden; border-radius:4px; margin-right:8px; flex-shrink:0;">]] .. portraitContent .. [[</div>]]
+                local xOverlay = ""
+                if data.disposed then
+                    xOverlay = [[<img src="{{raw::x.png}}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; z-index:10;">]]
+                end
+                portraitHtml = [[<div style="position:relative; width:50px; height:50px; overflow:hidden; border-radius:4px; margin-right:8px; flex-shrink:0;">]] .. portraitContent .. xOverlay .. [[</div>]]
             end
 
             local card = [[

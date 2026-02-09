@@ -22,37 +22,6 @@ end!!
     sysFunction(triggerId, "disposal.sys", "back")
 end!!
 
-[disposal/disposal_execute_release/hidden] function(triggerId)
-    debug("[Disposal:LuaHandler] Execute release")
-    sysFunction(triggerId, "disposal.sys", "execute_release")
-end!!
-
-[disposal/disposal_execute_cannibalism/hidden] function(triggerId)
-    debug("[Disposal:LuaHandler] Execute cannibalism")
-    sysFunction(triggerId, "disposal.sys", "execute_cannibalism")
-end!!
-
-[disposal/disposal_execute_burning/hidden] function(triggerId)
-    debug("[Disposal:LuaHandler] Execute burning")
-    sysFunction(triggerId, "disposal.sys", "execute_burning")
-end!!
-
-[disposal/disposal_execute_taxidermy/hidden] function(triggerId)
-    debug("[Disposal:LuaHandler] Execute taxidermy")
-    sysFunction(triggerId, "disposal.sys", "execute_taxidermy")
-end!!
-
-[disposal/disposal_execute_petrification/hidden] function(triggerId)
-    debug("[Disposal:LuaHandler] Execute petrification")
-    sysFunction(triggerId, "disposal.sys", "execute_petrification")
-end!!
-
-[disposal/disposal_execute_painting/hidden] function(triggerId)
-    debug("[Disposal:LuaHandler] Execute painting")
-    sysFunction(triggerId, "disposal.sys", "execute_painting")
-end!!
-
-[disposal/disposal_execute_dismemberment_onahole/hidden] function(triggerId)
-    debug("[Disposal:LuaHandler] Execute dismemberment_onahole")
-    sysFunction(triggerId, "disposal.sys", "execute_dismemberment_onahole")
+[disposal/199/돌아가기] function(triggerId)
+    screenChange(triggerId, getState(triggerId, "oldScreen"))
 end!!

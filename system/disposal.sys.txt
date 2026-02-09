@@ -86,6 +86,34 @@
     end
 
     ---------------------------------------
+    -- 조건 체크 함수 (Lua load 사용)
+    -- condition 필드에 Lua 조건문 문자열 작성
+    -- 예: "return target['성별'] == '여성'"
+    ---------------------------------------
+    local function checkCondition(conditionStr, target)
+        if not conditionStr or conditionStr == "" then
+            return true  -- 조건 없으면 항상 표시
+        end
+        
+        -- 조건 문자열을 함수로 컴파일 (target을 환경에 포함)
+        local env = {target = target, tonumber = tonumber, tostring = tostring}
+        local func, err = load(conditionStr, "condition", "t", env)
+        if not func then
+            debug("[Disposal:Condition] Parse error: " .. tostring(err))
+            return false
+        end
+        
+        -- 실행하여 결과 반환
+        local ok, result = pcall(func)
+        if not ok then
+            debug("[Disposal:Condition] Eval error: " .. tostring(result))
+            return false
+        end
+        
+        return result == true
+    end
+
+    ---------------------------------------
     -- [화면 진입] 처분 대상 목록 표시
     ---------------------------------------
     function funcs.main(triggerId)
@@ -103,8 +131,6 @@
         local cmds = "<div class='menu-btn' risu-btn='disposal_back'>뒤로가기</div>"
         setChatVar(triggerId, "cmds", cmds)
         reloadDisplay(triggerId)
-
-        alertNormal(triggerId, "처분할 대상을 선택하십시오.")
     end
 
     ---------------------------------------
@@ -123,27 +149,32 @@
         setState(triggerId, "disposalTargetName", charName)
 
         -- 처분 방식 목록 생성 (HTML)
-        -- 버튼 ID에서 캐릭터 이름 대신 state를 사용하여 파싱 문제 방지
+        -- condition 필드로 필터링, 버튼 ID에서 캐릭터 이름 대신 state 사용
         local html = ""
         local methodCount = 0
+        local filteredCount = 0
         for key, data in pairs(disposalDB) do
             methodCount = methodCount + 1
-            local btn = string.format(
-                "<div class='menu-btn' risu-btn='disposal_execute_%s'><h3>%s</h3><p>%s</p></div>",
-                key, data.name, data.desc
-            )
-            html = html .. btn
-            debug("[Disposal:SelectMethod] Added method button: " .. key)
+            -- 조건 체크
+            if checkCondition(data.condition, target) then
+                filteredCount = filteredCount + 1
+                local btn = string.format(
+                    "<div class='menu-btn' risu-btn='disposal.sys_execute_%s'><h3>%s</h3><p>%s</p></div>",
+                    key, data.name, data.desc
+                )
+                html = html .. btn
+                debug("[Disposal:SelectMethod] Added method button: " .. key)
+            else
+                debug("[Disposal:SelectMethod] Filtered out: " .. key)
+            end
         end
-        debug("[Disposal:SelectMethod] Total methods: " .. methodCount)
+        debug("[Disposal:SelectMethod] Total: " .. methodCount .. ", Shown: " .. filteredCount)
         setChatVar(triggerId, "methodList", html)
 
         -- 뒤로가기 버튼
         local cmds = "<div class='menu-btn' risu-btn='disposal_back'>뒤로가기</div>"
         setChatVar(triggerId, "cmds", cmds)
         reloadDisplay(triggerId)
-
-        alertNormal(triggerId, charName .. "을(를) 어떻게 처분하시겠습니까?")
     end
 
     ---------------------------------------
@@ -249,7 +280,9 @@ Keep the response within one paragraph (3-4 sentences max). Write in Korean.]],
 
         setChatVar(triggerId, "disposalResult", resultHtml)
         setChatVar(triggerId, "cmds", "<div class='menu-btn' risu-btn='disposal_back'>확인</div>")
-        reloadDisplay(triggerId)
+        
+        -- 캐릭터 리스트 갱신 (처분된 캐릭터 제거)
+        sysFunction(triggerId, "char.sys", "list")
 
         -- 6. 로그 기록
         local newLog = getChatVar(triggerId, "newLog") or ""
@@ -299,18 +332,15 @@ Keep the response within one paragraph (3-4 sentences max). Write in Korean.]],
 
     ---------------------------------------
     -- 버튼 클릭 핸들러
-    -- data format: "execute_methodKey" (캐릭터명은 state에서 가져옴)
+    -- data format: "disposal.sys_execute_methodKey" (Script.lua에서 전달)
     ---------------------------------------
     function funcs.click(triggerId, data)
         debug("[Disposal:Click] Received: " .. tostring(data))
-        if data and data:find("^execute_") then
-            local methodKey = data:match("^execute_(.+)$")
-            debug("[Disposal:Click] Parsed methodKey: " .. tostring(methodKey))
-            if methodKey then
-                funcs.execute(triggerId, methodKey)
-            else
-                debug("[Disposal:Click] ERROR: Failed to parse methodKey from: " .. tostring(data))
-            end
+        -- disposal.sys_execute_xxx 또는 execute_xxx 둘 다 처리
+        local methodKey = data:match("execute_(.+)$")
+        if methodKey then
+            debug("[Disposal:Click] Parsed methodKey: " .. methodKey)
+            funcs.execute(triggerId, methodKey)
         else
             debug("[Disposal:Click] Unknown click data: " .. tostring(data))
         end
