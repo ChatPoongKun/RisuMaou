@@ -103,6 +103,12 @@
             elseif scr == "charInfo" then
                 -- charInfo: 사망한 캐릭터도 포함하여 모두 표시
                 return true
+            elseif scr == "disposal" then
+                -- disposal: 사망(미처분) + 조교가능 + 실신 상태만 표시
+                local disposed = c["처분"] ~= nil
+                return (cond == "DEAD" and not disposed)
+                    or cond == "TRAINABLE"
+                    or cond == "FAINT"
             else
                 -- 기본값: 사망하지 않은 캐릭터만 표시
                 return cond ~= "DEAD"

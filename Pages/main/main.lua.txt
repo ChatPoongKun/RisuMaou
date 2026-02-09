@@ -92,9 +92,7 @@ end!!
 end!!
 
 [main/102/{{#when::unlock_disposal::vis::1}}포로 처분{{/when}}] function(triggerId)
-    local screen = "disposal"
-    -- sysFunction(triggerId, "disposal.sys", "main")
-    alertNormal(triggerId, screen.." 미구현")
+    sysFunction(triggerId, "disposal.sys", "main")
 end!!
 
 [main/103/{{#when::0==1}}노예 매각{{/when}}] function(triggerId)

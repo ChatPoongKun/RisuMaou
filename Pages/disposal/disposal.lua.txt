@@ -56,8 +56,3 @@ end!!
     debug("[Disposal:LuaHandler] Execute dismemberment_onahole")
     sysFunction(triggerId, "disposal.sys", "execute_dismemberment_onahole")
 end!!
-
-[disposal/199/돌아가기] function(triggerId)
-    setChatVar(triggerId, "category", "items")
-    screenChange(triggerId, getState(triggerId, "oldScreen"))
-end!!

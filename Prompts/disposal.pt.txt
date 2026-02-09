@@ -9,11 +9,17 @@ The tone should be dark, serious, and consistent with a Demon King's dungeon.
 - Method Description: {{method_desc}}
 - Character Name: {{char_name}}
 - Character Info: {{char_info}}
+- Character Condition: {{char_condition}}
 </Input>
 
 <Instruction>
-Write a brutal and vivid description of how {{char_name}} meets their end using the {{disposal_method}}.
-Focus on the final moments and the specific nature of the disposal.
-Keep it under 3-4 sentences. Do not include any spoken dialogue unless necessary.
+Write a brief description of {{char_name}}'s disposal using the {{disposal_method}}.
+
+IMPORTANT: Check the character's condition first:
+- If condition is "FAINT" (unconscious) or "DEAD": Do NOT include any dialogue. Describe only the disposal process silently.
+- If condition is "TRAINABLE" or other (conscious): Include a brief final quote from the character before disposal (1 sentence in Korean), then describe the disposal result.
+
+Keep the entire response within one paragraph (3-4 sentences max).
+Write in Korean.
 Output only the description text.
 </Instruction>

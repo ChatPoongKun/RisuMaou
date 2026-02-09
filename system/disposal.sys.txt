@@ -1,76 +1,43 @@
 -- disposal.sys.txt
--- 포로 처분 시스템
+-- 포로 처분 시스템 (State Machine Pattern)
 -- sysFunction(triggerId, "disposal.sys", "main")
--- sysFunction(triggerId, "disposal.sys", "execute", charName, methodKey)
 
 (function()
     local funcs = {}
 
-    -- [화면 진입] 처분 대상 목록 표시
-    function funcs.main(triggerId)
-        -- 화면 설정
-        setChatVar(triggerId, "category", "index")
-        -- char.sys에 "disposal" 화면 상태를 전달하여 필터링 로직 활성화
-        screenChange(triggerId, "disposal") 
-        sysFunction(triggerId, "char.sys", "list")
-        
-        alertNormal(triggerId, "처분할 대상을 선택하십시오.")
-    end
-
-    -- [메뉴 선택] 처분 방식 선택
-    function funcs.selectMethod(triggerId, charName)
-        local disposalDB = getDB(triggerId, "disposal.db")
-        local user = getLoreBookContent(triggerId, "user")
-        local target = json.decode(getLoreBookContent(triggerId, charName))
-        
-        setChatVar(triggerId, "targetName", charName)
-        
-        -- 처분 방식 목록 생성 (HTML)
-        local html = "<div class='disposal-list'>"
-        for key, data in pairs(disposalDB) do
-            local btn = string.format(
-                "<div class='menu-btn' risu-btn='disposal.sys_execute_%s_%s'><h3>%s</h3><p>%s</p></div>",
-                charName, key, data.name, data.desc
-            )
-            html = html .. btn
-        end
-        html = html .. "</div>"
-        
-        -- 임시 화면이나 팝업으로 표시할 수 있으나, 
-        -- 편의상 alertNormal로 안내 후 setChatVar로 목록을 뿌려주는 방식 등을 고려해야 함.
-        -- 여기서는 메인 화면의 commands 영역 등을 활용하거나 전용 팝업이 없으므로
-        -- charInfo 화면의 하단이나 별도 영역에 표시해야 함.
-        -- 현재 구조상 char.sys에서 클릭 시 바로 이 함수가 호출되므로,
-        -- 여기서 disposal_options 같은 chatVar를 세팅하고 화면을 갱신하는 것이 좋음.
-        
-        -- 다만, 간단한 구현을 위해 '목록'을 보여주는 alert는 한계가 있음.
-        -- 따라서 charList 화면 위에 오버레이하거나 커맨드 영역을 교체.
-        
-        setChatVar(triggerId, "cmds", html)
-        reloadDisplay(triggerId)
-        alertNormal(triggerId, charName .. "을(를) 어떻게 처분하시겠습니까?")
-    end
-
-    -- [실행] 처분 실행 및 Spirit 계산
-    function funcs.execute(triggerId, charName, methodKey)
-        debug("Disposal Execute: " .. charName .. " / " .. methodKey)
-        
-        local disposalDB = getDB(triggerId, "disposal.db")
-        local methodData = disposalDB[methodKey]
-        
-        if not methodData then
-            alertNormal(triggerId, "잘못된 처분 방식입니다.")
-            return
-        end
-
-        local target = json.decode(getLoreBookContent(triggerId, charName))
+    ---------------------------------------
+    -- Spirit 계산 함수
+    -- Base Spirit = floor(0.8 × Rating^1.55)
+    -- 보너스(합연산): 어빌레벨 합계×10%, 각인레벨 합계×10%
+    -- 배율(곱연산): 칭호, 상태, 반발각인(마지막)
+    ---------------------------------------
+    local function calculateSpirit(triggerId, target)
+        debug("[Disposal:CalcSpirit] Starting calculation...")
         local rating = tonumber(target["레이팅"]) or 0
-
-        -- 1. Spirit 계산 (Log-Linear Power Model)
-        -- Formula: Floor( 0.8 * (Rating ^ 1.55) )
         local baseSpirit = math.floor(0.8 * (rating ^ 1.55))
-        
-        -- Multipliers
+        debug("[Disposal:CalcSpirit] Rating: " .. rating .. ", Base: " .. baseSpirit)
+
+        -- A. 어빌리티 레벨 합계 (10% per level)
+        local ablDB = getDB(triggerId, "abl.db")
+        local totalAblLv = 0
+        for key, data in pairs(ablDB) do
+            if data.name then
+                totalAblLv = totalAblLv + (tonumber(target[data.name]) or 0)
+            end
+        end
+        local ablBonus = totalAblLv * 0.10
+        debug("[Disposal:CalcSpirit] AblLv: " .. totalAblLv .. ", Bonus: " .. ablBonus)
+
+        -- B. 각인 합계 (반발각인 제외, 10% per level)
+        local posMarks = {"고통각인", "쾌락각인", "공포각인", "복종각인", "치욕각인"}
+        local totalMarkLv = 0
+        for _, markName in ipairs(posMarks) do
+            totalMarkLv = totalMarkLv + (tonumber(target[markName]) or 0)
+        end
+        local markBonus = totalMarkLv * 0.10
+        debug("[Disposal:CalcSpirit] MarkLv: " .. totalMarkLv .. ", Bonus: " .. markBonus)
+
+        -- C. 칭호 배율
         local multTitle = 1.0
         local title = target["칭호"] or ""
         if title == "연모" or title == "음란" or title == "암캐" then
@@ -78,103 +45,287 @@
         elseif title == "붕괴" or title == "광기" then
             multTitle = 0.5
         end
-        
-        -- Marks (Positive: Additive 5%, Negative: Multiplicative 0.9)
-        local posMarks = {"고통각인", "쾌락각인", "공포각인", "복종각인", "치욕각인"}
-        local totalPosLv = 0
-        for _, markName in ipairs(posMarks) do
-             local lv = tonumber(target[markName]) or 0
-             totalPosLv = totalPosLv + lv
+
+        -- D. 상태 배율 (실신 20% 차감, 사망 50% 차감)
+        local condMult = 1.0
+        local cond = target["condition"]
+        if cond == "FAINT" then
+            condMult = 0.8
+        elseif cond == "DEAD" then
+            condMult = 0.5
         end
-        local bonusMark = totalPosLv * 0.05
-        
+
+        -- E. 반발각인 (마지막, 곱연산, 레벨당 20% 차감)
         local rebelLv = tonumber(target["반발각인"]) or 0
-        local penaltyRebel = 0.9 ^ rebelLv
-        
-        -- Condition Penalty
-        local conditionMult = 1.0
-        if target["condition"] == "DEAD" then
-            conditionMult = 0.5
-        end
-        
-        -- Final Calculation
-        local finalSpirit = baseSpirit * multTitle * (1 + bonusMark) * penaltyRebel * conditionMult
-        finalSpirit = math.floor(finalSpirit)
-        
-        -- Breakdown Text
-        local breakdown = string.format(
-            "기본(%d) x 칭호(%.1f) x 각인(1+%.2f) x 반발(%.2f) x 상태(%.1f)",
-            baseSpirit, multTitle, bonusMark, penaltyRebel, conditionMult
+        local rebelMult = 0.8 ^ rebelLv
+
+        -- 최종 계산
+        local totalBonus = 1 + ablBonus + markBonus
+        local spirit = baseSpirit * totalBonus * multTitle * condMult * rebelMult
+        spirit = math.floor(spirit)
+
+        debug("[Disposal:CalcSpirit] Final Spirit: " .. spirit)
+
+        -- 계산 내역
+        local breakdown = {
+            base = baseSpirit,
+            ablBonus = ablBonus,
+            markBonus = markBonus,
+            titleMult = multTitle,
+            condMult = condMult,
+            rebelMult = rebelMult,
+            total = spirit
+        }
+
+        local breakdownText = string.format(
+            "기본(%d) × (1+어빌%.0f%%+각인%.0f%%) × 칭호(%.1f) × 상태(%.1f) × 반발(%.2f) = %d",
+            baseSpirit, ablBonus*100, markBonus*100, multTitle, condMult, rebelMult, spirit
         )
 
-        -- 2. LLM 호출 (처분 묘사)
-        -- 로딩 표시
+        return spirit, breakdownText, breakdown
+    end
+
+    ---------------------------------------
+    -- [화면 진입] 처분 대상 목록 표시
+    ---------------------------------------
+    function funcs.main(triggerId)
+        debug("[Disposal:Main] Entering disposal screen")
+        setChatVar(triggerId, "category", "index")
+        setChatVar(triggerId, "disposal_phase", "list")
+        setChatVar(triggerId, "targetName", "")
+        setChatVar(triggerId, "methodList", "")
+        setChatVar(triggerId, "disposalResult", "")
+
+        screenChange(triggerId, "disposal")
+        sysFunction(triggerId, "char.sys", "list")
+
+        -- 뒤로가기 버튼
+        local cmds = "<div class='menu-btn' risu-btn='disposal_back'>뒤로가기</div>"
+        setChatVar(triggerId, "cmds", cmds)
+        reloadDisplay(triggerId)
+
+        alertNormal(triggerId, "처분할 대상을 선택하십시오.")
+    end
+
+    ---------------------------------------
+    -- [캐릭터 선택] 처분 방식 목록 표시
+    ---------------------------------------
+    function funcs.selectMethod(triggerId, charName)
+        debug("[Disposal:SelectMethod] Character selected: " .. tostring(charName))
+        local disposalDB = getDB(triggerId, "disposal.db")
+        local target = json.decode(getLoreBookContent(triggerId, charName))
+
+        setChatVar(triggerId, "disposal_phase", "method")
+        setChatVar(triggerId, "targetName", charName)
+
+        -- 대상 정보 저장
+        setState(triggerId, "disposalTarget", target)
+        setState(triggerId, "disposalTargetName", charName)
+
+        -- 처분 방식 목록 생성 (HTML)
+        -- 버튼 ID에서 캐릭터 이름 대신 state를 사용하여 파싱 문제 방지
+        local html = ""
+        local methodCount = 0
+        for key, data in pairs(disposalDB) do
+            methodCount = methodCount + 1
+            local btn = string.format(
+                "<div class='menu-btn' risu-btn='disposal_execute_%s'><h3>%s</h3><p>%s</p></div>",
+                key, data.name, data.desc
+            )
+            html = html .. btn
+            debug("[Disposal:SelectMethod] Added method button: " .. key)
+        end
+        debug("[Disposal:SelectMethod] Total methods: " .. methodCount)
+        setChatVar(triggerId, "methodList", html)
+
+        -- 뒤로가기 버튼
+        local cmds = "<div class='menu-btn' risu-btn='disposal_back'>뒤로가기</div>"
+        setChatVar(triggerId, "cmds", cmds)
+        reloadDisplay(triggerId)
+
+        alertNormal(triggerId, charName .. "을(를) 어떻게 처분하시겠습니까?")
+    end
+
+    ---------------------------------------
+    -- [실행] 처분 실행 및 Spirit 계산
+    -- 즉시 저장 방식
+    ---------------------------------------
+    function funcs.execute(triggerId, methodKey)
+        -- state에서 캐릭터 이름 가져오기
+        local charName = getState(triggerId, "disposalTargetName")
+        debug("[Disposal:Execute] Method: " .. tostring(methodKey) .. ", Char: " .. tostring(charName))
+
+        if not charName then
+            debug("[Disposal:Execute] ERROR: No target character in state!")
+            alertNormal(triggerId, "처분 대상이 선택되지 않았습니다.")
+            return
+        end
+
+        local disposalDB = getDB(triggerId, "disposal.db")
+        local methodData = disposalDB[methodKey]
+
+        if not methodData then
+            debug("[Disposal:Execute] ERROR: Invalid method key: " .. tostring(methodKey))
+            alertNormal(triggerId, "잘못된 처분 방식입니다.")
+            return
+        end
+        debug("[Disposal:Execute] Method found: " .. methodData.name)
+
+        local target = json.decode(getLoreBookContent(triggerId, charName))
+        local cond = target["condition"]
+        debug("[Disposal:Execute] Target condition: " .. tostring(cond))
+
+        -- 1. Spirit 계산
+        local spirit, breakdownText, _ = calculateSpirit(triggerId, target)
+        debug("[Disposal:Execute] Spirit calculated: " .. spirit)
+
+        -- 2. 로딩 표시
+        setChatVar(triggerId, "disposal_phase", "result")
+        setChatVar(triggerId, "methodList", "")
         setChatVar(triggerId, "cmds", "<div class='loading-text'>처분 진행 중...</div>")
         reloadDisplay(triggerId)
 
+        -- 3. LLM 호출 (조건부 대사 포함)
+        local includeDialogue = (cond ~= "DEAD" and cond ~= "FAINT")
+        local dialogueInstruction = ""
+        if includeDialogue then
+            dialogueInstruction = "Include a brief final quote from the character before disposal (1 sentence in Korean). Then describe the disposal result."
+        else
+            dialogueInstruction = "The character is unconscious or already dead, so do NOT include any dialogue. Describe only the disposal process."
+        end
+        debug("[Disposal:Execute] Dialogue included: " .. tostring(includeDialogue))
+
         local prompt = {
-            promptBuild("system", getLoreBookContent(triggerId, "disposal.pt")),
-            promptBuild("user", string.format("Disposal Method: %s\nMethod Description: %s\nCharacter Name: %s\nCharacter Info: %s", 
-                methodData.name, methodData.desc, charName, json.encode(target)))
+            promptBuild("system", string.format([[You are an AI assistant for a dark fantasy text game.
+Your task is to write a short, one-paragraph description of a captured hero's execution or disposal.
+The tone should be dark, serious, and consistent with a Demon King's dungeon.
+
+Disposal Method: %s
+Method Description: %s
+
+%s
+
+Keep the response within one paragraph (3-4 sentences max). Write in Korean.]], 
+                methodData.name, methodData.prompt, dialogueInstruction)),
+            promptBuild("user", string.format("Character Name: %s\nCharacter Info: %s",
+                charName, json.encode(target)))
         }
 
+        debug("[Disposal:Execute] Calling LLM...")
         local llmResult = LLM(triggerId, prompt, "disposal")
         local description = "처분이 완료되었습니다."
         if llmResult.success then
             description = llmResult.result
+            debug("[Disposal:Execute] LLM success")
         else
-            debug("Disposal LLM Failed: " .. tostring(llmResult.result))
+            debug("[Disposal:Execute] LLM failed: " .. tostring(llmResult.result))
         end
-        
-        -- 3. 데이터 업데이트
-        -- Spirit
+
+        -- 4. 데이터 업데이트 (즉시 저장)
+        -- Spirit 추가
         local currentSpirit = tonumber(getChatVar(triggerId, "spirit") or "0")
-        currentSpirit = currentSpirit + finalSpirit
+        currentSpirit = currentSpirit + spirit
         setChatVar(triggerId, "spirit", tostring(currentSpirit))
-        
-        -- Character
+        debug("[Disposal:Execute] Spirit updated: " .. currentSpirit)
+
+        -- 캐릭터 업데이트 (condition → DEAD, 처분 필드 추가)
         target["condition"] = "DEAD"
         target["처분"] = description
         local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
         upsertLocalLoreBook(triggerId, charName, json.encode(target), option)
-        
-        -- 4. 로그 기록
+        debug("[Disposal:Execute] Character updated in lorebook")
+
+        -- 5. 결과 표시
+        local resultHtml = string.format([[
+<div class='disposal-result-box'>
+<h3>[처분 완료] %s</h3>
+<div class='disposal-description'>%s</div>
+<div class='spirit-gain'>
+<p><strong>획득 Spirit:</strong> %d</p>
+<p class='breakdown'>%s</p>
+</div>
+</div>
+]], charName, description, spirit, breakdownText)
+
+        setChatVar(triggerId, "disposalResult", resultHtml)
+        setChatVar(triggerId, "cmds", "<div class='menu-btn' risu-btn='disposal_back'>확인</div>")
+        reloadDisplay(triggerId)
+
+        -- 6. 로그 기록
         local newLog = getChatVar(triggerId, "newLog") or ""
-        local logEntry = string.format("<div class='disposal-log'><h3>[처분] %s</h3><p>%s</p><p class='spirit-gain'>획득 Spirit: %d (%s)</p></div>", 
-            charName, description, finalSpirit, breakdown)
+        local logEntry = string.format("<div class='disposal-log'><h3>[처분] %s</h3><p>%s</p><p class='spirit-gain'>획득 Spirit: %d</p></div>",
+            charName, description, spirit)
         newLog = newLog .. "<br>" .. logEntry
         setChatVar(triggerId, "newLog", newLog)
         
-        -- Main 화면 Log 갱신용 (turnEnd 등에서 활용)
-        
-        -- 5. 결과 알림 및 화면 복귀
-        alertNormal(triggerId, string.format("처분 완료!\n획득 Spirit: %d\n\n%s", finalSpirit, breakdown))
-        
-        -- 목록 화면으로 복귀
-        funcs.main(triggerId)
+        -- state 정리
+        setState(triggerId, "disposalTarget", nil)
+        setState(triggerId, "disposalTargetName", nil)
+        debug("[Disposal:Execute] Execution complete")
     end
 
-     -- 버튼 클릭 핸들러
-    -- data format: "disposal.sys_execute_charName_methodKey"
+    ---------------------------------------
+    -- [뒤로가기] 상태별 분기
+    ---------------------------------------
+    function funcs.back(triggerId)
+        local phase = getChatVar(triggerId, "disposal_phase") or "list"
+        debug("[Disposal:Back] Current phase: " .. phase)
+
+        if phase == "result" then
+            -- 결과 화면 → 목록으로 복귀
+            debug("[Disposal:Back] Returning from result to list")
+            funcs.main(triggerId)
+
+        elseif phase == "method" then
+            -- 처분 방식 선택 → 목록으로 복귀 (처분방법 숨김)
+            debug("[Disposal:Back] Returning from method to list")
+            setChatVar(triggerId, "disposal_phase", "list")
+            setChatVar(triggerId, "targetName", "")
+            setChatVar(triggerId, "methodList", "")
+            setState(triggerId, "disposalTarget", nil)
+            setState(triggerId, "disposalTargetName", nil)
+            sysFunction(triggerId, "char.sys", "list")
+
+            local cmds = "<div class='menu-btn' risu-btn='disposal_back'>뒤로가기</div>"
+            setChatVar(triggerId, "cmds", cmds)
+            reloadDisplay(triggerId)
+
+        else
+            -- 목록 화면 → 메인 메뉴로
+            debug("[Disposal:Back] Returning to main menu")
+            screenChange(triggerId, "main")
+        end
+    end
+
+    ---------------------------------------
+    -- 버튼 클릭 핸들러
+    -- data format: "execute_methodKey" (캐릭터명은 state에서 가져옴)
+    ---------------------------------------
     function funcs.click(triggerId, data)
-        if data:find("^execute_") then
-            local _, _, charName, methodKey = data:find("^execute_([^_]+)_(.+)$")
-            if charName and methodKey then
-                funcs.execute(triggerId, charName, methodKey)
+        debug("[Disposal:Click] Received: " .. tostring(data))
+        if data and data:find("^execute_") then
+            local methodKey = data:match("^execute_(.+)$")
+            debug("[Disposal:Click] Parsed methodKey: " .. tostring(methodKey))
+            if methodKey then
+                funcs.execute(triggerId, methodKey)
+            else
+                debug("[Disposal:Click] ERROR: Failed to parse methodKey from: " .. tostring(data))
             end
+        else
+            debug("[Disposal:Click] Unknown click data: " .. tostring(data))
         end
     end
 
     return function(triggerId, subFunc, ...)
+        debug("[Disposal:Dispatch] Called with: " .. tostring(subFunc))
         if funcs[subFunc] then
             return funcs[subFunc](triggerId, ...)
-        elseif subFunc:find("execute_") then
-             -- click 핸들러에서 넘어온 경우 (subFunc 자체가 execute_... 형태일 수 있음)
-             -- 하지만 click function에서 파싱해서 호출하므로 여기선 필요 없을수도 있으나 안전장치
-             funcs.click(triggerId, subFunc)
+        elseif subFunc and subFunc:find("execute_") then
+            debug("[Disposal:Dispatch] Routing to click handler")
+            funcs.click(triggerId, subFunc)
         else
-             -- funcs.click 호출 (risu-btn 연결)
-             funcs.click(triggerId, subFunc)
+            debug("[Disposal:Dispatch] Routing to click handler (fallback)")
+            funcs.click(triggerId, subFunc)
         end
     end
 end)()
