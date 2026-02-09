@@ -83,6 +83,9 @@
         -- 저장
         setChatVar(triggerId, "user", json.encode(updatedUser))
         
+        -- [FIX] Lorebook에 저장 (turnEnd시 초기화 방지)
+        upsertLocalLoreBook(triggerId, "user", json.encode(updatedUser), DEFAULT_LORE_OPTION)
+        
         -- 효과 출력 (화면 갱신은 호출측에서 담당하거나 여기서 refresh)
         -- 알현실 UI 갱신을 위해 render 호출 권장
         funcs.render(triggerId)
