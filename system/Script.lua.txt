@@ -206,6 +206,8 @@ function stateToVar(triggerId, key, tbl)
             if type(v) == "table" then --이상경험기록은 평탄화 안해서 값이 테이블이므로 encode해서 집어넣음 추후 개선안 필요함.
                 v = json.encode(v)
             end
+            -- 큰따옴표를 HTML 엔티티로 이스케이프
+            v = string.gsub(tostring(v), '"', '&quot;')
             new_tbl = new_tbl .. '"' .. k .. '":"' .. v .. '",'
         end
         new_tbl = string.gsub(new_tbl, ",$", "}")
