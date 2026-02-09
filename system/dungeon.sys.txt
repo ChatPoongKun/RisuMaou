@@ -31,7 +31,7 @@
         
         dungeon.floors = currentFloors + 1
         setState(triggerId, "dungeon", dungeon)
-        alertNormal(triggerId, "던전이 " .. dungeon.floors .. "층으로 확장되었습니다!")
+        alertEffect(triggerId, "던전이 " .. dungeon.floors .. "층으로 확장되었습니다!", "success")
     end
 
     -- 버튼 클릭 핸들러 (Script.lua 연동)

@@ -74,6 +74,11 @@ function debug(...)
     end
 end
 
+--스크린이펙트 알림 (alertNormal 대체용)
+function alertEffect(triggerId, message, alertType)
+    sysFunction(triggerId, "alertEffect.sys", message, alertType or "info")
+end
+
 --tonumber를 콤마제거후 숫자로 인식하도록 오버라이딩
 old_tonumber = tonumber
 tonumber = function(str, base)
@@ -376,6 +381,7 @@ end)
 
 onButtonClick = async(function(triggerId, data)
     setChatVar(triggerId, "screenEffect", "") --버튼 누를때마다 screenEffect 초기화
+    setChatVar(triggerId, "alertEffectCount", 0) --알림 카운트 초기화
     if data == "gameStart" then
         initialize(triggerId)
         debug("게임 시작")

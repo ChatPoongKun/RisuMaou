@@ -1,0 +1,33 @@
+-- alertEffect.sys.txt
+-- 스크린이펙트 알림 시스템
+
+function(triggerId, message, alertType)
+    alertType = alertType or "info"
+    
+    -- 타입별 색상 설정
+    local colors = {
+        info = { bg = "#111", text = "#fff", glow = "#60d9f7" },
+        unlock = { bg = "#111", text = "#ffd700", glow = "#ffd700" },
+        success = { bg = "#111", text = "#4caf50", glow = "#4caf50" },
+        warning = { bg = "#111", text = "#ff9800", glow = "#ff9800" },
+        danger = { bg = "#111", text = "#f44336", glow = "#f44336" }
+    }
+    
+    local c = colors[alertType] or colors.info
+    
+    -- 순차 표시를 위한 알림 카운트 (1.4초씩 딜레이)
+    local alertCount = tonumber(getChatVar(triggerId, "alertEffectCount")) or 0
+    local delay = alertCount * 1.4
+    alertCount = alertCount + 1
+    setChatVar(triggerId, "alertEffectCount", alertCount)
+    
+    local effectHtml = string.format([[
+<div class="alert-effect" style="--alert-color: %s; --alert-glow: %s; --alert-delay: %.1fs;">
+    <div class="alert-effect-text">%s</div>
+</div>
+]], c.text, c.glow, delay, message)
+    
+    -- 기존 효과에 연결
+    local existingEffect = getChatVar(triggerId, "screenEffect") or ""
+    setChatVar(triggerId, "screenEffect", existingEffect .. effectHtml)
+end

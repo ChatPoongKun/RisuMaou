@@ -304,6 +304,12 @@ end!!
         setChatVar(triggerId, "traceText", "")
         setChatVar(triggerId, "targetTrace", "")
 
+        -- pending 알림 처리 (조교 완료 후 해금 알림은 여기서 발생)
+        if getChatVar(triggerId, "pending_shop_unlock") == "1" then
+            alertEffect(triggerId, "마계 상점과의 연결이 복구되었습니다.<br>조교에 도움이 될만한 물건들을 살펴보세요.", "unlock")
+            setChatVar(triggerId, "pending_shop_unlock", "")
+        end
+
         sysFunction(triggerId, "turnEnd.sys")
     else
         screenChange(triggerId, getState(triggerId,"oldScreen"))

@@ -148,7 +148,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
             newLog = newLog .. "<p>대상은 가혹한 조교를 견디지 못하고 실신했다.</p>"
             setChatVar(triggerId, "newLog", newLog)
             sysFunction(triggerId, "train.sys", "post") --조교종료 화면으로 넘어가 trace를 얻고 어빌처리는 할 수 있도록 함
-            alertNormal(triggerId, "대상은 가혹한 조교를 견디지 못하고 실신했습니다. 조교를 종료합니다.")
+            alertEffect(triggerId, "대상은 가혹한 조교를 견디지 못하고 실신했습니다.\n조교를 종료합니다.", "warning")
 
         else --사망처리.
             --변수 초기화
@@ -178,7 +178,7 @@ function(triggerId, dc, HP, SP, exps, feeling, command, equipTarget, tags)
             setChatVar(triggerId, "category", "items")
            screenChange(triggerId, "main")
             processAndStoreLore(triggerId, "main.lua")
-            alertNormal(triggerId, "대상이 가혹한 조교를 견디지 못하고 사망했습니다. 조교를 종료합니다.")
+            alertEffect(triggerId, "대상이 가혹한 조교를 견디지 못하고 사망했습니다.\n조교를 종료합니다.", "danger")
         end
 
         return false

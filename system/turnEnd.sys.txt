@@ -401,7 +401,7 @@ function (triggerId, action)
                 local unlockInv = tonumber(getChatVar(triggerId, "unlock_invasion")) or 0
                 if defCount >= 3 and unlockInv == 0 then
                     setChatVar(triggerId, "unlock_invasion", 1)
-                    alertNormal(triggerId, "이제 인간 마을을 직접 침공할 수 있습니다!")
+                    alertEffect(triggerId, "이제 인간 마을을 직접 침공할 수 있습니다!", "unlock")
                 end
             end
 
@@ -417,9 +417,9 @@ function (triggerId, action)
     -- 침공이 없을 때만 알림 메시지 표시
     if not invasionTriggered then
         if isNight then
-            alertNormal(triggerId, "하루가 지나갑니다...")
+            alertEffect(triggerId, "하루가 지나갑니다...", "info")
         else
-            alertNormal(triggerId, "밤이 깊어옵니다...")
+            alertEffect(triggerId, "밤이 깊어옵니다...", "info")
         end
         setChatVar(triggerId, "category", "items")
         screenChange(triggerId, "main")
@@ -447,7 +447,7 @@ function (triggerId, action)
     local unlockDungeon = tonumber(getChatVar(triggerId, "unlock_dungeon")) or 0
     if tonumber(day) >= 2 and unlockDungeon == 0 then
         setChatVar(triggerId, "unlock_dungeon", 1)
-        alertNormal(triggerId, "마왕의 부활이 알려졌습니다. 몬스터를 소환해 인간들로부터 던전을 방어하세요!")
+        alertEffect(triggerId, "마왕의 부활이 알려졌습니다.<br>몬스터를 소환해 인간들로부터 던전을 방어하세요!", "unlock")
     end
 
     -- [가시성 업데이트] 던전 현황 탭 (배치된 유닛이 있을 때만 표시)

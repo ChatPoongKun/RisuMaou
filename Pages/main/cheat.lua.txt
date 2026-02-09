@@ -18,7 +18,7 @@ end!!
     end
     
     setChatVar(triggerId, "spirit", intForm(newSpirit))
-    alertNormal(triggerId, "Spirit이 "..intForm(newSpirit).."로 설정되었습니다.")
+    alertEffect(triggerId, "Spirit이 "..intForm(newSpirit).."로 설정되었습니다.", "success")
 end!!
 
 [cheat/2/모든 메뉴 해금] function(triggerId)
@@ -31,7 +31,7 @@ end!!
     setChatVar(triggerId, "has_assets", "1")
     setChatVar(triggerId, "has_items", "1")
     
-    alertNormal(triggerId, "모든 메뉴가 해금되었습니다.")
+    alertEffect(triggerId, "모든 메뉴가 해금되었습니다.", "unlock")
 end!!
 
 [cheat/199/돌아가기] function(triggerId)
