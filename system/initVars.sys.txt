@@ -66,13 +66,12 @@ function (triggerId)
     upsertLocalLoreBook(triggerId, "crystalRec", "{}", option)
 
     --user 및 고유캐릭터 정보를 로컬 로어북에 저장
-    local trace = {}
     for _, v in ipairs(json.decode(initVars.chars)) do --리수배열 스타일에 맞게 저장
         local content = json.decode(getLoreBookContent(triggerId, v..".init")) -- 대상 캐릭터의 로어북을 불러와 테이블로 저장
         
         --캐릭터에는 정의가 필요한 부분만 들어있음. 캐릭터 시트에 없는 trait, trace등의 필드를 db에서 읽어와서 추가
-        --새 구조에서는 mark.db, abl.db, exp.db의 키 값을 전부 0으로 초기화해서 추가
-        local dbNames = {"mark.db", "abl.db", "exp.db"}
+        --새 구조에서는 mark.db, abl.db, exp.db, trace.db의 키 값을 전부 0으로 초기화해서 추가
+        local dbNames = {"mark.db", "abl.db", "exp.db", "trace.db"}
         local added = ""
         
         for _, dbName in ipairs(dbNames) do
@@ -98,17 +97,7 @@ function (triggerId)
 
         --캐릭터 정보를 로컬로어북에 저장
         upsertLocalLoreBook(triggerId, v, json.encode(content), option)
-
-        --캐릭터의 흔적은 별도의 state로 저장 (trace.db 사용)
-        local traceDB = getDB(triggerId, "trace.db")
-        trace[v] = {}
-        for _, val in pairs(traceDB) do
-            if val.name then
-                trace[v][val.name] = 0
-            end 
-        end
     end
-    setState(triggerId, "trace", trace)
 
     --유저 정보를 user변수에 테이블로 할당
     local user = json.decode(getLoreBookContent(triggerId, "user"))

@@ -18,7 +18,7 @@
         debug(string.format("[Char:Select] Target: %s, Screen: %s", name, getState(triggerId, "screen")))
         local screen = getState(triggerId, "screen")
         
-        -- [Migration] Trace Migration & UI Refresh (Shared Logic)
+        -- traceList 생성 (UI용)
         local traceDB = getDB(triggerId, "trace.db")
         local traceList = {}
         for k, v in pairs(traceDB) do
@@ -26,32 +26,6 @@
         end
         table.sort(traceList)
         setChatVar(triggerId, "traceList", json.encode(traceList))
-
-        -- 데이터 로드 및 마이그레이션
-        local allTraces = getState(triggerId, "trace")
-        if not allTraces[name] then allTraces[name] = {} end
-        local targetTrace = allTraces[name]
-        
-        local oldToNew = {
-            ["C감각"] = "C감각의 흔적", ["B감각"] = "B감각의 흔적", ["V감각"] = "V감각의 흔적", ["A감각"] = "A감각의 흔적",
-            ["U감각"] = "U감각의 흔적", ["애정"] = "애정의 흔적", ["발정"] = "발정의 흔적", ["순종"] = "순종의 흔적",
-            ["복종"] = "복종의 흔적", ["기술"] = "기술의 흔적", ["굴욕"] = "굴욕의 흔적", ["상처"] = "상처의 흔적",
-            ["불안"] = "불안의 흔적", ["부정"] = "부정의 흔적"
-        }
-        local migrated = false
-        for old, new in pairs(oldToNew) do
-            if targetTrace[old] and (tonumber(targetTrace[old]) or 0) > 0 then
-                targetTrace[new] = (targetTrace[new] or 0) + tonumber(targetTrace[old])
-                targetTrace[old] = nil -- Remove old key
-                migrated = true
-            end
-        end
-        
-        if migrated then
-            allTraces[name] = targetTrace
-            setState(triggerId, "trace", allTraces)
-            debug("Trace Migrated in char.sys for " .. name)
-        end
 
         if screen == "charList" then --캐릭터 조회화면
             if name == getPersonaName(triggerId) then
@@ -67,7 +41,6 @@
             end
             setState(triggerId, "target", target)
             stateToVar(triggerId, "target", target)
-            stateToVar(triggerId, "targetTrace", targetTrace)
             setChatVar(triggerId, "category", "appearance")
             screenChange(triggerId, "charInfo") --캐릭터 상세 정보 화면으로 이동
         elseif screen == "disposal" then -- 포로 처분 화면
@@ -75,7 +48,6 @@
             sysFunction(triggerId, "disposal.sys", "selectMethod", name)
         elseif screen == "preTrain" then        --조교 대상 화면
             sysFunction(triggerId, "train.sys", "prepare", name)
-            stateToVar(triggerId, "targetTrace", targetTrace)
             screenChange(triggerId, "train") --조교 화면으로 이동
         end
     end

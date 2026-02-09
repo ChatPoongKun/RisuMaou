@@ -17,34 +17,20 @@
     function funcs.levelUp(triggerId, abl, selectedCondition, alert)
         local target = getState(triggerId, "target")
         local ablLv = tonumber(target[abl])
-        local allTrace = getState(triggerId, "trace")
-        local targetTrace = allTrace[target["이름"]]
 
         if alert == nil then
             alert = true
         end
 
-        -- 레벨업 조건 확인
+        -- 레벨업 조건 확인 (trace가 target에 포함되어 있음)
         for k, v in pairs(selectedCondition) do
-            if targetTrace[k] then
-                print("targetTrace", k, targetTrace[k], v)
-                if tonumber(targetTrace[k]) < v then
-                    if alert == true then
-                        alertNormal(triggerId, "레벨업 불가: " .. k .. " 흔적 " .. (v - (targetTrace[k] or 0)) .. "부족")
-                    end
-                    setChatVar(triggerId, "selectedAbl", "none")
-                    return false
+            local currentVal = tonumber(target[k]) or 0
+            if currentVal < v then
+                if alert == true then
+                    alertNormal(triggerId, "레벨업 불가: " .. k .. " " .. (v - currentVal) .. " 부족")
                 end
-            end
-            if target[k] then
-                print("target", k, target[k], v)
-                if tonumber(target[k]) < v then
-                    if alert == true then
-                        alertNormal(triggerId, "레벨업 불가: " .. k .. " " .. (v - (target[k] or 0)) .. "부족")
-                    end
-                    setChatVar(triggerId, "selectedAbl", "none")
-                    return false
-                end
+                setChatVar(triggerId, "selectedAbl", "none")
+                return false
             end
         end
 
@@ -56,19 +42,17 @@
         -- 레벨업 처리
         alertNormal(triggerId, abl .. "레벨 상승! (" .. ablLv .. "->" .. tostring(ablLv + 1) .. ")")
         target[abl] = tostring(ablLv + 1)
+        
+        -- 조건(흔적 등) 차감
         for k, v in pairs(selectedCondition) do
-            if targetTrace[k] then
-                targetTrace[k] = targetTrace[k] - v
-            end
+            local currentVal = tonumber(target[k]) or 0
+            target[k] = tostring(currentVal - v)
         end
 
         -- 능력 선택 초기화
         setChatVar(triggerId, "selectedAbl", "none")
 
-        -- 변경된 trace와 abl정보 저장
-        allTrace[target["이름"]] = targetTrace
-        setState(triggerId, "trace", allTrace)
-        stateToVar(triggerId, "targetTrace", targetTrace)
+        -- 변경된 target 저장
         setState(triggerId, "target", target)
         stateToVar(triggerId, "target", target)
 

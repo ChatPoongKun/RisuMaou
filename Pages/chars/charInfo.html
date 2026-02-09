@@ -468,8 +468,8 @@
 <h2>* 흔적</h2>
 <div class="info-grid">
 {{#each {{getvar::traceList}} trace}}
-{{#when::{{dict_element::{{getvar::targetTrace}}::{{slot::trace}}}}::isnot::0}}
-<div class="talent-tag"><strong>{{slot::trace}}:</strong> {{dict_element::{{getvar::targetTrace}}::{{slot::trace}}}}</div>
+{{#when::{{dict_element::{{getvar::target}}::{{slot::trace}}}}::isnot::0}}
+<div class="talent-tag"><strong>{{slot::trace}}:</strong> {{dict_element::{{getvar::target}}::{{slot::trace}}}}</div>
 {{/when}}
 {{/each}}
 </div>

@@ -299,8 +299,8 @@ function (triggerId, reason)
     end
 
 
-    -- DB에 없는 필드 0으로 초기화
-    local extraDBs = {"mark.db", "abl.db", "exp.db", "stat.db"}
+    -- DB에 없는 필드 0으로 초기화 (trace.db 포함)
+    local extraDBs = {"mark.db", "abl.db", "exp.db", "stat.db", "trace.db"}
     for _, dbName in ipairs(extraDBs) do
         local dbContent = getDB(triggerId, dbName) -- 객체
         for key, val in pairs(dbContent) do
@@ -312,18 +312,6 @@ function (triggerId, reason)
             end
         end
     end
-
-    -- Trace 초기화
-    local allTrace = getState(triggerId, "trace") or {}
-    local traceDB = getDB(triggerId, "trace.db")
-    allTrace[skeleton["이름"]] = {}
-    
-    for k, v in pairs(traceDB) do
-        if v.name then
-            allTrace[skeleton["이름"]][v.name] = 0
-        end
-    end
-    setState(triggerId, "trace", allTrace)
     
     -- 캐릭터 리스트 업데이트
     local chars = json.decode(getChatVar(triggerId, "chars"))

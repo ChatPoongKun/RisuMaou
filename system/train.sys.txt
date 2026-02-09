@@ -340,11 +340,9 @@
              return
         end
         local exp = getDB(triggerId, "EXPtable.db")
-        local allTraces = getState(triggerId, "trace")
-        local traceCurrent = allTraces[target["이름"]] or {}
         local totalTrace = 0
 
-        -- [Migration] Trace Migration & UI Refresh
+        -- traceList 생성 (UI용)
         local traceDB = getDB(triggerId, "trace.db")
         local traceList = {}
         for k, v in pairs(traceDB) do
@@ -352,19 +350,6 @@
         end
         table.sort(traceList)
         setChatVar(triggerId, "traceList", json.encode(traceList))
-
-        local oldToNew = {
-            ["C감각"] = "C감각의 흔적", ["B감각"] = "B감각의 흔적", ["V감각"] = "V감각의 흔적", ["A감각"] = "A감각의 흔적",
-            ["U감각"] = "U감각의 흔적", ["애정"] = "애정의 흔적", ["발정"] = "발정의 흔적", ["순종"] = "순종의 흔적",
-            ["복종"] = "복종의 흔적", ["기술"] = "기술의 흔적", ["굴욕"] = "굴욕의 흔적", ["상처"] = "상처의 흔적",
-            ["불안"] = "불안의 흔적", ["부정"] = "부정의 흔적"
-        }
-        for old, new in pairs(oldToNew) do
-            if traceCurrent[old] and (tonumber(traceCurrent[old]) or 0) > 0 then
-                traceCurrent[new] = (traceCurrent[new] or 0) + tonumber(traceCurrent[old])
-                traceCurrent[old] = nil -- Remove old key
-            end
-        end
 
         -- 1. 캐시 초기화 (한 번만 실행)
         if not cachedValidTraces then
@@ -405,9 +390,14 @@
         local traceAdd = {} -- 이번에 추가될 흔적 양
         local traceSum = {} -- 기존 + 추가 합산 (차감 전)
 
-        -- 기존 흔적 복사
-        for k, v in pairs(traceCurrent) do
-            traceSum[k] = v
+        -- 기존 흔적을 target에서 추출하여 복사
+        local traceCurrent = {}
+        for _, traceName in ipairs(traceList) do
+            local val = tonumber(target[traceName]) or 0
+            if val > 0 then
+                traceCurrent[traceName] = val
+                traceSum[traceName] = val
+            end
         end
 
         for statName, expVal in pairs(traceEXP) do
@@ -486,8 +476,8 @@
                 traceText = traceText .. string.format("%s: %d + %d - %d = %d<br>",
                     k, (traceCurrent[k] or 0), added, deducted, finalVal)
 
-                -- 값 적용
-                traceCurrent[k] = finalVal
+                -- 값 적용 (target에 직접 저장)
+                target[k] = tostring(math.max(0, finalVal))
             end
         end
 
@@ -503,13 +493,10 @@
         setChatVar(triggerId, "spirit", intForm(newSpirit))
         debug(string.format("[Train:Post] Spirit: %d -> %d (Gained: %d)", oldSpirit, newSpirit, totalTrace))
 
-        -- 데이터 저장 및 업데이트
-        upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), DEFAULT_LORE_OPTION)
+        -- 데이터 저장 및 업데이트 (trace가 target에 직접 포함됨)
+        setState(triggerId, "target", target)
         stateToVar(triggerId, "target", target)
-
-        stateToVar(triggerId, "targetTrace", traceCurrent)
-        allTraces[target["이름"]] = traceCurrent
-        setState(triggerId, "trace", allTraces)
+        upsertLocalLoreBook(triggerId, target["이름"], json.encode(target), DEFAULT_LORE_OPTION)
         setChatVar(triggerId, "traceText", traceText)
 
         -- 6. 경험치 누적 및 레벨업 체크
@@ -564,7 +551,7 @@
         local unlockShop = tonumber(getChatVar(triggerId, "unlock_shop")) or 0
         if trainCount >= 1 and unlockShop == 0 then
             setChatVar(triggerId, "unlock_shop", 1)
-            alertNormal(triggerId, "마계 상점과의 연결이 복구되었습니다. 조교에 도움이 될만한 물건들을 살펴보세요.")
+            setChatVar(triggerId, "pending_shop_unlock", "1") -- ablUp→main 전환 시 알림
         end
 
         -- 초기화 및 화면 이동
