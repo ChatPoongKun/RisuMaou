@@ -416,6 +416,15 @@ end!!
     setChatVar(triggerId, "debug", debug)
 end!!
 
+[config/llmRetries/hidden] function(triggerId)
+    local currentRetries = getChatVar(triggerId, "llmRetries")
+    local newRetries = alertInput(triggerId, "LLM 재시도 횟수를 입력하세요 (현재: " .. currentRetries .. ")"):await()
+    
+    if newRetries ~= "" and tonumber(newRetries) then
+        setChatVar(triggerId, "llmRetries", math.floor(tonumber(newRetries)))
+    end
+end!!
+
 [config/use_dictionary/hidden] function(triggerId)
     local use_dictionary = getChatVar(triggerId, "use_dictionary")
     use_dictionary = math.abs(use_dictionary-1)

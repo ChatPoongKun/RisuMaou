@@ -104,7 +104,7 @@ risu-btn='kingPenis'><strong>페니스: </strong>{{dict_element::{{getvar::king}
 <label><b>용사 나이 제한</b></label>
 <label class="triple-switch">
 <input type="radio" name="ageLimit" id="one" {{#when::ageLimit::vis::0}}checked{{/when}}>
-<input type="radio" name="ageLimit" id="two" {{#when::ageLimit::vis::12}}checked{{/when}}>
+<input type="radio" name="ageLimit" id="two" {{#when::ageLimit::vis::13}}checked{{/when}}>
 <input type="radio" name="ageLimit" id="three" {{#when::ageLimit::vis::18}}checked{{/when}}>
 <span class="triple-slider"></span>
 </label>
@@ -303,6 +303,11 @@ risu-btn='kingPenis'><strong>페니스: </strong>{{dict_element::{{getvar::king}
 <p class="setting-description">콘솔에 디버그 메시지를 출력합니다.</p>
 {{/when}}
 </div>
+
+<div class="btn command-btn two-cells" risu-btn="llmRetries">
+    <strong>LLM 재시도 횟수: </strong>{{getvar::llmRetries}}회
+</div>
+<p class="setting-description" style="grid-column: 1 / -1;">LLM 응답 실패 시 재시도할 최대 횟수를 설정합니다.</p>
 
 <div class="two-cells" risu-btn="use_dictionary">
 <label><b>마계사전 활성화</b></label>

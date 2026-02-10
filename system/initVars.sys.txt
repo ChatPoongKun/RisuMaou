@@ -41,6 +41,9 @@ function (triggerId)
         use_dictionary = 0, --마계사전 활성화 (0: Off, 1: On)
         unlock_cheat_menu = 0, --치트 메뉴 활성화 (0: Locked, 1: Unlocked)
         show_dungeon = 0, --던전 현황 탭 표시 (0: Hidden, 1: Visible)
+        
+        --[시스템 설정]
+        llmRetries = 3, --LLM 재시도 횟수
     }
 
     for key, value in pairs(initVars) do

@@ -97,11 +97,23 @@ LLM = function(triggerId, prompt, callName)
     local modelSelect = models[callName]
     local response
 
-    if modelSelect == "1" then
-        response = old_LLM(triggerId, prompt)
-    else
-        response = axLLM(triggerId, prompt)
+    local maxRetries = tonumber(getChatVar(triggerId, "llmRetries")) or 3
+    
+    for i = 0, maxRetries do
+        if modelSelect == "1" then
+            response = old_LLM(triggerId, prompt)
+        else
+            response = axLLM(triggerId, prompt)
+        end
+
+        if response.success then
+            return response
+        else
+            debug("LLM 요청 실패 (시도 " .. (i + 1) .. "/" .. (maxRetries + 1) .. "): " .. tostring(response.result))
+        end
     end
+    
+    debug("LLM 요청 최종 실패. 최대 재시도 횟수 초과.")
     return response
 end
 
