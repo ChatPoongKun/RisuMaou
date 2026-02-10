@@ -109,6 +109,7 @@ function (triggerId, action)
         setChatVar(triggerId, "battleLoadingState", "침공 용사 파악중...")
         setChatVar(triggerId, "battleLogsHtml", "") -- 초기화
         setChatVar(triggerId, "battleNarration", "")
+        setChatVar(triggerId, "battleSkipped", "0") -- 스킵 상태 초기화
         setChatVar(triggerId, "defenderImage", "")
         setChatVar(triggerId, "battleDungeonHtml", "")
         screenChange(triggerId, "battle")

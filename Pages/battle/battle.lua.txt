@@ -1,3 +1,10 @@
+[battle/skip/스킵] function(triggerId)
+    setChatVar(triggerId, "battleSkipped", "1")
+    setChatVar(triggerId, "animDuration", "0s")
+    setChatVar(triggerId, "shakeCount", "0")
+    reloadDisplay(triggerId)
+end!!
+
 [battle/close/확인] function(triggerId)
     local result = getChatVar(triggerId, "battleResult")
     local battleLogsHtml = getChatVar(triggerId, "battleLogsOnly") or ""

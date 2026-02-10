@@ -984,6 +984,21 @@ input#three:checked~.x-risu-triple-slider:before {
     to { opacity: 1; }
 }
 
+/* Dismissed State - 클릭 시 즉시 실행 */
+.alert-effect.dismissed {
+    animation: hide-container 0.2s 0.5s forwards !important;
+    opacity: 1 !important;
+}
+
+.alert-effect.dismissed::before,
+.alert-effect.dismissed::after {
+    animation: open-panels 0.5s ease-in-out 0s forwards !important;
+}
+
+.alert-effect.dismissed .alert-effect-text {
+    animation: alert-text-anim 0.5s ease-in-out 0s forwards !important;
+}
+
 /* Media Queries */
 @media screen and (max-width: 400px) {
     .container {

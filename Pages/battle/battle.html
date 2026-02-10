@@ -326,6 +326,7 @@
         padding: 1rem;
         padding-bottom: 0;
         opacity: 0;
+        visibility: hidden; /* Prevent blocking clicks while waiting */
         transform: translateY(20px);
         animation: reveal-result 0.5s forwards;
         animation-delay: {{getvar::animDuration}}; 
@@ -335,7 +336,7 @@
     }
     
     @keyframes reveal-result {
-        to { opacity: 1; transform: translateY(0); }
+        to { opacity: 1; transform: translateY(0); visibility: visible; }
     }
 
     .result-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
@@ -397,6 +398,57 @@
         0%, 100% { opacity: 1; }
         50% { opacity: 0.6; }
     }
+
+    /* Skip Button */
+    .skip-btn {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        background: rgba(30, 30, 30, 0.85);
+        color: #ddd;
+        border: 1px solid #555;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        animation: skip-pulse 2s infinite;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .skip-btn:hover { background: rgba(60, 60, 60, 0.9); border-color: #888; color: #fff; }
+    @keyframes skip-pulse {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+    }
+
+    /* Skipped State: override all animation delays to 0 */
+    .battle-container.skipped .log-line,
+    .battle-container.skipped .battle-narration {
+        animation-delay: 0s !important;
+    }
+    .battle-container.skipped .defender-img.timed {
+        animation-delay: 0s !important;
+    }
+    .battle-container.skipped .impact-layer {
+        animation-iteration-count: 0 !important;
+    }
+    .battle-container.skipped .fighter-container {
+        animation-iteration-count: 0 !important;
+    }
+    .battle-container.skipped .fighter-icon::after {
+        animation-iteration-count: 0 !important;
+    }
+    .skipped ~ .result-section {
+        animation-delay: 0s !important;
+    }
+    
+    .result-section {
+        position: relative;
+        z-index: 20; /* Ensure it overlays the skip button if both are present */
+    }
 </style>
 
 <div class="container">
@@ -411,8 +463,11 @@
 <!-- Conditional rendering: battleLoadingState가 비어있으면 전투 컨텐츠, 아니면 로딩 오버레이 -->
 {{#when::battleLoadingState::vis::}}
 <!-- Battle content (shown when loading complete) -->
+<div class="battle-container {{#if {{equal::{{getvar::battleSkipped}}::1}}}}skipped{{/if}}">
+{{#if {{equal::{{getvar::battleSkipped}}::0}}}}
+<button class="skip-btn" risu-btn="skip">SKIP ▶▶</button>
+{{/if}}
 <div class="impact-layer"></div> <!-- Visual Shake Layer -->
-<div class="battle-container">
 <!-- 1. Dungeon Status Strip -->
 <div class="dungeon-status-strip" style="width:100%; box-sizing:border-box;">
 {{getvar::battleDungeonHtml}}
@@ -453,7 +508,7 @@
 </div>
 <div><button class="close-btn" risu-btn="close">전투 종료 및 확인</button></div>
 </div>
-</div>
+</div> <!-- /battle-container -->
 {{:else}}
 <!-- Loading Overlay (shown when battleLoadingState is set) -->
 <div class="loading-overlay">

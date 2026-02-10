@@ -22,12 +22,12 @@ function(triggerId, message, alertType)
     setChatVar(triggerId, "alertEffectCount", alertCount)
     
     local effectHtml = string.format([[
-<div class="alert-effect" style="--alert-color: %s; --alert-glow: %s; --alert-delay: %.1fs;">
+<div class="alert-effect" style="--alert-color: %s; --alert-glow: %s; --alert-delay: %.1fs;" onclick="this.classList.add('dismissed')">
     <div class="alert-effect-text">%s</div>
 </div>
 ]], c.text, c.glow, delay, message)
     
-    -- 기존 효과에 연결
+    -- 기존 효과 앞에 추가 (역순으로 쌓아서 먼저 뜬 알림이 위에 오도록 함 - 클릭 가능하게)
     local existingEffect = getChatVar(triggerId, "screenEffect") or ""
-    setChatVar(triggerId, "screenEffect", existingEffect .. effectHtml)
+    setChatVar(triggerId, "screenEffect", effectHtml .. existingEffect)
 end
