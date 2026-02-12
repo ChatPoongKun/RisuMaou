@@ -162,18 +162,12 @@ end!!
     local targetVar = getChatVar(triggerId, "target")
     local target = json.decode(targetVar)
     
-    -- target이 이름만 있는 경우와 전체 객체인 경우 구분 필요할 수 있음
-    -- 하지만 charInfo 진입 시점에 target은 전체 객체로 설정되는 것으로 보임 (Script 참조 필요하지만 일단 진행)
-    -- 만약 target이 이름이라면 LoreBook에서 읽어와야 함
-    
     if type(target) == "string" then
-       -- 혹시 문자열 그대로라면 (이름)
        local content = getLoreBookContent(triggerId, target)
        if content and content ~= "" then
            target = json.decode(content)
        end
     elseif target["이름"] then
-        -- 이미 객체라면 최신 정보를 위해 로어북에서 다시 읽는 것이 안전할 수 있음
         local content = getLoreBookContent(triggerId, target["이름"])
         if content and content ~= "" then
             target = json.decode(content)
@@ -185,9 +179,64 @@ end!!
         local append = target["portrait_append"] or ""
         local imgTag = pre .. append
         setChatVar(triggerId, "charPopupImg", imgTag)
+        
+        -- inlay 체크
+        if string.find(pre, "{{inlay") then
+            setChatVar(triggerId, "isInlay", "true")
+        else
+            setChatVar(triggerId, "isInlay", "")
+        end
     end
+    setChatVar(triggerId, "showConvertConfirm", "")
+end!!
+
+[charInfo/popup_convert_req/hidden] function(triggerId)
+    setChatVar(triggerId, "showConvertConfirm", "true")
+end!!
+
+[charInfo/popup_convert_cancel/hidden] function(triggerId)
+    setChatVar(triggerId, "showConvertConfirm", "")
+end!!
+
+[charInfo/popup_convert_confirm/hidden] function(triggerId)
+    local targetVar = getChatVar(triggerId, "target")
+    local target = json.decode(targetVar)
+    
+    if type(target) == "string" then
+       local content = getLoreBookContent(triggerId, target)
+       if content and content ~= "" then target = json.decode(content) end
+    elseif target["이름"] then
+        local content = getLoreBookContent(triggerId, target["이름"])
+        if content and content ~= "" then target = json.decode(content) end
+    end
+    
+    if not target then return end
+    
+    local name = target["이름"]
+ 
+    target["portrait_pre"] = "<img src='{{raw:"
+    target["portrait_append"] = ":" .. name .. "}}'>"
+    
+    -- 저장
+    local option = {alwaysActive = false, insertOrder = 100, key = "", secondKey = "", regex = false}
+    upsertLocalLoreBook(triggerId, name, json.encode(target), option)
+    
+    -- 현재 상태 업데이트
+    setChatVar(triggerId, "charPopupImg", target["portrait_pre"] .. target["portrait_append"])
+    setChatVar(triggerId, "isInlay", "")
+    setChatVar(triggerId, "showConvertConfirm", "")
+    
+    setState(triggerId, "target", target)
+    stateToVar(triggerId, "target", target)
+    
+    alertNormal(triggerId, "초상화 타입이 Raw(로컬파일)로 변경되었습니다.")
 end!!
 
 [charInfo/popup_close/hidden] function(triggerId)
     setChatVar(triggerId, "charPopupImg", "")
+    setChatVar(triggerId, "isInlay", "")
+    setChatVar(triggerId, "showConvertConfirm", "")
+    
+    -- 목록 갱신 (이미지 변경사항 반영)
+    sysFunction(triggerId, "char.sys", "list")
 end!!

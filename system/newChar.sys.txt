@@ -292,10 +292,11 @@ function (triggerId, reason)
         -- [JSON Parsing Fix] Split ':' into two fields
         skeleton["portrait_pre"] = "{{inlay:"
         skeleton["portrait_append"] = cleanImg
-        skeleton["portrait"] = nil -- 기존 필드 제거
         debug("초상화 저장 완료")
     else
         debug("초상화 생성 실패 (최대 재시도 횟수 초과)")
+        skeleton["portrait_pre"] = "<img src='{{raw:"
+        skeleton["portrait_append"] = ":dummy_portrait}}'>"
     end
 
 
